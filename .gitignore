@@ -2,4 +2,6 @@ dist/
 __pycache__/
 .DS_Store
 voice-tools/cache/
+voice-tools/texts.json
 models/
+node_modules/

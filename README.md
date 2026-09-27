@@ -11,7 +11,7 @@ A 2D brick-building website for kids aged 5–12 (English and Arabic). It is pla
 
 ```
 build.py            Joins the files in src/ into finished pages in dist/ and docs/
-voice-tools/        Records Bricky's voice (make_voice.py, texts.json, texts.js); run by .github/workflows/voice.yml
+voice-tools/        Records Bricky's voice (texts.js lists the text, make_voice.py records it); run by .github/workflows/voice.yml
 src/
   markup.html       Page structure: home, adventure map, games picker, studio, and the sheets (name, photo, save, grown-ups)
   styles.css        Main look: bricks, studs, buttons
@@ -67,10 +67,7 @@ This creates three pages in `dist/`:
 
 Bricky speaks with recorded clips in `docs/voice/en.json` and `docs/voice/ar.json`, made with the open Supertonic 3 text-to-speech model by Supertone (OpenRAIL-M licence). Arabic clips are checked with the Whisper speech recogniser and recorded again when unclear. The app plays a clip when the text matches one it has; anything else (for example a child's name) uses the device's own voice.
 
-To record new text after changing the app:
-
-1. Run `python3 build.py`, then `node voice-tools/texts.js` to update `voice-tools/texts.json` (needs Node and Playwright).
-2. Upload `voice-tools/texts.json`, open the **Actions** tab, choose **Make Bricky's voice** and press **Run workflow**. It takes up to about an hour and saves the clips to `docs/voice/`. Clips from earlier runs are reused, so later runs are quicker.
+To record new text after changing the app, open the **Actions** tab on GitHub, choose **Make Bricky's voice** and press **Run workflow**. It builds the app, lists everything it can say (`voice-tools/texts.js`), records what is new (`voice-tools/make_voice.py`) and saves the clips to `docs/voice/`. The first run takes about an hour; later runs reuse earlier clips and are quicker.
 
 ## Where things are saved
 
