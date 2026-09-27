@@ -67,11 +67,15 @@ $$("[data-mode]").forEach(b => b.addEventListener("click", () => {
   $$("[data-mode]").forEach(x => x.setAttribute("aria-pressed", x.dataset.mode === nameMode));
 }));
 
+// hide the tablet brick dock while the on-screen keyboard is up
+document.addEventListener("focusin", e => { if (e.target.matches && e.target.matches("input, textarea")) document.body.classList.add("typing"); });
+document.addEventListener("focusout", e => { if (e.target.matches && e.target.matches("input, textarea")) document.body.classList.remove("typing"); });
 let rz;
 window.addEventListener("resize", () => {
   clearTimeout(rz);
-  rz = setTimeout(() => { fitCell(); buildLogo(); buildShapes(); buildStamps(); emit("resize"); }, 120);
+  rz = setTimeout(() => { buildLogo(); buildShapes(); buildStamps(); fitCell(); emit("resize"); }, 120);
 });
+window.addEventListener("orientationchange", () => setTimeout(() => { buildLogo(); fitCell(); }, 300));
 
 /* ---- go ---- */
 document.body.dataset.mode = "free";
