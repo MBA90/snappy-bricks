@@ -7,6 +7,10 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Snappy Bricks">
 <meta name="description" content="A colorful brick-building website for kids: snap bricks, play word and puzzle games, and build your name in English or Arabic.">
 </head>
 <body>
@@ -480,6 +484,152 @@ body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(25
 .teacher h3{margin:0}
 .teacher textarea{font:inherit;font-weight:700;border:3px solid var(--ink);border-radius:12px;padding:8px;min-height:90px;resize:vertical;color:var(--ink)}
 
+/* ===================== tablets & touch ===================== */
+.tray-sec,.name-box{display:flex;flex-direction:column;gap:12px}
+.tray-sec[hidden]{display:none!important}
+
+/* finger-friendly everywhere touch is the main input */
+html{touch-action:manipulation}
+.plate,.tray,.card,.swatch,.stylebtn,.btn,.chip,.mode,.gletter,.lv-item,.theme-card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+@media (hover:none){
+  .card:hover{border-color:transparent}
+  .card[aria-pressed="true"]:hover{border-color:var(--ink)}
+  .mode:hover{background:transparent}
+  .mode[aria-pressed="true"]:hover{background:#fff}
+  .lv-item:hover{background:#fff}
+}
+@media (pointer:coarse){
+  .btn{min-height:46px;padding-inline:14px}
+  .btn.small{min-height:42px}
+  .chip{min-height:46px;padding-inline:14px}
+  .mode{min-height:52px}
+  .swatch{min-width:44px;min-height:44px}
+  .stylebtn{min-height:52px}
+  .card{min-height:70px}
+  .gletter{min-width:58px;height:58px;font-size:1.7rem}
+  .extras .btn{min-width:54px}
+  .card-x{width:34px;height:34px;top:-10px;inset-inline-end:-10px}
+  .lv-item{min-height:64px}
+  .name-input{min-height:56px}
+  .card-form input{min-height:48px}
+}
+
+/* ---------- tablet, landscape: bricks beside the board, extras underneath ---------- */
+@media (min-width:900px) and (max-width:1279px) and (orientation:landscape){
+  .app{gap:10px;padding-block:10px 30px}
+  .top{gap:10px 14px}
+  .tag{display:none}
+  .chips{margin-inline-start:auto}
+  .studio{grid-template-columns:236px minmax(0,1fr);gap:16px}
+  .tray{
+    grid-column:1;grid-row:1 / span 2;order:0;
+    position:sticky;top:calc(env(safe-area-inset-top, 0px) + 10px);
+    max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);overflow-y:auto;overscroll-behavior:contain;
+    padding:14px;gap:14px;
+  }
+  .tray .hint{display:none}
+  .board-area{grid-column:2;grid-row:1;order:0;gap:10px}
+  .helper .bricky{width:44px;height:44px}
+  .bubble{min-height:40px;font-size:1rem}
+  .toolbar{gap:6px}
+  .toolbar .btn{padding-inline:10px;font-size:.92rem}
+  .toolbar .divider{display:none}
+  .plate-wrap{padding-block:6px 14px}
+  .side{grid-column:2;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+}
+
+/* ---------- tablet, portrait: a brick dock fixed to the bottom of the screen ---------- */
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  body{padding-bottom:calc(var(--dock-h, 210px) + 16px)}
+  .studio{grid-template-columns:minmax(0,1fr)}
+  .board-area{grid-column:1;order:-1}
+  .side{grid-column:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+  .side .board-settings{grid-column:1 / -1}
+  .tray{
+    position:fixed;left:0;right:0;bottom:0;z-index:80;
+    flex-direction:row;align-items:flex-start;gap:18px;
+    overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;
+    border-radius:26px 26px 0 0;border-bottom:0;
+    box-shadow:0 -8px 22px rgba(43,30,92,.28);
+    padding:10px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+    transition:transform .25s ease;
+    scrollbar-width:thin;
+  }
+  .tray-sec{flex:none;gap:6px}
+  .tray h2,.tray h3{font-size:.85rem;margin:0;white-space:nowrap;color:var(--ink-soft)}
+  .tray .hint{display:none}
+  .swatches{grid-template-columns:repeat(5,46px);gap:6px}
+  .styles{grid-template-columns:repeat(3,64px);grid-template-rows:auto auto}
+  .shapes{grid-template-columns:none;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:minmax(92px,auto);gap:8px}
+  .stamps{grid-template-columns:none;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:78px;gap:8px}
+  .sec-bricks{flex-direction:column}
+  .sec-bricks .row{margin-top:2px}
+  .card{touch-action:pan-x}
+  body.typing .tray{transform:translateY(110%)}
+}
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  .sec-bricks{display:grid;grid-template-columns:auto auto;align-items:center;justify-content:start;column-gap:10px;row-gap:6px}
+  .sec-bricks .shapes{grid-column:1 / -1}
+  .sec-bricks .row{margin:0}
+  .sec-bricks .row .btn{min-height:36px;padding:2px 10px 0;font-size:.85rem;border-radius:12px;box-shadow:0 3px 0 var(--ink)}
+  .sec-bricks .row .btn svg{width:18px;height:18px}
+}
+
+/* ---------- tablet refinements ---------- */
+@media (min-width:900px) and (max-width:1279px) and (orientation:landscape){
+  .swatches{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .styles{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .modebar{flex-wrap:nowrap;padding:5px;gap:4px}
+  .mode{padding:4px 6px 2px;font-size:.9rem;gap:4px;min-height:46px}
+  .mode .mi{font-size:1.05rem}
+  /* toolbar: one row of icon buttons with small labels underneath */
+  .toolbar{flex-wrap:nowrap;gap:5px}
+  .toolbar .seg{flex-wrap:nowrap;gap:5px}
+  .toolbar .spacer{display:none}
+  .toolbar .btn{flex-direction:column;gap:1px;padding:4px 2px 2px;min-width:0;flex:1 1 0;min-height:56px;font-size:.64rem;line-height:1.1;border-radius:14px}
+  .toolbar .btn svg{width:22px;height:22px}
+  .toolbar .btn .txt{white-space:normal;text-align:center;line-height:1;max-width:100%;overflow-wrap:normal;word-break:keep-all}
+  .toolbar .seg{flex:5 1 0;display:flex}
+  .toolbar #mirrorBtn,.toolbar #stackBtn,.toolbar #undoBtn,.toolbar #replayBtn,.toolbar #clearBtn,.toolbar #saveBtn{flex:1 1 0}
+  .below{min-height:0}
+}
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  .tag{display:none}
+  .chips{margin-inline-start:auto}
+  .chip .txt{display:none}
+  .below{display:none}
+  .swatches{grid-template-columns:repeat(5,38px);gap:6px}
+  .swatch{min-width:38px;min-height:38px}
+  .styles{grid-template-columns:repeat(3,54px)}
+  .shapes{grid-auto-columns:82px}
+  .tray{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+}
+/* dropping a board brick back on the brick tray puts it away */
+.tray.hot{outline:4px dashed #FF8A5C;outline-offset:-8px;background:#FFF1EA}
+
+/* ---------- games on tablets ---------- */
+@media (min-width:900px) and (max-width:1279px) and (orientation:landscape){
+  body:not([data-mode="free"]) .board-area{
+    display:grid;grid-template-columns:minmax(0,1fr) 250px;align-items:start;column-gap:14px;
+    grid-template-areas:"mode mode" "helper helper" "tools tools" "sel sel" "plate game" "below below";
+  }
+  body:not([data-mode="free"]) .modebar{grid-area:mode}
+  body:not([data-mode="free"]) .helper{grid-area:helper}
+  body:not([data-mode="free"]) .toolbar{grid-area:tools}
+  body:not([data-mode="free"]) .selbar{grid-area:sel}
+  body:not([data-mode="free"]) .plate-wrap{grid-area:plate}
+  body:not([data-mode="free"]) .below{grid-area:below}
+  body:not([data-mode="free"]) .gamepanel{grid-area:game;flex-direction:column;gap:10px;padding:12px}
+  body:not([data-mode="free"]) .gp-target{flex-basis:auto;min-height:110px}
+}
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  body:not([data-mode="free"]) .helper{display:none}
+  body:not([data-mode="free"]) .gamepanel{padding:10px;gap:12px}
+  body:not([data-mode="free"]) .gp-target{flex-basis:112px;min-height:96px}
+  body:not([data-mode="free"]) .gp-emoji{font-size:2.6rem}
+  body:not([data-mode="free"]) .gp-num{font-size:3rem}
+}
+
 </style>
 <div class="app">
   <header class="top">
@@ -512,25 +662,33 @@ body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(25
 
   <main class="studio">
     <!-- Brick tray -->
-    <section class="panel tray" aria-labelledby="trayTitle">
-      <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
-      <div class="swatches" id="swatches"></div>
-      <h3 data-i18n="brickStyle">Brick style</h3>
-      <div class="styles" id="styles"></div>
-      <h2 data-i18n="dragBrick">Drag a brick</h2>
-      <p class="hint" data-i18n="dragHint">Drag it to the board, or tap it and then tap the board.</p>
-      <div class="shapes" id="shapes"></div>
-      <div class="row">
-        <button class="btn lav" id="turnBtn" type="button" aria-pressed="false">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>
-          <span data-i18n="turnBricks">Turn bricks</span>
-        </button>
+    <section class="panel tray" id="tray" aria-labelledby="trayTitle">
+      <div class="tray-sec sec-colors">
+        <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
+        <div class="swatches" id="swatches"></div>
       </div>
-      <h3 data-i18n="funShapes">Fun shapes</h3>
-      <div class="stamps" id="stamps"></div>
-      <div id="myStampsWrap" hidden>
+      <div class="tray-sec sec-styles">
+        <h3 data-i18n="brickStyle">Brick style</h3>
+        <div class="styles" id="styles"></div>
+      </div>
+      <div class="tray-sec sec-bricks">
+        <h2 data-i18n="dragBrick">Drag a brick</h2>
+        <p class="hint" data-i18n="dragHint">Drag it to the board, or tap it and then tap the board.</p>
+        <div class="shapes" id="shapes"></div>
+        <div class="row">
+          <button class="btn lav" id="turnBtn" type="button" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>
+            <span data-i18n="turnBricks">Turn bricks</span>
+          </button>
+        </div>
+      </div>
+      <div class="tray-sec sec-stamps">
+        <h3 data-i18n="funShapes">Fun shapes</h3>
+        <div class="stamps" id="stamps"></div>
+      </div>
+      <div class="tray-sec sec-mine" id="myStampsWrap" hidden>
         <h3 data-i18n="myStamps">My stamps</h3>
-        <div class="stamps" id="myStamps" style="margin-top:10px"></div>
+        <div class="stamps" id="myStamps"></div>
       </div>
     </section>
 
@@ -652,6 +810,7 @@ body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(25
 
     <!-- Name + board settings -->
     <section class="panel side" aria-labelledby="nameTitle">
+      <div class="name-box">
       <h2 id="nameTitle" data-i18n="writeName">Write your name</h2>
       <form class="name-form" id="nameForm" autocomplete="off">
         <label class="label" for="nameInput" data-i18n="typeLetters">Type letters or numbers</label>
@@ -670,6 +829,7 @@ body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(25
         </div>
         <button class="btn big" type="submit" data-i18n="buildName">Build my name!</button>
       </form>
+      </div>
       <div class="share-box">
         <h2 data-i18n="saveShare">Save and share</h2>
         <div class="share-grid" id="shareGrid">
@@ -889,6 +1049,7 @@ addStrings({
   welcomeBack: ["Welcome back! Your board is just how you left it.", "أهلًا بعودتك! لوحتك كما تركتها."],
   talkSayOn: ["I'll read letters and words out loud.", "سأقرأ الحروف والكلمات بصوت عالٍ."],
   talkSayOff: ["Okay, I'll stay quiet.", "حسنًا، سأبقى هادئًا."],
+  tipTwoFinger: ["Tip: while you drag a long brick, tap the screen with another finger to turn it!", "نصيحة: أثناء سحب مكعب طويل، اضغط على الشاشة بإصبع آخر لتلفّه!"],
   noArabicVoice: ["This device has no Arabic voice, so I'll read in English only.", "هذا الجهاز لا يملك صوتًا عربيًا، لذلك سأقرأ بالإنجليزية فقط."],
 });
 
@@ -1137,9 +1298,18 @@ function fitCell(){
   const wrap = $("#plateWrap");
   const w = wrap.clientWidth - 16;
   const top = wrap.getBoundingClientRect().top + window.scrollY;
+  // on tablets in portrait the bricks sit in a dock at the bottom of the screen
+  const tray = $("#tray");
+  const docked = !!tray && getComputedStyle(tray).position === "fixed";
+  const dock = docked ? tray.offsetHeight : 0;
+  document.body.style.setProperty("--dock-h", dock + "px");
+  const H = window.innerHeight;
   let maxH;
-  if (window.innerWidth > 1180) maxH = Math.max(300, window.innerHeight - top - 96);
-  else maxH = Math.max(240, window.innerHeight * .6);
+  if (window.innerWidth <= 720) maxH = Math.max(240, H * .6);
+  else {
+    const landscapeTablet = window.innerWidth < 1280 && window.innerWidth > window.innerHeight;
+    maxH = Math.max(H * (docked ? .25 : landscapeTablet ? .35 : .55), H - top - dock - (docked ? 24 : 70));
+  }
   cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), 7, 46));
   plate.style.setProperty("--cell", cell + "px");
 }
@@ -1421,7 +1591,8 @@ function placePiece(piece, gx, gy, opts = {}){
 }
 
 /* ===================== tray UI ===================== */
-function trayCell(){ return window.innerWidth < 720 ? 14 : 16; }
+const coarse = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
+function trayCell(){ return window.innerWidth < 720 ? 14 : coarse ? 18 : 16; }
 function buildSwatches(){
   const box = $("#swatches"); box.innerHTML = "";
   for (const c of COLORS){
@@ -1566,8 +1737,11 @@ function hideGhost(){ if (ghostEl){ ghostEl.remove(); ghostEl = null; } }
 function computeTarget(e){
   const r = plate.getBoundingClientRect();
   const cx = e.clientX, cy = e.clientY - ptr.lift;
-  const inTrash = overEl(trash, e.clientX, e.clientY);
-  trash.classList.toggle("hot", inTrash);
+  const trayEl = $("#tray");
+  const overTray = ptr.source === "board" && overEl(trayEl, e.clientX, e.clientY);
+  const inTrash = overTray || overEl(trash, e.clientX, e.clientY);
+  trash.classList.toggle("hot", inTrash && !overTray);
+  trayEl.classList.toggle("hot", overTray);
   const near = cx > r.left - cell && cx < r.right + cell && cy > r.top - cell && cy < r.bottom + cell;
   ptr.inTrash = inTrash;
   if (!near || inTrash){ ptr.target = null; hideGhost(); return; }
@@ -1584,7 +1758,7 @@ function computeTarget(e){
 }
 function endDrag(e, cancelled){
   const p = ptr; ptr = null;
-  hideGhost(); trash.classList.remove("hot");
+  hideGhost(); trash.classList.remove("hot"); $("#tray").classList.remove("hot");
   if (floatEl){ floatEl.remove(); floatEl = null; }
   if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); }
   if (cancelled) return;
@@ -1791,6 +1965,7 @@ window.addEventListener("pointermove", e => {
   if (!ptr.moved){
     if (Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) < 7) return;
     ptr.moved = true; showFloat();
+    if (e.pointerType === "touch" && ptr.piece.single && ptr.piece.w !== ptr.piece.h && !store("snappy-tip-turn")){ store("snappy-tip-turn", 1); say(t("tipTwoFinger")); }
   }
   e.preventDefault();
   moveFloat(e); computeTarget(e);
@@ -1824,13 +1999,21 @@ window.addEventListener("keydown", e => {
   if (e.key === "Escape"){ closeModal(); cancelSelection(); }
   if (typing) return;
   if (e.key.toLowerCase() === "r"){
-    if (ptr && ptr.kind === "drag" && ptr.moved && ptr.piece.single){
-      const p = ptr.piece; [p.w, p.h] = [p.h, p.w]; p.bricks[0].w = p.w; p.bricks[0].h = p.h;
-      [ptr.grabX, ptr.grabY] = [p.w * cell / 2, p.h * cell / 2];
-      floatEl.innerHTML = ""; floatEl.appendChild(pieceEl(p, cell)); sfx.turn(); hideGhost();
-    } else toggleTurn();
+    if (ptr && ptr.kind === "drag" && ptr.moved && ptr.piece.single) turnDragged();
+    else toggleTurn();
   }
 });
+function turnDragged(){
+  const p = ptr.piece; [p.w, p.h] = [p.h, p.w]; p.bricks[0].w = p.w; p.bricks[0].h = p.h;
+  [ptr.grabX, ptr.grabY] = [p.w * cell / 2, p.h * cell / 2];
+  floatEl.innerHTML = ""; floatEl.appendChild(pieceEl(p, cell)); sfx.turn(); hideGhost();
+}
+// on a tablet: while one finger drags a brick, tap anywhere with another finger to turn it
+window.addEventListener("pointerdown", e => {
+  if (!ptr || ptr.kind !== "drag" || !ptr.moved || e.pointerId === ptr.id || e.pointerType === "mouse") return;
+  e.preventDefault(); e.stopPropagation();
+  if (ptr.piece.single) turnDragged();
+}, true);
 function toggleTurn(){
   turned = !turned; $("#turnBtn").setAttribute("aria-pressed", turned);
   buildShapes(); sfx.turn(); say(t(turned ? "turnedUp" : "turnedDown"));
@@ -1862,6 +2045,12 @@ function clearBoard(){
 /* ---- saving files ---- */
 const capDownloads = IN_ARTIFACT ? Promise.resolve(window.claude.use("downloads")).catch(() => null) : Promise.resolve(null);
 async function saveFile(blob, filename, previewUrl){
+  if (!IN_ARTIFACT && coarse && navigator.canShare && navigator.share){
+    try {
+      const file = new File([blob], filename, {type: blob.type || "image/png"});
+      if (navigator.canShare({files: [file]})){ await navigator.share({files: [file]}); return "saved"; }
+    } catch(e){ if (e && e.name === "AbortError") return "declined"; }
+  }
   if (!IN_ARTIFACT){
     try {
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
@@ -2180,7 +2369,7 @@ function buildName(raw){
 /* ---- logo made of bricks ---- */
 function buildLogo(){
   const logo = $("#logo");
-  const px = window.innerWidth < 720 ? 8 : 11;
+  const px = window.innerWidth < 1280 ? 8 : 11;
   const words = ["SNAPPY", "BRICKS"];
   const W = Math.max(...words.map(wordWidth)), H = 11;
   logo.style.setProperty("--cell", px + "px");
@@ -2261,6 +2450,7 @@ async function startGame(m, idx){
   if (m === "trace") startTrace(idx != null ? idx : progress.traceIdx[gAlpha]);
   if (m === "spell") startSpell(idx != null ? idx : progress.spellIdx[gAlpha]);
   if (m === "math") startMath();
+  requestAnimationFrame(() => { fitCell(); requestAnimationFrame(fitCell); });
 }
 function refreshGameText(){ if (currentMode !== "free" && G.refresh) G.refresh(); }
 on("lang", () => {
@@ -2920,11 +3110,15 @@ $$("[data-mode]").forEach(b => b.addEventListener("click", () => {
   $$("[data-mode]").forEach(x => x.setAttribute("aria-pressed", x.dataset.mode === nameMode));
 }));
 
+// hide the tablet brick dock while the on-screen keyboard is up
+document.addEventListener("focusin", e => { if (e.target.matches && e.target.matches("input, textarea")) document.body.classList.add("typing"); });
+document.addEventListener("focusout", e => { if (e.target.matches && e.target.matches("input, textarea")) document.body.classList.remove("typing"); });
 let rz;
 window.addEventListener("resize", () => {
   clearTimeout(rz);
-  rz = setTimeout(() => { fitCell(); buildLogo(); buildShapes(); buildStamps(); emit("resize"); }, 120);
+  rz = setTimeout(() => { buildLogo(); buildShapes(); buildStamps(); fitCell(); emit("resize"); }, 120);
 });
+window.addEventListener("orientationchange", () => setTimeout(() => { buildLogo(); fitCell(); }, 300));
 
 /* ---- go ---- */
 document.body.dataset.mode = "free";
