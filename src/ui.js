@@ -82,7 +82,8 @@ function placePiece(piece, gx, gy, opts = {}){
 }
 
 /* ===================== tray UI ===================== */
-function trayCell(){ return window.innerWidth < 720 ? 14 : 16; }
+const coarse = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
+function trayCell(){ return window.innerWidth < 720 ? 14 : coarse ? 18 : 16; }
 function buildSwatches(){
   const box = $("#swatches"); box.innerHTML = "";
   for (const c of COLORS){
@@ -227,8 +228,11 @@ function hideGhost(){ if (ghostEl){ ghostEl.remove(); ghostEl = null; } }
 function computeTarget(e){
   const r = plate.getBoundingClientRect();
   const cx = e.clientX, cy = e.clientY - ptr.lift;
-  const inTrash = overEl(trash, e.clientX, e.clientY);
-  trash.classList.toggle("hot", inTrash);
+  const trayEl = $("#tray");
+  const overTray = ptr.source === "board" && overEl(trayEl, e.clientX, e.clientY);
+  const inTrash = overTray || overEl(trash, e.clientX, e.clientY);
+  trash.classList.toggle("hot", inTrash && !overTray);
+  trayEl.classList.toggle("hot", overTray);
   const near = cx > r.left - cell && cx < r.right + cell && cy > r.top - cell && cy < r.bottom + cell;
   ptr.inTrash = inTrash;
   if (!near || inTrash){ ptr.target = null; hideGhost(); return; }
@@ -245,7 +249,7 @@ function computeTarget(e){
 }
 function endDrag(e, cancelled){
   const p = ptr; ptr = null;
-  hideGhost(); trash.classList.remove("hot");
+  hideGhost(); trash.classList.remove("hot"); $("#tray").classList.remove("hot");
   if (floatEl){ floatEl.remove(); floatEl = null; }
   if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); }
   if (cancelled) return;
@@ -452,6 +456,7 @@ window.addEventListener("pointermove", e => {
   if (!ptr.moved){
     if (Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) < 7) return;
     ptr.moved = true; showFloat();
+    if (e.pointerType === "touch" && ptr.piece.single && ptr.piece.w !== ptr.piece.h && !store("snappy-tip-turn")){ store("snappy-tip-turn", 1); say(t("tipTwoFinger")); }
   }
   e.preventDefault();
   moveFloat(e); computeTarget(e);
@@ -485,13 +490,21 @@ window.addEventListener("keydown", e => {
   if (e.key === "Escape"){ closeModal(); cancelSelection(); }
   if (typing) return;
   if (e.key.toLowerCase() === "r"){
-    if (ptr && ptr.kind === "drag" && ptr.moved && ptr.piece.single){
-      const p = ptr.piece; [p.w, p.h] = [p.h, p.w]; p.bricks[0].w = p.w; p.bricks[0].h = p.h;
-      [ptr.grabX, ptr.grabY] = [p.w * cell / 2, p.h * cell / 2];
-      floatEl.innerHTML = ""; floatEl.appendChild(pieceEl(p, cell)); sfx.turn(); hideGhost();
-    } else toggleTurn();
+    if (ptr && ptr.kind === "drag" && ptr.moved && ptr.piece.single) turnDragged();
+    else toggleTurn();
   }
 });
+function turnDragged(){
+  const p = ptr.piece; [p.w, p.h] = [p.h, p.w]; p.bricks[0].w = p.w; p.bricks[0].h = p.h;
+  [ptr.grabX, ptr.grabY] = [p.w * cell / 2, p.h * cell / 2];
+  floatEl.innerHTML = ""; floatEl.appendChild(pieceEl(p, cell)); sfx.turn(); hideGhost();
+}
+// on a tablet: while one finger drags a brick, tap anywhere with another finger to turn it
+window.addEventListener("pointerdown", e => {
+  if (!ptr || ptr.kind !== "drag" || !ptr.moved || e.pointerId === ptr.id || e.pointerType === "mouse") return;
+  e.preventDefault(); e.stopPropagation();
+  if (ptr.piece.single) turnDragged();
+}, true);
 function toggleTurn(){
   turned = !turned; $("#turnBtn").setAttribute("aria-pressed", turned);
   buildShapes(); sfx.turn(); say(t(turned ? "turnedUp" : "turnedDown"));
@@ -523,6 +536,12 @@ function clearBoard(){
 /* ---- saving files ---- */
 const capDownloads = IN_ARTIFACT ? Promise.resolve(window.claude.use("downloads")).catch(() => null) : Promise.resolve(null);
 async function saveFile(blob, filename, previewUrl){
+  if (!IN_ARTIFACT && coarse && navigator.canShare && navigator.share){
+    try {
+      const file = new File([blob], filename, {type: blob.type || "image/png"});
+      if (navigator.canShare({files: [file]})){ await navigator.share({files: [file]}); return "saved"; }
+    } catch(e){ if (e && e.name === "AbortError") return "declined"; }
+  }
   if (!IN_ARTIFACT){
     try {
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
