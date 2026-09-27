@@ -234,7 +234,7 @@ function buildName(raw){
 /* ---- logo made of bricks ---- */
 function buildLogo(){
   const logo = $("#logo");
-  const px = window.innerWidth < 720 ? 8 : 11;
+  const px = window.innerWidth < 1280 ? 8 : 11;
   const words = ["SNAPPY", "BRICKS"];
   const W = Math.max(...words.map(wordWidth)), H = 11;
   logo.style.setProperty("--cell", px + "px");
