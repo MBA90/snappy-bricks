@@ -56,6 +56,7 @@ async function startGame(m, idx){
   if (m === "trace") startTrace(idx != null ? idx : progress.traceIdx[gAlpha]);
   if (m === "spell") startSpell(idx != null ? idx : progress.spellIdx[gAlpha]);
   if (m === "math") startMath();
+  requestAnimationFrame(() => { fitCell(); requestAnimationFrame(fitCell); });
 }
 function refreshGameText(){ if (currentMode !== "free" && G.refresh) G.refresh(); }
 on("lang", () => {
