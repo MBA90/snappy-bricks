@@ -4,7 +4,8 @@ This folder is the complete Snappy Bricks website. It is a plain HTML site with 
 
 | File | What it does |
 |---|---|
-| `index.html` | The whole app: the building board, games, Arabic/English, badges, gallery and cards |
+| `index.html` | The whole app: the building board, adventure map, games, photo to bricks, Arabic/English, badges, gallery and cards |
+| `voice/en.json`, `voice/ar.json` | Bricky's recorded voice in English and Arabic (keep them next to `index.html`) |
 | `manifest.webmanifest` | Lets tablets and phones install it like an app ("Add to Home Screen") |
 | `sw.js` | Keeps it working offline after the first visit |
 | `icon-192.png`, `icon-512.png` | App icons |
@@ -31,10 +32,11 @@ Buy the name from any domain seller, then add it in your host's "Custom domain" 
 Double-clicking `index.html` works for playing. Installing and offline mode only work once the site is served over `https://` (or `http://localhost`). For a quick local server run `python3 -m http.server` in this folder and open `http://localhost:8000`.
 
 ## Updating
-Replace `index.html` with the new version. When you change files, also change the `CACHE` name in `sw.js` (for example `snappy-bricks-v2`) so devices pick up the new version.
+Replace `index.html` (and the `voice` folder if it changed). Devices load the newest page automatically when they are online.
 
 ## Privacy notes for a kids' site
-- The site collects nothing. Creations, badges and settings are stored only in the child's own browser.
+- The site collects nothing. Creations, badges, stickers and settings are stored only in the child's own browser.
+- Photos used in "Brick my photo" are turned into bricks inside the browser and are never uploaded.
 - There are no ads, no trackers, no sign-in, and no chat.
 - Fonts load from Google Fonts. For zero third-party requests, download the "Baloo 2" and "Baloo Bhaijaan 2" fonts, put the files next to `index.html`, and replace the Google Fonts `<link>` with your own `@font-face` rules.
 - If you later add accounts, analytics or sharing, check the children's privacy rules where you operate (for example COPPA in the US and the UAE's personal data protection law) before launching.
