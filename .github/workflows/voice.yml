@@ -1,0 +1,69 @@
+name: Make Bricky's voice
+
+# Lists everything the app can say, records Bricky's voice clips and saves them in docs/voice/.
+# Run it from the Actions tab ("Run workflow") after changing the text in the app.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  voice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          pip install -q "sherpa-onnx==1.13.8" soundfile numpy
+          npm install --no-save --silent playwright
+          npx playwright install --with-deps chromium
+
+      - name: List everything the app can say
+        run: |
+          python3 build.py
+          node voice-tools/texts.js
+
+      - name: Download the voice and checking models
+        run: |
+          mkdir -p models && cd models
+          curl -sSL -o tts.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/sherpa-onnx-supertonic-3-tts-int8-2026-05-11.tar.bz2
+          tar xjf tts.tar.bz2 && rm tts.tar.bz2
+          curl -sSL -o asr.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/sherpa-onnx-whisper-small.tar.bz2
+          tar xjf asr.tar.bz2 && rm asr.tar.bz2
+
+      - name: Reuse clips from earlier runs
+        uses: actions/cache@v4
+        with:
+          path: voice-tools/cache
+          key: voice-${{ hashFiles('src/**', 'voice-tools/make_voice.py') }}
+          restore-keys: voice-
+
+      - name: Record
+        run: python3 voice-tools/make_voice.py --models models
+
+      - name: Save to the repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add docs/voice
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Record Bricky's voice"
+          git push
+
+      - name: Update the live site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
