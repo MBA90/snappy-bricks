@@ -15,7 +15,7 @@ def read(name):
     return open(p, encoding="utf-8").read() if os.path.exists(p) else ""
 
 def bundle(edition="public"):
-    css = read("styles.css") + "\n" + read("styles2.css")
+    css = read("styles.css") + "\n" + read("styles2.css") + "\n" + read("styles3.css")
     markup = read("markup.html")
     for part in ["HEADER_EXTRA", "MODEBAR", "GAMEPANEL", "TOOLBAR_EXTRA", "SIDE_EXTRA"]:
         markup = markup.replace(f"<!--{part}-->", read(f"part_{part.lower()}.html"))
@@ -34,6 +34,10 @@ def standalone(body):
              '<link rel="manifest" href="manifest.webmanifest">\n'
              '<link rel="icon" href="icon-192.png">\n'
              '<link rel="apple-touch-icon" href="icon-192.png">\n'
+             '<meta name="apple-mobile-web-app-capable" content="yes">\n'
+             '<meta name="mobile-web-app-capable" content="yes">\n'
+             '<meta name="apple-mobile-web-app-status-bar-style" content="default">\n'
+             '<meta name="apple-mobile-web-app-title" content="Snappy Bricks">\n'
              '<meta name="description" content="A colorful brick-building website for kids: snap bricks, play word and puzzle games, and build your name in English or Arabic.">\n')
     sw = ("<script>if('serviceWorker' in navigator && location.protocol.startsWith('http')){"
           "window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>\n")
