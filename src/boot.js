@@ -32,7 +32,8 @@ $("#talkBtn").addEventListener("click", () => {
   $("#talkBtn").setAttribute("aria-pressed", settings.talk);
   $("#talkTxt").textContent = t(settings.talk ? "talkOn" : "talkOff");
   sfx.click();
-  if (settings.talk && LANG === "ar" && !voiceFor("ar")) say(t("noArabicVoice"));
+  if (!settings.talk) stopClips(); else warmVoice();
+  if (settings.talk && LANG === "ar" && !voiceFor("ar") && VOICE.clips.ar && !hasVoicePack("ar")) say(t("noArabicVoice"));
   else say(t(settings.talk ? "talkSayOn" : "talkSayOff"), {speak: true});
 });
 $("#soundBtn").addEventListener("click", () => {

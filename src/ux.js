@@ -47,10 +47,12 @@ function showScreen(name){
   $("#homeScreen").hidden = name !== "home";
   $("#gamesScreen").hidden = name !== "games";
   $("#studioScreen").hidden = name !== "studio";
+  $("#mapScreen").hidden = name !== "map";
   document.body.dataset.screen = name;
   closeSheets();
   if (name === "home"){ document.body.dataset.area = "home"; refreshHome(); }
   if (name === "games"){ document.body.dataset.area = "games"; refreshGamesPick(); }
+  if (name === "map") document.body.dataset.area = "map";
   if (name === "studio"){ refreshArea(); requestAnimationFrame(() => { fitCell(); requestAnimationFrame(fitCell); }); }
   window.scrollTo(0, 0);
 }
@@ -84,14 +86,14 @@ const _loadIntoFree = loadIntoFree;
 loadIntoFree = function(cb){ _loadIntoFree(cb); if (screen !== "studio") showScreen("studio"); refreshArea(); };
 
 $$("[data-go]").forEach(b => b.addEventListener("click", () => { sfx.click(); showScreen(b.dataset.go); if (b.dataset.go === "home") speakHome(); }));
-function speakHome(){ speak($("#homeBubble").textContent, LANG); }
+function speakHome(){ speak($("#homeBubble").textContent, LANG, {fallback: t("homeHiNoName")}); }
 $("#doorBuild").addEventListener("click", () => {
   sfx.click();
   showScreen("studio");
   if (currentMode !== "free") setMode("free", true); else refreshArea();
   say(t("buildHi"), {speak: true});
 });
-$("#doorGames").addEventListener("click", () => { sfx.click(); showScreen("games"); speak(t("pickGame"), LANG); });
+$("#doorGames").addEventListener("click", () => { sfx.click(); openMap(false); });
 $("#doorCard").addEventListener("click", () => {
   sfx.click();
   if (currentMode !== "free") setMode("free", true);

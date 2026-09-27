@@ -30,6 +30,7 @@ const SPELL = {
 const AR_LETTERS = "ابتثجحخدذرزسشصضطظعغفقكلمنهوي";
 
 addStrings({
+  praise1: ["Great job!", "أحسنت!"], praise2: ["Amazing!", "رائع!"], praise3: ["You did it!", "لقد نجحت!"], praise4: ["Super builder!", "بنّاء رائع!"],
   modeFree: ["Free build", "بناء حر"], modeCopy: ["Copy it", "انسخ الصورة"], modeTrace: ["Trace letters", "تتبّع الحروف"],
   modeSpell: ["Spell it", "تهجئة"], modeMath: ["Brick math", "حساب المكعبات"],
   playModes: ["Play modes", "طرق اللعب"],

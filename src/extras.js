@@ -78,6 +78,7 @@ function award(id){
   const bd = BADGES.find(b => b.id === id); if (!bd) return;
   earned.add(id); store("snappy-badges", [...earned]); updateBadgeCount();
   toast(bd.icon, t("badgeNew"), bd[LANG][0]); setTimeout(() => sfx.badge(), 200);
+  setTimeout(() => speak(`${t("badgeNew")} ${bd[LANG][0]}`, LANG), 2400);
 }
 on("placed", () => { award("first"); if (settings.mirror !== "off") award("mirror"); });
 on("change", () => {

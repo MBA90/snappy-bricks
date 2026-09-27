@@ -28,6 +28,7 @@ const COLORS = [
   {en: "Blue",       ar: "أزرق",       hex: "#2F8CF0"},
   {en: "Sky",        ar: "سماوي",      hex: "#8FD3FF"},
   {en: "Purple",     ar: "بنفسجي",     hex: "#8A4DE0"},
+  {en: "Tan",        ar: "حنطي",       hex: "#E3A878"},
   {en: "Brown",      ar: "بني",        hex: "#9A5B34"},
   {en: "Gray",       ar: "رمادي",      hex: "#9AA0AE"},
   {en: "Black",      ar: "أسود",       hex: "#2E2A3A"},

@@ -76,6 +76,7 @@ function win(key, vars, n){
   progress.solvedCount = (progress.solvedCount || 0) + 1; saveProgress();
   setTimeout(() => { sfx.cheer(); confetti(); }, 250);
   say(t(key, {...vars, s}));
+  setTimeout(() => speak(t("praise" + (1 + Math.floor(Math.random() * 4))), LANG), 1100);
   $("#gNext").classList.add("pulse");
   emit("gameWin", {kind: G.kind, stars: n});
 }
@@ -95,7 +96,7 @@ function artCanvas(pix, plateHex, c){
 }
 function startCopy(i){
   i = mod(i, PUZZLES.length);
-  if (settings.age === "little") for (let k = 0; k < PUZZLES.length && PUZZLES[i].lvl !== "easy"; k++) i = mod(i + 1, PUZZLES.length); progress.puzzleIdx = i; saveProgress();
+  if (settings.age === "little" && !G.adv) for (let k = 0; k < PUZZLES.length && PUZZLES[i].lvl !== "easy"; k++) i = mod(i + 1, PUZZLES.length); progress.puzzleIdx = i; saveProgress();
   const pz = PUZZLES[i], pix = artToPix(ART[pz.art].art);
   const h = pix.length, w = pix[0].length;
   const colors = [...new Set(pix.flat().filter(Boolean))];
@@ -181,7 +182,7 @@ function checkTrace(){
 /* ---------- Spell it ---------- */
 function startSpell(i){
   const list = spellList(gAlpha); i = mod(i, list.length);
-  if (settings.age === "little") for (let k = 0; k < list.length && [...list[i][0]].length > 3; k++) i = mod(i + 1, list.length); progress.spellIdx[gAlpha] = i; saveProgress();
+  if (settings.age === "little" && !G.adv) for (let k = 0; k < list.length && [...list[i][0]].length > 3; k++) i = mod(i + 1, list.length); progress.spellIdx[gAlpha] = i; saveProgress();
   const [word, emo] = list[i];
   gameBoard(24, 18, "#3DC45A");
   Object.assign(G, {word, emo, letters: [...word], pos: 0});
@@ -241,7 +242,7 @@ function spellHint(){
 
 /* ---------- Brick math ---------- */
 function startMath(){
-  const L = settings.age === "little" ? Math.min(progress.mathLevel || 1, 3) : (progress.mathLevel || 1), r = n => Math.floor(Math.random() * n);
+  const L = G.adv && G.adv.level ? G.adv.level : settings.age === "little" ? Math.min(progress.mathLevel || 1, 3) : (progress.mathLevel || 1), r = n => Math.floor(Math.random() * n);
   let n, k = null;
   if (L <= 3) n = 2 + r(9);
   else if (L <= 6) n = 10 + r(11);
@@ -264,7 +265,7 @@ function checkMath(){
   if (sum > G.n){ if (!G.warned){ G.warned = true; say(t("mathTooMany"), {speak: true}); } }
   else G.warned = false;
   if (sum === G.n && (!G.k || cnt === G.k)){
-    progress.mathLevel = G.L + 1; progress.mathSolved = (progress.mathSolved || 0) + 1; saveProgress();
+    progress.mathLevel = G.adv ? Math.max(progress.mathLevel || 1, G.L + 1) : G.L + 1; progress.mathSolved = (progress.mathSolved || 0) + 1; saveProgress();
     win("mathWin", {eq}, 3);
   } else if (sum === G.n && G.k && !G.warnedK){ G.warnedK = true; say(t("mathBricks", {k: G.k})); }
 }

@@ -31,8 +31,8 @@
       </button>
       <button class="door" id="doorGames" type="button" data-area="games">
         <span class="door-pic" id="picGames" aria-hidden="true"></span>
-        <span class="door-name" data-i18n="doorGames">Play games</span>
-        <span class="door-sub" data-i18n="doorGamesSub">Pictures, letters, words and numbers</span>
+        <span class="door-name" data-i18n="doorAdv">Adventure</span>
+        <span class="door-sub" data-i18n="doorAdvSub">Play games on Bricky's islands</span>
       </button>
       <button class="door" id="doorCard" type="button" data-area="card">
         <span class="door-pic" id="picCard" aria-hidden="true"></span>
@@ -83,12 +83,28 @@
     </div>
   </section>
 
+  <!-- ===================== ADVENTURE MAP ===================== -->
+  <section class="screen mapscreen" id="mapScreen" aria-labelledby="mapTitle" hidden>
+    <div class="topbar">
+      <button class="tb-home" type="button" data-go="home" data-i18n-aria="goHome">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+      </button>
+      <h2 class="tb-title" id="mapTitle" data-i18n="mapTitle">Bricky's islands</h2>
+      <span class="tb-space"></span>
+      <button class="tb-btn" id="allGamesBtn" type="button"><span aria-hidden="true">🎮</span> <span data-i18n="allGames">All games</span></button>
+      <button class="tb-btn" id="stickerBtn" type="button" data-i18n-aria="stickerBook"><span aria-hidden="true">📒</span> <span id="stickerCount">0</span></button>
+    </div>
+    <div class="daily" id="mapDaily" aria-live="polite"></div>
+    <div class="islands" id="mapIslands"></div>
+  </section>
+
   <!-- ===================== STUDIO (build + games) ===================== -->
   <section class="screen studio-screen" id="studioScreen" hidden>
     <div class="topbar">
       <button class="tb-home" type="button" data-go="home" data-i18n-aria="goHome">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
       </button>
+      <button class="tb-btn" id="mapBtn" type="button" hidden><span aria-hidden="true">🗺️</span> <span data-i18n="mapBack">Map</span></button>
       <button class="tb-btn" id="gamesBtn" type="button" data-go="games" hidden><span aria-hidden="true">🎮</span> <span data-i18n="games">Games</span></button>
       <div class="helper">
         <svg class="bricky" id="bricky" viewBox="0 0 64 64" aria-hidden="true">
@@ -111,6 +127,7 @@
       <section class="panel tray" id="tray" aria-labelledby="trayTitle">
         <div class="tray-sec sec-name">
           <button class="btn big name-open" id="nameOpenBtn" type="button"><span aria-hidden="true">✍️</span> <span data-i18n="writeName">Write my name</span></button>
+          <button class="btn photo-open" id="photoOpenBtn" type="button"><span aria-hidden="true">📷</span> <span data-i18n="photoOpen">Brick my photo</span></button>
         </div>
         <div class="tray-sec sec-colors">
           <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
@@ -163,7 +180,7 @@
               <button class="btn white small" id="gReset" type="button" data-i18n="startOver">Start over</button>
               <button class="btn lav small" id="gLevels" type="button" data-i18n="levels">Levels</button>
               <button class="btn white small" id="gAlpha" type="button">ABC</button>
-              <button class="btn mint small" id="gNext" type="button"><span data-i18n="next">Next</span> <span class="arr" aria-hidden="true">➜</span></button>
+              <button class="btn mint small" id="gNext" type="button"><span id="gNextTxt" data-i18n="next">Next</span> <span class="arr" aria-hidden="true">➜</span></button>
             </div>
           </div>
         </div>
@@ -266,6 +283,40 @@
       </div>
       <button class="btn big" type="submit" data-i18n="buildName">Build my name!</button>
     </form>
+  </div>
+</div>
+
+<div class="sheet" id="photoSheet" hidden>
+  <div class="sheet-card photo-card" role="dialog" aria-modal="true" aria-labelledby="photoTitle">
+    <div class="sheet-head">
+      <h2 id="photoTitle" data-i18n="photoOpen">Brick my photo</h2>
+      <button class="sheet-x" type="button" data-close-sheet data-i18n-aria="close">×</button>
+    </div>
+    <div class="photo-pick">
+      <button class="btn pink" id="photoPickBtn" type="button"><span aria-hidden="true">🖼️</span> <span data-i18n="photoPick">Choose a photo</span></button>
+      <button class="btn sun" id="photoCamBtn" type="button"><span aria-hidden="true">📷</span> <span data-i18n="photoTake">Take a photo</span></button>
+      <button class="btn lav" id="photoSampleBtn" type="button"><span aria-hidden="true">🙂</span> <span data-i18n="photoSample">Try Bricky</span></button>
+      <input class="sr-only" type="file" id="photoFile" accept="image/*" tabindex="-1" aria-hidden="true">
+      <input class="sr-only" type="file" id="photoCam" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true">
+    </div>
+    <p class="photo-msg" id="photoMsg" aria-live="polite"></p>
+    <div class="photo-stage" id="photoStage"><canvas id="photoCanvas" aria-hidden="true"></canvas><span class="photo-count" id="photoCount"></span></div>
+    <div class="gu-rows photo-opts">
+      <div class="gu-row"><span class="gu-label" data-i18n="boardSize">Board size</span><div class="seg" id="photoSizeSeg"></div></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="photoColors">Colors</span>
+        <div class="seg" id="photoColorSeg">
+          <button class="btn" type="button" data-k="4" data-i18n="colorsFew">4 colors</button>
+          <button class="btn" type="button" data-k="8" data-i18n="colorsSome">8 colors</button>
+          <button class="btn" type="button" data-k="16" data-i18n="colorsAll">All colors</button>
+        </div></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="photoView">Picture</span>
+        <div class="seg" id="photoViewSeg">
+          <button class="btn" type="button" data-zoom="0" data-i18n="viewWhole">Whole photo</button>
+          <button class="btn" type="button" data-zoom="1" data-i18n="viewZoom">Zoom in</button>
+        </div></div>
+    </div>
+    <button class="btn big photo-build" id="photoBuildBtn" type="button" disabled data-i18n="photoBuild">Build it!</button>
+    <p class="hint" style="margin:0" data-i18n="photoPrivacy">Your photo stays on this device. It is never uploaded.</p>
   </div>
 </div>
 
