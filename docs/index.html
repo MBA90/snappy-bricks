@@ -767,6 +767,120 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
 .tray.nudge .card{animation:wiggle .45s ease 2}
 .tray.nudge .name-open{animation:wiggle .45s ease 2}
 
+/* ===================== photo to bricks ===================== */
+.photo-open{width:100%;background:var(--sun);font-size:1.02rem;padding:8px 10px 6px;min-height:52px}
+.photo-card{width:min(760px,100%)}
+.photo-pick{display:flex;gap:8px;flex-wrap:wrap}
+.photo-pick .btn{flex:1 1 150px;min-height:60px;font-size:1.05rem}
+.photo-msg{margin:0;font-weight:800;color:var(--ink-soft);min-height:1.2em}
+.photo-stage{
+  position:relative;flex:none;display:grid;place-items:center;min-height:180px;padding:10px;border-radius:18px;
+  background:repeating-linear-gradient(45deg,#F4F1FB 0 12px,#fff 12px 24px);border:3px dashed rgba(43,30,92,.25);
+}
+.photo-stage.ready{border-style:solid;border-color:var(--ink);background:#fff}
+.photo-stage canvas{display:block;max-width:100%;border-radius:6px;box-shadow:0 4px 0 rgba(43,30,92,.25)}
+.photo-stage:not(.ready) canvas{display:none}
+.photo-count{position:absolute;inset-inline-end:10px;bottom:8px;font-weight:800;font-size:.85rem;background:var(--sun);border:2px solid var(--ink);border-radius:999px;padding:1px 10px}
+.photo-count:empty{display:none}
+.photo-build{align-self:stretch}
+.photo-build:disabled{opacity:.45}
+@media (orientation:portrait), (max-width:899px){
+  .sec-name{display:flex;flex-direction:column;gap:6px}
+  .name-open{height:auto;min-height:0;flex:1 1 auto;font-size:.9rem}
+  .name-open > span:first-child{font-size:1.5rem}
+  .photo-open{flex:none;flex-direction:column;gap:0;width:92px;min-height:0;font-size:.78rem;line-height:1.05;padding:5px 4px;white-space:normal}
+  .photo-open > span:first-child{font-size:1.3rem}
+  .tray .swatches{grid-template-columns:repeat(8,40px)}
+}
+@media (max-width:699px){
+  .tray .swatches{grid-template-columns:repeat(8,34px)}
+  .photo-pick .btn{flex-basis:120px;min-height:52px;font-size:.95rem}
+}
+
+/* ===================== adventure map ===================== */
+body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
+.tb-space{flex:1}
+.mapscreen{gap:14px}
+.daily{
+  display:flex;align-items:center;gap:12px;padding:10px 14px;border:4px dashed var(--ink);border-radius:24px;background:#FFF6CF;
+}
+.daily.done{border-style:solid;background:#E4F9EC}
+.dly-ic{font-size:2.4rem;line-height:1}
+.dly-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.dly-txt strong{font-size:1.15rem}
+.dly-txt span{font-weight:700;color:var(--ink-soft)}
+.daily .btn{min-height:54px;font-size:1.15rem;padding-inline:22px}
+.islands{display:flex;flex-direction:column;gap:18px;padding-bottom:20px}
+.island{
+  position:relative;background:var(--isl);border:4px solid var(--ink);border-radius:30px;box-shadow:0 7px 0 var(--ink);
+  padding:12px 16px 18px;overflow:hidden;overflow:clip;
+}
+.island::after{content:"";position:absolute;left:-10%;right:-10%;bottom:-40px;height:80px;background:var(--gnd);border-radius:50%;opacity:.55;pointer-events:none}
+.island.locked{filter:saturate(.35);opacity:.8}
+.isl-head{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
+.isl-emoji{font-size:2.2rem;line-height:1}
+.isl-head h3{margin:0;flex:1;font-size:1.45rem}
+.isl-sticker{
+  width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:1.8rem;font-weight:800;
+  border:3px dashed rgba(43,30,92,.45);background:rgba(255,255,255,.6);color:rgba(43,30,92,.45);
+}
+.isl-sticker.got{border:3px solid var(--ink);background:#fff;color:inherit;box-shadow:0 3px 0 var(--ink);transform:rotate(-8deg)}
+.isl-path{
+  position:relative;z-index:1;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding:18px 4px 30px;
+  background:linear-gradient(transparent calc(50% - 3px), transparent calc(50% - 3px)) ;
+}
+.isl-path::before{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:6px dotted rgba(43,30,92,.35)}
+.stop{
+  position:relative;justify-self:center;width:96px;height:96px;border-radius:50%;border:4px solid var(--ink);background:#fff;
+  box-shadow:0 5px 0 var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  font:inherit;color:var(--ink);cursor:pointer;padding:0;transition:transform .12s;
+}
+.stop:nth-child(even){transform:translateY(26px)}
+.stop:nth-child(odd){transform:translateY(-10px)}
+.stop:active{box-shadow:0 1px 0 var(--ink)}
+.stop-ic{font-size:1.9rem;line-height:1}
+.stop-lb{font-weight:800;font-size:.8rem;line-height:1.05;max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stop-st{position:absolute;bottom:-24px;font-size:1rem;color:#F5B400;text-shadow:0 1px 0 var(--ink);white-space:nowrap;letter-spacing:-1px}
+.stop.done{background:#BFF2D8}
+.stop.here{background:var(--sun);animation:stopPulse 1.3s ease-in-out infinite}
+.stop.shut{background:#ECE9F3;color:rgba(43,30,92,.55);box-shadow:0 5px 0 rgba(43,30,92,.45);border-color:rgba(43,30,92,.55)}
+.stop.shut .stop-ic{font-size:1.5rem}
+.stop-me{position:absolute;top:-46px;width:48px;height:48px;animation:hopHere 1s ease-in-out infinite}
+.stop-me svg{width:100%;height:100%}
+.stop.arrive .stop-me{animation:arrive .8s cubic-bezier(.3,1.6,.5,1) 1, hopHere 1s ease-in-out .8s infinite}
+@keyframes stopPulse{50%{box-shadow:0 5px 0 var(--ink),0 0 0 10px rgba(255,232,56,.55)}}
+@keyframes hopHere{50%{transform:translateY(-8px)}}
+@keyframes arrive{from{transform:translate(-90px,-40px) scale(.6);opacity:0}to{transform:none;opacity:1}}
+.sticker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:10px;max-height:52vh;overflow:auto;padding:4px}
+.sticker{
+  aspect-ratio:1;border-radius:18px;border:3px dashed rgba(43,30,92,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:2.3rem;color:rgba(43,30,92,.3);font-weight:800;background:#F7F5FC;
+}
+.sticker small{font-size:.6rem;color:var(--ink-soft);text-align:center;line-height:1.1;padding:0 2px}
+.sticker.got{border:3px solid var(--ink);background:#fff;color:inherit;box-shadow:0 3px 0 var(--ink)}
+.sticker.got:nth-child(3n){transform:rotate(-5deg)}
+.sticker.got:nth-child(3n+1){transform:rotate(4deg)}
+.sticker.isl{background:#FFF6CF}
+@media (max-width:899px){
+  .isl-path{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:46px}
+  .isl-path::before{display:none}
+  .stop:nth-child(n){transform:none}
+  .stop:nth-child(4){grid-column:3;grid-row:2}
+  .stop:nth-child(5){grid-column:2;grid-row:2}
+  .stop:nth-child(6){grid-column:1;grid-row:2}
+}
+@media (max-width:699px){
+  .isl-path{padding-top:44px;row-gap:56px}
+  .stop{width:84px;height:84px}
+  .stop-ic{font-size:1.6rem}
+  .island{padding:10px 10px 16px;border-radius:24px}
+  .isl-head h3{font-size:1.2rem}
+  .daily{flex-wrap:wrap}
+  .daily .btn{flex:1 1 100%}
+  #allGamesBtn span[data-i18n]{display:none}
+}
+@media (prefers-reduced-motion: reduce){ .stop.here,.stop-me{animation:none} }
+
 </style>
 <div class="app">
 
@@ -801,8 +915,8 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
       </button>
       <button class="door" id="doorGames" type="button" data-area="games">
         <span class="door-pic" id="picGames" aria-hidden="true"></span>
-        <span class="door-name" data-i18n="doorGames">Play games</span>
-        <span class="door-sub" data-i18n="doorGamesSub">Pictures, letters, words and numbers</span>
+        <span class="door-name" data-i18n="doorAdv">Adventure</span>
+        <span class="door-sub" data-i18n="doorAdvSub">Play games on Bricky's islands</span>
       </button>
       <button class="door" id="doorCard" type="button" data-area="card">
         <span class="door-pic" id="picCard" aria-hidden="true"></span>
@@ -853,12 +967,28 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
     </div>
   </section>
 
+  <!-- ===================== ADVENTURE MAP ===================== -->
+  <section class="screen mapscreen" id="mapScreen" aria-labelledby="mapTitle" hidden>
+    <div class="topbar">
+      <button class="tb-home" type="button" data-go="home" data-i18n-aria="goHome">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+      </button>
+      <h2 class="tb-title" id="mapTitle" data-i18n="mapTitle">Bricky's islands</h2>
+      <span class="tb-space"></span>
+      <button class="tb-btn" id="allGamesBtn" type="button"><span aria-hidden="true">🎮</span> <span data-i18n="allGames">All games</span></button>
+      <button class="tb-btn" id="stickerBtn" type="button" data-i18n-aria="stickerBook"><span aria-hidden="true">📒</span> <span id="stickerCount">0</span></button>
+    </div>
+    <div class="daily" id="mapDaily" aria-live="polite"></div>
+    <div class="islands" id="mapIslands"></div>
+  </section>
+
   <!-- ===================== STUDIO (build + games) ===================== -->
   <section class="screen studio-screen" id="studioScreen" hidden>
     <div class="topbar">
       <button class="tb-home" type="button" data-go="home" data-i18n-aria="goHome">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
       </button>
+      <button class="tb-btn" id="mapBtn" type="button" hidden><span aria-hidden="true">🗺️</span> <span data-i18n="mapBack">Map</span></button>
       <button class="tb-btn" id="gamesBtn" type="button" data-go="games" hidden><span aria-hidden="true">🎮</span> <span data-i18n="games">Games</span></button>
       <div class="helper">
         <svg class="bricky" id="bricky" viewBox="0 0 64 64" aria-hidden="true">
@@ -881,6 +1011,7 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
       <section class="panel tray" id="tray" aria-labelledby="trayTitle">
         <div class="tray-sec sec-name">
           <button class="btn big name-open" id="nameOpenBtn" type="button"><span aria-hidden="true">✍️</span> <span data-i18n="writeName">Write my name</span></button>
+          <button class="btn photo-open" id="photoOpenBtn" type="button"><span aria-hidden="true">📷</span> <span data-i18n="photoOpen">Brick my photo</span></button>
         </div>
         <div class="tray-sec sec-colors">
           <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
@@ -933,7 +1064,7 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
               <button class="btn white small" id="gReset" type="button" data-i18n="startOver">Start over</button>
               <button class="btn lav small" id="gLevels" type="button" data-i18n="levels">Levels</button>
               <button class="btn white small" id="gAlpha" type="button">ABC</button>
-              <button class="btn mint small" id="gNext" type="button"><span data-i18n="next">Next</span> <span class="arr" aria-hidden="true">➜</span></button>
+              <button class="btn mint small" id="gNext" type="button"><span id="gNextTxt" data-i18n="next">Next</span> <span class="arr" aria-hidden="true">➜</span></button>
             </div>
           </div>
         </div>
@@ -1039,6 +1170,40 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
   </div>
 </div>
 
+<div class="sheet" id="photoSheet" hidden>
+  <div class="sheet-card photo-card" role="dialog" aria-modal="true" aria-labelledby="photoTitle">
+    <div class="sheet-head">
+      <h2 id="photoTitle" data-i18n="photoOpen">Brick my photo</h2>
+      <button class="sheet-x" type="button" data-close-sheet data-i18n-aria="close">×</button>
+    </div>
+    <div class="photo-pick">
+      <button class="btn pink" id="photoPickBtn" type="button"><span aria-hidden="true">🖼️</span> <span data-i18n="photoPick">Choose a photo</span></button>
+      <button class="btn sun" id="photoCamBtn" type="button"><span aria-hidden="true">📷</span> <span data-i18n="photoTake">Take a photo</span></button>
+      <button class="btn lav" id="photoSampleBtn" type="button"><span aria-hidden="true">🙂</span> <span data-i18n="photoSample">Try Bricky</span></button>
+      <input class="sr-only" type="file" id="photoFile" accept="image/*" tabindex="-1" aria-hidden="true">
+      <input class="sr-only" type="file" id="photoCam" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true">
+    </div>
+    <p class="photo-msg" id="photoMsg" aria-live="polite"></p>
+    <div class="photo-stage" id="photoStage"><canvas id="photoCanvas" aria-hidden="true"></canvas><span class="photo-count" id="photoCount"></span></div>
+    <div class="gu-rows photo-opts">
+      <div class="gu-row"><span class="gu-label" data-i18n="boardSize">Board size</span><div class="seg" id="photoSizeSeg"></div></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="photoColors">Colors</span>
+        <div class="seg" id="photoColorSeg">
+          <button class="btn" type="button" data-k="4" data-i18n="colorsFew">4 colors</button>
+          <button class="btn" type="button" data-k="8" data-i18n="colorsSome">8 colors</button>
+          <button class="btn" type="button" data-k="16" data-i18n="colorsAll">All colors</button>
+        </div></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="photoView">Picture</span>
+        <div class="seg" id="photoViewSeg">
+          <button class="btn" type="button" data-zoom="0" data-i18n="viewWhole">Whole photo</button>
+          <button class="btn" type="button" data-zoom="1" data-i18n="viewZoom">Zoom in</button>
+        </div></div>
+    </div>
+    <button class="btn big photo-build" id="photoBuildBtn" type="button" disabled data-i18n="photoBuild">Build it!</button>
+    <p class="hint" style="margin:0" data-i18n="photoPrivacy">Your photo stays on this device. It is never uploaded.</p>
+  </div>
+</div>
+
 <div class="sheet" id="saveSheet" hidden>
   <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="saveTitle">
     <div class="sheet-head">
@@ -1128,6 +1293,7 @@ const COLORS = [
   {en: "Blue",       ar: "أزرق",       hex: "#2F8CF0"},
   {en: "Sky",        ar: "سماوي",      hex: "#8FD3FF"},
   {en: "Purple",     ar: "بنفسجي",     hex: "#8A4DE0"},
+  {en: "Tan",        ar: "حنطي",       hex: "#E3A878"},
   {en: "Brown",      ar: "بني",        hex: "#9A5B34"},
   {en: "Gray",       ar: "رمادي",      hex: "#9AA0AE"},
   {en: "Black",      ar: "أسود",       hex: "#2E2A3A"},
@@ -1329,6 +1495,7 @@ const SPELL = {
 const AR_LETTERS = "ابتثجحخدذرزسشصضطظعغفقكلمنهوي";
 
 addStrings({
+  praise1: ["Great job!", "أحسنت!"], praise2: ["Amazing!", "رائع!"], praise3: ["You did it!", "لقد نجحت!"], praise4: ["Super builder!", "بنّاء رائع!"],
   modeFree: ["Free build", "بناء حر"], modeCopy: ["Copy it", "انسخ الصورة"], modeTrace: ["Trace letters", "تتبّع الحروف"],
   modeSpell: ["Spell it", "تهجئة"], modeMath: ["Brick math", "حساب المكعبات"],
   playModes: ["Play modes", "طرق اللعب"],
@@ -2711,6 +2878,7 @@ function win(key, vars, n){
   progress.solvedCount = (progress.solvedCount || 0) + 1; saveProgress();
   setTimeout(() => { sfx.cheer(); confetti(); }, 250);
   say(t(key, {...vars, s}));
+  setTimeout(() => speak(t("praise" + (1 + Math.floor(Math.random() * 4))), LANG), 1100);
   $("#gNext").classList.add("pulse");
   emit("gameWin", {kind: G.kind, stars: n});
 }
@@ -2730,7 +2898,7 @@ function artCanvas(pix, plateHex, c){
 }
 function startCopy(i){
   i = mod(i, PUZZLES.length);
-  if (settings.age === "little") for (let k = 0; k < PUZZLES.length && PUZZLES[i].lvl !== "easy"; k++) i = mod(i + 1, PUZZLES.length); progress.puzzleIdx = i; saveProgress();
+  if (settings.age === "little" && !G.adv) for (let k = 0; k < PUZZLES.length && PUZZLES[i].lvl !== "easy"; k++) i = mod(i + 1, PUZZLES.length); progress.puzzleIdx = i; saveProgress();
   const pz = PUZZLES[i], pix = artToPix(ART[pz.art].art);
   const h = pix.length, w = pix[0].length;
   const colors = [...new Set(pix.flat().filter(Boolean))];
@@ -2816,7 +2984,7 @@ function checkTrace(){
 /* ---------- Spell it ---------- */
 function startSpell(i){
   const list = spellList(gAlpha); i = mod(i, list.length);
-  if (settings.age === "little") for (let k = 0; k < list.length && [...list[i][0]].length > 3; k++) i = mod(i + 1, list.length); progress.spellIdx[gAlpha] = i; saveProgress();
+  if (settings.age === "little" && !G.adv) for (let k = 0; k < list.length && [...list[i][0]].length > 3; k++) i = mod(i + 1, list.length); progress.spellIdx[gAlpha] = i; saveProgress();
   const [word, emo] = list[i];
   gameBoard(24, 18, "#3DC45A");
   Object.assign(G, {word, emo, letters: [...word], pos: 0});
@@ -2876,7 +3044,7 @@ function spellHint(){
 
 /* ---------- Brick math ---------- */
 function startMath(){
-  const L = settings.age === "little" ? Math.min(progress.mathLevel || 1, 3) : (progress.mathLevel || 1), r = n => Math.floor(Math.random() * n);
+  const L = G.adv && G.adv.level ? G.adv.level : settings.age === "little" ? Math.min(progress.mathLevel || 1, 3) : (progress.mathLevel || 1), r = n => Math.floor(Math.random() * n);
   let n, k = null;
   if (L <= 3) n = 2 + r(9);
   else if (L <= 6) n = 10 + r(11);
@@ -2899,7 +3067,7 @@ function checkMath(){
   if (sum > G.n){ if (!G.warned){ G.warned = true; say(t("mathTooMany"), {speak: true}); } }
   else G.warned = false;
   if (sum === G.n && (!G.k || cnt === G.k)){
-    progress.mathLevel = G.L + 1; progress.mathSolved = (progress.mathSolved || 0) + 1; saveProgress();
+    progress.mathLevel = G.adv ? Math.max(progress.mathLevel || 1, G.L + 1) : G.L + 1; progress.mathSolved = (progress.mathSolved || 0) + 1; saveProgress();
     win("mathWin", {eq}, 3);
   } else if (sum === G.n && G.k && !G.warnedK){ G.warnedK = true; say(t("mathBricks", {k: G.k})); }
 }
@@ -3056,6 +3224,7 @@ function award(id){
   const bd = BADGES.find(b => b.id === id); if (!bd) return;
   earned.add(id); store("snappy-badges", [...earned]); updateBadgeCount();
   toast(bd.icon, t("badgeNew"), bd[LANG][0]); setTimeout(() => sfx.badge(), 200);
+  setTimeout(() => speak(`${t("badgeNew")} ${bd[LANG][0]}`, LANG), 2400);
 }
 on("placed", () => { award("first"); if (settings.mirror !== "off") award("mirror"); });
 on("change", () => {
@@ -3284,6 +3453,87 @@ $("#cardBtn").addEventListener("click", openCardMaker);
 
 on("boot", () => { updateBadgeCount(); applyTheme(settings.theme, false); });
 
+/* ===================== Bricky's recorded voice =====================
+   Clips live in voice/en.json and voice/ar.json: {"clips": {"<key>": "<base64 mp3>"}}.
+   A clip is found by a normalised key made from the text, so any text we recorded
+   (a message, a button name, a letter, a word) plays in Bricky's voice.
+   Anything we did not record falls back to the device voice. */
+const VOICE_V = "1";   // bump when the clips are regenerated
+const VOICE = {clips: {en: null, ar: null}, loading: {}, audio: null, urls: new Map(), token: 0};
+function vkey(text){
+  return String(text).toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/ـ/g, "")
+    .replace(/\s+/g, " ").trim();
+}
+function loadVoice(lang){
+  if (VOICE.clips[lang]) return Promise.resolve(VOICE.clips[lang]);
+  if (VOICE.loading[lang]) return VOICE.loading[lang];
+  VOICE.loading[lang] = fetch(`voice/${lang}.json?v=${VOICE_V}`)
+    .then(r => r.ok ? r.json() : null)
+    .then(j => (VOICE.clips[lang] = (j && j.clips) || {}))
+    .catch(() => (VOICE.clips[lang] = {}));
+  return VOICE.loading[lang];
+}
+function hasVoicePack(lang){ const c = VOICE.clips[lang]; return !!c && Object.keys(c).length > 0; }
+function clipUrl(lang, key){
+  const id = lang + ":" + key;
+  if (VOICE.urls.has(id)) return VOICE.urls.get(id);
+  const b64 = VOICE.clips[lang][key]; const bin = atob(b64); const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const url = URL.createObjectURL(new Blob([bytes], {type: "audio/mpeg"}));
+  VOICE.urls.set(id, url);
+  return url;
+}
+// whole text first, then sentence by sentence
+function clipKeys(text, lang){
+  const c = VOICE.clips[lang]; if (!c) return null;
+  const whole = vkey(text);
+  if (!whole) return null;
+  if (c[whole]) return [whole];
+  const parts = String(text).split(/(?<=[.!?؟…:])\s+/).map(vkey).filter(Boolean);
+  if (parts.length > 1 && parts.every(p => c[p])) return parts;
+  return null;
+}
+function stopClips(){
+  VOICE.token++;
+  if (VOICE.audio){ try { VOICE.audio.pause(); } catch(e){} }
+}
+function playClips(lang, keys, onFail){
+  stopClips();
+  const my = VOICE.token;
+  if (!VOICE.audio){ VOICE.audio = new Audio(); VOICE.audio.preload = "auto"; }
+  const a = VOICE.audio; let i = 0;
+  const next = () => {
+    if (my !== VOICE.token || i >= keys.length) return;
+    a.src = clipUrl(lang, keys[i++]);
+    a.onended = () => setTimeout(next, 120);
+    const p = a.play();
+    if (p && p.catch) p.catch(() => { if (my === VOICE.token && i === 1 && onFail) onFail(); });
+  };
+  next();
+}
+const deviceSpeak = speak;
+speak = function(text, lang = LANG, opts = {}){
+  if (!settings.talk || !text) return false;
+  lang = lang === "ar" ? "ar" : "en";
+  const go = () => {
+    const keys = clipKeys(text, lang) || (opts.fallback ? clipKeys(opts.fallback, lang) : null);
+    if (keys){ try { speechSynthesis.cancel(); } catch(e){} playClips(lang, keys, () => deviceSpeak(text, lang, opts)); return true; }
+    stopClips();
+    return deviceSpeak(text, lang, opts);
+  };
+  if (VOICE.clips[lang]) return go();
+  // the pack is still on its way: wait a moment rather than switching voices
+  const my = ++VOICE.token;
+  let done = false;
+  loadVoice(lang).then(() => { if (!done && my === VOICE.token){ done = true; go(); } });
+  setTimeout(() => { if (!done && my === VOICE.token){ done = true; deviceSpeak(text, lang, opts); } }, 1500);
+  return true;
+};
+function warmVoice(){ if (settings.talk){ loadVoice(LANG); setTimeout(() => loadVoice(LANG === "ar" ? "en" : "ar"), 4000); } }
+on("boot", () => setTimeout(warmVoice, 800));
+on("lang", () => loadVoice(LANG));
+
 /* ===================== screens, grown-ups corner, hold-to-hear, name keyboard, welcome tour ===================== */
 addStrings({
   lockAria: ["Grown-ups settings: press and hold for 3 seconds", "إعدادات الكبار: اضغط مطولًا 3 ثوانٍ"],
@@ -3333,10 +3583,12 @@ function showScreen(name){
   $("#homeScreen").hidden = name !== "home";
   $("#gamesScreen").hidden = name !== "games";
   $("#studioScreen").hidden = name !== "studio";
+  $("#mapScreen").hidden = name !== "map";
   document.body.dataset.screen = name;
   closeSheets();
   if (name === "home"){ document.body.dataset.area = "home"; refreshHome(); }
   if (name === "games"){ document.body.dataset.area = "games"; refreshGamesPick(); }
+  if (name === "map") document.body.dataset.area = "map";
   if (name === "studio"){ refreshArea(); requestAnimationFrame(() => { fitCell(); requestAnimationFrame(fitCell); }); }
   window.scrollTo(0, 0);
 }
@@ -3370,14 +3622,14 @@ const _loadIntoFree = loadIntoFree;
 loadIntoFree = function(cb){ _loadIntoFree(cb); if (screen !== "studio") showScreen("studio"); refreshArea(); };
 
 $$("[data-go]").forEach(b => b.addEventListener("click", () => { sfx.click(); showScreen(b.dataset.go); if (b.dataset.go === "home") speakHome(); }));
-function speakHome(){ speak($("#homeBubble").textContent, LANG); }
+function speakHome(){ speak($("#homeBubble").textContent, LANG, {fallback: t("homeHiNoName")}); }
 $("#doorBuild").addEventListener("click", () => {
   sfx.click();
   showScreen("studio");
   if (currentMode !== "free") setMode("free", true); else refreshArea();
   say(t("buildHi"), {speak: true});
 });
-$("#doorGames").addEventListener("click", () => { sfx.click(); showScreen("games"); speak(t("pickGame"), LANG); });
+$("#doorGames").addEventListener("click", () => { sfx.click(); openMap(false); });
 $("#doorCard").addEventListener("click", () => {
   sfx.click();
   if (currentMode !== "free") setMode("free", true);
@@ -3672,6 +3924,464 @@ on("boot", () => {
 on("lang", () => { if (screen === "home") refreshHome(); if (screen === "games") refreshGamesPick(); if (screen === "studio") refreshArea(); if ($("#nameSheet") && !$("#nameSheet").hidden) buildTiles(); });
 on("resize", () => { doorPics(); });
 
+/* ===================== photo to bricks =====================
+   A photo is cropped, shrunk to one pixel per stud, matched to the brick colours,
+   and laid out with real brick sizes. Everything happens on the device. */
+addStrings({
+  photoOpen: ["Brick my photo", "صورتي بالمكعبات"],
+  photoPick: ["Choose a photo", "اختر صورة"],
+  photoTake: ["Take a photo", "التقط صورة"],
+  photoSample: ["Try Bricky", "جرّب بريكي"],
+  photoHint: ["Pick a photo and I'll turn it into bricks!", "اختر صورة وسأحوّلها إلى مكعبات!"],
+  photoColors: ["Colors", "الألوان"],
+  colorsFew: ["4 colors", "4 ألوان"], colorsSome: ["8 colors", "8 ألوان"], colorsAll: ["All colors", "كل الألوان"],
+  photoView: ["Picture", "الصورة"], viewWhole: ["Whole photo", "الصورة كاملة"], viewZoom: ["Zoom in", "تكبير"],
+  photoBuild: ["Build it!", "ابنِها!"],
+  photoPrivacy: ["Your photo stays on this device. It is never uploaded.", "صورتك تبقى على هذا الجهاز ولا تُرفع أبدًا."],
+  photoDone: ["Ta-da! Your photo is made of bricks.", "تادا! صورتك صارت من المكعبات."],
+  photoBad: ["I couldn't open that picture. Try another one.", "لم أستطع فتح هذه الصورة. جرّب صورة أخرى."],
+  photoBricks: ["{n} bricks", "{n} مكعبًا"],
+});
+BADGES.push({id: "photo", icon: "📷", en: ["Photo artist", "Turn a photo into bricks"], ar: ["فنان الصور", "حوّل صورة إلى مكعبات"]});
+
+const PHOTO = {img: null, size: "l", colors: 8, zoom: false, pix: null, bricks: null};
+const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+function toLab([r, g, b]){
+  const lin = v => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+  const R = lin(r), G = lin(g), Bl = lin(b);
+  let X = (R * 0.4124 + G * 0.3576 + Bl * 0.1805) / 0.95047, Y = R * 0.2126 + G * 0.7152 + Bl * 0.0722, Z = (R * 0.0193 + G * 0.1192 + Bl * 0.9505) / 1.08883;
+  const f = v => v > 0.008856 ? Math.cbrt(v) : 7.787 * v + 16 / 116;
+  X = f(X); Y = f(Y); Z = f(Z);
+  return [116 * Y - 16, 500 * (X - Y), 200 * (Y - Z)];
+}
+const PAL_LAB = () => COLORS.map(c => ({hex: c.hex, lab: toLab(hexRgb(c.hex))}));
+
+// 1. crop and shrink: one averaged colour per stud
+function photoPixels(img, cols, rows, zoom){
+  const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+  const ar = cols / rows;
+  let sw = iw, sh = iw / ar; if (sh > ih){ sh = ih; sw = ih * ar; }
+  if (zoom){ sw *= .62; sh *= .62; }
+  let sx = (iw - sw) / 2, sy = (ih - sh) / 2;
+  if (zoom) sy = Math.max(0, (ih - sh) * .35);           // faces sit a little above the middle
+  // shrink in halves for a smooth result
+  let src = img, W = sw, H = sh, cx = sx, cy = sy;
+  const S = 4, tw = cols * S, th = rows * S;
+  while (W / 2 > tw && H / 2 > th){
+    const c = document.createElement("canvas"); c.width = Math.round(W / 2); c.height = Math.round(H / 2);
+    const x = c.getContext("2d"); x.imageSmoothingQuality = "high";
+    x.drawImage(src, cx, cy, W, H, 0, 0, c.width, c.height);
+    src = c; W = c.width; H = c.height; cx = 0; cy = 0;
+  }
+  const cv = document.createElement("canvas"); cv.width = tw; cv.height = th;
+  const x = cv.getContext("2d", {willReadFrequently: true}); x.imageSmoothingQuality = "high";
+  x.fillStyle = "#fff"; x.fillRect(0, 0, tw, th);
+  x.drawImage(src, cx, cy, W, H, 0, 0, tw, th);
+  const d = x.getImageData(0, 0, tw, th).data;
+  const out = [];
+  for (let y = 0; y < rows; y++){
+    const row = [];
+    for (let X = 0; X < cols; X++){
+      let r = 0, g = 0, b = 0;
+      for (let j = 0; j < S; j++) for (let i = 0; i < S; i++){
+        const k = ((y * S + j) * tw + (X * S + i)) * 4; r += d[k]; g += d[k + 1]; b += d[k + 2];
+      }
+      const n = S * S; r /= n; g /= n; b /= n;
+      // a little more colour and contrast, so the bricks look bright
+      const m = (r + g + b) / 3, sat = 1.3, con = 1.08;
+      r = (m + (r - m) * sat - 128) * con + 128; g = (m + (g - m) * sat - 128) * con + 128; b = (m + (b - m) * sat - 128) * con + 128;
+      row.push([clamp(r, 0, 255), clamp(g, 0, 255), clamp(b, 0, 255)]);
+    }
+    out.push(row);
+  }
+  return out;
+}
+// 2. match to brick colours; with fewer colours, pick the set that fits the photo best
+function quantize(px, k){
+  const pal = PAL_LAB(), labs = px.flat().map(toLab);
+  const dist = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2;
+  const D = labs.map(l => pal.map(p => dist(l, p.lab)));
+  let chosen = [], best = labs.map(() => Infinity);
+  k = Math.min(k, pal.length);
+  while (chosen.length < k){
+    let pick = -1, score = Infinity;
+    for (let p = 0; p < pal.length; p++){
+      if (chosen.includes(p)) continue;
+      let s = 0; for (let i = 0; i < labs.length; i++) s += Math.min(best[i], D[i][p]);
+      if (s < score){ score = s; pick = p; }
+    }
+    chosen.push(pick); best = best.map((b, i) => Math.min(b, D[i][pick]));
+  }
+  const cols = px[0].length;
+  const grid = px.map((row, y) => row.map((_, x) => {
+    const i = y * cols + x; let bp = chosen[0];
+    for (const p of chosen) if (D[i][p] < D[i][bp]) bp = p;
+    return pal[bp].hex;
+  }));
+  // tidy lonely specks
+  const H = grid.length, W = cols, out = grid.map(r => r.slice());
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
+    const me = grid[y][x], nb = [[0, -1], [0, 1], [-1, 0], [1, 0]].map(([a, b]) => (grid[y + b] || [])[x + a]).filter(Boolean);
+    if (nb.includes(me)) continue;
+    const cnt = {}; nb.forEach(c => cnt[c] = (cnt[c] || 0) + 1);
+    const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
+    if (top && top[1] >= 3) out[y][x] = top[0];
+  }
+  return out;
+}
+// 3. real brick sizes, biggest first
+function mosaicBricks(pix){
+  const H = pix.length, W = pix[0].length, used = pix.map(r => r.map(() => false)), out = [];
+  const shapes = [];
+  [[6, 2], [4, 2], [3, 2], [2, 2], [4, 1], [3, 1], [2, 1], [1, 1]].forEach(([w, h]) => { shapes.push([w, h]); if (w !== h) shapes.push([h, w]); });
+  const fits = (x, y, w, h, c) => {
+    if (x + w > W || y + h > H) return false;
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (used[y + j][x + i] || pix[y + j][x + i] !== c) return false;
+    return true;
+  };
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
+    if (used[y][x]) continue;
+    const c = pix[y][x];
+    for (const [w, h] of shapes){
+      if (!fits(x, y, w, h, c)) continue;
+      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) used[y + j][x + i] = true;
+      out.push({x, y, w, h, c});
+      break;
+    }
+  }
+  return out;
+}
+function photoDims(){
+  const s = SIZES.find(z => z.id === PHOTO.size) || SIZES[2];
+  const iw = PHOTO.img.naturalWidth || PHOTO.img.width, ih = PHOTO.img.naturalHeight || PHOTO.img.height;
+  return ih > iw * 1.1 ? [s.rows, s.cols] : [s.cols, s.rows];      // tall photos get a tall board
+}
+function photoMake(){
+  if (!PHOTO.img) return;
+  const [cols, rows] = photoDims();
+  PHOTO.pix = quantize(photoPixels(PHOTO.img, cols, rows, PHOTO.zoom), PHOTO.colors);
+  PHOTO.bricks = mosaicBricks(PHOTO.pix);
+  drawPhotoPreview();
+}
+function drawPhotoPreview(){
+  const cv = $("#photoCanvas"), pix = PHOTO.pix; if (!pix) return;
+  const rows = pix.length, cols = pix[0].length;
+  const box = $("#photoStage").clientWidth || 480;
+  const maxH = Math.max(170, Math.min(window.innerHeight * .36, 400));
+  const c = Math.max(4, Math.floor(Math.min(box / cols, maxH / rows)));
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = cols * c * dpr; cv.height = rows * c * dpr; cv.style.width = cols * c + "px"; cv.style.height = rows * c + "px";
+  const x = cv.getContext("2d"); x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  for (const b of PHOTO.bricks){
+    x.fillStyle = b.c; x.fillRect(b.x * c, b.y * c, b.w * c, b.h * c);
+    x.strokeStyle = "rgba(0,0,0,.28)"; x.lineWidth = 1; x.strokeRect(b.x * c + .5, b.y * c + .5, b.w * c - 1, b.h * c - 1);
+    for (let j = 0; j < b.h; j++) for (let i = 0; i < b.w; i++){
+      const cx = (b.x + i + .5) * c, cy = (b.y + j + .5) * c;
+      x.beginPath(); x.arc(cx, cy, c * .3, 0, Math.PI * 2);
+      x.fillStyle = "rgba(255,255,255,.28)"; x.fill();
+      x.strokeStyle = "rgba(0,0,0,.18)"; x.stroke();
+    }
+  }
+  $("#photoCount").textContent = t("photoBricks", {n: PHOTO.bricks.length});
+  $("#photoStage").classList.add("ready");
+  $("#photoBuildBtn").disabled = false;
+}
+function photoLoad(src, revoke){
+  const img = new Image();
+  img.onload = () => { PHOTO.img = img; photoMake(); if (revoke) URL.revokeObjectURL(src); sfx.snap(); };
+  img.onerror = () => { sfx.nope(); $("#photoMsg").textContent = t("photoBad"); speak(t("photoBad"), LANG); };
+  img.src = src;
+}
+function photoSample(){
+  const svg = $("#bricky").outerHTML.replace('id="bricky"', 'xmlns="http://www.w3.org/2000/svg" width="560" height="420"')
+    .replace(/viewBox="[^"]*"/, 'viewBox="-14 -4 92 69"');
+  const wrapped = svg.replace(/(<svg[^>]*>)/, '$1<rect x="-14" y="-4" width="92" height="69" fill="#8FD3FF"/><rect x="-14" y="52" width="92" height="13" fill="#3DC45A"/>');
+  photoLoad("data:image/svg+xml;charset=utf-8," + encodeURIComponent(wrapped));
+}
+function openPhotoSheet(){
+  PHOTO.size = (settings.age === "little") ? "m" : "l";
+  syncPhotoSegs();
+  $("#photoMsg").textContent = t("photoHint");
+  openSheet("photoSheet");
+  speak(t("photoHint"), LANG);
+  if (PHOTO.img) requestAnimationFrame(photoMake);
+}
+function buildPhotoSizes(){
+  const box = $("#photoSizeSeg"); box.innerHTML = "";
+  SIZES.forEach(z => {
+    const b = document.createElement("button"); b.className = "btn"; b.type = "button"; b.dataset.size = z.id; b.textContent = z[LANG];
+    b.addEventListener("click", () => { PHOTO.size = z.id; sfx.click(); syncPhotoSegs(); photoMake(); });
+    box.appendChild(b);
+  });
+  syncPhotoSegs();
+}
+buildPhotoSizes();
+function syncPhotoSegs(){
+  $$("#photoSizeSeg [data-size]").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === PHOTO.size));
+  $$("#photoColorSeg [data-k]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.k === PHOTO.colors));
+  $$("#photoViewSeg [data-zoom]").forEach(b => b.setAttribute("aria-pressed", (b.dataset.zoom === "1") === PHOTO.zoom));
+}
+function buildPhoto(){
+  if (!PHOTO.bricks) return;
+  const [cols, rows] = photoDims();
+  const st = brickStyle === "round" ? "std" : brickStyle;
+  closeSheets();
+  if (currentMode !== "free") setMode("free", true);
+  showScreen("studio");
+  pushHistory();
+  FREE.cols = cols; FREE.rows = rows; FREE.plate = "#FBFAF5";
+  FREE.bricks = PHOTO.bricks.map(b => ({id: nextId++, ...b, t: st, z: 0}));
+  B = FREE; clearEls(); applyBoard(); commit(new Map(FREE.bricks.map(b => [b.id, Math.min(1400, b.y * 45 + b.x * 8)])));
+  sfx.cheer(); say(t("photoDone"), {speak: true});
+  award("photo");
+  emit("photoBuilt", FREE.bricks.length);
+  requestAnimationFrame(fitCell);
+}
+$("#photoOpenBtn").addEventListener("click", () => { sfx.click(); openPhotoSheet(); });
+["#photoFile", "#photoCam"].forEach(id => $(id).addEventListener("change", e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = "";
+  if (f) photoLoad(URL.createObjectURL(f), true);
+}));
+$("#photoPickBtn").addEventListener("click", () => $("#photoFile").click());
+$("#photoCamBtn").addEventListener("click", () => $("#photoCam").click());
+$("#photoCamBtn").hidden = !coarse;
+$("#photoSampleBtn").addEventListener("click", () => { sfx.click(); photoSample(); });
+$$("#photoColorSeg [data-k]").forEach(b => b.addEventListener("click", () => { PHOTO.colors = +b.dataset.k; sfx.click(); syncPhotoSegs(); photoMake(); }));
+$$("#photoViewSeg [data-zoom]").forEach(b => b.addEventListener("click", () => { PHOTO.zoom = b.dataset.zoom === "1"; sfx.click(); syncPhotoSegs(); photoMake(); }));
+$("#photoBuildBtn").addEventListener("click", buildPhoto);
+on("resize", () => { if (!$("#photoSheet").hidden) drawPhotoPreview(); });
+on("lang", () => { buildPhotoSizes(); if (PHOTO.bricks) $("#photoCount").textContent = t("photoBricks", {n: PHOTO.bricks.length}); });
+
+/* ===================== Bricky's adventure map =====================
+   Five islands with six stops each. Every stop is one game round; finishing it opens the next.
+   Each island gives a sticker, and a daily challenge gives a surprise sticker. */
+addStrings({
+  doorAdv: ["Adventure", "المغامرة"], doorAdvSub: ["Play games on Bricky's islands", "العب على جزر بريكي"],
+  mapTitle: ["Bricky's islands", "جزر بريكي"],
+  mapHi: ["Tap the stop where I'm standing!", "اضغط على المحطة التي أقف عليها!"],
+  mapLocked: ["Finish the stop before this one first.", "أنهِ المحطة التي قبلها أولًا."],
+  allGames: ["All games", "كل الألعاب"],
+  stickers: ["Stickers", "الملصقات"], stickerBook: ["My sticker book", "دفتر ملصقاتي"],
+  stickerSub: ["Finish islands and daily challenges to fill your book!", "أنهِ الجزر وتحديات اليوم لتملأ دفترك!"],
+  stickerNew: ["New sticker!", "ملصق جديد!"],
+  islandDone: ["You finished the island! Here is a sticker.", "أنهيت الجزيرة! إليك ملصقًا."],
+  mapBack: ["Map", "الخريطة"],
+  stopNext: ["Next stop", "المحطة التالية"],
+  daily: ["Today's challenge", "تحدي اليوم"], dailyPlay: ["Play", "العب"],
+  dailyDone: ["Done! Come back tomorrow for a new sticker.", "أحسنت! عُد غدًا لملصق جديد."],
+  dailyWin: ["You did today's challenge! Here is a surprise sticker.", "أنجزت تحدي اليوم! إليك ملصقًا مفاجئًا."],
+  island1: ["Sunny Beach", "الشاطئ المشمس"], island2: ["Candy Forest", "غابة الحلوى"], island3: ["Star Mountain", "جبل النجوم"],
+  island4: ["Coral Reef", "الشعاب المرجانية"], island5: ["Rocket Castle", "قلعة الصواريخ"],
+  allDone: ["You finished every island! You are an adventure hero!", "أنهيت كل الجزر! أنت بطل المغامرة!"],
+});
+BADGES.push(
+  {id: "island1", icon: "🏝️", en: ["Island explorer", "Finish the first island"], ar: ["مستكشف الجزر", "أنهِ الجزيرة الأولى"]},
+  {id: "advHero", icon: "🦸", en: ["Adventure hero", "Finish all five islands"], ar: ["بطل المغامرة", "أنهِ الجزر الخمس"]},
+  {id: "sticker5", icon: "📒", en: ["Sticker collector", "Collect 5 stickers"], ar: ["جامع الملصقات", "اجمع 5 ملصقات"]},
+);
+const ISLANDS = [
+  {emoji: "🏖️", bg: "#FFE9A8", ground: "#FFD166"},
+  {emoji: "🍭", bg: "#FFD6E8", ground: "#FF9CC2"},
+  {emoji: "⛰️", bg: "#DCD6FF", ground: "#A9A6F0"},
+  {emoji: "🐠", bg: "#CDEFFF", ground: "#7CC8F2"},
+  {emoji: "🚀", bg: "#D8F5DF", ground: "#7FD99A"},
+];
+const DAILY_STICKERS = ["🦄", "🐙", "🦖", "🚂", "🍩", "🐼", "🦋", "🎈", "🐬", "🌈", "🍉", "🦁", "🐢", "🎠", "🪐", "🐝", "🍓", "🦒", "⚽", "🐧", "🌻", "🦊", "🍦", "🐳", "🎸", "🦜", "🧁", "🐞", "🚁", "🐨"];
+const ICON = {copy: "🖼️", trace: "✏️", spell: "🔤", math: "➕"};
+if (!progress.adv) progress.adv = {done: {}, stickers: [], daily: {}};
+
+function advStops(){
+  const little = settings.age === "little", lang = LANG;
+  const copyIdx = little ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] : [0, 1, 3, 6, 7, 9, 10, 12, 13, 15];
+  const words = SPELL[lang].map((w, i) => [i, [...w[0]].length]);
+  const spellIdx = (little ? words.filter(w => w[1] <= 3).concat(words.filter(w => w[1] > 3)) : words).map(w => w[0]);
+  const mathLv = little ? [1, 2, 2, 3, 3] : [1, 2, 4, 5, 7];
+  let c = 0, tr = 0, sp = 0;
+  const out = [];
+  for (let i = 0; i < 5; i++){
+    const plan = ["copy", "trace", "math", "spell", "copy", i % 2 ? "spell" : "trace"];
+    plan.forEach((kind, j) => {
+      const s = {id: `i${i}s${j}`, island: i, kind};
+      if (kind === "copy") s.idx = copyIdx[c++ % copyIdx.length];
+      if (kind === "trace") s.idx = tr++ % TRACE[lang].length;
+      if (kind === "spell") s.idx = spellIdx[sp++ % spellIdx.length];
+      if (kind === "math") s.level = mathLv[i];
+      out.push(s);
+    });
+  }
+  return out;
+}
+const stopKey = s => `${s.id}.${s.kind}`;
+const stopStars = s => progress.adv.done[stopKey(s)] || 0;
+function currentStopIndex(stops){ const i = stops.findIndex(s => !stopStars(s)); return i < 0 ? stops.length : i; }
+function stopLabel(s){
+  if (s.kind === "copy") return ART[PUZZLES[s.idx].art][LANG];
+  if (s.kind === "trace") return TRACE[LANG][s.idx][0];
+  if (s.kind === "spell") return SPELL[LANG][s.idx][1];
+  return t("mathLevel", {n: s.level});
+}
+function stopTitle(s){
+  if (s.kind === "copy") return t("copyTitle", {n: ART[PUZZLES[s.idx].art][LANG]});
+  if (s.kind === "trace") return t("traceTitle", {l: TRACE[LANG][s.idx][0]});
+  if (s.kind === "spell") return t("modeSpell");
+  return t("modeMath");
+}
+
+/* ---------- drawing the map ---------- */
+function renderMap(){
+  const stops = advStops(), cur = currentStopIndex(stops), box = $("#mapIslands");
+  box.innerHTML = "";
+  for (let i = 0; i < 5; i++){
+    const isl = ISLANDS[i], mine = stops.filter(s => s.island === i);
+    const done = mine.every(s => stopStars(s));
+    const sec = document.createElement("section"); sec.className = "island" + (done ? " done" : ""); sec.style.setProperty("--isl", isl.bg); sec.style.setProperty("--gnd", isl.ground);
+    const first = stops.indexOf(mine[0]);
+    const locked = first > cur;
+    if (locked) sec.classList.add("locked");
+    sec.innerHTML = `<header class="isl-head"><span class="isl-emoji" aria-hidden="true">${isl.emoji}</span><h3>${esc(t("island" + (i + 1)))}</h3>
+      <span class="isl-sticker${done ? " got" : ""}" aria-label="${esc(t("stickers"))}">${done ? isl.emoji : "?"}</span></header><div class="isl-path"></div>`;
+    const path = sec.querySelector(".isl-path");
+    mine.forEach((s, j) => {
+      const idx = stops.indexOf(s), st = stopStars(s), here = idx === cur, open = idx <= cur;
+      const b = document.createElement("button"); b.type = "button";
+      b.className = `stop k-${s.kind}${st ? " done" : ""}${here ? " here" : ""}${open ? "" : " shut"}`;
+      b.style.setProperty("--row", j);
+      b.dataset.say = `${stopTitle(s)}`;
+      b.setAttribute("aria-label", `${stopTitle(s)}${st ? " " + starText(st) : ""}`);
+      b.innerHTML = `<span class="stop-ic" aria-hidden="true">${open ? ICON[s.kind] : "🔒"}</span>
+        <span class="stop-lb">${esc(open ? stopLabel(s) : "")}</span>
+        <span class="stop-st" aria-hidden="true">${st ? starText(st) : ""}</span>
+        ${here ? `<span class="stop-me" aria-hidden="true">${BRICKY_SVG}</span>` : ""}`;
+      b.addEventListener("click", () => {
+        if (!open){ sfx.nope(); say(t("mapLocked")); speak(t("mapLocked"), LANG); b.classList.remove("wiggle"); void b.offsetWidth; b.classList.add("wiggle"); return; }
+        sfx.click(); playStop(s);
+      });
+      path.appendChild(b);
+    });
+    box.appendChild(sec);
+  }
+  $("#stickerCount").textContent = progress.adv.stickers.length;
+  renderDaily();
+}
+function scrollToCurrent(){
+  const here = $("#mapIslands .stop.here") || $("#mapIslands .island:last-child");
+  if (!here) return;
+  const r = here.getBoundingClientRect();
+  window.scrollTo({top: Math.max(0, window.scrollY + r.top - window.innerHeight / 2 + r.height / 2), behavior: reduceMotion ? "auto" : "smooth"});
+}
+
+/* ---------- playing a stop ---------- */
+let advPending = null;
+function playStop(s){
+  gAlpha = LANG;
+  if (s.kind === "copy") progress.puzzleIdx = s.idx;
+  if (s.kind === "trace") progress.traceIdx[gAlpha] = s.idx;
+  if (s.kind === "spell") progress.spellIdx[gAlpha] = s.idx;
+  if (currentMode !== "free") setMode("free", true);    // restart cleanly
+  advPending = {...s};
+  setMode(s.kind);
+}
+const _setModeAdv = setMode;
+setMode = function(m, quiet){
+  G.adv = m === "free" ? null : advPending;
+  advPending = null;
+  _setModeAdv(m, quiet);
+  refreshMapBtn();
+};
+function refreshMapBtn(){
+  const adv = !!G.adv && currentMode !== "free";
+  $("#mapBtn").hidden = !adv;
+  if (adv) $("#gamesBtn").hidden = true;
+  $("#gNextTxt").textContent = t(adv ? (G.adv.daily ? "mapBack" : "stopNext") : "next");
+}
+on("gameWin", ({kind, stars}) => {
+  const a = G.adv; if (!a || a.kind !== kind) return;
+  if (a.daily){
+    const today = dayKey();
+    if (progress.adv.daily.date !== today || !progress.adv.daily.done){
+      progress.adv.daily = {date: today, done: true};
+      const pick = DAILY_STICKERS.find(s => !progress.adv.stickers.includes(s)) || DAILY_STICKERS[hashStr(today) % DAILY_STICKERS.length];
+      giveSticker(pick, t("dailyWin"));
+    }
+    saveProgress(); return;
+  }
+  const key = stopKey(a), before = stopStars(a);
+  progress.adv.done[key] = Math.max(before, stars || 1);
+  const stops = advStops(), mine = stops.filter(s => s.island === a.island);
+  if (!before && mine.every(s => stopStars(s))){
+    giveSticker(ISLANDS[a.island].emoji, t("islandDone"));
+    if (a.island === 0) award("island1");
+    if (stops.every(s => stopStars(s))){ award("advHero"); setTimeout(() => say(t("allDone"), {speak: true}), 3500); }
+  }
+  saveProgress();
+});
+function giveSticker(emo, msg){
+  if (!progress.adv.stickers.includes(emo)) progress.adv.stickers.push(emo);
+  if (progress.adv.stickers.length >= 5) award("sticker5");
+  setTimeout(() => { toast(emo, t("stickerNew"), msg); say(msg, {speak: true}); }, 1600);
+}
+// "Next" goes back to the map, where Bricky walks to the next stop
+$("#gamePanel").addEventListener("click", e => {
+  if (!G.adv || !e.target.closest("#gNext")) return;
+  e.stopImmediatePropagation();
+  sfx.click();
+  const wasSolved = G.solved;
+  setMode("free", true);
+  openMap(wasSolved);
+}, true);
+function openMap(walk){
+  showScreen("map");
+  renderMap();
+  requestAnimationFrame(() => { scrollToCurrent(); if (walk){ const h = $("#mapIslands .stop.here"); if (h){ h.classList.add("arrive"); } } });
+  speak(t("mapHi"), LANG);
+}
+
+/* ---------- daily challenge ---------- */
+const dayKey = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
+function hashStr(s){ let h = 2166136261; for (const ch of s){ h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+function dailyStop(){
+  const h = hashStr(dayKey() + LANG), kinds = ["copy", "trace", "spell", "math"], kind = kinds[h % 4];
+  const s = {id: "daily", kind, daily: true};
+  const little = settings.age === "little";
+  if (kind === "copy") s.idx = (h >> 3) % (little ? 6 : PUZZLES.length);
+  if (kind === "trace") s.idx = (h >> 3) % TRACE[LANG].length;
+  if (kind === "spell"){ const ok = SPELL[LANG].map((w, i) => [i, [...w[0]].length]).filter(w => !little || w[1] <= 3); s.idx = ok[(h >> 3) % ok.length][0]; }
+  if (kind === "math") s.level = little ? 1 + (h >> 3) % 3 : 1 + (h >> 3) % 7;
+  return s;
+}
+function renderDaily(){
+  const s = dailyStop(), done = progress.adv.daily.date === dayKey() && progress.adv.daily.done;
+  const box = $("#mapDaily");
+  box.classList.toggle("done", done);
+  box.innerHTML = `<span class="dly-ic" aria-hidden="true">${done ? "✅" : "🎁"}</span>
+    <div class="dly-txt"><strong>${esc(t("daily"))}</strong><span>${esc(done ? t("dailyDone") : `${ICON[s.kind]} ${stopTitle(s)}${s.kind === "spell" ? " " + SPELL[LANG][s.idx][1] : ""}`)}</span></div>
+    ${done ? "" : `<button class="btn sun" type="button" id="dailyBtn">${esc(t("dailyPlay"))}</button>`}`;
+  const btn = $("#dailyBtn");
+  if (btn) btn.addEventListener("click", () => { sfx.click(); playStop(s); });
+  box.dataset.say = done ? t("dailyDone") : `${t("daily")}: ${stopTitle(s)}`;
+}
+
+/* ---------- sticker book ---------- */
+function openStickers(){
+  const got = progress.adv.stickers;
+  const all = [...ISLANDS.map(i => i.emoji), ...DAILY_STICKERS];
+  let html = `<h2>${esc(t("stickerBook"))}</h2><p>${esc(t("stickerSub"))}</p><div class="sticker-grid">`;
+  all.forEach((e, i) => {
+    const has = got.includes(e);
+    const label = i < 5 ? t("island" + (i + 1)) : "";
+    html += `<div class="sticker${has ? " got" : ""}${i < 5 ? " isl" : ""}"><span aria-hidden="true">${has ? e : "?"}</span>${label ? `<small>${esc(label)}</small>` : ""}</div>`;
+  });
+  html += `</div><div class="modal-actions"><button class="btn white" data-close>${esc(t("close"))}</button></div>`;
+  openModal(html, t("stickerBook"), "sticker-modal");
+  sfx.click();
+}
+
+$("#stickerBtn").addEventListener("click", openStickers);
+$("#allGamesBtn").addEventListener("click", () => { sfx.click(); showScreen("games"); speak(t("pickGame"), LANG); });
+$("#mapBtn").addEventListener("click", () => { sfx.click(); setMode("free", true); openMap(false); });
+on("lang", () => { if (screen === "map") renderMap(); refreshMapBtn(); });
+on("boot", () => refreshMapBtn());
+
 /* ===================== start-up + wiring ===================== */
 const SAVE_KEY = "snappy-bricks-v2";
 on("change", () => {
@@ -3706,7 +4416,8 @@ $("#talkBtn").addEventListener("click", () => {
   $("#talkBtn").setAttribute("aria-pressed", settings.talk);
   $("#talkTxt").textContent = t(settings.talk ? "talkOn" : "talkOff");
   sfx.click();
-  if (settings.talk && LANG === "ar" && !voiceFor("ar")) say(t("noArabicVoice"));
+  if (!settings.talk) stopClips(); else warmVoice();
+  if (settings.talk && LANG === "ar" && !voiceFor("ar") && VOICE.clips.ar && !hasVoicePack("ar")) say(t("noArabicVoice"));
   else say(t(settings.talk ? "talkSayOn" : "talkSayOff"), {speak: true});
 });
 $("#soundBtn").addEventListener("click", () => {
