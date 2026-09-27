@@ -1,0 +1,145 @@
+/* ===================== tablets & touch ===================== */
+.tray-sec,.name-box{display:flex;flex-direction:column;gap:12px}
+.tray-sec[hidden]{display:none!important}
+
+/* finger-friendly everywhere touch is the main input */
+html{touch-action:manipulation}
+.plate,.tray,.card,.swatch,.stylebtn,.btn,.chip,.mode,.gletter,.lv-item,.theme-card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+@media (hover:none){
+  .card:hover{border-color:transparent}
+  .card[aria-pressed="true"]:hover{border-color:var(--ink)}
+  .mode:hover{background:transparent}
+  .mode[aria-pressed="true"]:hover{background:#fff}
+  .lv-item:hover{background:#fff}
+}
+@media (pointer:coarse){
+  .btn{min-height:46px;padding-inline:14px}
+  .btn.small{min-height:42px}
+  .chip{min-height:46px;padding-inline:14px}
+  .mode{min-height:52px}
+  .swatch{min-width:44px;min-height:44px}
+  .stylebtn{min-height:52px}
+  .card{min-height:70px}
+  .gletter{min-width:58px;height:58px;font-size:1.7rem}
+  .extras .btn{min-width:54px}
+  .card-x{width:34px;height:34px;top:-10px;inset-inline-end:-10px}
+  .lv-item{min-height:64px}
+  .name-input{min-height:56px}
+  .card-form input{min-height:48px}
+}
+
+/* ---------- tablet, landscape: bricks beside the board, extras underneath ---------- */
+@media (min-width:900px) and (max-width:1279px) and (orientation:landscape){
+  .app{gap:10px;padding-block:10px 30px}
+  .top{gap:10px 14px}
+  .tag{display:none}
+  .chips{margin-inline-start:auto}
+  .studio{grid-template-columns:236px minmax(0,1fr);gap:16px}
+  .tray{
+    grid-column:1;grid-row:1 / span 2;order:0;
+    position:sticky;top:calc(env(safe-area-inset-top, 0px) + 10px);
+    max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);overflow-y:auto;overscroll-behavior:contain;
+    padding:14px;gap:14px;
+  }
+  .tray .hint{display:none}
+  .board-area{grid-column:2;grid-row:1;order:0;gap:10px}
+  .helper .bricky{width:44px;height:44px}
+  .bubble{min-height:40px;font-size:1rem}
+  .toolbar{gap:6px}
+  .toolbar .btn{padding-inline:10px;font-size:.92rem}
+  .toolbar .divider{display:none}
+  .plate-wrap{padding-block:6px 14px}
+  .side{grid-column:2;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+}
+
+/* ---------- tablet, portrait: a brick dock fixed to the bottom of the screen ---------- */
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  body{padding-bottom:calc(var(--dock-h, 210px) + 16px)}
+  .studio{grid-template-columns:minmax(0,1fr)}
+  .board-area{grid-column:1;order:-1}
+  .side{grid-column:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+  .side .board-settings{grid-column:1 / -1}
+  .tray{
+    position:fixed;left:0;right:0;bottom:0;z-index:80;
+    flex-direction:row;align-items:flex-start;gap:18px;
+    overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;
+    border-radius:26px 26px 0 0;border-bottom:0;
+    box-shadow:0 -8px 22px rgba(43,30,92,.28);
+    padding:10px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+    transition:transform .25s ease;
+    scrollbar-width:thin;
+  }
+  .tray-sec{flex:none;gap:6px}
+  .tray h2,.tray h3{font-size:.85rem;margin:0;white-space:nowrap;color:var(--ink-soft)}
+  .tray .hint{display:none}
+  .swatches{grid-template-columns:repeat(5,46px);gap:6px}
+  .styles{grid-template-columns:repeat(3,64px);grid-template-rows:auto auto}
+  .shapes{grid-template-columns:none;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:minmax(92px,auto);gap:8px}
+  .stamps{grid-template-columns:none;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:78px;gap:8px}
+  .sec-bricks{flex-direction:column}
+  .sec-bricks .row{margin-top:2px}
+  .card{touch-action:pan-x}
+  body.typing .tray{transform:translateY(110%)}
+}
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  .sec-bricks{display:grid;grid-template-columns:auto auto;align-items:center;justify-content:start;column-gap:10px;row-gap:6px}
+  .sec-bricks .shapes{grid-column:1 / -1}
+  .sec-bricks .row{margin:0}
+  .sec-bricks .row .btn{min-height:36px;padding:2px 10px 0;font-size:.85rem;border-radius:12px;box-shadow:0 3px 0 var(--ink)}
+  .sec-bricks .row .btn svg{width:18px;height:18px}
+}
+
+/* ---------- tablet refinements ---------- */
+@media (min-width:900px) and (max-width:1279px) and (orientation:landscape){
+  .swatches{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .styles{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .modebar{flex-wrap:nowrap;padding:5px;gap:4px}
+  .mode{padding:4px 6px 2px;font-size:.9rem;gap:4px;min-height:46px}
+  .mode .mi{font-size:1.05rem}
+  /* toolbar: one row of icon buttons with small labels underneath */
+  .toolbar{flex-wrap:nowrap;gap:5px}
+  .toolbar .seg{flex-wrap:nowrap;gap:5px}
+  .toolbar .spacer{display:none}
+  .toolbar .btn{flex-direction:column;gap:1px;padding:4px 2px 2px;min-width:0;flex:1 1 0;min-height:56px;font-size:.64rem;line-height:1.1;border-radius:14px}
+  .toolbar .btn svg{width:22px;height:22px}
+  .toolbar .btn .txt{white-space:normal;text-align:center;line-height:1;max-width:100%;overflow-wrap:normal;word-break:keep-all}
+  .toolbar .seg{flex:5 1 0;display:flex}
+  .toolbar #mirrorBtn,.toolbar #stackBtn,.toolbar #undoBtn,.toolbar #replayBtn,.toolbar #clearBtn,.toolbar #saveBtn{flex:1 1 0}
+  .below{min-height:0}
+}
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  .tag{display:none}
+  .chips{margin-inline-start:auto}
+  .chip .txt{display:none}
+  .below{display:none}
+  .swatches{grid-template-columns:repeat(5,38px);gap:6px}
+  .swatch{min-width:38px;min-height:38px}
+  .styles{grid-template-columns:repeat(3,54px)}
+  .shapes{grid-auto-columns:82px}
+  .tray{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+}
+/* dropping a board brick back on the brick tray puts it away */
+.tray.hot{outline:4px dashed #FF8A5C;outline-offset:-8px;background:#FFF1EA}
+
+/* ---------- games on tablets ---------- */
+@media (min-width:900px) and (max-width:1279px) and (orientation:landscape){
+  body:not([data-mode="free"]) .board-area{
+    display:grid;grid-template-columns:minmax(0,1fr) 250px;align-items:start;column-gap:14px;
+    grid-template-areas:"mode mode" "helper helper" "tools tools" "sel sel" "plate game" "below below";
+  }
+  body:not([data-mode="free"]) .modebar{grid-area:mode}
+  body:not([data-mode="free"]) .helper{grid-area:helper}
+  body:not([data-mode="free"]) .toolbar{grid-area:tools}
+  body:not([data-mode="free"]) .selbar{grid-area:sel}
+  body:not([data-mode="free"]) .plate-wrap{grid-area:plate}
+  body:not([data-mode="free"]) .below{grid-area:below}
+  body:not([data-mode="free"]) .gamepanel{grid-area:game;flex-direction:column;gap:10px;padding:12px}
+  body:not([data-mode="free"]) .gp-target{flex-basis:auto;min-height:110px}
+}
+@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
+  body:not([data-mode="free"]) .helper{display:none}
+  body:not([data-mode="free"]) .gamepanel{padding:10px;gap:12px}
+  body:not([data-mode="free"]) .gp-target{flex-basis:112px;min-height:96px}
+  body:not([data-mode="free"]) .gp-emoji{font-size:2.6rem}
+  body:not([data-mode="free"]) .gp-num{font-size:3rem}
+}
