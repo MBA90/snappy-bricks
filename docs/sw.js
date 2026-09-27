@@ -1,5 +1,5 @@
 /* Snappy Bricks offline helper: keeps the app working without internet after the first visit. */
-const CACHE = "snappy-bricks-v1";
+const CACHE = "snappy-bricks-v2";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => {
