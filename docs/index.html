@@ -1968,12 +1968,24 @@ function layoutLines(words, cols, breakWords){
   if (line.length) lines.push(line);
   return lines;
 }
+function lum(hex){
+  const n = parseInt(hex.slice(1), 16);
+  const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; };
+  return .2126 * f(n >> 16) + .7152 * f((n >> 8) & 255) + .0722 * f(n & 255);
+}
+// a letter color must stand out clearly from the board color
+function readable(c, plateHex){
+  const d = colorDist(c, plateHex), a = lum(c), b = lum(plateHex);
+  const ratio = (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+  return d > 200 && (ratio >= 1.45 || d >= 330);
+}
 function textColors(mode, explicit){
   if (explicit) return explicit;
-  const far = c => colorDist(c, B.plate) > 90;
   if (mode === "one") return [color];
-  const list = (mode === "pastel" ? CANDY : RAINBOW).filter(far);
-  return list.length ? list : RAINBOW;
+  const ok = c => readable(c, B.plate);
+  let list = (mode === "pastel" ? CANDY : RAINBOW).filter(ok);
+  if (!list.length) list = RAINBOW.filter(ok);
+  return list.length ? list : ["#2E2A3A"];
 }
 
 /* ---- pixel-font path (A–Z, 0–9) ---- */
