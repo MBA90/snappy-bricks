@@ -1,0 +1,2938 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#5CC6FF">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="description" content="A colorful brick-building website for kids: snap bricks, play word and puzzle games, and build your name in English or Arabic.">
+</head>
+<body>
+<title>Snappy Bricks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Baloo+Bhaijaan+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#5CC6FF;
+  --bg-img:radial-gradient(circle at 50% 50%, rgba(255,255,255,.24) 0 9px, transparent 10px);
+  --bg-size:58px 58px;
+  --on-bg:#2B1E5C;
+  --ink:#2B1E5C;
+  --ink-soft:#5B4E8E;
+  --paper:#FFFFFF;
+  --tint:#F1EEFF;
+  --sun:#FFE14D;
+  --mint:#7FE3C0;
+  --pink:#FF2E8A;
+  --blush:#FFB3CF;
+  --lav:#A9A6F0;
+  --good:#2FBF71;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{
+  margin:0;
+  background-color:var(--bg);
+  background-image:var(--bg-img);
+  background-size:var(--bg-size);
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:"Baloo 2","Baloo Bhaijaan 2","Comic Sans MS","Chalkboard SE",system-ui,sans-serif;
+  font-size:16px;
+  padding-inline:16px;
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color .4s;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:12px}
+
+.app{max-width:1520px;margin:0 auto;padding-block:14px 40px;display:flex;flex-direction:column;gap:14px}
+
+/* ---------- header ---------- */
+.top{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap}
+.logo{position:relative;flex:none}
+.logo .brick{box-shadow:inset 0 calc(var(--cell)*-.12) 0 var(--dk),0 2px 0 var(--ink);border-radius:2px}
+.tag{margin:0;font-size:1.12rem;font-weight:700;line-height:1.2;flex:1 1 220px;text-wrap:balance;color:var(--on-bg)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  border:3px solid var(--ink);background:var(--paper);border-radius:999px;
+  padding:5px 12px 3px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 var(--ink);
+  display:inline-flex;align-items:center;gap:6px;line-height:1.2;
+}
+.chip:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.chip svg{width:20px;height:20px;flex:none}
+.chip[aria-pressed="false"] .on-only{display:none}
+.chip .ar{font-family:"Baloo Bhaijaan 2","Baloo 2",sans-serif}
+
+/* ---------- layout ---------- */
+.studio{display:grid;gap:18px;grid-template-columns:260px minmax(0,1fr) 290px;align-items:start}
+.panel{
+  background:var(--paper);border:3px solid var(--ink);border-radius:24px;
+  box-shadow:0 7px 0 var(--ink);padding:16px;display:flex;flex-direction:column;gap:12px;
+}
+.panel h2{margin:0;font-size:1.25rem;font-weight:800;line-height:1.1}
+.panel h3{margin:4px 0 0;font-size:1.05rem;font-weight:800;line-height:1.1}
+.hint{margin:-6px 0 0;font-size:.9rem;color:var(--ink-soft);font-weight:600;line-height:1.25}
+.label{font-size:.95rem;font-weight:800;margin:0;color:var(--ink-soft)}
+
+/* ---------- bricks ---------- */
+.brick,.plate,.swatch-face{
+  --c:#FF2E8A;--lt:#ff7ab4;--dk:#c21666;--z:0;
+  --studs:
+    radial-gradient(circle at 42% 38%, rgba(255,255,255,.75) 0 calc(var(--cell)*.06), transparent calc(var(--cell)*.12)),
+    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.2), var(--c) calc(var(--cell)*.29), transparent calc(var(--cell)*.3)),
+    radial-gradient(circle at 57% 61%, rgba(30,10,50,.32) 0 calc(var(--cell)*.29), transparent calc(var(--cell)*.33));
+  background-color:var(--c);
+  background-image:var(--studs);
+  background-size:var(--cell) var(--cell);
+}
+.brick{
+  position:absolute;border-radius:calc(var(--cell)*.14);
+  background-position:-1px -1px;
+  translate:calc(var(--z) * -2px) calc(var(--z) * -3px);
+  box-shadow:
+    inset 0 calc(var(--cell)*-.09) 0 var(--dk),
+    inset 0 1px 0 rgba(255,255,255,.55),
+    calc(var(--z) * 1px) calc(2px + var(--z) * 3px) calc(3px + var(--z) * 3px) rgba(30,10,60,.38);
+}
+.brick.t-tile{background-image:linear-gradient(155deg, rgba(255,255,255,.5), rgba(255,255,255,0) 45%)}
+.brick.t-round{border-radius:999px}
+.brick.t-clear{opacity:.6}
+.brick.t-glitter{
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.95) 0 1px, transparent 1.6px),
+    radial-gradient(circle, rgba(255,255,255,.8) 0 .8px, transparent 1.4px),
+    var(--studs);
+  background-size:9px 11px, 13px 7px, var(--cell) var(--cell);
+  background-position:2px 3px, 6px 1px, -1px -1px;
+  overflow:hidden;
+}
+.brick.t-glitter::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(110deg, transparent 38%, rgba(255,255,255,.6) 50%, transparent 62%);
+  background-size:260% 100%;animation:shine 2.6s linear infinite;
+}
+@keyframes shine{from{background-position:130% 0}to{background-position:-130% 0}}
+.brick.lifted{opacity:.25}
+.brick.selected{outline:3px dashed #fff;outline-offset:1px;filter:brightness(1.12)}
+.brick.drop{animation:drop .42s cubic-bezier(.3,1.6,.5,1) both}
+.brick.poof{animation:poof .28s ease-in forwards;pointer-events:none}
+.brick.wiggle{animation:wiggle .35s ease}
+.brick.fly{transition:transform .5s cubic-bezier(.5,-0.4,.8,.6),opacity .5s;opacity:0;pointer-events:none}
+.brick.flash{animation:flash .3s ease}
+.brick.hidden-replay{visibility:hidden}
+@keyframes drop{0%{transform:translateY(-120%) scale(1.15);opacity:0}60%{opacity:1}100%{transform:none;opacity:1}}
+@keyframes poof{to{transform:scale(1.5) rotate(12deg);opacity:0}}
+@keyframes wiggle{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes flash{50%{filter:brightness(1.35)}}
+
+/* ---------- tray ---------- */
+.swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.swatch{aspect-ratio:1;max-width:100%;border:0;padding:0;background:none;cursor:pointer;border-radius:10px;position:relative}
+.swatch-face{
+  --cell:100%;position:absolute;inset:3px;border-radius:8px;background-size:100% 100%;
+  box-shadow:inset 0 -3px 0 var(--dk),0 2px 2px rgba(30,10,60,.3);
+}
+.swatch[aria-pressed="true"]{outline:3px solid var(--ink);outline-offset:1px}
+.swatch[aria-pressed="true"]::after{
+  content:"";position:absolute;inset-inline-end:-4px;top:-4px;width:14px;height:14px;border-radius:50%;
+  background:var(--ink);border:2px solid #fff;
+}
+.styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:4px}
+.stylebtn{
+  display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 2px;border-radius:12px;
+  border:3px solid transparent;background:var(--tint);cursor:pointer;font-size:.7rem;font-weight:800;line-height:1.1;color:var(--ink-soft);
+  min-width:0;overflow:hidden;
+}
+.stylebtn[aria-pressed="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
+.shapes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:8px}
+.card{
+  position:relative;display:grid;place-items:center;min-height:60px;padding:10px 6px 20px;
+  background:var(--tint);border:3px solid transparent;border-radius:16px;cursor:grab;
+  touch-action:none;user-select:none;-webkit-user-select:none;
+}
+.card:hover{border-color:var(--lav)}
+.card[aria-pressed="true"]{border-color:var(--ink);background:#FFF5B5}
+.card .size{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.76rem;font-weight:800;color:var(--ink-soft);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-inline:4px}
+.card-x{
+  position:absolute;top:-8px;inset-inline-end:-8px;width:26px;height:26px;border-radius:50%;border:3px solid var(--ink);
+  background:#fff;font-weight:800;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0;font-size:1rem;
+}
+.piece{position:relative;flex:none;pointer-events:none}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ---------- buttons ---------- */
+.btn{
+  border:3px solid var(--ink);border-radius:16px;background:var(--sun);color:var(--ink);
+  box-shadow:0 4px 0 var(--ink);padding:6px 12px 4px;font-weight:800;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1.2;
+  transition:transform .08s, box-shadow .08s;text-decoration:none;
+}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn svg{width:22px;height:22px;flex:none}
+.btn.mint{background:var(--mint)}
+.btn.pink{background:var(--blush)}
+.btn.lav{background:var(--lav)}
+.btn.white{background:#fff}
+.btn.warn{background:#FF8A5C}
+.btn.big{font-size:1.3rem;padding:10px 16px 8px;border-radius:20px;background:var(--pink);color:#fff;text-shadow:0 2px 0 rgba(43,30,92,.45)}
+.btn.small{font-size:.9rem;padding:4px 10px 2px;border-radius:12px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg .btn{background:#fff}
+.seg .btn[aria-pressed="true"]{background:var(--sun)}
+.toggle[aria-pressed="true"]{background:var(--mint)}
+.toggle[aria-pressed="false"]{background:#fff}
+
+/* ---------- board area ---------- */
+.board-area{display:flex;flex-direction:column;gap:12px;min-width:0}
+.helper{display:flex;align-items:center;gap:12px}
+.bricky{width:58px;height:58px;flex:none}
+.bricky.hop{animation:hop .45s ease}
+@keyframes hop{30%{transform:translateY(-10px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}}
+.bubble{
+  position:relative;margin:0;background:#fff;border:3px solid var(--ink);border-radius:18px;
+  padding:6px 14px 4px;font-weight:700;font-size:1.06rem;line-height:1.3;box-shadow:0 4px 0 var(--ink);min-height:44px;
+  display:flex;align-items:center;
+}
+.bubble::before{
+  content:"";position:absolute;inset-inline-start:-12px;top:50%;margin-top:-8px;width:0;height:0;
+  border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:12px solid var(--ink);
+}
+[dir="rtl"] .bubble::before{border-right:0;border-left:12px solid var(--ink)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.toolbar .spacer{flex:1}
+.toolbar .divider{width:3px;align-self:stretch;background:rgba(43,30,92,.25);border-radius:3px}
+.selbar{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#fff;border:3px solid var(--ink);
+  border-radius:18px;padding:8px 10px;box-shadow:0 4px 0 var(--ink);
+}
+.selbar strong{margin-inline-end:auto}
+.plate-wrap{display:flex;justify-content:center;padding:10px 6px 18px;position:relative}
+.plate{
+  position:relative;border-radius:calc(var(--cell)*.3);
+  box-shadow:0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+  touch-action:none;user-select:none;-webkit-user-select:none;
+  background-image:
+    radial-gradient(circle at 42% 38%, rgba(255,255,255,.55) 0 calc(var(--cell)*.05), transparent calc(var(--cell)*.11)),
+    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.18), var(--c) calc(var(--cell)*.27), transparent calc(var(--cell)*.28)),
+    radial-gradient(circle at 57% 61%, rgba(30,10,50,.3) 0 calc(var(--cell)*.27), transparent calc(var(--cell)*.31));
+}
+.plate.tool-paint,.plate.tool-fill{cursor:crosshair}
+.plate.tool-erase{cursor:not-allowed}
+.plate.tool-select{cursor:cell}
+.plate.tool-move .brick{cursor:grab}
+.ghost{
+  position:absolute;border-radius:calc(var(--cell)*.14);pointer-events:none;z-index:300;
+  border:3px dashed #fff;background:rgba(255,255,255,.3);
+  display:grid;place-items:center;color:var(--ink);font-weight:800;font-size:calc(var(--cell)*.5);
+}
+.ghost.bad{border-color:var(--ink);background:rgba(43,30,92,.35)}
+.selbox{position:absolute;pointer-events:none;z-index:300;border:3px dashed var(--ink);background:rgba(255,255,255,.28);border-radius:6px}
+.mline{position:absolute;pointer-events:none;z-index:250;opacity:.8}
+.mline.v{left:calc(50% - 1.5px);top:-6px;bottom:-6px;width:3px;background:repeating-linear-gradient(#fff 0 8px, transparent 8px 14px)}
+.mline.h{top:calc(50% - 1.5px);left:-6px;right:-6px;height:3px;background:repeating-linear-gradient(90deg,#fff 0 8px, transparent 8px 14px)}
+.hintcell{position:absolute;pointer-events:none;z-index:0;border-radius:calc(var(--cell)*.2)}
+.hintcell.ghost-color{background:radial-gradient(circle, var(--hc) 0 36%, rgba(255,255,255,.95) 38% 47%, transparent 49%)!important}
+.hintcell.ghost-line{border:2px dashed rgba(255,255,255,.95);background:rgba(255,255,255,.18)}
+.hintcell.wrong{z-index:260;border:3px solid #fff;background:rgba(43,30,92,.45);animation:blink .5s ease 3}
+@keyframes blink{50%{opacity:.2}}
+.below{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.count{font-weight:800;font-size:1rem;color:var(--ink);background:rgba(255,255,255,.8);border-radius:999px;padding:4px 12px 2px;font-variant-numeric:tabular-nums}
+.trash{
+  display:inline-flex;align-items:center;gap:8px;border:3px dashed var(--ink);border-radius:18px;
+  padding:6px 14px 4px;font-weight:800;background:rgba(255,255,255,.8);transition:transform .15s, background .15s;color:var(--ink);
+}
+.trash svg{width:26px;height:26px}
+.trash.hot{background:#FF8A5C;transform:scale(1.1);border-style:solid}
+.floating{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;filter:drop-shadow(0 10px 8px rgba(30,10,60,.4))}
+.floating .piece{transform:scale(1.06) rotate(-2deg)}
+
+/* ---------- name panel ---------- */
+.name-form{display:flex;flex-direction:column;gap:10px}
+.name-input{
+  width:100%;font:inherit;font-size:1.55rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  border:3px solid var(--ink);border-radius:16px;padding:8px 12px 4px;color:var(--ink);background:#FFFDF0;
+}
+.name-input::placeholder{color:#9C93C4;text-transform:none;letter-spacing:0;font-weight:700;font-size:1.15rem}
+.extras{display:flex;gap:6px;flex-wrap:wrap}
+.extras .btn{min-width:44px;font-size:1.15rem;padding:2px 10px 0;background:#fff}
+.plates{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:10000;background:rgba(43,30,92,.6);display:grid;place-items:center;padding:16px}
+.modal-card{
+  background:#fff;border:3px solid var(--ink);border-radius:24px;box-shadow:0 7px 0 var(--ink);padding:18px;
+  width:min(720px,100%);max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:12px;
+}
+.modal-card h2{margin:0;font-size:1.5rem;line-height:1.1}
+.modal-card img{width:100%;height:auto;border-radius:12px}
+.modal-card p{margin:0;font-weight:700}
+.modal-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:9998}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom, 0px));z-index:10001;
+  translate:-50% 0;background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);
+  padding:10px 16px 8px;display:flex;align-items:center;gap:12px;font-weight:800;max-width:calc(100% - 32px);
+  animation:toastIn .5s cubic-bezier(.3,1.6,.5,1);
+}
+.toast .medal{font-size:2rem;line-height:1}
+.toast small{display:block;font-weight:600;color:var(--ink-soft)}
+@keyframes toastIn{from{transform:translateY(120%)}to{transform:none}}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  .studio{grid-template-columns:1fr 1fr}
+  .board-area{grid-column:1 / -1;order:-1}
+}
+@media (max-width:720px){
+  .studio{grid-template-columns:1fr}
+  .tag{font-size:1rem}
+  .helper .bricky{width:46px;height:46px}
+  .bubble{font-size:.96rem}
+  .shapes{grid-template-columns:repeat(4,1fr)}
+  .toolbar .btn .txt{display:none}
+  .toolbar .btn{padding:6px 8px 4px}
+  .toolbar .divider{display:none}
+  .chip .txt{display:none}
+}
+@media (max-width:720px) and (min-height:700px){
+  .board-area{
+    position:sticky;top:env(safe-area-inset-top, 0px);z-index:50;
+    margin-inline:-16px;padding:8px 16px 6px;gap:8px;
+    background-color:var(--bg);
+    box-shadow:0 10px 14px -10px rgba(43,30,92,.45);
+  }
+  .helper .bricky{width:36px;height:36px}
+  .bubble{font-size:.88rem;min-height:36px;padding:4px 10px 2px}
+  .plate-wrap{padding:6px 4px 14px}
+  .below{flex-wrap:nowrap}
+  .trash{font-size:.82rem;padding:4px 10px 2px}
+  .trash svg{width:20px;height:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+
+/* ---------- play modes ---------- */
+.modebar{display:flex;gap:6px;flex-wrap:wrap;background:rgba(255,255,255,.55);border:3px solid var(--ink);border-radius:20px;padding:6px}
+.mode{
+  flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:3px solid transparent;border-radius:14px;background:transparent;padding:6px 10px 4px;
+  font-weight:800;cursor:pointer;line-height:1.1;color:var(--ink);
+}
+.mode .mi{font-size:1.2rem}
+.mode:hover{background:rgba(255,255,255,.7)}
+.mode[aria-pressed="true"]{background:#fff;border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+body:not([data-mode="free"]) .board-settings{display:none}
+
+.gamepanel{
+  display:flex;gap:14px;align-items:stretch;background:#fff;border:3px solid var(--ink);border-radius:22px;
+  box-shadow:0 6px 0 var(--ink);padding:12px;
+}
+.gp-target{
+  flex:0 0 132px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  background:var(--tint);border-radius:16px;padding:8px;min-height:120px;
+}
+.gp-canvas{width:100%;height:auto;border-radius:10px;image-rendering:auto}
+.gp-emoji{font-size:3.4rem;line-height:1}
+.gp-word{font-weight:800;font-size:1.1rem;text-align:center;line-height:1.2}
+.gp-num{font-size:4rem;font-weight:800;line-height:1;color:var(--pink);text-shadow:0 3px 0 var(--ink)}
+.gp-slots{display:flex;gap:4px;font-size:1.5rem;font-weight:800}
+.gp-slots span{min-width:1.1em;text-align:center;border-bottom:3px solid var(--ink);line-height:1.2}
+.gp-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.gp-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gp-head h2{margin:0;font-size:1.3rem;line-height:1.15;text-wrap:balance}
+.gp-stars{font-size:1.4rem;color:#F5B400;letter-spacing:2px;text-shadow:0 2px 0 var(--ink)}
+.gp-text{margin:0;font-weight:600;line-height:1.3;color:var(--ink-soft)}
+.gp-bar{height:14px;border:3px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden}
+.gp-bar span{display:block;height:100%;width:0;background:repeating-linear-gradient(-45deg,var(--mint) 0 10px,#5fd6ab 10px 20px);transition:width .3s}
+.gp-prog{margin:0;font-weight:800;font-variant-numeric:tabular-nums}
+.gp-letters{display:flex;gap:6px;flex-wrap:wrap}
+.gp-letters:empty{display:none}
+.gletter{
+  min-width:48px;height:48px;border:3px solid var(--ink);border-radius:14px;background:var(--sun);
+  font-size:1.5rem;font-weight:800;cursor:pointer;box-shadow:0 4px 0 var(--ink);line-height:1;padding:0 8px;
+}
+.gletter:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.gletter.shake{animation:shake .4s}
+.gletter.glow{animation:glow 1.2s ease 2}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+@keyframes glow{50%{background:#fff;box-shadow:0 0 0 6px var(--mint),0 4px 0 var(--ink)}}
+.gp-eq{font-weight:800;font-size:1.15rem;background:var(--tint);border-radius:12px;padding:4px 10px 2px;font-variant-numeric:tabular-nums}
+.gp-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.btn.pulse{animation:pulse 1s ease infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+[dir="rtl"] .arr{display:inline-block;transform:scaleX(-1)}
+
+/* levels modal */
+.lv-h{margin:6px 0 0;font-size:1.1rem}
+.lv-h small{font-weight:600;color:var(--ink-soft)}
+.lv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.lv-grid.letters{grid-template-columns:repeat(auto-fill,minmax(56px,1fr))}
+.lv-item{
+  position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;border:3px solid var(--ink);border-radius:16px;
+  background:#fff;padding:8px 6px 6px;cursor:pointer;font-weight:800;box-shadow:0 3px 0 var(--ink);line-height:1.15;
+}
+.lv-item:hover{background:#FFF5B5}
+.lv-item.done{background:#DDF8EC}
+.lv-item small{font-weight:700;color:var(--ink-soft)}
+.lv-letter{font-size:1.6rem;padding:6px}
+.lv-letter small{position:absolute;top:2px;inset-inline-end:6px;font-size:.8rem;color:var(--good)}
+.lv-pic{width:84px}
+.lv-pic canvas{width:100%;height:auto;border-radius:8px}
+.lv-emo{font-size:2rem;line-height:1}
+.lv-stars{color:#F5B400;letter-spacing:1px}
+
+@media (max-width:720px){
+  .mode span:not(.mi){font-size:.8rem}
+  .mode{padding:4px 6px 2px;flex-direction:column;gap:0}
+  .gamepanel{flex-direction:row;gap:10px;padding:10px}
+  .gp-target{flex-basis:92px;min-height:90px}
+  .gp-emoji{font-size:2.4rem}
+  .gp-num{font-size:2.8rem}
+  .gp-head h2{font-size:1.05rem}
+  .gp-text{font-size:.88rem}
+  .gletter{min-width:40px;height:40px;font-size:1.25rem}
+}
+@media (max-width:720px) and (min-height:700px){
+  body:not([data-mode="free"]) .board-area .helper{display:none}
+}
+@media (max-width:720px) and (min-height:700px){
+  body:not([data-mode="free"]) .board-area{position:static;box-shadow:none;margin-inline:0;padding:0;background:none}
+}
+
+/* ---------- themes ---------- */
+body[data-kit="space"]{
+  --bg:#1E2356;--on-bg:#FFFFFF;
+  --bg-img:radial-gradient(circle at 20% 30%, #fff 0 1.6px, transparent 2.2px),radial-gradient(circle at 70% 80%, rgba(255,255,255,.8) 0 1px, transparent 1.6px),radial-gradient(circle at 50% 50%, rgba(160,170,255,.16) 0 14px, transparent 15px);
+  --bg-size:90px 90px, 57px 57px, 150px 150px;
+}
+body[data-kit="sea"]{
+  --bg:#1AA3C8;--on-bg:#08324A;
+  --bg-img:radial-gradient(circle at 30% 30%, rgba(255,255,255,.4) 0 5px, transparent 6px),radial-gradient(circle at 70% 60%, rgba(255,255,255,.25) 0 9px, transparent 10px),linear-gradient(180deg, rgba(255,255,255,.12), rgba(0,40,80,.18));
+  --bg-size:64px 64px, 110px 110px, 100% 100%;
+}
+body[data-kit="birthday"]{
+  --bg:#C9B8FF;--on-bg:#2B1E5C;
+  --bg-img:radial-gradient(circle at 25% 25%, #FF2E8A 0 4px, transparent 5px),radial-gradient(circle at 75% 40%, #FFE838 0 4px, transparent 5px),radial-gradient(circle at 45% 80%, #7FE3C0 0 4px, transparent 5px),radial-gradient(circle at 85% 90%, #2F8CF0 0 3px, transparent 4px);
+  --bg-size:70px 70px, 90px 90px, 80px 80px, 60px 60px;
+}
+body[data-kit="eid"]{
+  --bg:#0F4C3A;--on-bg:#FFE08A;
+  --bg-img:radial-gradient(circle at 30% 30%, #FFE08A 0 2px, transparent 2.6px),radial-gradient(circle at 65% 70%, rgba(255,224,138,.7) 0 1.4px, transparent 2px),radial-gradient(circle at 50% 50%, rgba(255,224,138,.1) 0 16px, transparent 17px);
+  --bg-size:80px 80px, 53px 53px, 160px 160px;
+}
+body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(255,255,255,.85)}
+
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.theme-card{
+  display:flex;flex-direction:column;align-items:center;gap:6px;border:3px solid var(--ink);border-radius:18px;padding:10px;
+  cursor:pointer;background:#fff;box-shadow:0 4px 0 var(--ink);font-weight:800;
+}
+.theme-card[aria-pressed="true"]{background:#FFF5B5}
+.theme-sw{width:100%;height:56px;border-radius:12px;border:3px solid var(--ink);background:var(--pl)}
+.theme-card[data-theme-preview="space"] .theme-sw{background:radial-gradient(circle at 20% 30%, #fff 0 1.5px, transparent 2px) 0 0/30px 30px, #1E2356}
+.theme-card[data-theme-preview="sea"] .theme-sw{background:radial-gradient(circle, rgba(255,255,255,.45) 0 4px, transparent 5px) 0 0/26px 26px, #1AA3C8}
+.theme-card[data-theme-preview="birthday"] .theme-sw{background:radial-gradient(circle, #FF2E8A 0 3px, transparent 4px) 0 0/22px 22px, #C9B8FF}
+.theme-card[data-theme-preview="eid"] .theme-sw{background:radial-gradient(circle, #FFE08A 0 2px, transparent 3px) 0 0/24px 24px, #0F4C3A}
+.theme-card[data-theme-preview="classic"] .theme-sw{background:radial-gradient(circle, rgba(255,255,255,.4) 0 5px, transparent 6px) 0 0/28px 28px, #5CC6FF}
+.theme-stamps{display:flex;gap:6px;align-items:flex-end;min-height:40px}
+
+/* ---------- badges ---------- */
+.badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.badge{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:10px 8px;border-radius:16px;border:3px dashed #C9C3E6;background:#F7F6FC;line-height:1.2}
+.badge .bi{font-size:2rem;filter:grayscale(1);opacity:.45}
+.badge small{color:var(--ink-soft);font-weight:600}
+.badge.got{border:3px solid var(--ink);background:#FFF5B5;box-shadow:0 3px 0 var(--ink)}
+.badge.got .bi{filter:none;opacity:1}
+
+/* ---------- save & share ---------- */
+.share-box{display:flex;flex-direction:column;gap:10px}
+.share-grid{display:grid;gap:8px}
+.share-grid .btn{justify-content:flex-start}
+.modal-card.wide{width:min(900px,100%)}
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.gal-item{display:flex;flex-direction:column;gap:6px;border:3px solid var(--ink);border-radius:16px;padding:8px;background:var(--tint)}
+.gal-item img{border-radius:10px;background:#fff;aspect-ratio:4/3;object-fit:contain}
+.gal-date{font-weight:700;color:var(--ink-soft);font-size:.9rem}
+.gal-actions{display:flex;gap:6px;flex-wrap:wrap}
+.card-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.card-form label{display:flex;flex-direction:column;gap:2px;font-weight:800;font-size:.9rem;color:var(--ink-soft)}
+.card-form input{font:inherit;font-weight:700;font-size:1.05rem;border:3px solid var(--ink);border-radius:12px;padding:6px 10px 4px;color:var(--ink);background:#FFFDF0;min-width:0}
+.card-preview{border-radius:14px;overflow:hidden;border:3px solid var(--ink)}
+.card-canvas{display:block;width:100%;height:auto}
+
+.board-settings{display:flex;flex-direction:column;gap:10px}
+/* ---------- class wall ---------- */
+.wall-post{display:flex;flex-direction:column;gap:8px;background:var(--tint);border-radius:16px;padding:12px}
+.wall-item{display:flex;flex-direction:column;gap:6px;border:3px solid var(--ink);border-radius:16px;padding:8px;background:#fff;cursor:pointer;font:inherit;font-weight:800;color:var(--ink)}
+.wall-item img{border-radius:10px;aspect-ratio:4/3;object-fit:contain;background:#fff}
+.teacher{display:flex;flex-direction:column;gap:8px;border:3px dashed var(--ink);border-radius:16px;padding:12px;background:#FFFBEA}
+.teacher h3{margin:0}
+.teacher textarea{font:inherit;font-weight:700;border:3px solid var(--ink);border-radius:12px;padding:8px;min-height:90px;resize:vertical;color:var(--ink)}
+
+</style>
+<div class="app">
+  <header class="top">
+    <div class="logo" id="logo" role="img" aria-label="Snappy Bricks"></div>
+    <p class="tag" data-i18n="tagline">Snap bricks onto the board, make pictures, and build your name!</p>
+    <div class="chips">
+      <button class="chip" id="themeBtn" type="button" data-i18n-title="theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.8 2-1.8 0-.5-.2-.9-.5-1.3-.3-.3-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4C21 6.4 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor"/><circle cx="10.5" cy="7" r="1.3" fill="currentColor"/><circle cx="15.5" cy="7.5" r="1.3" fill="currentColor"/></svg>
+        <span class="txt" data-i18n="theme">Theme</span>
+      </button>
+      <button class="chip" id="badgesBtn" type="button" data-i18n-title="badges">
+        <span aria-hidden="true">🏅</span><span id="badgeCount">0</span>
+      </button>
+      
+
+      <button class="chip" id="langBtn" type="button" aria-label="Language">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+        <span id="langTxt" class="ar">عربي</span>
+      </button>
+      <button class="chip" id="talkBtn" type="button" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path class="on-only" d="M8 10h8M8 13h5"/></svg>
+        <span class="txt" id="talkTxt" data-i18n="talkOn">Talking on</span>
+      </button>
+      <button class="chip" id="soundBtn" type="button" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+        <span class="txt" id="soundTxt" data-i18n="soundOn">Sound on</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="studio">
+    <!-- Brick tray -->
+    <section class="panel tray" aria-labelledby="trayTitle">
+      <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
+      <div class="swatches" id="swatches"></div>
+      <h3 data-i18n="brickStyle">Brick style</h3>
+      <div class="styles" id="styles"></div>
+      <h2 data-i18n="dragBrick">Drag a brick</h2>
+      <p class="hint" data-i18n="dragHint">Drag it to the board, or tap it and then tap the board.</p>
+      <div class="shapes" id="shapes"></div>
+      <div class="row">
+        <button class="btn lav" id="turnBtn" type="button" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>
+          <span data-i18n="turnBricks">Turn bricks</span>
+        </button>
+      </div>
+      <h3 data-i18n="funShapes">Fun shapes</h3>
+      <div class="stamps" id="stamps"></div>
+      <div id="myStampsWrap" hidden>
+        <h3 data-i18n="myStamps">My stamps</h3>
+        <div class="stamps" id="myStamps" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+    <!-- Board -->
+    <section class="board-area" aria-label="Building board">
+      <nav class="modebar" id="modebar" data-i18n-aria="playModes">
+        <button type="button" class="mode" data-gmode="free" aria-pressed="true"><span class="mi" aria-hidden="true">🧱</span><span data-i18n="modeFree">Free build</span></button>
+        <button type="button" class="mode" data-gmode="copy" aria-pressed="false"><span class="mi" aria-hidden="true">🖼️</span><span data-i18n="modeCopy">Copy it</span></button>
+        <button type="button" class="mode" data-gmode="trace" aria-pressed="false"><span class="mi" aria-hidden="true">✏️</span><span data-i18n="modeTrace">Trace letters</span></button>
+        <button type="button" class="mode" data-gmode="spell" aria-pressed="false"><span class="mi" aria-hidden="true">🔤</span><span data-i18n="modeSpell">Spell it</span></button>
+        <button type="button" class="mode" data-gmode="math" aria-pressed="false"><span class="mi" aria-hidden="true">➕</span><span data-i18n="modeMath">Brick math</span></button>
+      </nav>
+
+      <div class="helper">
+        <svg class="bricky" id="bricky" viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="11" y="4" width="15" height="11" rx="3" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
+          <rect x="38" y="4" width="15" height="11" rx="3" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
+          <rect x="4" y="12" width="56" height="47" rx="9" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
+          <circle cx="22" cy="31" r="4.5" fill="#2B1E5C"/><circle cx="42" cy="31" r="4.5" fill="#2B1E5C"/>
+          <circle cx="23.5" cy="29.5" r="1.4" fill="#fff"/><circle cx="43.5" cy="29.5" r="1.4" fill="#fff"/>
+          <circle cx="14" cy="40" r="3.5" fill="#FF8FB8"/><circle cx="50" cy="40" r="3.5" fill="#FF8FB8"/>
+          <path d="M23 42q9 9 18 0" fill="none" stroke="#2B1E5C" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <p class="bubble" id="bubble" aria-live="polite"></p>
+      </div>
+      <div class="gamepanel" id="gamePanel" hidden>
+        <div class="gp-target" id="gTarget"></div>
+        <div class="gp-main">
+          <div class="gp-head">
+            <h2 id="gTitle"></h2>
+            <span class="gp-stars" id="gStars"></span>
+          </div>
+          <p class="gp-text" id="gText"></p>
+          <div class="gp-bar" aria-hidden="true"><span id="gBarFill"></span></div>
+          <p class="gp-prog" id="gProg" aria-live="polite"></p>
+          <div class="gp-letters" id="gLetters"></div>
+          <div class="gp-actions">
+            <button class="btn white small" id="gHint" type="button" data-i18n="hint">Hint</button>
+            <button class="btn white small" id="gReset" type="button" data-i18n="startOver">Start over</button>
+            <button class="btn lav small" id="gLevels" type="button" data-i18n="levels">Levels</button>
+            <button class="btn white small" id="gAlpha" type="button">ABC</button>
+            <button class="btn mint small" id="gNext" type="button"><span data-i18n="next">Next</span> <span class="arr" aria-hidden="true">➜</span></button>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="toolbar" role="toolbar" aria-label="Tools">
+        <div class="seg" role="group">
+          <button class="btn" data-tool="move" aria-pressed="true" data-i18n-title="tt_move">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>
+            <span class="txt" data-i18n="move">Move</span>
+          </button>
+          <button class="btn" data-tool="paint" aria-pressed="false" data-i18n-title="tt_paint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 3l3 3-9 9-3-3z"/><path d="M9 12c-3 0-5 2-5 5 0 1.5-1 2.5-2 3 4 1 9 0 10-5"/></svg>
+            <span class="txt" data-i18n="paint">Paint</span>
+          </button>
+          <button class="btn" data-tool="fill" aria-pressed="false" data-i18n-title="tt_fill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11l7-7 8 8-7 7z"/><path d="M5 11h15"/><path d="M20 16s2 2.4 2 3.6a2 2 0 0 1-4 0c0-1.2 2-3.6 2-3.6z" fill="currentColor"/></svg>
+            <span class="txt" data-i18n="fill">Fill</span>
+          </button>
+          <button class="btn" data-tool="erase" aria-pressed="false" data-i18n-title="tt_erase">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l5 5-10 10H6l-3-3z"/><path d="M9 21h12"/><path d="M11 8l5 5"/></svg>
+            <span class="txt" data-i18n="eraser">Eraser</span>
+          </button>
+          <button class="btn" data-tool="select" aria-pressed="false" data-i18n-title="tt_select">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4" /><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+            <span class="txt" data-i18n="stampTool">Stamp maker</span>
+          </button>
+        </div>
+        <span class="divider"></span>
+        <button class="btn toggle" id="mirrorBtn" type="button" aria-pressed="false" data-i18n-title="tt_mirror">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20" stroke-dasharray="3 3"/><path d="M9 6L3 18h6z"/><path d="M15 6l6 12h-6z"/></svg>
+          <span class="txt" id="mirrorTxt">Mirror off</span>
+        </button>
+        <button class="btn toggle" id="stackBtn" type="button" aria-pressed="false" data-i18n-title="tt_stack">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="14" width="18" height="6" rx="1.5"/><rect x="6" y="8" width="12" height="6" rx="1.5"/><rect x="9" y="3" width="6" height="5" rx="1.5"/></svg>
+          <span class="txt" data-i18n="stack">Stack</span>
+        </button>
+        <span class="spacer"></span>
+        <button class="btn mint" id="undoBtn" type="button" disabled data-i18n-title="undo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+          <span class="txt" data-i18n="undo">Undo</span>
+        </button>
+        <button class="btn lav" id="replayBtn" type="button" data-i18n-title="replay">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>
+          <span class="txt" data-i18n="replay">Replay</span>
+        </button>
+
+        <button class="btn warn" id="clearBtn" type="button" data-i18n-title="tt_clear">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+          <span class="txt" id="clearTxt" data-i18n="clear">Clear</span>
+        </button>
+        <button class="btn pink" id="saveBtn" type="button" data-i18n-title="savePicture">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          <span class="txt" data-i18n="savePicture">Save picture</span>
+        </button>
+      </div>
+
+      <div class="selbar" id="selbar" hidden>
+        <strong id="selCount"></strong>
+        <button class="btn mint small" id="selStamp" type="button" data-i18n="makeStamp">Make a stamp</button>
+        <button class="btn warn small" id="selDelete" type="button" data-i18n="deleteThese">Delete them</button>
+        <button class="btn white small" id="selCancel" type="button" data-i18n="cancel">Cancel</button>
+      </div>
+
+      <div class="plate-wrap" id="plateWrap">
+        <div class="plate tool-move" id="plate" aria-label="Brick board"></div>
+      </div>
+
+      <div class="below">
+        <span class="count" id="count">0</span>
+        <div class="trash" id="trash">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>
+          <span data-i18n="dropTrash">Drop here to throw away</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Name + board settings -->
+    <section class="panel side" aria-labelledby="nameTitle">
+      <h2 id="nameTitle" data-i18n="writeName">Write your name</h2>
+      <form class="name-form" id="nameForm" autocomplete="off">
+        <label class="label" for="nameInput" data-i18n="typeLetters">Type letters or numbers</label>
+        <input class="name-input" id="nameInput" maxlength="18" data-i18n-ph="namePh" placeholder="Your name here" spellcheck="false">
+        <div class="extras">
+          <button class="btn" type="button" data-ins="♥" data-i18n-aria="addHeart">♥</button>
+          <button class="btn" type="button" data-ins="★" data-i18n-aria="addStar">★</button>
+          <button class="btn" type="button" data-ins="!" aria-label="!">!</button>
+          <button class="btn" type="button" data-ins="?" aria-label="?">?</button>
+        </div>
+        <p class="label" data-i18n="letterColors">Letter colors</p>
+        <div class="seg" id="nameModes">
+          <button class="btn" type="button" data-mode="rainbow" aria-pressed="true" data-i18n="rainbow">Rainbow</button>
+          <button class="btn" type="button" data-mode="pastel" aria-pressed="false" data-i18n="candy">Candy</button>
+          <button class="btn" type="button" data-mode="one" aria-pressed="false" data-i18n="myColor">My color</button>
+        </div>
+        <button class="btn big" type="submit" data-i18n="buildName">Build my name!</button>
+      </form>
+      <div class="share-box">
+        <h2 data-i18n="saveShare">Save and share</h2>
+        <div class="share-grid" id="shareGrid">
+          <button class="btn mint" id="gallerySaveBtn" type="button"><span aria-hidden="true">💾</span><span data-i18n="saveCreation">Save to My creations</span></button>
+          <button class="btn white" id="galleryBtn" type="button"><span aria-hidden="true">🖼️</span><span data-i18n="myCreations">My creations</span></button>
+          <button class="btn pink" id="cardBtn" type="button"><span aria-hidden="true">💌</span><span data-i18n="makeCard">Make a card</span></button>
+        </div>
+      </div>
+
+      <div class="board-settings">
+        <h2 data-i18n="board">Board</h2>
+        <p class="label" data-i18n="size">Size</p>
+        <div class="seg" id="sizes"></div>
+        <p class="label" data-i18n="boardColor">Board color</p>
+        <div class="plates" id="plates"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(() => {
+"use strict";
+const EDITION = "standalone";
+/* ===================== data ===================== */
+const SIZES = [
+  {id: "s", en: "Small",  ar: "صغيرة", cols: 16, rows: 12},
+  {id: "m", en: "Medium", ar: "وسط",   cols: 24, rows: 18},
+  {id: "l", en: "Large",  ar: "كبيرة", cols: 32, rows: 24},
+  {id: "x", en: "Huge",   ar: "ضخمة",  cols: 40, rows: 30},
+];
+const PLATES = [
+  {en: "Pink",   ar: "وردية",   hex: "#FF2E8A"},
+  {en: "Blue",   ar: "زرقاء",   hex: "#2F9BF0"},
+  {en: "Green",  ar: "خضراء",   hex: "#3DC45A"},
+  {en: "Purple", ar: "بنفسجية", hex: "#8F7FEA"},
+  {en: "Yellow", ar: "صفراء",   hex: "#FFD23F"},
+  {en: "White",  ar: "بيضاء",   hex: "#F2EFF7"},
+  {en: "Night",  ar: "ليلية",   hex: "#27336B"},
+  {en: "Sand",   ar: "رملية",   hex: "#EFC98B"},
+];
+const COLORS = [
+  {en: "White",      ar: "أبيض",       hex: "#FBFAF5"},
+  {en: "Light pink", ar: "وردي فاتح",  hex: "#FFB3CF"},
+  {en: "Mint",       ar: "نعناعي",     hex: "#7FE3C0"},
+  {en: "Lavender",   ar: "خزامى",      hex: "#A9A6F0"},
+  {en: "Yellow",     ar: "أصفر",       hex: "#FFE838"},
+  {en: "Hot pink",   ar: "وردي غامق",  hex: "#FF2E8A"},
+  {en: "Red",        ar: "أحمر",       hex: "#F2383A"},
+  {en: "Orange",     ar: "برتقالي",    hex: "#FF9A1F"},
+  {en: "Green",      ar: "أخضر",       hex: "#3DC45A"},
+  {en: "Blue",       ar: "أزرق",       hex: "#2F8CF0"},
+  {en: "Sky",        ar: "سماوي",      hex: "#8FD3FF"},
+  {en: "Purple",     ar: "بنفسجي",     hex: "#8A4DE0"},
+  {en: "Brown",      ar: "بني",        hex: "#9A5B34"},
+  {en: "Gray",       ar: "رمادي",      hex: "#9AA0AE"},
+  {en: "Black",      ar: "أسود",       hex: "#2E2A3A"},
+];
+const STYLES = [
+  {id: "std",     en: "Classic", ar: "كلاسيك"},
+  {id: "tile",    en: "Smooth",  ar: "أملس"},
+  {id: "round",   en: "Round",   ar: "دائري"},
+  {id: "glitter", en: "Glitter", ar: "بريق"},
+  {id: "clear",   en: "Clear",   ar: "شفاف"},
+];
+// long side first (lying down)
+const SHAPES = [[1,1],[2,1],[3,1],[4,1],[2,2],[3,2],[4,2],[6,2]];
+const PAL = {R:"#F2383A",W:"#FBFAF5",Y:"#FFE838",K:"#2E2A3A",P:"#FFB3CF",G:"#3DC45A",B:"#2F8CF0",O:"#FF9A1F",
+             M:"#7FE3C0",L:"#A9A6F0",H:"#FF2E8A",V:"#8A4DE0",N:"#9A5B34",S:"#8FD3FF",A:"#9AA0AE"};
+const ART = {
+  heart:    {en: "Heart",     ar: "قلب",       art: ".RR.RR.|RWRRRRR|RRRRRRR|.RRRRR.|..RRR..|...R..."},
+  star:     {en: "Star",      ar: "نجمة",      art: "...Y...|...Y...|YYYYYYY|.YYYYY.|..YYY..|.YY.YY.|.Y...Y."},
+  smile:    {en: "Smiley",    ar: "وجه مبتسم", art: ".YYYYY.|YYYYYYY|YKYYYKY|YYYYYYY|YKYYYKY|YYKKKYY|.YYYYY."},
+  flower:   {en: "Flower",    ar: "زهرة",      art: ".W.W.|WWYWW|.WWW.|..G..|GGG..|..GGG|..G.."},
+  crown:    {en: "Crown",     ar: "تاج",       art: "Y.Y.Y|YYYYY|YRYBY|YYYYY"},
+  house:    {en: "House",     ar: "بيت",       art: "...R...|..RRR..|.RRRRR.|RRRRRRR|.WWWWW.|.WBWNW.|.WWWNW."},
+  tree:     {en: "Tree",      ar: "شجرة",      art: "..G..|.GGG.|GGGGG|.GGG.|GGGGG|..N..|..N.."},
+  sun:      {en: "Sun",       ar: "شمس",       art: "Y..Y..Y|.YOOOY.|.OOOOO.|YOOOOOY|.OOOOO.|.YOOOY.|Y..Y..Y"},
+  fish:     {en: "Fish",      ar: "سمكة",      art: "....OOO.|O..OOOOO|OOOOOOKO|O..OOOOO|....OOO."},
+  cat:      {en: "Cat",       ar: "قطة",       art: "K.....K|KK...KK|KKKKKKK|KYKKKYK|KKKPKKK|.KKKKK.|..KKK.."},
+  rocket:   {en: "Rocket",    ar: "صاروخ",     art: "..R..|.RWR.|.WWW.|.WBW.|.WWW.|.WWW.|RWWWR|R.O.R|..Y.."},
+  rainbow:  {en: "Rainbow",   ar: "قوس قزح",   art: "..RRRRR..|.ROOOOOR.|ROYYYYYOR|OYGGGGGYO|YG.....GY"},
+  car:      {en: "Car",       ar: "سيارة",     art: "..BBBB..|.BSBBSB.|BBBBBBBB|BBBBBBYB|.KK..KK."},
+  butterfly:{en: "Butterfly", ar: "فراشة",     art: "VV...VV|VPVKVPV|VVVKVVV|.VVKVV.|VPVKVPV|VV...VV"},
+  planet:   {en: "Planet",    ar: "كوكب",      art: "..OOO..|.OOOOO.|LLLLLLL|.OOOOO.|..OOO.."},
+  alien:    {en: "Alien",     ar: "فضائي",     art: ".G...G.|..GGG..|.GGGGG.|GKGGGKG|GGGGGGG|.G.G.G."},
+  moon:     {en: "Moon",      ar: "هلال",      art: "..YYY|.YY..|YY...|YY...|YY...|.YY..|..YYY"},
+  cake:     {en: "Cake",      ar: "كعكة",      art: ".Y.Y.Y.|.R.R.R.|PPPPPPP|WWWWWWW|PPPPPPP|HWHWHWH"},
+  balloon:  {en: "Balloon",   ar: "بالون",     art: ".RRR.|RRRRR|RWRRR|RRRRR|.RRR.|..R..|..K..|.K..."},
+  gift:     {en: "Gift",      ar: "هدية",      art: "..Y.Y..|...Y...|BBBYBBB|BBBYBBB|YYYYYYY|BBBYBBB"},
+  lantern:  {en: "Lantern",   ar: "فانوس",     art: "..Y..|.YYY.|YOOOY|YOYOY|YOOOY|YOYOY|.YYY.|..Y.."},
+  mosque:   {en: "Mosque",    ar: "مسجد",      art: "....Y....|...WWW...|..WWWWW..|.WWWWWWW.|WWWWWWWWW|WW.W.W.WW|WWWWWWWWW"},
+  octopus:  {en: "Octopus",   ar: "أخطبوط",    art: ".VVVVV.|VVVVVVV|VKVVVKV|VVVVVVV|V.V.V.V|V.V.V.V|.V...V."},
+  starfish: {en: "Starfish",  ar: "نجم البحر", art: "...O...|...O...|OOOOOOO|.OOOOO.|..OOO..|.OO.OO.|.O...O."},
+};
+const BASE_STAMPS = ["heart", "star", "smile", "flower", "crown", "house", "tree"];
+const THEMES = {
+  classic:  {en: "Classic",  ar: "كلاسيك",  plate: "#FF2E8A", stamps: []},
+  space:    {en: "Space",    ar: "الفضاء",  plate: "#27336B", stamps: ["rocket", "planet", "alien", "moon"]},
+  sea:      {en: "Sea",      ar: "البحر",   plate: "#2F9BF0", stamps: ["fish", "octopus", "starfish"]},
+  birthday: {en: "Birthday", ar: "عيد ميلاد", plate: "#8F7FEA", stamps: ["cake", "balloon", "gift"]},
+  eid:      {en: "Eid",      ar: "العيد",   plate: "#3DC45A", stamps: ["moon", "lantern", "mosque"]},
+};
+const FONT = {
+  A:".##.|#..#|####|#..#|#..#", B:"###.|#..#|###.|#..#|###.", C:".###|#...|#...|#...|.###",
+  D:"###.|#..#|#..#|#..#|###.", E:"####|#...|###.|#...|####", F:"####|#...|###.|#...|#...",
+  G:".###|#...|#.##|#..#|.###", H:"#..#|#..#|####|#..#|#..#", I:"###|.#.|.#.|.#.|###",
+  J:"..##|...#|...#|#..#|.##.", K:"#..#|#.#.|##..|#.#.|#..#", L:"#...|#...|#...|#...|####",
+  M:"#...#|##.##|#.#.#|#...#|#...#", N:"#...#|##..#|#.#.#|#..##|#...#", O:".##.|#..#|#..#|#..#|.##.",
+  P:"###.|#..#|###.|#...|#...", Q:".##.|#..#|#..#|#.#.|.#.#", R:"###.|#..#|###.|#.#.|#..#",
+  S:".###|#...|.##.|...#|###.", T:"#####|..#..|..#..|..#..|..#..", U:"#..#|#..#|#..#|#..#|.##.",
+  V:"#...#|#...#|.#.#.|.#.#.|..#..", W:"#...#|#...#|#.#.#|##.##|#...#", X:"#...#|.#.#.|..#..|.#.#.|#...#",
+  Y:"#...#|.#.#.|..#..|..#..|..#..", Z:"####|...#|.##.|#...|####",
+  "0":"###|#.#|#.#|#.#|###", "1":".#.|##.|.#.|.#.|###", "2":"###.|...#|.##.|#...|####",
+  "3":"###.|...#|.##.|...#|###.", "4":"#..#|#..#|####|...#|...#", "5":"####|#...|###.|...#|###.",
+  "6":".##.|#...|###.|#..#|.##.", "7":"####|...#|..#.|.#..|.#..", "8":".##.|#..#|.##.|#..#|.##.",
+  "9":".##.|#..#|.###|...#|.##.",
+  "♥":".#.#.|#####|#####|.###.|..#..", "★":"..#..|.###.|#####|.###.|.#.#.",
+  "!":"#|#|#|.|#", "?":"###.|...#|.##.|....|.#..", ".":".|.|.|.|#", "-":"...|...|###|...|...", "'":"#|#|.|.|.",
+};
+const RAINBOW = ["#F2383A", "#FF9A1F", "#FFE838", "#3DC45A", "#2F8CF0", "#8A4DE0"];
+const CANDY   = ["#FBFAF5", "#7FE3C0", "#A9A6F0", "#FFE838", "#FFB3CF"];
+const LOGO_COLORS = ["#FF2E8A", "#FFE838", "#7FE3C0", "#FBFAF5", "#A9A6F0", "#FF9A1F"];
+
+/* ===================== words (English / Arabic) ===================== */
+const STR = {en: {}, ar: {}};
+function addStrings(pairs){ for (const k in pairs){ STR.en[k] = pairs[k][0]; STR.ar[k] = pairs[k][1]; } }
+addStrings({
+  appName: ["Snappy Bricks", "مكعبات سنابي"],
+  tagline: ["Snap bricks onto the board, make pictures, and build your name!", "ركّب المكعبات على اللوحة، وارسم صورًا، واكتب اسمك!"],
+  talkOn: ["Talking on", "الكلام مفعّل"], talkOff: ["Talking off", "الكلام متوقف"],
+  soundOn: ["Sound on", "الصوت مفعّل"], soundOff: ["Sound off", "الصوت متوقف"],
+  pickColor: ["Pick a color", "اختر لونًا"],
+  brickStyle: ["Brick style", "نوع المكعب"],
+  dragBrick: ["Drag a brick", "اسحب مكعبًا"],
+  dragHint: ["Drag it to the board, or tap it and then tap the board.", "اسحبه إلى اللوحة، أو اضغط عليه ثم اضغط على اللوحة."],
+  turnBricks: ["Turn bricks", "لُفّ المكعبات"],
+  funShapes: ["Fun shapes", "أشكال ممتعة"],
+  myStamps: ["My stamps", "أختامي"],
+  move: ["Move", "تحريك"], paint: ["Paint", "تلوين"], fill: ["Fill", "تعبئة"], eraser: ["Eraser", "ممحاة"], stampTool: ["Stamp maker", "صانع الأختام"],
+  tt_move: ["Move bricks. Tap a brick to turn it.", "حرّك المكعبات. اضغط على مكعب لتلفّه."],
+  tt_paint: ["Tap or swipe over bricks to color them", "اضغط أو مرّر على المكعبات لتلوينها"],
+  tt_fill: ["Fill an empty space, or recolor a whole shape", "املأ مكانًا فارغًا، أو غيّر لون شكل كامل"],
+  tt_erase: ["Tap or swipe over bricks to take them off", "اضغط أو مرّر على المكعبات لإزالتها"],
+  tt_select: ["Draw a box around bricks to make a stamp", "ارسم مربعًا حول المكعبات لتصنع ختمًا"],
+  tt_mirror: ["Mirror magic: build one side and the other side copies it", "سحر المرآة: ابنِ في جهة والجهة الأخرى تنسخها"],
+  tt_stack: ["Stack bricks on top of each other", "ضع المكعبات فوق بعضها"],
+  tt_clear: ["Clear the board", "امسح اللوحة"],
+  stack: ["Stack", "تكديس"],
+  undo: ["Undo", "تراجع"], clear: ["Clear", "مسح"], sure: ["Sure?", "متأكد؟"],
+  savePicture: ["Save picture", "احفظ الصورة"],
+  makeStamp: ["Make a stamp", "اصنع ختمًا"], deleteThese: ["Delete them", "احذفها"], cancel: ["Cancel", "إلغاء"],
+  dropTrash: ["Drop here to throw away", "أفلت هنا للرمي"],
+  writeName: ["Write your name", "اكتب اسمك"],
+  typeLetters: ["Type in English or Arabic", "اكتب بالعربية أو الإنجليزية"],
+  namePh: ["Your name here", "اسمك هنا"],
+  addHeart: ["Add a heart", "أضف قلبًا"], addStar: ["Add a star", "أضف نجمة"],
+  letterColors: ["Letter colors", "ألوان الحروف"],
+  rainbow: ["Rainbow", "قوس قزح"], candy: ["Candy", "حلوى"], myColor: ["My color", "لوني"],
+  buildName: ["Build my name!", "ابنِ اسمي!"],
+  board: ["Board", "اللوحة"], size: ["Size", "الحجم"], boardColor: ["Board color", "لون اللوحة"],
+  undone: ["Undone! It's back the way it was.", "تم التراجع! عاد كما كان."],
+  oneBrick: ["1 brick", "المكعبات: 1"], nBricks: ["{n} bricks", "المكعبات: {n}"],
+  builtWith: ["Built with Snappy Bricks", "صُنعت بمكعبات سنابي"],
+  paintReady: ["{c} paint is ready. Tap or swipe over bricks!", "اللون {c} جاهز. اضغط أو مرّر على المكعبات!"],
+  colorPicked: ["{c} it is! Now drag a brick.", "اخترت {c}! الآن اسحب مكعبًا."],
+  styleSay_std: ["Classic bricks with bumps on top.", "مكعبات كلاسيكية بنتوءات صغيرة."],
+  styleSay_tile: ["Smooth tiles: flat and shiny.", "بلاط أملس: مسطح ولامع."],
+  styleSay_round: ["Round bricks, like buttons!", "مكعبات دائرية مثل الأزرار!"],
+  styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
+  styleSay_clear: ["See-through bricks, like glass.", "مكعبات شفافة مثل الزجاج."],
+  brickAria: ["{s} brick", "مكعب {s}"],
+  myStamp: ["Stamp", "ختم"], deleteStamp: ["Delete this stamp", "احذف هذا الختم"],
+  tapToPlace: ["Now tap the board to put it there. Tap it again to stop.", "الآن اضغط على اللوحة لتضعه. اضغط عليه مرة أخرى للتوقف."],
+  dragAnytime: ["Okay! Drag a brick onto the board whenever you like.", "حسنًا! اسحب مكعبًا إلى اللوحة متى شئت."],
+  tool_move: ["Move: drag bricks around. Tap a brick to turn it.", "تحريك: اسحب المكعبات. اضغط على مكعب لتلفّه."],
+  tool_paint: ["Paint: tap or swipe over bricks to color them.", "تلوين: اضغط أو مرّر على المكعبات لتلوينها."],
+  tool_fill: ["Fill: tap an empty space to fill it, or tap a shape to recolor it.", "تعبئة: اضغط على مكان فارغ لتملأه، أو على شكل لتغيّر لونه."],
+  tool_erase: ["Eraser: tap or swipe over bricks to take them off.", "ممحاة: اضغط أو مرّر على المكعبات لإزالتها."],
+  tool_select: ["Stamp maker: draw a box around the bricks you want to copy.", "صانع الأختام: ارسم مربعًا حول المكعبات التي تريد نسخها."],
+  mirror_off: ["Mirror", "المرآة"], mirror_lr: ["Mirror ↔", "مرآة ↔"], mirror_four: ["Mirror ✚", "مرآة ✚"],
+  mirrorSay_off: ["Mirror is off.", "أوقفنا المرآة."],
+  mirrorSay_lr: ["Mirror magic! Build on one side and the other side copies you.", "سحر المرآة! ابنِ في جهة والجهة الأخرى تقلّدك."],
+  mirrorSay_four: ["Super mirror! Every brick makes four.", "مرآة خارقة! كل مكعب يصبح أربعة."],
+  stackOn: ["Stacking is on. Drop bricks on top of other bricks!", "التكديس مفعّل. ضع المكعبات فوق بعضها!"],
+  stackOff: ["Stacking is off. Bricks go on the board only.", "التكديس متوقف. المكعبات توضع على اللوحة فقط."],
+  cheers: ["Snap!|Nice one!|Looking great!|Click! Perfect fit.|You're a builder!", "طَق!|رائع!|يبدو جميلًا!|تمام! مكانه مضبوط.|أنت بنّاء ماهر!"],
+  tooHigh: ["That tower is as tall as it can go!", "هذا البرج وصل إلى أعلى ارتفاع!"],
+  spotTaken: ["Oops, that spot is taken. Find an empty spot, or turn on Stack.", "عذرًا، هذا المكان مشغول. ابحث عن مكان فارغ، أو فعّل التكديس."],
+  byeBrick: ["Bye bye, brick!", "وداعًا يا مكعب!"],
+  squareTurn: ["Square bricks look the same when you turn them!", "المكعبات المربعة تبقى كما هي عندما تلفّها!"],
+  noRoomTurn: ["No room to turn it here. Try moving it first.", "لا يوجد مكان للفّه هنا. جرّب تحريكه أولًا."],
+  selectNone: ["No bricks inside the box. Try a bigger box.", "لا توجد مكعبات داخل المربع. جرّب مربعًا أكبر."],
+  selectDone: ["Got them! Make a stamp to copy them anywhere.", "أمسكتها! اصنع ختمًا لتنسخها في أي مكان."],
+  stampMade: ["Stamp made! It's in My stamps. Tap the board to stamp it.", "صنعت ختمًا! تجده في أختامي. اضغط على اللوحة لتختم به."],
+  tapHint: ["Drag a brick here from the tray, or tap one first and then tap here.", "اسحب مكعبًا إلى هنا، أو اضغط عليه أولًا ثم اضغط هنا."],
+  noRoomThere: ["No room right there. Try an empty spot!", "لا يوجد مكان هنا. جرّب مكانًا فارغًا!"],
+  turnedUp: ["Bricks are standing up tall now.", "المكعبات واقفة الآن."],
+  turnedDown: ["Bricks are lying down again.", "المكعبات مستلقية من جديد."],
+  clearAgain: ["Tap Clear again to take every brick off.", "اضغط مسح مرة أخرى لإزالة كل المكعبات."],
+  allClear: ["All clear! Tap Undo if you want it back.", "اللوحة فارغة! اضغط تراجع إن أردت استرجاعها."],
+  alreadyEmpty: ["The board is already empty. Time to build!", "اللوحة فارغة. هيا نبني!"],
+  holdToSave: ["Here's your picture! Press and hold it (or right-click) to save it.", "هذه صورتك! اضغط عليها مطولًا (أو بالزر الأيمن) لحفظها."],
+  close: ["Close", "إغلاق"], yourPicture: ["Your picture", "صورتك"],
+  buildFirst: ["Build something first, then save a picture of it!", "ابنِ شيئًا أولًا، ثم احفظ صورته!"],
+  savedPic: ["Saved! Show your picture to someone special.", "تم الحفظ! أرِ صورتك لشخص تحبه."],
+  noPic: ["Okay, no picture this time.", "حسنًا، لا صورة هذه المرة."],
+  picReady: ["Your picture is ready!", "صورتك جاهزة!"],
+  plateSay: ["A {c} board. Pretty!", "لوحة {c}. جميلة!"],
+  sizeCut: ["Some bricks didn't fit on the smaller board. Tap Undo to bring them back.", "بعض المكعبات لم تتسع في اللوحة الأصغر. اضغط تراجع لإرجاعها."],
+  sizeSay: ["{s} board: {c} × {r} studs.", "لوحة {s}: {c} × {r}."],
+  typeFirst: ["Type your name in the box first!", "اكتب اسمك في المربع أولًا!"],
+  tooLong: ["That's too long for the board. Try a shorter word!", "هذا طويل على اللوحة. جرّب كلمة أقصر!"],
+  nameWow: ["Wow, {n}! Great building!", "واو، {n}! بناء رائع!"],
+  langSay: ["Hello! Let's build together.", "أهلًا! هيا نبني معًا."],
+  hello: ["Hi! Drag a brick onto the board, or write your name.", "مرحبًا! اسحب مكعبًا إلى اللوحة، أو اكتب اسمك."],
+  welcomeBack: ["Welcome back! Your board is just how you left it.", "أهلًا بعودتك! لوحتك كما تركتها."],
+  talkSayOn: ["I'll read letters and words out loud.", "سأقرأ الحروف والكلمات بصوت عالٍ."],
+  talkSayOff: ["Okay, I'll stay quiet.", "حسنًا، سأبقى هادئًا."],
+  noArabicVoice: ["This device has no Arabic voice, so I'll read in English only.", "هذا الجهاز لا يملك صوتًا عربيًا، لذلك سأقرأ بالإنجليزية فقط."],
+});
+
+/* ===================== games data ===================== */
+const PUZZLES = [
+  {art: "heart", lvl: "easy"}, {art: "crown", lvl: "easy"}, {art: "tree", lvl: "easy"},
+  {art: "flower", lvl: "easy"}, {art: "balloon", lvl: "easy"}, {art: "moon", lvl: "easy"},
+  {art: "smile", lvl: "medium"}, {art: "house", lvl: "medium"}, {art: "fish", lvl: "medium"},
+  {art: "sun", lvl: "medium"}, {art: "car", lvl: "medium"}, {art: "cake", lvl: "medium"},
+  {art: "rocket", lvl: "hard"}, {art: "butterfly", lvl: "hard"}, {art: "cat", lvl: "hard"},
+  {art: "rainbow", lvl: "hard"}, {art: "gift", lvl: "hard"}, {art: "planet", lvl: "hard"},
+];
+const LEVEL_AGES = {easy: ["Ages 5+", "من 5 سنوات"], medium: ["Ages 7+", "من 7 سنوات"], hard: ["Ages 9+", "من 9 سنوات"]};
+const TRACE = {
+  en: [["A","Apple","🍎"],["B","Ball","⚽"],["C","Cat","🐱"],["D","Duck","🦆"],["E","Egg","🥚"],["F","Fish","🐟"],
+       ["G","Grapes","🍇"],["H","Hat","🎩"],["I","Ice cream","🍦"],["J","Juice","🧃"],["K","Kite","🪁"],["L","Lion","🦁"],
+       ["M","Moon","🌙"],["N","Nut","🥜"],["O","Orange","🍊"],["P","Pizza","🍕"],["Q","Queen","👑"],["R","Rainbow","🌈"],
+       ["S","Sun","☀️"],["T","Tree","🌳"],["U","Umbrella","☂️"],["V","Violin","🎻"],["W","Whale","🐳"],["X","Xylophone","🎹"],
+       ["Y","Yo-yo","🪀"],["Z","Zebra","🦓"]],
+  ar: [["ا","أرنب","🐰"],["ب","بطة","🦆"],["ت","تفاحة","🍎"],["ث","ثعلب","🦊"],["ج","جمل","🐫"],["ح","حصان","🐴"],
+       ["خ","خروف","🐑"],["د","دب","🐻"],["ذ","ذرة","🌽"],["ر","راديو","📻"],["ز","زرافة","🦒"],["س","سمكة","🐟"],
+       ["ش","شمس","☀️"],["ص","صاروخ","🚀"],["ض","ضفدع","🐸"],["ط","طائرة","✈️"],["ظ","ظرف","✉️"],["ع","عنب","🍇"],
+       ["غ","غيمة","☁️"],["ف","فيل","🐘"],["ق","قمر","🌙"],["ك","كعكة","🎂"],["ل","ليمون","🍋"],["م","موز","🍌"],
+       ["ن","نحلة","🐝"],["ه","هدية","🎁"],["و","وردة","🌹"],["ي","يد","✋"]],
+};
+const SPELL = {
+  en: [["CAT","🐱"],["DOG","🐶"],["SUN","☀️"],["BEE","🐝"],["BUS","🚌"],["EGG","🥚"],["HAT","🎩"],
+       ["FISH","🐟"],["STAR","⭐"],["CAKE","🎂"],["BALL","⚽"],["MOON","🌙"],["FROG","🐸"],["DUCK","🦆"],["TREE","🌳"],["LION","🦁"],
+       ["APPLE","🍎"],["HOUSE","🏠"],["TRAIN","🚆"],["ROBOT","🤖"]],
+  ar: [["قطة","🐱"],["شمس","☀️"],["بطة","🦆"],["قمر","🌙"],["كرة","⚽"],["بيت","🏠"],["أسد","🦁"],
+       ["نحلة","🐝"],["سمكة","🐟"],["كعكة","🎂"],["شجرة","🌳"],["نجمة","⭐"],["قطار","🚆"],["وردة","🌹"],["تفاحة","🍎"]],
+};
+const AR_LETTERS = "ابتثجحخدذرزسشصضطظعغفقكلمنهوي";
+
+addStrings({
+  modeFree: ["Free build", "بناء حر"], modeCopy: ["Copy it", "انسخ الصورة"], modeTrace: ["Trace letters", "تتبّع الحروف"],
+  modeSpell: ["Spell it", "تهجئة"], modeMath: ["Brick math", "حساب المكعبات"],
+  playModes: ["Play modes", "طرق اللعب"],
+  copyTitle: ["Copy the {n}", "انسخ: {n}"],
+  copyText_easy: ["Cover the faint colors with bricks of the same color.", "غطِّ الألوان الباهتة بمكعبات من نفس اللون."],
+  copyText_medium: ["Fill the dashed spots. Look at the picture to pick the colors!", "املأ الأماكن المنقّطة. انظر إلى الصورة لتختار الألوان!"],
+  copyText_hard: ["Build the picture in the middle of the board, all by yourself!", "ابنِ الصورة في وسط اللوحة وحدك!"],
+  progStuds: ["{a} of {b} spots right", "{a} من {b} صحيحة"],
+  hint: ["Hint", "تلميح"], startOver: ["Start over", "من جديد"], levels: ["Levels", "المراحل"], next: ["Next", "التالي"],
+  hintSay: ["The blinking spots need fixing.", "الأماكن التي تومض تحتاج إلى تصحيح."],
+  copyWin: ["You copied the {n}! {s}", "نسخت {n}! {s}"],
+  easy: ["Easy", "سهل"], medium: ["Medium", "متوسط"], hard: ["Hard", "صعب"],
+  pickPicture: ["Pick a picture", "اختر صورة"],
+  traceTitle: ["Trace the letter {l}", "تتبّع الحرف {l}"],
+  traceText: ["Cover every dashed spot with bricks.", "غطِّ كل الأماكن المنقّطة بالمكعبات."],
+  traceWin: ["{l} is for {w}!", "{l} كما في {w}!"],
+  progCover: ["{a} of {b} covered", "غطّيت {a} من {b}"],
+  pickLetter: ["Pick a letter", "اختر حرفًا"],
+  spellTitle: ["Spell the word", "تهجَّ الكلمة"],
+  spellText: ["Tap the letters in the right order.", "اضغط على الحروف بالترتيب الصحيح."],
+  spellWrong: ["Not that one. Try again!", "ليس هذا. حاول مرة أخرى!"],
+  spellWin: ["You spelled {w}! {s}", "تهجّيت {w}! {s}"],
+  progLetters: ["{a} of {b} letters", "{a} من {b} حروف"],
+  hintSpell: ["The next letter is {l}.", "الحرف التالي هو {l}."],
+  pickWord: ["Pick a word", "اختر كلمة"],
+  mathTitle: ["Make {n}!", "كوّن {n}!"],
+  mathText: ["Put bricks on the board until there are exactly {n} bumps.", "ضع مكعبات حتى يصبح عدد النتوءات {n} بالضبط."],
+  mathTextK: ["Use exactly {k} bricks to make {n} bumps.", "استخدم {k} مكعبات بالضبط لتكوّن {n} نتوءًا."],
+  mathTooMany: ["Too many! Take some bricks off.", "أكثر من اللازم! أزِل بعض المكعبات."],
+  mathBricks: ["Right number! Now use exactly {k} bricks.", "العدد صحيح! الآن استخدم {k} مكعبات بالضبط."],
+  mathWin: ["Yes! {eq}", "أحسنت! {eq}"],
+  mathLevel: ["Level {n}", "المرحلة {n}"],
+  hintMath: ["Count the bumps on each brick. A 2×2 brick has 4.", "عُدّ النتوءات على كل مكعب. المكعب 2×2 فيه 4."],
+  bumps: ["bumps", "نتوءات"],
+  freeBack: ["Back to free building!", "عدنا إلى البناء الحر!"],
+  gameStart: ["Let's play! {t}", "هيا نلعب! {t}"],
+  letterSet: ["Letters", "الحروف"],
+});
+
+/* ===================== engine: helpers, board model, rendering ===================== */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const pick = a => a[(Math.random() * a.length) | 0];
+const reduceMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const IN_ARTIFACT = !!(window.claude && typeof window.claude.use === "function");
+const MAXZ = 5;
+
+function store(key, val){
+  try {
+    if (val === undefined){ const r = localStorage.getItem(key); return r ? JSON.parse(r) : null; }
+    localStorage.setItem(key, JSON.stringify(val)); return true;
+  } catch(e){ return val === undefined ? null : false; }
+}
+
+function shade(hex, amt){
+  const n = parseInt(hex.slice(1), 16);
+  let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  if (amt > 0){ r += (255 - r) * amt; g += (255 - g) * amt; b += (255 - b) * amt; }
+  else { r *= 1 + amt; g *= 1 + amt; b *= 1 + amt; }
+  return `rgb(${r | 0},${g | 0},${b | 0})`;
+}
+function paintVars(el, c){
+  el.style.setProperty("--c", c);
+  el.style.setProperty("--lt", shade(c, .3));
+  el.style.setProperty("--dk", shade(c, -.24));
+}
+function colorDist(a, b){
+  const x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16);
+  return Math.abs((x >> 16) - (y >> 16)) + Math.abs(((x >> 8) & 255) - ((y >> 8) & 255)) + Math.abs((x & 255) - (y & 255));
+}
+function placeEl(el, b){
+  el.style.left   = `calc(var(--cell) * ${b.x} + 1px)`;
+  el.style.top    = `calc(var(--cell) * ${b.y} + 1px)`;
+  el.style.width  = `calc(var(--cell) * ${b.w} - 2px)`;
+  el.style.height = `calc(var(--cell) * ${b.h} - 2px)`;
+}
+function styleBrickEl(el, b){
+  el.className = "brick t-" + (b.t || "std");
+  placeEl(el, b); paintVars(el, b.c);
+  el.style.setProperty("--z", b.z || 0);
+  el.style.zIndex = 1 + (b.z || 0) * 10;
+}
+
+/* ---- tiny event bus ---- */
+const bus = {};
+function on(ev, fn){ (bus[ev] = bus[ev] || []).push(fn); }
+function emit(ev, data){ (bus[ev] || []).forEach(fn => { try { fn(data); } catch(e){ console.error(e); } }); }
+
+/* ---- pixel pictures -> bricks ---- */
+// pix: 2D array of color strings or null. maxRun: longest horizontal brick to use.
+function decompose(pix, maxRun = 2){
+  const H = pix.length, W = H ? pix[0].length : 0;
+  const used = pix.map(r => r.map(() => false));
+  const out = [];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
+    if (!pix[y][x] || used[y][x]) continue;
+    let n = 1;
+    while (n < maxRun && x + n < W && pix[y][x + n] === pix[y][x] && !used[y][x + n]) n++;
+    if (n >= 2){ for (let k = 0; k < n; k++) used[y][x + k] = true; out.push({x, y, w: n, h: 1, c: pix[y][x]}); }
+  }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
+    if (!pix[y][x] || used[y][x]) continue;
+    if (y + 1 < H && pix[y + 1][x] === pix[y][x] && !used[y + 1][x]){ used[y][x] = used[y + 1][x] = true; out.push({x, y, w: 1, h: 2, c: pix[y][x]}); }
+  }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++)
+    if (pix[y][x] && !used[y][x]){ used[y][x] = true; out.push({x, y, w: 1, h: 1, c: pix[y][x]}); }
+  return out;
+}
+function artToPix(art, recolor){
+  return art.split("|").map(r => [...r].map(ch => ch === "." ? null : (recolor || PAL[ch] || "#FBFAF5")));
+}
+
+/* ===================== boards ===================== */
+function newBoard(cols, rows, plate){ return {cols, rows, plate, bricks: [], hist: []}; }
+let FREE = newBoard(24, 18, "#FF2E8A");
+let B = FREE;            // the board on screen
+let nextId = 1;
+let grid = [];           // grid[y][x] = stack of brick ids, lowest first
+const byId = new Map();
+let cell = 30;
+const plate = $("#plate");
+const els = new Map();
+
+function rebuildGrid(){
+  grid = Array.from({length: B.rows}, () => Array.from({length: B.cols}, () => []));
+  byId.clear();
+  const sorted = [...B.bricks].sort((a, b) => (a.z || 0) - (b.z || 0));
+  for (const b of sorted){
+    byId.set(b.id, b);
+    for (let y = b.y; y < b.y + b.h; y++) for (let x = b.x; x < b.x + b.w; x++)
+      if (y >= 0 && y < B.rows && x >= 0 && x < B.cols) grid[y][x].push(b.id);
+  }
+}
+function topAt(x, y, ignore){
+  const st = grid[y] && grid[y][x]; if (!st) return null;
+  for (let i = st.length - 1; i >= 0; i--) if (st[i] !== ignore) return byId.get(st[i]);
+  return null;
+}
+function heightAt(x, y, ignore){ const b = topAt(x, y, ignore); return b ? (b.z || 0) + 1 : 0; }
+// Where would these bricks land? {ok, z}
+function canPlace(bricks, gx, gy, ignore = 0){
+  let base = 0, rel = 0;
+  for (const b of bricks){
+    rel = Math.max(rel, b.z || 0);
+    for (let y = gy + b.y; y < gy + b.y + b.h; y++) for (let x = gx + b.x; x < gx + b.x + b.w; x++){
+      if (x < 0 || y < 0 || x >= B.cols || y >= B.rows) return {ok: false, out: true};
+      base = Math.max(base, heightAt(x, y, ignore));
+    }
+  }
+  if (settings.stack) return {ok: base + rel < MAXZ, z: base, full: base + rel >= MAXZ};
+  return {ok: base === 0, z: 0, taken: base > 0};
+}
+
+/* ---- history ---- */
+function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, bricks: B.bricks}); }
+function pushHistory(){
+  B.hist.push(snapshot()); if (B.hist.length > 60) B.hist.shift();
+  updateUndo();
+}
+function updateUndo(){ const u = $("#undoBtn"); if (u) u.disabled = !B.hist.length; }
+function undo(){
+  if (!B.hist.length) return;
+  const d = JSON.parse(B.hist.pop());
+  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.bricks = d.bricks;
+  applyBoard(); commit(); sfx.turn(); updateUndo();
+  say(t("undone"));
+}
+
+/* ---- rendering ---- */
+function commit(anim){ rebuildGrid(); render(anim); emit("change"); }
+function render(anim){
+  const seen = new Set();
+  for (const b of B.bricks){
+    let el = els.get(b.id);
+    if (!el){
+      el = document.createElement("div");
+      el.dataset.id = b.id;
+      plate.appendChild(el); els.set(b.id, el);
+      styleBrickEl(el, b);
+      if (anim && anim.has(b.id) && !reduceMotion){
+        el.style.animationDelay = anim.get(b.id) + "ms";
+        el.classList.add("drop");
+        el.addEventListener("animationend", () => { el.classList.remove("drop"); el.style.animationDelay = ""; }, {once: true});
+      }
+    } else {
+      const keep = ["drop", "flash", "wiggle", "selected"].filter(c => el.classList.contains(c));
+      styleBrickEl(el, b); keep.forEach(c => el.classList.add(c));
+    }
+    seen.add(b.id);
+  }
+  for (const [id, el] of els) if (!seen.has(id)){ el.remove(); els.delete(id); }
+  const n = B.bricks.length;
+  const cnt = $("#count"); if (cnt) cnt.textContent = t(n === 1 ? "oneBrick" : "nBricks", {n});
+}
+function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); }
+function switchBoard(board){
+  if (B === board) return;
+  cancelSelection();
+  B = board; clearEls(); applyBoard(); commit(); updateUndo();
+}
+function applyBoard(){
+  paintVars(plate, B.plate);
+  plate.style.width  = `calc(var(--cell) * ${B.cols})`;
+  plate.style.height = `calc(var(--cell) * ${B.rows})`;
+  fitCell();
+  drawMirrorLines();
+  emit("board");
+}
+function fitCell(){
+  const wrap = $("#plateWrap");
+  const w = wrap.clientWidth - 16;
+  const top = wrap.getBoundingClientRect().top + window.scrollY;
+  let maxH;
+  if (window.innerWidth > 1180) maxH = Math.max(300, window.innerHeight - top - 96);
+  else maxH = Math.max(240, window.innerHeight * .6);
+  cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), 7, 46));
+  plate.style.setProperty("--cell", cell + "px");
+}
+
+/* ---- helper speech bubble ---- */
+function say(text, opts = {}){
+  $("#bubble").textContent = text;
+  const b = $("#bricky"); b.classList.remove("hop"); void b.getBoundingClientRect(); b.classList.add("hop");
+  if (opts.speak) speakHelper(text);
+}
+
+/* ===================== sound ===================== */
+let actx = null;
+function ac(){
+  if (!settings.sound) return null;
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+  } catch(e){ return null; }
+  return actx;
+}
+function tone(f1, f2, dur, type = "sine", vol = .2, delay = 0){
+  const a = ac(); if (!a) return;
+  const t0 = a.currentTime + delay;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(f1, t0); o.frequency.exponentialRampToValueAtTime(Math.max(40, f2), t0 + dur);
+  g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur);
+  o.connect(g).connect(a.destination); o.start(t0); o.stop(t0 + dur + .02);
+}
+const sfx = {
+  snap(d = 0){ tone(1500, 600, .04, "square", .05, d); tone(320, 110, .09, "sine", .28, d); },
+  soft(d = 0){ tone(900, 500, .03, "square", .025, d); tone(260, 120, .06, "sine", .12, d); },
+  remove(){ tone(620, 180, .16, "triangle", .18); },
+  turn(){ tone(620, 980, .08, "triangle", .14); },
+  paint(){ tone(880, 1320, .06, "sine", .12); },
+  nope(){ tone(210, 150, .14, "square", .06); },
+  whoosh(){ tone(900, 120, .35, "sawtooth", .05); },
+  cheer(d = 0){ [523, 659, 784, 1047].forEach((f, i) => tone(f, f * 1.01, .18, "triangle", .16, d + i * .09)); },
+  badge(){ [784, 988, 1175, 1568].forEach((f, i) => tone(f, f, .14, "sine", .14, i * .07)); },
+  click(){ tone(700, 700, .03, "sine", .08); },
+  fill(){ [400, 500, 600, 800].forEach((f, i) => tone(f, f * 1.2, .06, "sine", .1, i * .04)); },
+};
+
+/* ===================== confetti ===================== */
+function confetti(){
+  if (reduceMotion) return;
+  const cv = document.createElement("canvas"); cv.className = "confetti";
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; document.body.appendChild(cv);
+  const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr);
+  const cols = ["#F2383A", "#FF9A1F", "#FFE838", "#3DC45A", "#2F8CF0", "#8A4DE0", "#FFB3CF", "#7FE3C0", "#FFFFFF"];
+  const parts = Array.from({length: 140}, () => ({
+    x: innerWidth / 2 + (Math.random() - .5) * innerWidth * .5, y: innerHeight * .35,
+    vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4, s: 8 + Math.random() * 10,
+    r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: pick(cols), wide: Math.random() < .5
+  }));
+  const t0 = performance.now();
+  (function frame(tm){
+    const k = (tm - t0) / 1800;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    for (const p of parts){
+      p.vy += .45; p.x += p.vx; p.y += p.vy; p.vx *= .99; p.r += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.globalAlpha = Math.max(0, 1 - k * k);
+      const w = p.wide ? p.s * 2 : p.s, h = p.s;
+      ctx.fillStyle = p.c; ctx.fillRect(-w / 2, -h / 2, w, h);
+      ctx.fillStyle = "rgba(255,255,255,.55)";
+      for (let i = 0; i < (p.wide ? 2 : 1); i++){ ctx.beginPath(); ctx.arc(-w / 2 + p.s * (i + .5), 0, p.s * .28, 0, 7); ctx.fill(); }
+      ctx.restore();
+    }
+    if (k < 1) requestAnimationFrame(frame); else cv.remove();
+  })(t0);
+}
+
+/* ===================== picture drawing (canvas) ===================== */
+function rrect(ctx, x, y, w, h, r){
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+function stud(ctx, x, y, c, col, flat){
+  const r = c * (flat ? .27 : .29);
+  ctx.fillStyle = "rgba(30,10,50,.3)";
+  ctx.beginPath(); ctx.arc(x + c * .57, y + c * .61, r, 0, 7); ctx.fill();
+  const g = ctx.createRadialGradient(x + c * .5, y + c * .5, 0, x + c * .5, y + c * .5, r);
+  g.addColorStop(0, shade(col, .3)); g.addColorStop(.7, shade(col, .3)); g.addColorStop(1, col);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x + c * .5, y + c * .5, r, 0, 7); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,.7)";
+  ctx.beginPath(); ctx.arc(x + c * .42, y + c * .38, c * .07, 0, 7); ctx.fill();
+}
+function drawBoard(ctx, board, ox, oy, c){
+  ctx.fillStyle = board.plate; rrect(ctx, ox, oy, board.cols * c, board.rows * c, c * .3); ctx.fill();
+  for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) stud(ctx, ox + x * c, oy + y * c, c, board.plate, true);
+  const list = [...board.bricks].sort((a, b) => (a.z || 0) - (b.z || 0));
+  for (const b of list){
+    const z = b.z || 0, t = b.t || "std";
+    const x = ox + b.x * c + 1.5 - z * 2, y = oy + b.y * c + 1.5 - z * 3, w = b.w * c - 3, h = b.h * c - 3;
+    const rad = t === "round" ? Math.min(w, h) / 2 : c * .14;
+    ctx.save();
+    if (t === "clear") ctx.globalAlpha = .62;
+    ctx.fillStyle = "rgba(30,10,60,.3)"; rrect(ctx, x + z, y + 3 + z * 2, w, h, rad); ctx.fill();
+    ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
+    ctx.fillStyle = b.c; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
+    if (t === "tile"){
+      const g = ctx.createLinearGradient(x, y, x + w * .5, y + h * .5);
+      g.addColorStop(0, "rgba(255,255,255,.45)"); g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
+    } else {
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - 1.5 + xx * c, y - 1.5 + yy * c, c, b.c);
+    }
+    if (t === "glitter"){
+      let s = b.id * 9301 + 49297;
+      const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
+      ctx.fillStyle = "rgba(255,255,255,.9)";
+      for (let i = 0; i < b.w * b.h * 6; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, 1 + rnd() * 1.5, 0, 7); ctx.fill(); }
+    }
+    ctx.restore();
+  }
+}
+function boardCanvas(board, c = 40, opts = {}){
+  const pad = opts.pad != null ? opts.pad : 36, foot = opts.foot != null ? opts.foot : 58;
+  const W = board.cols * c + pad * 2, H = board.rows * c + pad * 2 + foot;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const ctx = cv.getContext("2d");
+  if (!opts.transparent){ ctx.fillStyle = opts.bg || "#5CC6FF"; ctx.fillRect(0, 0, W, H); }
+  if (pad > 0){ ctx.fillStyle = "#2B1E5C"; rrect(ctx, pad - 4, pad - 4, board.cols * c + 8, board.rows * c + 14, c * .4); ctx.fill(); }
+  drawBoard(ctx, board, pad, pad, c);
+  if (foot > 0){
+    ctx.fillStyle = "#2B1E5C"; ctx.font = `800 ${Math.round(foot * .48)}px "Baloo 2", "Baloo Bhaijaan 2", sans-serif`;
+    ctx.textBaseline = "middle"; ctx.direction = LANG === "ar" ? "rtl" : "ltr";
+    ctx.textAlign = LANG === "ar" ? "right" : "left";
+    ctx.fillText(t("builtWith"), LANG === "ar" ? W - pad : pad, H - foot / 2 - 4);
+  }
+  return cv;
+}
+function thumbData(board, size = 180){
+  const c = Math.max(3, Math.floor(size / Math.max(board.cols, board.rows)));
+  const cv = boardCanvas(board, c, {pad: 0, foot: 0, bg: "#ffffff"});
+  try { return cv.toDataURL("image/jpeg", .8); } catch(e){ return ""; }
+}
+
+/* ===================== language + talking ===================== */
+let LANG = "en";
+function t(key, vars){
+  let s = (STR[LANG] && STR[LANG][key] != null) ? STR[LANG][key] : (STR.en[key] != null ? STR.en[key] : key);
+  if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => vars[k] != null ? vars[k] : m);
+  return s;
+}
+function applyStatic(root = document){
+  root.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  root.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  root.querySelectorAll("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
+  root.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); if (!el.getAttribute("aria-label")) el.setAttribute("aria-label", t(el.dataset.i18nTitle)); });
+}
+function setLang(l, quiet){
+  LANG = l; settings.lang = l; saveSettings();
+  document.documentElement.lang = l;
+  document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+  document.title = t("appName");
+  applyStatic();
+  $("#langTxt").textContent = l === "ar" ? "English" : "عربي";
+  $("#langTxt").className = l === "ar" ? "" : "ar";
+  $("#logo").setAttribute("aria-label", t("appName"));
+  $("#talkTxt").textContent = t(settings.talk ? "talkOn" : "talkOff");
+  $("#soundTxt").textContent = t(settings.sound ? "soundOn" : "soundOff");
+  buildSwatches(); buildStyles(); buildShapes(); buildStamps(); buildBoardControls(); buildLogo();
+  setMirror(settings.mirror, true);
+  render();
+  emit("lang");
+  if (!quiet) say(t("langSay"), {speak: true});
+}
+
+/* ---- read aloud (browser speech) ---- */
+let voices = [];
+const canSpeak = typeof window.speechSynthesis !== "undefined" && typeof window.SpeechSynthesisUtterance !== "undefined";
+function loadVoices(){ try { voices = speechSynthesis.getVoices() || []; } catch(e){ voices = []; } }
+if (canSpeak){ loadVoices(); try { speechSynthesis.addEventListener("voiceschanged", loadVoices); } catch(e){} }
+function voiceFor(lang){
+  const pref = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith(lang));
+  return pref.find(v => /female|samantha|zira|google/i.test(v.name)) || pref[0] || null;
+}
+function speak(text, lang = LANG, opts = {}){
+  if (!canSpeak || !settings.talk || !text) return false;
+  const v = voiceFor(lang);
+  if (lang === "ar" && !v) return false;
+  try {
+    if (!opts.queue) speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(text).replace(/[♥★☆]/g, ""));
+    u.lang = lang === "ar" ? "ar-SA" : "en-US";
+    if (v) u.voice = v;
+    u.rate = opts.rate || (lang === "ar" ? .9 : .95); u.pitch = 1.15;
+    speechSynthesis.speak(u);
+    return true;
+  } catch(e){ return false; }
+}
+function speakHelper(text){ speak(text, LANG); }
+function hasArabic(s){ return /[؀-ۿݐ-ݿࢠ-ࣿ]/.test(s); }
+
+/* ===================== UI: tray, tools, dragging ===================== */
+const settings = Object.assign({sound: true, talk: false, stack: false, mirror: "off", lang: "en", theme: "classic"}, store("snappy-settings") || {});
+function saveSettings(){ store("snappy-settings", settings); }
+
+let tool = "move";
+let color = "#7FE3C0";
+let brickStyle = "std";
+let turned = false;
+let selected = null;     // {kind:"brick",i} | {kind:"art",name} | {kind:"my",id}
+let myStamps = store("snappy-stamps") || [];
+
+/* ---- pieces ---- */
+function brickPiece(i){
+  let [w, h] = SHAPES[i]; if (turned) [w, h] = [h, w];
+  return {w, h, single: true, bricks: [{x: 0, y: 0, w, h, c: color, t: brickStyle}]};
+}
+function artPiece(name){
+  const pix = artToPix(ART[name].art);
+  return {w: pix[0].length, h: pix.length, single: false,
+          bricks: decompose(pix).map(b => ({...b, t: brickStyle === "round" ? "std" : brickStyle}))};
+}
+function myPiece(id){
+  const s = myStamps.find(m => m.id === id); if (!s) return null;
+  return {w: s.w, h: s.h, single: false, bricks: s.bricks.map(b => ({...b}))};
+}
+function pieceFor(sel){
+  if (!sel) return null;
+  if (sel.kind === "brick") return brickPiece(sel.i);
+  if (sel.kind === "art") return artPiece(sel.name);
+  if (sel.kind === "my") return myPiece(sel.id);
+  return null;
+}
+function pieceEl(piece, px){
+  const d = document.createElement("div"); d.className = "piece";
+  d.style.setProperty("--cell", px + "px");
+  d.style.width = piece.w * px + "px"; d.style.height = piece.h * px + "px";
+  for (const b of piece.bricks){ const e = document.createElement("div"); styleBrickEl(e, b); d.appendChild(e); }
+  return d;
+}
+
+/* ---- mirror ---- */
+function mirrorFns(){
+  const lr = r => ({...r, x: B.cols - r.x - r.w});
+  const ud = r => ({...r, y: B.rows - r.y - r.h});
+  if (settings.mirror === "lr") return [lr];
+  if (settings.mirror === "four") return [lr, ud, r => lr(ud(r))];
+  return [];
+}
+function drawMirrorLines(){
+  plate.querySelectorAll(".mline").forEach(e => e.remove());
+  if (settings.mirror === "off") return;
+  const v = document.createElement("div"); v.className = "mline v"; plate.appendChild(v);
+  if (settings.mirror === "four"){ const h = document.createElement("div"); h.className = "mline h"; plate.appendChild(h); }
+}
+
+/* ---- placing ---- */
+function placePiece(piece, gx, gy, opts = {}){
+  const res = canPlace(piece.bricks, gx, gy, 0);
+  if (!res.ok) return 0;
+  if (!opts.noHistory) pushHistory();
+  const anim = new Map(); let n = 0;
+  const add = (list, z0, delay0) => list.forEach((b, i) => {
+    const nb = {id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: z0 + (b.z || 0)};
+    B.bricks.push(nb); anim.set(nb.id, piece.single ? delay0 : delay0 + i * 16); n++;
+  });
+  const abs = piece.bricks.map(b => ({...b, x: gx + b.x, y: gy + b.y}));
+  add(abs, res.z, 0);
+  if (!opts.noMirror){
+    const orig = JSON.stringify(abs.map(b => [b.x, b.y, b.w, b.h]).sort());
+    mirrorFns().forEach((fn, k) => {
+      rebuildGrid();
+      const m = abs.map(fn);
+      if (JSON.stringify(m.map(b => [b.x, b.y, b.w, b.h]).sort()) === orig) return;
+      const r2 = canPlace(m.map(b => ({...b, z: (b.z || 0)})), 0, 0, 0);
+      if (r2.ok) add(m, r2.z, 90 * (k + 1));
+    });
+  }
+  commit(anim);
+  if (!opts.silent) sfx.snap();
+  emit("placed", {n});
+  return n;
+}
+
+/* ===================== tray UI ===================== */
+function trayCell(){ return window.innerWidth < 720 ? 14 : 16; }
+function buildSwatches(){
+  const box = $("#swatches"); box.innerHTML = "";
+  for (const c of COLORS){
+    const b = document.createElement("button");
+    b.className = "swatch"; b.type = "button"; b.dataset.hex = c.hex;
+    b.setAttribute("aria-label", c[LANG]); b.title = c[LANG];
+    b.setAttribute("aria-pressed", c.hex === color);
+    const f = document.createElement("span"); f.className = "swatch-face"; paintVars(f, c.hex); b.appendChild(f);
+    b.addEventListener("click", () => {
+      color = c.hex; sfx.click();
+      box.querySelectorAll(".swatch").forEach(s => s.setAttribute("aria-pressed", s.dataset.hex === color));
+      buildShapes(); emit("color", color);
+      say(tool === "paint" || tool === "fill" ? t("paintReady", {c: c[LANG]}) : t("colorPicked", {c: c[LANG]}));
+    });
+    box.appendChild(b);
+  }
+}
+function buildStyles(){
+  const box = $("#styles"); box.innerHTML = "";
+  for (const s of STYLES){
+    const b = document.createElement("button"); b.type = "button"; b.className = "stylebtn";
+    b.setAttribute("aria-pressed", s.id === brickStyle); b.title = s[LANG];
+    const prev = pieceEl({w: 2, h: 1, bricks: [{x: 0, y: 0, w: s.id === "round" ? 1 : 2, h: 1, c: color, t: s.id}]}, 14);
+    b.appendChild(prev);
+    const lab = document.createElement("span"); lab.textContent = s[LANG]; b.appendChild(lab);
+    b.addEventListener("click", () => {
+      brickStyle = s.id; sfx.click(); buildStyles(); buildShapes(); buildStamps();
+      say(t("styleSay_" + s.id));
+    });
+    box.appendChild(b);
+  }
+}
+function makeCard(piece, px, label, sel, ariaLabel){
+  const card = document.createElement("div");
+  card.className = "card"; card.tabIndex = 0; card.setAttribute("role", "button");
+  card.setAttribute("aria-label", ariaLabel || label);
+  card.setAttribute("aria-pressed", !!(selected && sameSel(selected, sel)));
+  card.appendChild(pieceEl(piece, px));
+  const lab = document.createElement("span"); lab.className = "size"; lab.textContent = label; card.appendChild(lab);
+  card.addEventListener("pointerdown", e => startTrayDrag(e, sel));
+  card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleSelect(sel); } });
+  return card;
+}
+function buildShapes(){
+  const box = $("#shapes"); box.innerHTML = "";
+  SHAPES.forEach((s, i) => {
+    const p = brickPiece(i);
+    const lab = `${Math.min(p.w, p.h)}×${Math.max(p.w, p.h)}`;
+    box.appendChild(makeCard(p, trayCell(), lab, {kind: "brick", i}, t("brickAria", {s: lab})));
+  });
+  // colour the style previews too
+  $$("#styles .brick").forEach(e => paintVars(e, color));
+}
+function buildStamps(){
+  const box = $("#stamps"); box.innerHTML = "";
+  const names = [...BASE_STAMPS, ...(THEMES[settings.theme] || THEMES.classic).stamps];
+  for (const name of names){
+    const p = artPiece(name);
+    const px = Math.max(4, Math.min(8, Math.floor(56 / Math.max(p.w, p.h))));
+    box.appendChild(makeCard(p, px, ART[name][LANG], {kind: "art", name}));
+  }
+  const mine = $("#myStamps"); mine.innerHTML = "";
+  $("#myStampsWrap").hidden = !myStamps.length;
+  for (const s of myStamps){
+    const p = myPiece(s.id);
+    const px = Math.max(3, Math.min(8, Math.floor(56 / Math.max(p.w, p.h))));
+    const card = makeCard(p, px, t("myStamp"), {kind: "my", id: s.id});
+    const x = document.createElement("button"); x.type = "button"; x.className = "card-x"; x.setAttribute("aria-label", t("deleteStamp")); x.textContent = "×";
+    x.addEventListener("pointerdown", e => e.stopPropagation());
+    x.addEventListener("click", e => {
+      e.stopPropagation();
+      myStamps = myStamps.filter(m => m.id !== s.id); store("snappy-stamps", myStamps);
+      if (selected && selected.kind === "my" && selected.id === s.id) selected = null;
+      buildStamps(); sfx.remove();
+    });
+    card.appendChild(x);
+    mine.appendChild(card);
+  }
+}
+function sameSel(a, b){ return !!(a && b && a.kind === b.kind && a.i === b.i && a.name === b.name && a.id === b.id); }
+function toggleSelect(sel){
+  selected = sameSel(selected, sel) ? null : sel;
+  if (selected && tool !== "move") setTool("move", true);
+  buildShapes(); buildStamps(); sfx.click();
+  say(t(selected ? "tapToPlace" : "dragAnytime"));
+}
+
+/* ===================== tools ===================== */
+function setTool(tl, quiet){
+  tool = tl;
+  $$("[data-tool]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tool === tl));
+  plate.className = plate.className.replace(/tool-\w+/g, "").trim() + " tool-" + tl;
+  if (tl !== "select") cancelSelection();
+  if (tl !== "move" && selected){ selected = null; buildShapes(); buildStamps(); }
+  if (quiet) return;
+  sfx.click(); say(t("tool_" + tl));
+}
+function setMirror(m, quiet){
+  settings.mirror = m; saveSettings();
+  const btn = $("#mirrorBtn");
+  btn.setAttribute("aria-pressed", m !== "off");
+  btn.dataset.mode = m;
+  $("#mirrorTxt").textContent = t("mirror_" + m);
+  drawMirrorLines();
+  if (!quiet){ sfx.turn(); say(t("mirrorSay_" + m)); if (m !== "off") emit("mirrorOn"); }
+}
+function setStack(on, quiet){
+  settings.stack = on; saveSettings();
+  $("#stackBtn").setAttribute("aria-pressed", on);
+  if (!quiet){ sfx.click(); say(t(on ? "stackOn" : "stackOff")); }
+}
+
+/* ===================== pointer handling ===================== */
+let ptr = null, ghostEl = null, floatEl = null;
+const trash = $("#trash");
+function overEl(el, x, y){ const r = el.getBoundingClientRect(); return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom; }
+function cellFromEvent(e){
+  const r = plate.getBoundingClientRect();
+  return {x: Math.floor((e.clientX - r.left) / cell), y: Math.floor((e.clientY - r.top) / cell)};
+}
+
+function startTrayDrag(e, sel){
+  if (e.button > 0 || ptr) return;
+  e.preventDefault();
+  const piece = pieceFor(sel); if (!piece) return;
+  ptr = {kind: "drag", id: e.pointerId, sel, piece, source: "tray", sx: e.clientX, sy: e.clientY, moved: false,
+         grabX: piece.w * cell / 2, grabY: piece.h * cell / 2, lift: e.pointerType === "touch" ? cell * 1.4 : 0, target: null};
+}
+function startBoardDrag(e, b){
+  const r = plate.getBoundingClientRect();
+  ptr = {kind: "drag", id: e.pointerId, source: "board", brick: b, sx: e.clientX, sy: e.clientY, moved: false,
+         piece: {w: b.w, h: b.h, single: true, bricks: [{x: 0, y: 0, w: b.w, h: b.h, c: b.c, t: b.t}]},
+         grabX: e.clientX - (r.left + b.x * cell), grabY: e.clientY - (r.top + b.y * cell), lift: 0, target: null};
+}
+function showFloat(){
+  floatEl = document.createElement("div"); floatEl.className = "floating";
+  floatEl.appendChild(pieceEl(ptr.piece, cell)); document.body.appendChild(floatEl);
+  if (ptr.source === "board"){ const el = els.get(ptr.brick.id); if (el) el.classList.add("lifted"); }
+}
+function moveFloat(e){ floatEl.style.transform = `translate(${e.clientX - ptr.grabX}px, ${e.clientY - ptr.grabY - ptr.lift}px)`; }
+function hideGhost(){ if (ghostEl){ ghostEl.remove(); ghostEl = null; } }
+function computeTarget(e){
+  const r = plate.getBoundingClientRect();
+  const cx = e.clientX, cy = e.clientY - ptr.lift;
+  const inTrash = overEl(trash, e.clientX, e.clientY);
+  trash.classList.toggle("hot", inTrash);
+  const near = cx > r.left - cell && cx < r.right + cell && cy > r.top - cell && cy < r.bottom + cell;
+  ptr.inTrash = inTrash;
+  if (!near || inTrash){ ptr.target = null; hideGhost(); return; }
+  const p = ptr.piece;
+  let gx = Math.round((cx - ptr.grabX - r.left) / cell);
+  let gy = Math.round((cy - ptr.grabY - r.top) / cell);
+  gx = clamp(gx, 0, Math.max(0, B.cols - p.w)); gy = clamp(gy, 0, Math.max(0, B.rows - p.h));
+  const res = canPlace(p.bricks, gx, gy, ptr.source === "board" ? ptr.brick.id : 0);
+  ptr.target = {gx, gy, ...res};
+  if (!ghostEl){ ghostEl = document.createElement("div"); ghostEl.className = "ghost"; plate.appendChild(ghostEl); }
+  placeEl(ghostEl, {x: gx, y: gy, w: p.w, h: p.h});
+  ghostEl.classList.toggle("bad", !res.ok);
+  ghostEl.textContent = res.ok && res.z > 0 ? "▲" + (res.z + 1) : "";
+}
+function endDrag(e, cancelled){
+  const p = ptr; ptr = null;
+  hideGhost(); trash.classList.remove("hot");
+  if (floatEl){ floatEl.remove(); floatEl = null; }
+  if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); }
+  if (cancelled) return;
+  if (!p.moved){
+    if (p.source === "tray") toggleSelect(p.sel); else tapBrick(p.brick);
+    return;
+  }
+  if (p.source === "tray"){
+    if (p.target && p.target.ok){
+      placePiece(p.piece, p.target.gx, p.target.gy);
+      if (Math.random() < .25) say(pick(t("cheers").split("|")));
+    } else if (p.target){ sfx.nope(); say(t(p.target.full ? "tooHigh" : "spotTaken")); }
+    return;
+  }
+  const b = p.brick;
+  if (p.target && p.target.ok){
+    pushHistory(); b.x = p.target.gx; b.y = p.target.gy; b.z = p.target.z; commit(); sfx.snap();
+  } else if (p.inTrash || !p.target){
+    removeBrick(b.id); say(t("byeBrick"));
+  } else { sfx.nope(); const el = els.get(b.id); if (el) wiggle(el); if (!settings.stack) say(t("spotTaken")); }
+}
+function wiggle(el){ el.classList.remove("wiggle"); void el.offsetWidth; el.classList.add("wiggle"); }
+function flash(el){ if (!el || reduceMotion) return; el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+
+function removeBrick(id, noHistory){
+  const i = B.bricks.findIndex(b => b.id === id); if (i < 0) return;
+  if (!noHistory) pushHistory();
+  B.bricks.splice(i, 1);
+  const el = els.get(id);
+  if (el){ els.delete(id); if (reduceMotion) el.remove(); else { el.classList.add("poof"); setTimeout(() => el.remove(), 300); } }
+  commit(); sfx.remove();
+}
+function tapBrick(b){
+  const el = els.get(b.id);
+  if (b.w === b.h){ sfx.nope(); if (el) wiggle(el); say(t("squareTurn")); return; }
+  const nw = b.h, nh = b.w;
+  const tries = [
+    [b.x + Math.round((b.w - nw) / 2), b.y + Math.round((b.h - nh) / 2)],
+    [b.x, b.y], [b.x + b.w - nw, b.y], [b.x, b.y + b.h - nh], [b.x + b.w - nw, b.y + b.h - nh],
+  ];
+  const wasStack = settings.stack; if ((b.z || 0) > 0) settings.stack = true;
+  for (const [x, y] of tries){
+    const res = canPlace([{x: 0, y: 0, w: nw, h: nh}], x, y, b.id);
+    if (res.ok){
+      settings.stack = wasStack;
+      pushHistory(); b.x = x; b.y = y; b.w = nw; b.h = nh; b.z = res.z; commit(); sfx.turn(); flash(els.get(b.id));
+      return;
+    }
+  }
+  settings.stack = wasStack;
+  sfx.nope(); if (el) wiggle(el); say(t("noRoomTurn"));
+}
+
+/* ---- paint / erase brush (with mirror) ---- */
+function brushOp(b){
+  if (!b || ptr.done.has(b.id)) return;
+  ptr.done.add(b.id);
+  if (tool === "erase"){
+    if (!ptr.changed){ pushHistory(); ptr.changed = true; }
+    removeBrick(b.id, true);
+  } else if (tool === "paint" && (b.c !== color || (b.t || "std") !== brickStyle)){
+    if (!ptr.changed){ pushHistory(); ptr.changed = true; }
+    b.c = color; b.t = brickStyle; const el = els.get(b.id); if (el){ styleBrickEl(el, b); flash(el); }
+    emit("change"); sfx.paint();
+  }
+}
+function brushAt(e){
+  const hit = document.elementFromPoint(e.clientX, e.clientY);
+  const el = hit && hit.closest && hit.closest(".brick");
+  if (!el || el.parentElement !== plate) return;
+  const b = byId.get(+el.dataset.id); if (!b || ptr.done.has(b.id)) return;
+  const mirrors = mirrorFns().map(fn => fn(b));
+  brushOp(b);
+  for (const r of mirrors){
+    const b2 = topAt(r.x + ((r.w - 1) >> 1), r.y + ((r.h - 1) >> 1));
+    brushOp(b2);
+  }
+}
+
+/* ---- fill bucket ---- */
+function fillAt(x, y, opts = {}){
+  if (x < 0 || y < 0 || x >= B.cols || y >= B.rows) return 0;
+  const target = topAt(x, y);
+  if (!target){
+    // flood the empty floor
+    const seen = new Set([y * 1000 + x]), q = [[x, y]], cells = [];
+    while (q.length && cells.length < 900){
+      const [cx, cy] = q.shift(); cells.push([cx, cy]);
+      for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const nx = cx + dx, ny = cy + dy, k = ny * 1000 + nx;
+        if (nx < 0 || ny < 0 || nx >= B.cols || ny >= B.rows || seen.has(k)) continue;
+        seen.add(k); if (!grid[ny][nx].length) q.push([nx, ny]);
+      }
+    }
+    const pix = Array.from({length: B.rows}, () => Array(B.cols).fill(null));
+    cells.forEach(([cx, cy]) => { pix[cy][cx] = color; });
+    if (!opts.noHistory) pushHistory();
+    const anim = new Map();
+    decompose(pix, 4).forEach(b => {
+      const nb = {id: nextId++, ...b, t: brickStyle, z: 0};
+      B.bricks.push(nb); anim.set(nb.id, Math.min(500, (Math.abs(b.x - x) + Math.abs(b.y - y)) * 18));
+    });
+    commit(anim);
+    return cells.length;
+  }
+  // recolour connected bricks of the same colour
+  const from = target.c;
+  if (from === color && (target.t || "std") === brickStyle) return 0;
+  const seen = new Set(), q = [[x, y]], hit = new Set();
+  seen.add(y * 1000 + x);
+  while (q.length){
+    const [cx, cy] = q.shift();
+    const b = topAt(cx, cy); if (!b || b.c !== from) continue;
+    hit.add(b);
+    for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const nx = cx + dx, ny = cy + dy, k = ny * 1000 + nx;
+      if (nx < 0 || ny < 0 || nx >= B.cols || ny >= B.rows || seen.has(k)) continue;
+      seen.add(k); q.push([nx, ny]);
+    }
+  }
+  if (!opts.noHistory) pushHistory();
+  hit.forEach(b => { b.c = color; b.t = brickStyle; const el = els.get(b.id); if (el){ styleBrickEl(el, b); flash(el); } });
+  emit("change");
+  return hit.size;
+}
+function doFill(e){
+  const {x, y} = cellFromEvent(e);
+  pushHistory();
+  let n = fillAt(x, y, {noHistory: true});
+  for (const fn of mirrorFns()){ rebuildGrid(); const r = fn({x, y, w: 1, h: 1}); n += fillAt(r.x, r.y, {noHistory: true}); }
+  rebuildGrid(); render();
+  if (n){ sfx.fill(); emit("placed", {n: 0}); } else { B.hist.pop(); updateUndo(); sfx.nope(); }
+}
+
+/* ---- select -> stamp ---- */
+let selBox = null, selBricks = [];
+function cancelSelection(){
+  selBricks.forEach(b => { const el = els.get(b.id); if (el) el.classList.remove("selected"); });
+  selBricks = []; if (selBox){ selBox.remove(); selBox = null; }
+  const bar = $("#selbar"); if (bar) bar.hidden = true;
+}
+function drawSelBox(x0, y0, x1, y1){
+  if (!selBox){ selBox = document.createElement("div"); selBox.className = "selbox"; plate.appendChild(selBox); }
+  const x = Math.min(x0, x1), y = Math.min(y0, y1);
+  placeEl(selBox, {x, y, w: Math.abs(x1 - x0) + 1, h: Math.abs(y1 - y0) + 1});
+}
+function finishSelection(x0, y0, x1, y1){
+  const xa = Math.min(x0, x1), xb = Math.max(x0, x1), ya = Math.min(y0, y1), yb = Math.max(y0, y1);
+  selBricks = B.bricks.filter(b => b.x >= xa && b.y >= ya && b.x + b.w - 1 <= xb && b.y + b.h - 1 <= yb);
+  if (!selBricks.length){ cancelSelection(); say(t("selectNone")); return; }
+  selBricks.forEach(b => { const el = els.get(b.id); if (el) el.classList.add("selected"); });
+  $("#selbar").hidden = false;
+  $("#selCount").textContent = t(selBricks.length === 1 ? "oneBrick" : "nBricks", {n: selBricks.length});
+  say(t("selectDone"));
+}
+function makeStampFromSelection(){
+  if (!selBricks.length) return;
+  const mx = Math.min(...selBricks.map(b => b.x)), my = Math.min(...selBricks.map(b => b.y));
+  const mz = Math.min(...selBricks.map(b => b.z || 0));
+  const bricks = selBricks.map(b => ({x: b.x - mx, y: b.y - my, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: (b.z || 0) - mz}));
+  const w = Math.max(...bricks.map(b => b.x + b.w)), h = Math.max(...bricks.map(b => b.y + b.h));
+  const s = {id: "s" + Date.now().toString(36), w, h, bricks};
+  myStamps.unshift(s); myStamps = myStamps.slice(0, 12); store("snappy-stamps", myStamps);
+  cancelSelection(); setTool("move", true);
+  selected = {kind: "my", id: s.id}; buildShapes(); buildStamps();
+  sfx.cheer(); say(t("stampMade")); emit("stampMade");
+}
+function deleteSelection(){
+  if (!selBricks.length) return;
+  pushHistory();
+  const ids = new Set(selBricks.map(b => b.id));
+  B.bricks = B.bricks.filter(b => !ids.has(b.id));
+  selBricks.forEach(b => { const el = els.get(b.id); if (el){ els.delete(b.id); el.classList.add("poof"); setTimeout(() => el.remove(), 300); } });
+  selBricks = []; cancelSelection(); commit(); sfx.remove();
+}
+
+/* ---- board pointer events ---- */
+plate.addEventListener("pointerdown", e => {
+  if (e.button > 0 || ptr) return;
+  e.preventDefault();
+  if (tool === "paint" || tool === "erase"){ ptr = {kind: "brush", id: e.pointerId, done: new Set(), changed: false}; brushAt(e); return; }
+  if (tool === "fill"){ doFill(e); return; }
+  if (tool === "select"){
+    cancelSelection();
+    const c = cellFromEvent(e);
+    ptr = {kind: "select", id: e.pointerId, x0: clamp(c.x, 0, B.cols - 1), y0: clamp(c.y, 0, B.rows - 1)};
+    ptr.x1 = ptr.x0; ptr.y1 = ptr.y0; drawSelBox(ptr.x0, ptr.y0, ptr.x1, ptr.y1);
+    return;
+  }
+  const el = e.target.closest(".brick");
+  if (el && el.parentElement === plate){ const b = byId.get(+el.dataset.id); if (b && !B.locked) startBoardDrag(e, b); return; }
+  const c = cellFromEvent(e);
+  ptr = {kind: "tap", id: e.pointerId, sx: e.clientX, sy: e.clientY, gx: c.x, gy: c.y};
+});
+window.addEventListener("pointermove", e => {
+  if (!ptr || e.pointerId !== ptr.id) return;
+  if (ptr.kind === "brush"){ brushAt(e); return; }
+  if (ptr.kind === "select"){
+    const c = cellFromEvent(e);
+    ptr.x1 = clamp(c.x, 0, B.cols - 1); ptr.y1 = clamp(c.y, 0, B.rows - 1);
+    drawSelBox(ptr.x0, ptr.y0, ptr.x1, ptr.y1); return;
+  }
+  if (ptr.kind === "tap") return;
+  if (!ptr.moved){
+    if (Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) < 7) return;
+    ptr.moved = true; showFloat();
+  }
+  e.preventDefault();
+  moveFloat(e); computeTarget(e);
+}, {passive: false});
+window.addEventListener("pointerup", e => {
+  if (!ptr || e.pointerId !== ptr.id) return;
+  if (ptr.kind === "brush"){ ptr = null; emit("change"); return; }
+  if (ptr.kind === "select"){ const p = ptr; ptr = null; finishSelection(p.x0, p.y0, p.x1, p.y1); return; }
+  if (ptr.kind === "tap"){
+    const tp = ptr; ptr = null;
+    if (Math.hypot(e.clientX - tp.sx, e.clientY - tp.sy) > 12) return;
+    const piece = pieceFor(selected);
+    if (!piece){ say(t("tapHint")); return; }
+    const gx = clamp(tp.gx - Math.floor((piece.w - 1) / 2), 0, Math.max(0, B.cols - piece.w));
+    const gy = clamp(tp.gy - Math.floor((piece.h - 1) / 2), 0, Math.max(0, B.rows - piece.h));
+    if (!placePiece(piece, gx, gy)){ sfx.nope(); say(t(settings.stack ? "tooHigh" : "noRoomThere")); }
+    return;
+  }
+  endDrag(e, false);
+});
+window.addEventListener("pointercancel", e => {
+  if (!ptr || e.pointerId !== ptr.id) return;
+  if (ptr.kind === "drag") endDrag(e, true);
+  else if (ptr.kind === "select"){ ptr = null; cancelSelection(); }
+  else ptr = null;
+});
+
+window.addEventListener("keydown", e => {
+  const typing = e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA");
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && !typing){ e.preventDefault(); undo(); return; }
+  if (e.key === "Escape"){ closeModal(); cancelSelection(); }
+  if (typing) return;
+  if (e.key.toLowerCase() === "r"){
+    if (ptr && ptr.kind === "drag" && ptr.moved && ptr.piece.single){
+      const p = ptr.piece; [p.w, p.h] = [p.h, p.w]; p.bricks[0].w = p.w; p.bricks[0].h = p.h;
+      [ptr.grabX, ptr.grabY] = [p.w * cell / 2, p.h * cell / 2];
+      floatEl.innerHTML = ""; floatEl.appendChild(pieceEl(p, cell)); sfx.turn(); hideGhost();
+    } else toggleTurn();
+  }
+});
+function toggleTurn(){
+  turned = !turned; $("#turnBtn").setAttribute("aria-pressed", turned);
+  buildShapes(); sfx.turn(); say(t(turned ? "turnedUp" : "turnedDown"));
+}
+
+/* ===================== toolbar actions ===================== */
+let clearArmed = null;
+function clearBoard(){
+  if (!B.bricks.length){ say(t("alreadyEmpty")); return; }
+  if (!clearArmed){
+    $("#clearTxt").textContent = t("sure"); say(t("clearAgain")); sfx.click();
+    clearArmed = setTimeout(() => { clearArmed = null; $("#clearTxt").textContent = t("clear"); }, 3000);
+    return;
+  }
+  clearTimeout(clearArmed); clearArmed = null; $("#clearTxt").textContent = t("clear");
+  pushHistory(); sfx.whoosh(); cancelSelection();
+  const old = B.bricks; B.bricks = [];
+  if (!reduceMotion){
+    for (const b of old){
+      const el = els.get(b.id); if (!el) continue; els.delete(b.id);
+      el.classList.add("fly");
+      el.style.transform = `translate(${(Math.random() - .5) * 400}px, ${-200 - Math.random() * 300}px) rotate(${(Math.random() - .5) * 720}deg)`;
+      setTimeout(() => el.remove(), 520);
+    }
+  }
+  commit(); say(t("allClear"));
+}
+
+/* ---- saving files ---- */
+const capDownloads = IN_ARTIFACT ? Promise.resolve(window.claude.use("downloads")).catch(() => null) : Promise.resolve(null);
+async function saveFile(blob, filename, previewUrl){
+  if (!IN_ARTIFACT){
+    try {
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+      return "saved";
+    } catch(e){ /* fall through to preview */ }
+  } else {
+    const d = await Promise.race([capDownloads, new Promise(r => setTimeout(() => r(null), 1500))]);
+    if (d){
+      try { await d.save({filename, data: blob}); return "saved"; }
+      catch(err){ if (err && err.code === "declined") return "declined"; }
+    }
+  }
+  openModal(`<p>${esc(t("holdToSave"))}</p><img alt="" src="${previewUrl}"><div class="modal-actions"><button class="btn" data-close>${esc(t("close"))}</button></div>`, t("yourPicture"));
+  return "preview";
+}
+async function savePicture(){
+  if (!B.bricks.length){ say(t("buildFirst")); return; }
+  sfx.click();
+  const cv = boardCanvas(B, 40);
+  const blob = await new Promise(res => cv.toBlob(res, "image/png"));
+  const r = await saveFile(blob, "my-brick-picture.png", cv.toDataURL("image/png"));
+  if (r === "saved"){ say(t("savedPic")); sfx.cheer(); emit("saved"); }
+  else if (r === "declined") say(t("noPic"));
+  else { say(t("picReady")); emit("saved"); }
+}
+
+/* ---- modal ---- */
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c])); }
+let modalEl = null;
+function openModal(html, label, cls = ""){
+  closeModal();
+  modalEl = document.createElement("div"); modalEl.className = "modal";
+  modalEl.innerHTML = `<div class="modal-card ${cls}" role="dialog" aria-modal="true" aria-label="${esc(label || "")}">${html}</div>`;
+  modalEl.addEventListener("click", e => { if (e.target === modalEl || e.target.closest("[data-close]")) closeModal(); });
+  document.body.appendChild(modalEl);
+  const f = modalEl.querySelector("[data-autofocus]") || modalEl.querySelector("button, input");
+  if (f) f.focus();
+  return modalEl.querySelector(".modal-card");
+}
+function closeModal(){ if (modalEl){ modalEl.remove(); modalEl = null; } }
+
+/* ---- board settings ---- */
+function buildBoardControls(){
+  const sz = $("#sizes"); sz.innerHTML = "";
+  for (const s of SIZES){
+    const b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.dataset.size = s.id;
+    b.textContent = s[LANG]; b.title = `${s.cols} × ${s.rows}`;
+    b.addEventListener("click", () => setSize(s, true));
+    sz.appendChild(b);
+  }
+  const pl = $("#plates"); pl.innerHTML = "";
+  for (const p of PLATES){
+    const b = document.createElement("button"); b.type = "button"; b.className = "swatch"; b.dataset.hex = p.hex;
+    b.setAttribute("aria-label", p[LANG]); b.title = p[LANG];
+    const f = document.createElement("span"); f.className = "swatch-face"; paintVars(f, p.hex); b.appendChild(f);
+    b.addEventListener("click", () => {
+      if (B.plate === p.hex) return;
+      pushHistory(); B.plate = p.hex; applyBoard(); emit("change"); sfx.click();
+      say(t("plateSay", {c: p[LANG]}));
+    });
+    pl.appendChild(b);
+  }
+  syncBoardControls();
+}
+function syncBoardControls(){
+  $$("#sizes .btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === sizeOf().id));
+  $$("#plates .swatch").forEach(b => b.setAttribute("aria-pressed", b.dataset.hex === B.plate));
+}
+function sizeOf(){ return SIZES.find(s => s.cols === B.cols) || SIZES[1]; }
+function setSize(s, fromUser){
+  if (s.cols === B.cols) return;
+  if (fromUser) pushHistory();
+  const before = B.bricks.length;
+  B.cols = s.cols; B.rows = s.rows;
+  B.bricks = B.bricks.filter(b => b.x + b.w <= s.cols && b.y + b.h <= s.rows);
+  applyBoard(); commit();
+  if (fromUser){ sfx.click(); say(before > B.bricks.length ? t("sizeCut") : t("sizeSay", {s: s[LANG], c: s.cols, r: s.rows})); }
+}
+on("board", syncBoardControls);
+
+/* ===================== words -> bricks ===================== */
+const RASTER_FONT = '"Baloo Bhaijaan 2", "Baloo 2", "Noto Naskh Arabic", "Geeza Pro", Arial, sans-serif';
+const MIN_FS = 17;
+let nameMode = "rainbow";
+
+function glyph(ch){ const g = FONT[ch]; if (!g) return null; const rows = g.split("|"); return {w: rows[0].length, rows}; }
+function wordWidth(word){ const cs = [...word]; return cs.reduce((a, ch) => a + glyph(ch).w, 0) + cs.length - 1; }
+function isPixelText(s){ return [...s].every(ch => FONT[ch] || ch === " "); }
+
+function layoutLines(words, cols, breakWords){
+  const parts = [];
+  for (const w of words){
+    if (wordWidth(w) <= cols){ parts.push(w); continue; }
+    if (!breakWords) return null;
+    let cur = "";
+    for (const ch of w){ const tt = cur + ch; if (cur && wordWidth(tt) > cols){ parts.push(cur); cur = ch; } else cur = tt; }
+    if (cur) parts.push(cur);
+  }
+  const lines = []; let line = [];
+  const lw = arr => arr.reduce((a, w) => a + wordWidth(w), 0) + 3 * (arr.length - 1);
+  for (const p of parts){ if (line.length && lw([...line, p]) > cols){ lines.push(line); line = [p]; } else line.push(p); }
+  if (line.length) lines.push(line);
+  return lines;
+}
+function textColors(mode, explicit){
+  if (explicit) return explicit;
+  const far = c => colorDist(c, B.plate) > 90;
+  if (mode === "one") return [color];
+  const list = (mode === "pastel" ? CANDY : RAINBOW).filter(far);
+  return list.length ? list : RAINBOW;
+}
+
+/* ---- pixel-font path (A–Z, 0–9) ---- */
+function composePixel(text, cols, rows, cl){
+  const words = text.split(/ +/).filter(Boolean);
+  let lines = layoutLines(words, cols, false);
+  if (!lines || lines.length * 6 - 1 > rows) lines = layoutLines(words, cols, true);
+  if (!lines || lines.length * 6 - 1 > rows) return null;
+  const lineW = l => l.reduce((a, w) => a + wordWidth(w), 0) + 3 * (l.length - 1);
+  const W = Math.max(...lines.map(lineW)), H = lines.length * 6 - 1;
+  const bricks = [], letters = [];
+  let n = 0;
+  lines.forEach((l, li) => {
+    let x = Math.floor((W - lineW(l)) / 2);
+    l.forEach(word => {
+      [...word].forEach(ch => {
+        const g = glyph(ch), c = cl[n % cl.length];
+        const pix = g.rows.map(r => [...r].map(p => p === "#" ? c : null));
+        decompose(pix).forEach((b, k) => bricks.push({...b, x: x + b.x, y: li * 6 + b.y, delay: n * 140 + k * 22, li: n}));
+        letters.push({ch, delay: n * 140});
+        n++; x += g.w + 1;
+      });
+      x += 2;
+    });
+  });
+  return {kind: "pixel", w: W, h: H, bricks, letters, rtl: false, fs: 99, dur: n * 140};
+}
+
+/* ---- font raster path (Arabic and anything else) ---- */
+function rasterLine(text, fs){
+  const cv = document.createElement("canvas");
+  const ctx = cv.getContext("2d", {willReadFrequently: true});
+  const font = `700 ${fs}px ${RASTER_FONT}`;
+  ctx.font = font;
+  const w = Math.ceil(ctx.measureText(text).width) + fs * 2, h = Math.ceil(fs * 2.4);
+  cv.width = w; cv.height = h;
+  ctx.font = font; ctx.fillStyle = "#000"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.direction = hasArabic(text) ? "rtl" : "ltr";
+  ctx.fillText(text, w / 2, h / 2);
+  const d = ctx.getImageData(0, 0, w, h).data;
+  let x0 = w, x1 = -1, y0 = h, y1 = -1;
+  const m = Array.from({length: h}, () => new Uint8Array(w));
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
+    if (d[(y * w + x) * 4 + 3] >= 118){ m[y][x] = 1; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  if (x1 < 0) return null;
+  return {w: x1 - x0 + 1, h: y1 - y0 + 1, m: m.slice(y0, y1 + 1).map(r => r.slice(x0, x1 + 1))};
+}
+function splitWords(words, k){
+  if (k === 1) return [words.join(" ")];
+  if (words.length < k) return null;
+  // balance by character count
+  const total = words.join(" ").length; const out = []; let cur = [];
+  for (const w of words){
+    cur.push(w);
+    if (out.length < k - 1 && cur.join(" ").length >= total / k){ out.push(cur.join(" ")); cur = []; }
+  }
+  if (cur.length) out.push(cur.join(" "));
+  return out.length === k ? out : null;
+}
+function composeRaster(text, cols, rows, cl){
+  const words = text.split(/\s+/).filter(Boolean);
+  let best = null;
+  for (let k = 1; k <= 3; k++){
+    const lines = splitWords(words, k); if (!lines) continue;
+    for (let fs = 34; fs >= 8; fs--){
+      const r = lines.map(l => rasterLine(l, fs));
+      if (r.some(x => !x)) break;
+      const W = Math.max(...r.map(x => x.w)), H = r.reduce((a, x) => a + x.h, 0) + (k - 1);
+      if (W <= cols && H <= rows){
+        if (!best || fs > best.fs) best = {fs, r, W, H};
+        break;
+      }
+    }
+  }
+  if (!best) return null;
+  const {r, W, H} = best;
+  const mask = Array.from({length: H}, () => new Uint8Array(W));
+  let yy = 0;
+  r.forEach(line => {
+    const ox = Math.floor((W - line.w) / 2);
+    line.m.forEach((row, y) => row.forEach((v, x) => { if (v) mask[yy + y][ox + x] = 1; }));
+    yy += line.h + 1;
+  });
+  const rtl = hasArabic(text);
+  // colour by connected pieces; tiny pieces (dots) take the colour of the nearest big piece
+  const lab = Array.from({length: H}, () => new Int32Array(W).fill(-1));
+  const comps = [];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
+    if (!mask[y][x] || lab[y][x] >= 0) continue;
+    const id = comps.length, q = [[x, y]], cells = []; lab[y][x] = id;
+    while (q.length){
+      const [cx, cy] = q.pop(); cells.push([cx, cy]);
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++){
+        const nx = cx + dx, ny = cy + dy;
+        if (nx >= 0 && ny >= 0 && nx < W && ny < H && mask[ny][nx] && lab[ny][nx] < 0){ lab[ny][nx] = id; q.push([nx, ny]); }
+      }
+    }
+    const mx = cells.reduce((a, c) => a + c[0], 0) / cells.length, my = cells.reduce((a, c) => a + c[1], 0) / cells.length;
+    comps.push({id, cells, mx, my, big: cells.length >= Math.max(6, best.fs * .9)});
+  }
+  const bigs = comps.filter(c => c.big).sort((a, b) => rtl ? b.mx - a.mx : a.mx - b.mx);
+  bigs.forEach((c, i) => { c.color = cl[i % cl.length]; });
+  comps.filter(c => !c.big).forEach(c => {
+    let near = bigs[0], d = 1e9;
+    for (const b of bigs){ const dd = (b.mx - c.mx) ** 2 + (b.my - c.my) ** 2 * .3; if (dd < d){ d = dd; near = b; } }
+    c.color = near ? near.color : cl[0];
+  });
+  const pix = Array.from({length: H}, () => Array(W).fill(null));
+  comps.forEach(c => c.cells.forEach(([x, y]) => { pix[y][x] = c.color; }));
+  const bricks = decompose(pix).map(b => ({...b, delay: (rtl ? (W - 1 - b.x) : b.x) * 26 + b.y * 6}));
+  const dur = W * 26;
+  return {kind: "raster", w: W, h: H, bricks, letters: [], rtl, fs: best.fs, dur};
+}
+function compose(text, cols, rows, mode, explicit){
+  const cl = textColors(mode, explicit);
+  const up = text.toUpperCase();
+  if (!hasArabic(text) && isPixelText(up)) return composePixel(up, cols, rows, cl);
+  return composeRaster(text, cols, rows, cl);
+}
+
+/* ---- put text on the board on screen ---- */
+function buildText(raw, opts = {}){
+  const text = (raw || "").trim().replace(/\s+/g, " ");
+  if (!text) return {ok: false, reason: "empty"};
+  const up = text.toUpperCase();
+  const shown = (!hasArabic(text) && isPixelText(up)) ? up : text;
+  const startIdx = Math.max(0, SIZES.findIndex(s => s.cols === B.cols));
+  const sizes = opts.grow ? SIZES.slice(startIdx) : [sizeOf()];
+  let plan = null, size = null;
+  for (const s of sizes){
+    const p = compose(text, s.cols, s.rows, opts.mode || nameMode, opts.colors);
+    if (p && (p.kind === "pixel" || p.fs >= MIN_FS || s === sizes[sizes.length - 1])){ plan = p; size = s; break; }
+  }
+  if (!plan) return {ok: false, reason: "tooLong"};
+  if (!opts.noHistory) pushHistory();
+  if (size.cols !== B.cols) setSize(size, false);
+  rebuildGrid();
+  const gx = opts.x != null ? opts.x : Math.floor((B.cols - plan.w) / 2);
+  const rel = plan.bricks.map(b => ({...b, x: b.x + gx}));
+  let dy;
+  if (opts.y != null) dy = opts.y;
+  else {
+    const mid = Math.floor((B.rows - plan.h) / 2);
+    const tries = []; for (let y = 0; y <= B.rows - plan.h; y++) tries.push(y);
+    tries.sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid));
+    const free = opts.overwrite ? null : tries.find(y => rel.every(b => {
+      for (let yy = y + b.y; yy < y + b.y + b.h; yy++) for (let xx = b.x; xx < b.x + b.w; xx++) if (grid[yy][xx].length) return false;
+      return true;
+    }));
+    dy = free != null ? free : mid;
+  }
+  const taken = new Set();
+  rel.forEach(b => { b.y += dy; for (let y = b.y; y < b.y + b.h; y++) for (let x = b.x; x < b.x + b.w; x++) taken.add(y * 1000 + x); });
+  B.bricks = B.bricks.filter(b => {
+    for (let y = b.y; y < b.y + b.h; y++) for (let x = b.x; x < b.x + b.w; x++) if (taken.has(y * 1000 + x)) return false;
+    return true;
+  });
+  const anim = new Map();
+  const st = opts.style || (brickStyle === "round" ? "std" : brickStyle);
+  rel.forEach(b => {
+    const nb = {id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: st, z: 0};
+    B.bricks.push(nb); anim.set(nb.id, opts.fast ? Math.min(b.delay, 300) : b.delay);
+  });
+  commit(opts.noAnim ? null : anim);
+  if (!opts.quiet){
+    if (plan.kind === "pixel"){
+      plan.letters.forEach(l => setTimeout(() => { sfx.snap(); if (settings.talk && !opts.noSpeak) speak(l.ch === "♥" ? "heart" : l.ch === "★" ? "star" : l.ch, "en"); }, reduceMotion ? 0 : l.delay));
+    } else {
+      for (let i = 0; i < Math.min(12, plan.w / 3); i++) sfx.soft(i * .08);
+    }
+    const end = reduceMotion ? 0 : plan.dur + 350;
+    if (!opts.noSpeak) setTimeout(() => speak(shown, plan.rtl ? "ar" : "en"), end + (plan.kind === "pixel" ? 150 : 0));
+    if (opts.celebrate !== false) setTimeout(() => { sfx.cheer(); confetti(); }, end);
+  }
+  return {ok: true, text: shown, rtl: plan.rtl, plan, x: gx, y: dy};
+}
+
+/* ---- the name form ---- */
+function buildName(raw){
+  if (typeof currentMode !== "undefined" && currentMode !== "free") setMode("free", true);
+  const res = buildText(raw, {grow: true});
+  if (!res.ok){
+    sfx.nope();
+    say(t(res.reason === "empty" ? "typeFirst" : "tooLong"), {speak: true});
+    return;
+  }
+  say(t("nameWow", {n: res.text}));
+  emit("nameBuilt", res);
+}
+
+/* ---- logo made of bricks ---- */
+function buildLogo(){
+  const logo = $("#logo");
+  const px = window.innerWidth < 720 ? 8 : 11;
+  const words = ["SNAPPY", "BRICKS"];
+  const W = Math.max(...words.map(wordWidth)), H = 11;
+  logo.style.setProperty("--cell", px + "px");
+  logo.style.width = W * px + "px"; logo.style.height = H * px + 2 + "px";
+  logo.innerHTML = "";
+  let n = 0;
+  words.forEach((word, li) => {
+    let x = Math.floor((W - wordWidth(word)) / 2);
+    [...word].forEach(ch => {
+      const g = glyph(ch); const c = LOGO_COLORS[n++ % LOGO_COLORS.length];
+      const pix = g.rows.map(r => [...r].map(p => p === "#" ? c : null));
+      decompose(pix).forEach(b => {
+        const e = document.createElement("div"); e.className = "brick";
+        e.style.left = (x + b.x) * px + .5 + "px"; e.style.top = (li * 6 + b.y) * px + .5 + "px";
+        e.style.width = b.w * px - 1 + "px"; e.style.height = b.h * px - 1 + "px";
+        paintVars(e, c); logo.appendChild(e);
+      });
+      x += g.w + 1;
+    });
+  });
+}
+
+/* ===================== games ===================== */
+let currentMode = "free";
+const G = {};
+const progress = Object.assign({puzzles: {}, traced: {en: [], ar: []}, spelled: {en: [], ar: []}, mathLevel: 1, mathSolved: 0,
+  puzzleIdx: 0, traceIdx: {en: 0, ar: 0}, spellIdx: {en: 0, ar: 0}, solvedCount: 0}, store("snappy-progress") || {});
+function saveProgress(){ store("snappy-progress", progress); }
+const mod = (i, n) => ((i % n) + n) % n;
+const starText = n => "★".repeat(n) + "☆".repeat(3 - n);
+let gAlpha = null;
+let CLASS_WORDS = [];
+function spellList(alpha){
+  const extra = CLASS_WORDS.map(w => String(w).trim()).filter(Boolean).map(w => hasArabic(w) ? (alpha === "ar" ? [w, "⭐"] : null)
+    : (alpha === "en" && /^[A-Za-z]{2,10}$/.test(w) ? [w.toUpperCase(), "⭐"] : null)).filter(Boolean);
+  return [...extra, ...SPELL[alpha]];
+}
+
+function clearHints(cls){ plate.querySelectorAll(cls ? ".hintcell." + cls : ".hintcell").forEach(e => e.remove()); }
+function addHint(x, y, cls, bg){
+  const d = document.createElement("div"); d.className = "hintcell " + cls;
+  placeEl(d, {x, y, w: 1, h: 1}); if (bg) d.style.setProperty("--hc", bg);
+  plate.appendChild(d); return d;
+}
+function setProgress(a, b, text){
+  $("#gBarFill").style.width = (b ? Math.round(100 * Math.min(a, b) / b) : 0) + "%";
+  $("#gProg").textContent = text;
+}
+function gameBoard(cols, rows, plateHex){
+  G.board = newBoard(cols, rows, plateHex);
+  const same = B === G.board; switchBoard(G.board); if (same) applyBoard();
+  clearHints();
+}
+
+function setMode(m, quiet){
+  if (m === currentMode && m === "free") return;
+  currentMode = m; document.body.dataset.mode = m;
+  $$("[data-gmode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.gmode === m));
+  clearHints();
+  if (m === "free"){
+    $("#gamePanel").hidden = true; switchBoard(FREE);
+    if (!quiet){ sfx.click(); say(t("freeBack")); }
+    return;
+  }
+  $("#gamePanel").hidden = false;
+  if (!gAlpha) gAlpha = LANG;
+  sfx.click();
+  startGame(m);
+}
+async function startGame(m, idx){
+  Object.assign(G, {ready: false, kind: m, solved: false, hints: 0, mistakes: 0, warned: false, warnedK: false, wrong: []});
+  $("#gStars").textContent = ""; $("#gLetters").innerHTML = ""; $("#gNext").classList.remove("pulse");
+  $("#gAlpha").hidden = !(m === "trace" || m === "spell");
+  $("#gAlpha").textContent = gAlpha === "ar" ? "ABC" : "أ ب ت";
+  $("#gAlpha").setAttribute("aria-label", t("letterSet"));
+  if (gAlpha === "ar" && (m === "trace" || m === "spell")) await ensureFont(AR_LETTERS);
+  if (m === "copy") startCopy(idx != null ? idx : progress.puzzleIdx);
+  if (m === "trace") startTrace(idx != null ? idx : progress.traceIdx[gAlpha]);
+  if (m === "spell") startSpell(idx != null ? idx : progress.spellIdx[gAlpha]);
+  if (m === "math") startMath();
+}
+function refreshGameText(){ if (currentMode !== "free" && G.refresh) G.refresh(); }
+on("lang", () => {
+  $$("[data-gmode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.gmode === currentMode));
+  refreshGameText();
+});
+on("change", () => { if (currentMode !== "free" && G.ready && B === G.board && !G.solved) checkGame(); });
+function checkGame(){
+  if (G.kind === "copy") checkCopy();
+  else if (G.kind === "trace") checkTrace();
+  else if (G.kind === "math") checkMath();
+}
+function win(key, vars, n){
+  G.solved = true;
+  const s = starText(n);
+  $("#gStars").textContent = s;
+  progress.solvedCount = (progress.solvedCount || 0) + 1; saveProgress();
+  setTimeout(() => { sfx.cheer(); confetti(); }, 250);
+  say(t(key, {...vars, s}));
+  $("#gNext").classList.add("pulse");
+  emit("gameWin", {kind: G.kind, stars: n});
+}
+
+/* ---------- Copy the picture ---------- */
+function plateFor(colors){
+  const opts = ["#2F9BF0", "#FF2E8A", "#3DC45A", "#8F7FEA", "#FFD23F"];
+  let best = opts[0], bd = -1;
+  for (const p of opts){ const d = Math.min(...colors.map(c => colorDist(c, p))); if (d > bd){ bd = d; best = p; } }
+  return best;
+}
+function artCanvas(pix, plateHex, c){
+  const tmp = {cols: pix[0].length + 2, rows: pix.length + 2, plate: plateHex,
+    bricks: decompose(pix).map((b, i) => ({...b, id: i + 1, x: b.x + 1, y: b.y + 1, t: "std", z: 0}))};
+  const cv = boardCanvas(tmp, c, {pad: 0, foot: 0, bg: "#ffffff"});
+  cv.className = "gp-canvas"; return cv;
+}
+function startCopy(i){
+  i = mod(i, PUZZLES.length); progress.puzzleIdx = i; saveProgress();
+  const pz = PUZZLES[i], pix = artToPix(ART[pz.art].art);
+  const h = pix.length, w = pix[0].length;
+  const colors = [...new Set(pix.flat().filter(Boolean))];
+  gameBoard(16, 12, plateFor(colors));
+  Object.assign(G, {pz, pix, ox: Math.floor((16 - w) / 2), oy: Math.floor((12 - h) / 2)});
+  pix.forEach((r, y) => r.forEach((c, x) => {
+    if (!c) return;
+    if (pz.lvl === "easy") addHint(G.ox + x, G.oy + y, "ghost-color", c);
+    if (pz.lvl === "medium") addHint(G.ox + x, G.oy + y, "ghost-line");
+  }));
+  const tg = $("#gTarget"); tg.innerHTML = ""; tg.appendChild(artCanvas(pix, B.plate, 16));
+  G.refresh = () => {
+    $("#gTitle").textContent = t("copyTitle", {n: ART[pz.art][LANG]});
+    $("#gText").textContent = `${t("copyText_" + pz.lvl)} (${t(pz.lvl)} · ${LEVEL_AGES[pz.lvl][LANG === "ar" ? 1 : 0]})`;
+  };
+  G.refresh();
+  color = colors[0]; buildSwatches(); buildShapes();
+  G.ready = true; checkCopy();
+  say(t("gameStart", {t: $("#gTitle").textContent}), {speak: true});
+}
+function checkCopy(){
+  let right = 0, total = 0; const wrong = [];
+  G.pix.forEach((r, y) => r.forEach((c, x) => {
+    const b = topAt(G.ox + x, G.oy + y), bc = b ? b.c : null;
+    if (c){ total++; if (bc === c) right++; else wrong.push([G.ox + x, G.oy + y]); }
+    else if (bc) wrong.push([G.ox + x, G.oy + y]);
+  }));
+  G.wrong = wrong;
+  setProgress(right, total, t("progStuds", {a: right, b: total}));
+  if (!wrong.length){
+    const n = G.hints === 0 ? 3 : G.hints <= 2 ? 2 : 1;
+    const key = G.pz.art;
+    progress.puzzles[key] = Math.max(progress.puzzles[key] || 0, n); saveProgress();
+    clearHints();
+    win("copyWin", {n: ART[key][LANG]}, n);
+  }
+}
+
+/* ---------- Trace letters ---------- */
+function startTrace(i){
+  const list = TRACE[gAlpha]; i = mod(i, list.length); progress.traceIdx[gAlpha] = i; saveProgress();
+  const [L, word, emo] = list[i];
+  gameBoard(16, 12, "#2F9BF0");
+  const cells = [];
+  if (gAlpha === "en"){
+    const g = glyph(L), ox = Math.floor((16 - g.w * 2) / 2), oy = 1;
+    g.rows.forEach((r, y) => [...r].forEach((p, x) => {
+      if (p === "#") for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) cells.push([ox + x * 2 + dx, oy + y * 2 + dy]);
+    }));
+  } else {
+    let best = null;
+    for (let fs = 40; fs >= 8; fs--){ const r = rasterLine(L, fs); if (r && r.w <= 14 && r.h <= 10){ best = r; break; } }
+    if (best){
+      const ox = Math.floor((16 - best.w) / 2), oy = Math.floor((12 - best.h) / 2);
+      best.m.forEach((row, y) => row.forEach((v, x) => { if (v) cells.push([ox + x, oy + y]); }));
+    }
+  }
+  Object.assign(G, {cells, L, word, emo});
+  cells.forEach(([x, y]) => addHint(x, y, "ghost-line"));
+  $("#gTarget").innerHTML = `<div class="gp-emoji" aria-hidden="true">${emo}</div><div class="gp-word" dir="auto">${esc(L)} · ${esc(word)}</div>`;
+  G.refresh = () => { $("#gTitle").textContent = t("traceTitle", {l: L}); $("#gText").textContent = t("traceText"); };
+  G.refresh();
+  G.ready = true; checkTrace();
+  say(t("traceTitle", {l: L})); speak(L, gAlpha);
+}
+function checkTrace(){
+  let a = 0; const miss = [];
+  G.cells.forEach(([x, y]) => { if (topAt(x, y)) a++; else miss.push([x, y]); });
+  G.wrong = miss;
+  setProgress(a, G.cells.length, t("progCover", {a, b: G.cells.length}));
+  if (!miss.length && G.cells.length){
+    const inside = new Set(G.cells.map(([x, y]) => y * 1000 + x));
+    let extra = 0;
+    for (let y = 0; y < B.rows; y++) for (let x = 0; x < B.cols; x++) if (topAt(x, y) && !inside.has(y * 1000 + x)) extra++;
+    const n = extra <= 3 ? 3 : extra <= 10 ? 2 : 1;
+    if (!progress.traced[gAlpha].includes(G.L)) progress.traced[gAlpha].push(G.L);
+    saveProgress(); clearHints();
+    win("traceWin", {l: G.L, w: G.word}, n);
+    setTimeout(() => speak(`${G.L}. ${G.word}`, gAlpha), 700);
+  }
+}
+
+/* ---------- Spell it ---------- */
+function startSpell(i){
+  const list = spellList(gAlpha); i = mod(i, list.length); progress.spellIdx[gAlpha] = i; saveProgress();
+  const [word, emo] = list[i];
+  gameBoard(24, 18, "#3DC45A");
+  Object.assign(G, {word, emo, letters: [...word], pos: 0});
+  if (gAlpha === "en") G.plan = compose(word, 24, 18, "rainbow");
+  const pool = gAlpha === "en" ? "ABCDEFGHIJKLMNOPRSTUVWY" : AR_LETTERS;
+  const uniq = [...new Set(G.letters)];
+  const decoys = [...pool].filter(c => !uniq.includes(c)).sort(() => Math.random() - .5).slice(0, Math.max(2, 6 - uniq.length));
+  const opts = [...uniq, ...decoys].sort(() => Math.random() - .5);
+  const box = $("#gLetters"); box.innerHTML = "";
+  opts.forEach(l => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "gletter"; b.textContent = l; b.dataset.l = l;
+    b.addEventListener("click", () => tapLetter(l, b));
+    box.appendChild(b);
+  });
+  G.refresh = () => { $("#gTitle").textContent = t("spellTitle"); $("#gText").textContent = t("spellText"); renderSlots(); };
+  G.refresh(); G.ready = true;
+  say(t("spellText")); speak(word, gAlpha);
+}
+function renderSlots(){
+  const shown = G.letters.map((l, i) => i < G.pos ? l : "_");
+  $("#gTarget").innerHTML = `<div class="gp-emoji" aria-hidden="true">${G.emo}</div><div class="gp-slots" dir="${gAlpha === "ar" ? "rtl" : "ltr"}">${shown.map(s => `<span>${esc(s)}</span>`).join("")}</div>`;
+  setProgress(G.pos, G.letters.length, t("progLetters", {a: G.pos, b: G.letters.length}));
+}
+function tapLetter(l, btn){
+  if (G.solved) return;
+  const need = G.letters[G.pos];
+  if (l !== need){ G.mistakes++; sfx.nope(); btn.classList.remove("shake"); void btn.offsetWidth; btn.classList.add("shake"); say(t("spellWrong")); return; }
+  G.pos++; sfx.snap(); speak(l, gAlpha);
+  renderSlots(); drawSpell();
+  if (G.pos === G.letters.length){
+    const n = G.mistakes === 0 ? 3 : G.mistakes <= 2 ? 2 : 1;
+    if (!progress.spelled[gAlpha].includes(G.word)) progress.spelled[gAlpha].push(G.word);
+    saveProgress();
+    setTimeout(() => { win("spellWin", {w: G.word}, n); speak(G.word, gAlpha); }, 650);
+  }
+}
+function drawSpell(){
+  if (gAlpha === "en" && G.plan){
+    const gx = Math.floor((B.cols - G.plan.w) / 2), gy = Math.floor((B.rows - G.plan.h) / 2);
+    const anim = new Map();
+    G.plan.bricks.filter(b => b.li === G.pos - 1).forEach((b, k) => {
+      const nb = {id: nextId++, x: gx + b.x, y: gy + b.y, w: b.w, h: b.h, c: b.c, t: "std", z: 0};
+      B.bricks.push(nb); anim.set(nb.id, k * 22);
+    });
+    commit(anim);
+  } else {
+    B.bricks = []; rebuildGrid();
+    buildText(G.letters.slice(0, G.pos).join(""), {noHistory: true, quiet: true, overwrite: true, mode: "rainbow", fast: true});
+  }
+}
+function spellHint(){
+  const l = G.letters[G.pos]; if (!l) return;
+  G.mistakes++;
+  say(t("hintSpell", {l})); speak(l, gAlpha);
+  $$("#gLetters .gletter").forEach(b => { if (b.dataset.l === l){ b.classList.remove("glow"); void b.offsetWidth; b.classList.add("glow"); } });
+}
+
+/* ---------- Brick math ---------- */
+function startMath(){
+  const L = progress.mathLevel || 1, r = n => Math.floor(Math.random() * n);
+  let n, k = null;
+  if (L <= 3) n = 2 + r(9);
+  else if (L <= 6) n = 10 + r(11);
+  else { n = 12 + r(25); k = clamp(Math.ceil(n / 8) + r(2), 2, 5); }
+  Object.assign(G, {n, k, L});
+  gameBoard(16, 12, "#8F7FEA");
+  $("#gTarget").innerHTML = `<div class="gp-num">${n}</div>`;
+  G.refresh = () => {
+    $("#gTitle").textContent = `${t("mathTitle", {n})} · ${t("mathLevel", {n: L})}`;
+    $("#gText").textContent = k ? t("mathTextK", {k, n}) : t("mathText", {n});
+  };
+  G.refresh(); G.ready = true; checkMath();
+  say(t("mathTitle", {n}), {speak: true});
+}
+function checkMath(){
+  const vals = B.bricks.map(b => b.w * b.h), sum = vals.reduce((a, v) => a + v, 0), cnt = vals.length;
+  const eq = cnt ? (cnt > 10 ? `… = ${sum}` : `${vals.join(" + ")} = ${sum}`) : "";
+  setProgress(Math.min(sum, G.n), G.n, `${sum} / ${G.n} ${t("bumps")}` + (G.k ? ` · 🧱 ${cnt} / ${G.k}` : ""));
+  $("#gLetters").innerHTML = eq ? `<div class="gp-eq" dir="ltr">${esc(eq)}</div>` : "";
+  if (sum > G.n){ if (!G.warned){ G.warned = true; say(t("mathTooMany"), {speak: true}); } }
+  else G.warned = false;
+  if (sum === G.n && (!G.k || cnt === G.k)){
+    progress.mathLevel = G.L + 1; progress.mathSolved = (progress.mathSolved || 0) + 1; saveProgress();
+    win("mathWin", {eq}, 3);
+  } else if (sum === G.n && G.k && !G.warnedK){ G.warnedK = true; say(t("mathBricks", {k: G.k})); }
+}
+
+/* ---------- panel buttons ---------- */
+$$("[data-gmode]").forEach(b => b.addEventListener("click", () => setMode(b.dataset.gmode)));
+$("#gNext").addEventListener("click", () => {
+  if (G.kind === "copy") startGame("copy", progress.puzzleIdx + 1);
+  else if (G.kind === "trace") startGame("trace", progress.traceIdx[gAlpha] + 1);
+  else if (G.kind === "spell") startGame("spell", progress.spellIdx[gAlpha] + 1);
+  else startGame("math");
+  sfx.click();
+});
+$("#gReset").addEventListener("click", () => {
+  if (G.kind === "copy") startGame("copy", progress.puzzleIdx);
+  else if (G.kind === "trace") startGame("trace", progress.traceIdx[gAlpha]);
+  else if (G.kind === "spell") startGame("spell", progress.spellIdx[gAlpha]);
+  else { B.bricks = []; commit(); }
+  sfx.whoosh();
+});
+$("#gHint").addEventListener("click", () => {
+  if (G.solved) return;
+  sfx.click();
+  if (G.kind === "spell"){ spellHint(); return; }
+  if (G.kind === "math"){ say(t("hintMath"), {speak: true}); return; }
+  G.hints++;
+  clearHints("wrong");
+  (G.wrong || []).forEach(([x, y]) => { const d = addHint(x, y, "wrong"); setTimeout(() => d.remove(), 1700); });
+  say(t("hintSay"), {speak: true});
+});
+$("#gAlpha").addEventListener("click", () => {
+  gAlpha = gAlpha === "ar" ? "en" : "ar"; sfx.click(); startGame(G.kind);
+});
+$("#gLevels").addEventListener("click", openLevels);
+
+function openLevels(){
+  let html = "";
+  if (G.kind === "copy"){
+    html = `<h2>${esc(t("pickPicture"))}</h2>`;
+    for (const lvl of ["easy", "medium", "hard"]){
+      html += `<h3 class="lv-h">${esc(t(lvl))} <small>${esc(LEVEL_AGES[lvl][LANG === "ar" ? 1 : 0])}</small></h3><div class="lv-grid">`;
+      PUZZLES.forEach((p, i) => {
+        if (p.lvl !== lvl) return;
+        const st = progress.puzzles[p.art] || 0;
+        html += `<button class="lv-item" data-i="${i}"><span class="lv-pic" data-art="${p.art}"></span><span>${esc(ART[p.art][LANG])}</span><span class="lv-stars">${st ? starText(st) : "☆☆☆"}</span></button>`;
+      });
+      html += `</div>`;
+    }
+  } else if (G.kind === "trace"){
+    html = `<h2>${esc(t("pickLetter"))}</h2><div class="lv-grid letters">`;
+    TRACE[gAlpha].forEach(([L], i) => {
+      const done = progress.traced[gAlpha].includes(L);
+      html += `<button class="lv-item lv-letter${done ? " done" : ""}" data-i="${i}">${esc(L)}${done ? "<small>✓</small>" : ""}</button>`;
+    });
+    html += `</div>`;
+  } else if (G.kind === "spell"){
+    html = `<h2>${esc(t("pickWord"))}</h2><div class="lv-grid">`;
+    spellList(gAlpha).forEach(([w, e], i) => {
+      const done = progress.spelled[gAlpha].includes(w);
+      html += `<button class="lv-item${done ? " done" : ""}" data-i="${i}"><span class="lv-emo">${e}</span><span dir="auto">${esc(w)}</span>${done ? "<small>✓</small>" : ""}</button>`;
+    });
+    html += `</div>`;
+  } else {
+    html = `<h2>${esc(t("levels"))}</h2><div class="lv-grid">` +
+      [[1, "easy"], [4, "medium"], [7, "hard"]].map(([lv, k]) => `<button class="lv-item" data-lv="${lv}"><span class="lv-emo">${lv === 1 ? "1️⃣" : lv === 4 ? "🔟" : "🧮"}</span><span>${esc(t(k))}</span><small>${esc(t("mathLevel", {n: lv + "+"}))}</small></button>`).join("") + `</div>`;
+  }
+  html += `<div class="modal-actions"><button class="btn white" data-close>${esc(t("close"))}</button></div>`;
+  const card = openModal(html, t("levels"), "levels");
+  card.querySelectorAll(".lv-pic").forEach(el => {
+    const pix = artToPix(ART[el.dataset.art].art);
+    el.appendChild(artCanvas(pix, plateFor([...new Set(pix.flat().filter(Boolean))]), 8));
+  });
+  card.querySelectorAll("[data-i]").forEach(b => b.addEventListener("click", () => { closeModal(); startGame(G.kind, +b.dataset.i); }));
+  card.querySelectorAll("[data-lv]").forEach(b => b.addEventListener("click", () => { closeModal(); progress.mathLevel = +b.dataset.lv; saveProgress(); startGame("math"); }));
+}
+
+/* ===================== badges, replay, themes, gallery, cards ===================== */
+addStrings({
+  theme: ["Theme", "المظهر"], badges: ["Badges", "الأوسمة"], replay: ["Replay", "إعادة العرض"],
+  pickTheme: ["Pick a theme", "اختر مظهرًا"],
+  themeSay_classic: ["Back to the classic sky!", "عدنا إلى السماء الكلاسيكية!"],
+  themeSay_space: ["Blast off! Welcome to space.", "انطلق! أهلًا بك في الفضاء."],
+  themeSay_sea: ["Splash! Let's build under the sea.", "سبلاش! هيا نبني تحت البحر."],
+  themeSay_birthday: ["Party time! Let's build for a birthday.", "وقت الحفلة! هيا نبني لعيد ميلاد."],
+  themeSay_eid: ["Eid Mubarak! Let's build something special.", "عيد مبارك! هيا نبني شيئًا مميزًا."],
+  badgeNew: ["New badge!", "وسام جديد!"],
+  badgesTitle: ["My badges", "أوسمتي"],
+  badgesSub: ["You have {a} of {b} badges. Keep building!", "لديك {a} من {b} وسامًا. واصل البناء!"],
+  locked: ["Not yet", "ليس بعد"],
+  replaySay: ["Watch how you built it!", "شاهد كيف بنيتها!"],
+  replayDone: ["Ta-da! That's how you built it.", "تادا! هكذا بنيتها."],
+  saveShare: ["Save and share", "احفظ وشارك"],
+  saveCreation: ["Save to My creations", "احفظ في أعمالي"],
+  myCreations: ["My creations", "أعمالي"],
+  makeCard: ["Make a card", "اصنع بطاقة"],
+  gallerySaved: ["Saved to My creations!", "حُفظت في أعمالي!"],
+  galleryFull: ["There's no more room. Delete an old creation first.", "لا توجد مساحة. احذف عملًا قديمًا أولًا."],
+  galleryEmpty: ["Nothing saved yet. Build something and tap Save to My creations!", "لا يوجد شيء محفوظ بعد. ابنِ شيئًا واضغط احفظ في أعمالي!"],
+  open: ["Open", "افتح"], del: ["Delete", "احذف"], delSure: ["Sure?", "متأكد؟"],
+  newBoard: ["New empty board", "لوحة جديدة فارغة"],
+  opened: ["Here it is! Keep building.", "ها هي! واصل البناء."],
+  newBoardSay: ["A fresh board. Let's build!", "لوحة جديدة. هيا نبني!"],
+  cardTitle: ["Make a card", "اصنع بطاقة"],
+  cardTo: ["To", "إلى"], cardHeading: ["Big words", "العنوان"], cardMsg: ["Message", "الرسالة"], cardFrom: ["From", "من"],
+  cardToPh: ["Their name", "اسمه"], cardFromPh: ["Your name", "اسمك"],
+  cardSave: ["Save card", "احفظ البطاقة"],
+  cardSaved: ["Your card is saved. Send it with love!", "حُفظت بطاقتك. أرسلها بحب!"],
+  toLine: ["To {n}", "إلى {n}"], fromLine: ["From {n}", "من {n}"],
+  tpl_birthday: ["Birthday", "عيد ميلاد"], tpl_eid: ["Eid", "العيد"], tpl_thanks: ["Thank you", "شكرًا"],
+  tpl_love: ["Love", "حب"], tpl_congrats: ["Well done", "أحسنت"],
+  card_birthday_t: ["Happy Birthday!", "عيد ميلاد سعيد!"], card_birthday_m: ["Have the best day ever!", "أتمنى لك يومًا رائعًا!"],
+  card_eid_t: ["Eid Mubarak!", "عيد مبارك!"], card_eid_m: ["Wishing you a happy Eid full of joy.", "كل عام وأنت بخير."],
+  card_thanks_t: ["Thank you!", "شكرًا لك!"], card_thanks_m: ["You are the best!", "أنت الأفضل!"],
+  card_love_t: ["I love you!", "أحبك!"], card_love_m: ["You make me so happy.", "أنت تسعدني كثيرًا."],
+  card_congrats_t: ["Well done!", "أحسنت!"], card_congrats_m: ["I'm so proud of you!", "أنا فخور بك!"],
+});
+const BADGES = [
+  {id: "first",   icon: "🧱", en: ["First brick", "Put your first brick on the board"], ar: ["أول مكعب", "ضع أول مكعب على اللوحة"]},
+  {id: "b50",     icon: "🏗️", en: ["Busy builder", "Have 80 bricks on your board"], ar: ["بنّاء نشيط", "ضع 80 مكعبًا على لوحتك"]},
+  {id: "b150",    icon: "🏰", en: ["Master builder", "Have 200 bricks on your board"], ar: ["بنّاء خبير", "ضع 200 مكعب على لوحتك"]},
+  {id: "name",    icon: "✍️", en: ["My name!", "Build your name"], ar: ["اسمي!", "ابنِ اسمك"]},
+  {id: "arabic",  icon: "🌙", en: ["Arabic writer", "Build a word in Arabic"], ar: ["كاتب بالعربية", "ابنِ كلمة بالعربية"]},
+  {id: "colors",  icon: "🎨", en: ["Color party", "Use 10 colors on one board"], ar: ["حفلة الألوان", "استخدم 10 ألوان في لوحة واحدة"]},
+  {id: "mirror",  icon: "🪞", en: ["Mirror magic", "Build with the mirror on"], ar: ["سحر المرآة", "ابنِ والمرآة مفعّلة"]},
+  {id: "tower",   icon: "🗼", en: ["Tall tower", "Stack bricks 3 high"], ar: ["برج عالٍ", "كدّس 3 مكعبات فوق بعضها"]},
+  {id: "stamp",   icon: "🔖", en: ["Stamp maker", "Make your own stamp"], ar: ["صانع الأختام", "اصنع ختمك الخاص"]},
+  {id: "puzzle1", icon: "🖼️", en: ["Copycat", "Finish a picture puzzle"], ar: ["الناسخ الماهر", "أكمل لغز صورة"]},
+  {id: "puzzle5", icon: "⭐", en: ["Star copier", "Get 3 stars on 5 puzzles"], ar: ["نجم النسخ", "احصل على 3 نجوم في 5 ألغاز"]},
+  {id: "trace5",  icon: "✏️", en: ["Letter tracer", "Trace 5 letters"], ar: ["متتبّع الحروف", "تتبّع 5 حروف"]},
+  {id: "spell3",  icon: "🔤", en: ["Speller", "Spell 3 words"], ar: ["المتهجّي", "تهجَّ 3 كلمات"]},
+  {id: "math5",   icon: "➕", en: ["Brick counter", "Solve 5 brick sums"], ar: ["عدّاد المكعبات", "حُلّ 5 مسائل"]},
+  {id: "saver",   icon: "📸", en: ["Photographer", "Save a picture or a card"], ar: ["المصوّر", "احفظ صورة أو بطاقة"]},
+  {id: "theme",   icon: "🚀", en: ["Explorer", "Try a new theme"], ar: ["المستكشف", "جرّب مظهرًا جديدًا"]},
+  {id: "gallery3",icon: "🗂️", en: ["Collector", "Save 3 creations"], ar: ["الجامع", "احفظ 3 أعمال"]},
+  {id: "card",    icon: "💌", en: ["Card maker", "Make a greeting card"], ar: ["صانع البطاقات", "اصنع بطاقة تهنئة"]},
+  {id: "replay",  icon: "🎬", en: ["Movie star", "Watch a build replay"], ar: ["نجم السينما", "شاهد إعادة عرض البناء"]},
+];
+
+/* ---------- toasts + badges ---------- */
+const toastQ = []; let toastOn = false;
+function toast(icon, title, sub){ toastQ.push([icon, title, sub]); if (!toastOn) nextToast(); }
+function nextToast(){
+  const n = toastQ.shift(); if (!n){ toastOn = false; return; }
+  toastOn = true;
+  const el = document.createElement("div"); el.className = "toast"; el.setAttribute("role", "status");
+  el.innerHTML = `<span class="medal" aria-hidden="true">${n[0]}</span><div>${esc(n[1])}<small>${esc(n[2])}</small></div>`;
+  document.body.appendChild(el);
+  setTimeout(() => { el.remove(); nextToast(); }, 3000);
+}
+let earned = new Set(store("snappy-badges") || []);
+function updateBadgeCount(){ $("#badgeCount").textContent = `${earned.size}/${BADGES.length}`; }
+function award(id){
+  if (earned.has(id)) return;
+  const bd = BADGES.find(b => b.id === id); if (!bd) return;
+  earned.add(id); store("snappy-badges", [...earned]); updateBadgeCount();
+  toast(bd.icon, t("badgeNew"), bd[LANG][0]); setTimeout(() => sfx.badge(), 200);
+}
+on("placed", () => { award("first"); if (settings.mirror !== "off") award("mirror"); });
+on("change", () => {
+  if (B !== FREE) return;
+  const n = FREE.bricks.length;
+  if (n >= 80) award("b50");
+  if (n >= 200) award("b150");
+  if (new Set(FREE.bricks.map(b => b.c)).size >= 10) award("colors");
+  if (FREE.bricks.some(b => (b.z || 0) >= 2)) award("tower");
+});
+on("nameBuilt", r => { award("name"); if (r && r.rtl) award("arabic"); });
+on("stampMade", () => award("stamp"));
+on("gameWin", ({kind}) => {
+  if (kind === "copy"){ award("puzzle1"); if (Object.values(progress.puzzles).filter(v => v === 3).length >= 5) award("puzzle5"); }
+  if (kind === "trace" && progress.traced.en.length + progress.traced.ar.length >= 5) award("trace5");
+  if (kind === "spell" && progress.spelled.en.length + progress.spelled.ar.length >= 3) award("spell3");
+  if (kind === "math" && (progress.mathSolved || 0) >= 5) award("math5");
+});
+on("saved", () => award("saver"));
+on("themeChanged", () => award("theme"));
+on("gallerySaved", n => { if (n >= 3) award("gallery3"); });
+on("cardMade", () => award("card"));
+on("replay", () => award("replay"));
+on("lang", updateBadgeCount);
+function openBadges(){
+  let html = `<h2>${esc(t("badgesTitle"))}</h2><p>${esc(t("badgesSub", {a: earned.size, b: BADGES.length}))}</p><div class="badge-grid">`;
+  for (const bd of BADGES){
+    const got = earned.has(bd.id);
+    html += `<div class="badge${got ? " got" : ""}"><span class="bi" aria-hidden="true">${bd.icon}</span><strong>${esc(bd[LANG][0])}</strong><small>${esc(got ? bd[LANG][1] : t("locked") + " · " + bd[LANG][1])}</small></div>`;
+  }
+  html += `</div><div class="modal-actions"><button class="btn white" data-close>${esc(t("close"))}</button></div>`;
+  openModal(html, t("badgesTitle"));
+  sfx.click();
+}
+$("#badgesBtn").addEventListener("click", openBadges);
+
+/* ---------- themes ---------- */
+function applyTheme(id, fromUser){
+  if (!THEMES[id]) id = "classic";
+  settings.theme = id; saveSettings();
+  document.body.dataset.kit = id;
+  buildStamps();
+  if (!fromUser) return;
+  if (B === FREE && FREE.plate !== THEMES[id].plate){ pushHistory(); FREE.plate = THEMES[id].plate; applyBoard(); emit("change"); }
+  sfx.cheer(); say(t("themeSay_" + id), {speak: true});
+  emit("themeChanged");
+}
+function openThemes(){
+  let html = `<h2>${esc(t("pickTheme"))}</h2><div class="theme-grid">`;
+  for (const id in THEMES){
+    const th = THEMES[id];
+    html += `<button class="theme-card" data-theme-id="${id}" data-theme-preview="${id}" aria-pressed="${settings.theme === id}">
+      <span class="theme-sw"></span><strong>${esc(th[LANG])}</strong><span class="theme-stamps"></span></button>`;
+  }
+  html += `</div><div class="modal-actions"><button class="btn white" data-close>${esc(t("close"))}</button></div>`;
+  const card = openModal(html, t("pickTheme"));
+  card.querySelectorAll(".theme-card").forEach(b => {
+    const id = b.dataset.themeId;
+    const sw = b.querySelector(".theme-sw"); sw.style.setProperty("--pl", THEMES[id].plate);
+    const st = b.querySelector(".theme-stamps");
+    (THEMES[id].stamps.length ? THEMES[id].stamps : ["heart", "star"]).slice(0, 3).forEach(n => st.appendChild(pieceEl(artPiece(n), 5)));
+    b.addEventListener("click", () => { closeModal(); applyTheme(id, true); });
+  });
+  sfx.click();
+}
+$("#themeBtn").addEventListener("click", openThemes);
+
+/* ---------- replay ---------- */
+let replaying = false;
+function replay(){
+  if (replaying) return;
+  if (!B.bricks.length){ say(t("buildFirst")); return; }
+  replaying = true; cancelSelection();
+  const list = [...B.bricks];
+  const step = clamp(Math.round(4200 / list.length), 18, 260);
+  list.forEach(b => { const el = els.get(b.id); if (el) el.classList.add("hidden-replay"); });
+  plate.style.pointerEvents = "none";
+  say(t("replaySay"));
+  list.forEach((b, i) => setTimeout(() => {
+    const el = els.get(b.id); if (!el) return;
+    el.classList.remove("hidden-replay");
+    if (!reduceMotion){ el.classList.remove("drop"); void el.offsetWidth; el.classList.add("drop"); el.addEventListener("animationend", () => el.classList.remove("drop"), {once: true}); }
+    if (i % Math.max(1, Math.round(60 / step)) === 0) sfx.soft();
+  }, i * step));
+  setTimeout(() => {
+    replaying = false; plate.style.pointerEvents = "";
+    $$(".brick.hidden-replay").forEach(e => e.classList.remove("hidden-replay"));
+    sfx.cheer(); say(t("replayDone")); emit("replay");
+  }, list.length * step + 500);
+}
+$("#replayBtn").addEventListener("click", replay);
+
+/* ---------- my creations (gallery) ---------- */
+let gallery = store("snappy-gallery") || [];
+function compactBoard(bd){ return {cols: bd.cols, rows: bd.rows, plate: bd.plate, b: bd.bricks.map(b => [b.x, b.y, b.w, b.h, b.c, b.t || "std", b.z || 0])}; }
+function expandBricks(cb){ return cb.b.map(a => ({id: nextId++, x: a[0], y: a[1], w: a[2], h: a[3], c: a[4], t: a[5] || "std", z: a[6] || 0})); }
+function saveToGallery(){
+  if (!B.bricks.length){ say(t("buildFirst")); return; }
+  const item = {id: "g" + Date.now().toString(36), at: Date.now(), thumb: thumbData(B), board: compactBoard(B)};
+  gallery.unshift(item); gallery = gallery.slice(0, 30);
+  if (!store("snappy-gallery", gallery)){ gallery.shift(); sfx.nope(); say(t("galleryFull")); return; }
+  sfx.cheer(); say(t("gallerySaved")); emit("gallerySaved", gallery.length);
+}
+function loadIntoFree(cb){
+  if (currentMode !== "free") setMode("free", true);
+  pushHistory();
+  FREE.cols = cb.cols; FREE.rows = cb.rows; FREE.plate = cb.plate; FREE.bricks = expandBricks(cb);
+  clearEls(); applyBoard(); commit();
+}
+function openGallery(){
+  const fmt = ts => { try { return new Date(ts).toLocaleDateString(LANG === "ar" ? "ar" : "en", {day: "numeric", month: "short"}); } catch(e){ return ""; } };
+  let html = `<h2>${esc(t("myCreations"))}</h2><div class="modal-actions" style="justify-content:flex-start"><button class="btn mint" id="gNew">${esc(t("newBoard"))}</button></div>`;
+  if (!gallery.length) html += `<p>${esc(t("galleryEmpty"))}</p>`;
+  html += `<div class="gal-grid">` + gallery.map(g => `<div class="gal-item" data-id="${g.id}">
+      <img alt="" src="${g.thumb}"><span class="gal-date">${esc(fmt(g.at))}</span>
+      <div class="gal-actions"><button class="btn small mint" data-open>${esc(t("open"))}</button><button class="btn small warn" data-del>${esc(t("del"))}</button></div></div>`).join("") + `</div>`;
+  html += `<div class="modal-actions"><button class="btn white" data-close>${esc(t("close"))}</button></div>`;
+  const card = openModal(html, t("myCreations"), "wide");
+  card.querySelector("#gNew").addEventListener("click", () => {
+    closeModal(); if (currentMode !== "free") setMode("free", true);
+    pushHistory(); FREE.bricks = []; commit(); sfx.whoosh(); say(t("newBoardSay"));
+  });
+  card.querySelectorAll(".gal-item").forEach(it => {
+    const g = gallery.find(x => x.id === it.dataset.id);
+    it.querySelector("[data-open]").addEventListener("click", () => { closeModal(); loadIntoFree(g.board); sfx.cheer(); say(t("opened")); });
+    const del = it.querySelector("[data-del]");
+    del.addEventListener("click", () => {
+      if (!del.dataset.armed){ del.dataset.armed = "1"; del.textContent = t("delSure"); setTimeout(() => { delete del.dataset.armed; del.textContent = t("del"); }, 2500); return; }
+      gallery = gallery.filter(x => x.id !== g.id); store("snappy-gallery", gallery); it.remove(); sfx.remove();
+    });
+  });
+  sfx.click();
+}
+$("#gallerySaveBtn").addEventListener("click", saveToGallery);
+$("#galleryBtn").addEventListener("click", openGallery);
+
+/* ---------- greeting cards ---------- */
+const CARDS = {
+  birthday: {icon: "🎂", bg: "#FFD6E7", ink: "#2B1E5C", border: RAINBOW},
+  eid:      {icon: "🌙", bg: "#0F4C3A", ink: "#FFE08A", border: ["#FFE838", "#3DC45A", "#FBFAF5", "#FF9A1F"]},
+  thanks:   {icon: "💐", bg: "#D9F7EC", ink: "#2B1E5C", border: ["#7FE3C0", "#FFB3CF", "#A9A6F0", "#FFE838"]},
+  love:     {icon: "❤️", bg: "#FFE3E3", ink: "#7A1133", border: ["#F2383A", "#FFB3CF", "#FF2E8A", "#FBFAF5"]},
+  congrats: {icon: "🏆", bg: "#FFF3B0", ink: "#2B1E5C", border: ["#FF9A1F", "#FFE838", "#2F8CF0", "#3DC45A"]},
+};
+let cardTpl = "birthday";
+function fitFont(ctx, text, max, size, weight = 800){
+  let s = size;
+  do { ctx.font = `${weight} ${s}px "Baloo 2", "Baloo Bhaijaan 2", sans-serif`; s -= 2; } while (ctx.measureText(text).width > max && s > 14);
+}
+function textLine(ctx, text, x, y, max, size, color){
+  if (!text) return;
+  ctx.save(); ctx.fillStyle = color; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.direction = hasArabic(text) ? "rtl" : "ltr";
+  fitFont(ctx, text, max, size); ctx.fillText(text, x, y); ctx.restore();
+}
+function drawCard(f){
+  const tp = CARDS[f.tpl], W = 1200, H = 900, c = 30;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const ctx = cv.getContext("2d");
+  ctx.fillStyle = tp.bg; ctx.fillRect(0, 0, W, H);
+  // brick border
+  let k = 0;
+  const brick = (x, y, w, h) => {
+    const col = tp.border[k++ % tp.border.length];
+    ctx.fillStyle = shade(col, -.24); rrect(ctx, x + 1, y + 1, w - 2, h - 2, 5); ctx.fill();
+    ctx.fillStyle = col; rrect(ctx, x + 1, y + 1, w - 2, h - 5, 5); ctx.fill();
+    for (let yy = 0; yy < h / c; yy++) for (let xx = 0; xx < w / c; xx++) stud(ctx, x + xx * c, y + yy * c, c, col);
+  };
+  for (let x = 0; x < W; x += 2 * c){ brick(x, 0, 2 * c, c); brick(x, H - c, 2 * c, c); }
+  for (let y = c; y < H - c; y += 2 * c){ brick(0, y, c, Math.min(2 * c, H - c - y)); brick(W - c, y, c, Math.min(2 * c, H - c - y)); }
+  const cx = W / 2;
+  textLine(ctx, f.to ? t("toLine", {n: f.to}) : "", cx, 88, 1000, 38, tp.ink);
+  textLine(ctx, f.title, cx, 160, 1040, 84, tp.ink);
+  // the board picture
+  const bw = 980, bh = 470;
+  const cs = Math.max(4, Math.floor(Math.min((bw - 24) / B.cols, (bh - 24) / B.rows)));
+  const pic = boardCanvas(B, cs, {pad: 12, foot: 0, bg: tp.bg});
+  ctx.drawImage(pic, cx - pic.width / 2, 215 + (bh - pic.height) / 2);
+  textLine(ctx, f.msg, cx, 735, 1040, 46, tp.ink);
+  textLine(ctx, f.from ? t("fromLine", {n: f.from}) : "", cx, 805, 1000, 36, tp.ink);
+  return cv;
+}
+function openCardMaker(){
+  if (!B.bricks.length){ say(t("buildFirst")); return; }
+  const tplBtns = Object.keys(CARDS).map(id => `<button class="btn small" type="button" data-tpl="${id}" aria-pressed="${id === cardTpl}"><span aria-hidden="true">${CARDS[id].icon}</span> ${esc(t("tpl_" + id))}</button>`).join("");
+  const html = `<h2>${esc(t("cardTitle"))}</h2>
+    <div class="seg" id="tplRow">${tplBtns}</div>
+    <div class="card-form">
+      <label>${esc(t("cardTo"))}<input id="cTo" dir="auto" maxlength="24" placeholder="${esc(t("cardToPh"))}"></label>
+      <label>${esc(t("cardHeading"))}<input id="cTitle" dir="auto" maxlength="32"></label>
+      <label>${esc(t("cardMsg"))}<input id="cMsg" dir="auto" maxlength="60"></label>
+      <label>${esc(t("cardFrom"))}<input id="cFrom" dir="auto" maxlength="24" placeholder="${esc(t("cardFromPh"))}"></label>
+    </div>
+    <div class="card-preview" id="cPrev"></div>
+    <div class="modal-actions"><button class="btn white" data-close>${esc(t("close"))}</button><button class="btn pink" id="cSave">${esc(t("cardSave"))}</button></div>`;
+  const card = openModal(html, t("cardTitle"), "wide");
+  const setTpl = id => {
+    cardTpl = id;
+    card.querySelectorAll("[data-tpl]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tpl === id));
+    card.querySelector("#cTitle").value = t(`card_${id}_t`);
+    card.querySelector("#cMsg").value = t(`card_${id}_m`);
+    draw();
+  };
+  const fields = () => ({tpl: cardTpl, to: card.querySelector("#cTo").value.trim(), title: card.querySelector("#cTitle").value.trim(),
+    msg: card.querySelector("#cMsg").value.trim(), from: card.querySelector("#cFrom").value.trim()});
+  let cv = null, tm;
+  const draw = async () => {
+    const f = fields();
+    if (hasArabic(f.to + f.title + f.msg + f.from)) await ensureFont(f.to + f.title + f.msg + f.from);
+    cv = drawCard(f); const prev = card.querySelector("#cPrev"); if (!prev) return;
+    prev.innerHTML = ""; cv.className = "card-canvas"; prev.appendChild(cv);
+  };
+  card.querySelectorAll("[data-tpl]").forEach(b => b.addEventListener("click", () => { sfx.click(); setTpl(b.dataset.tpl); }));
+  card.querySelectorAll("input").forEach(i => i.addEventListener("input", () => { clearTimeout(tm); tm = setTimeout(draw, 150); }));
+  card.querySelector("#cSave").addEventListener("click", async () => {
+    await draw();
+    const blob = await new Promise(r => cv.toBlob(r, "image/png"));
+    const res = await saveFile(blob, "my-brick-card.png", cv.toDataURL("image/png"));
+    if (res !== "declined"){ emit("cardMade"); emit("saved"); if (res === "saved"){ closeModal(); sfx.cheer(); say(t("cardSaved")); } }
+  });
+  setTpl(cardTpl);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+  sfx.click();
+}
+$("#cardBtn").addEventListener("click", openCardMaker);
+
+on("boot", () => { updateBadgeCount(); applyTheme(settings.theme, false); });
+
+/* ===================== start-up + wiring ===================== */
+const SAVE_KEY = "snappy-bricks-v2";
+on("change", () => {
+  if (B === FREE) store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, bricks: FREE.bricks});
+});
+function loadFree(){
+  const d = store(SAVE_KEY) || store("snappy-bricks-v1");
+  if (!d || !Array.isArray(d.bricks) || !SIZES.some(s => s.cols === d.cols && s.rows === d.rows)) return false;
+  FREE.cols = d.cols; FREE.rows = d.rows; FREE.plate = typeof d.plate === "string" ? d.plate : "#FF2E8A";
+  FREE.bricks = d.bricks.filter(b => b && [b.x, b.y, b.w, b.h].every(Number.isFinite) && typeof b.c === "string")
+    .map(b => ({id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: b.z || 0}));
+  return true;
+}
+function starter(){
+  FREE.cols = 24; FREE.rows = 18; FREE.plate = "#FF2E8A"; FREE.bricks = [];
+  rebuildGrid();
+  buildText("HELLO", {quiet: true, noHistory: true, y: 2, mode: "rainbow", style: "std"});
+  const put = (name, gx, gy) => artPiece(name).bricks.forEach(b => FREE.bricks.push({id: nextId++, x: gx + b.x, y: gy + b.y, w: b.w, h: b.h, c: b.c, t: "std", z: 0}));
+  put("heart", 3, 10); put("star", 14, 10);
+  [[0,0,2,2,"#7FE3C0"],[22,0,2,2,"#A9A6F0"],[0,16,2,2,"#FFE838"],[22,16,2,2,"#FBFAF5"],[10,14,4,2,"#FFB3CF"]]
+    .forEach(([x, y, w, h, c]) => FREE.bricks.push({id: nextId++, x, y, w, h, c, t: "std", z: 0}));
+}
+async function ensureFont(text){
+  if (!document.fonts || !document.fonts.load) return;
+  try { await Promise.race([document.fonts.load(`800 20px "Baloo Bhaijaan 2"`, text || "ب"), new Promise(r => setTimeout(r, 1500))]); } catch(e){}
+}
+
+/* ---- wiring ---- */
+$("#langBtn").addEventListener("click", () => { sfx.click(); setLang(LANG === "ar" ? "en" : "ar"); });
+$("#talkBtn").addEventListener("click", () => {
+  settings.talk = !settings.talk; saveSettings();
+  $("#talkBtn").setAttribute("aria-pressed", settings.talk);
+  $("#talkTxt").textContent = t(settings.talk ? "talkOn" : "talkOff");
+  sfx.click();
+  if (settings.talk && LANG === "ar" && !voiceFor("ar")) say(t("noArabicVoice"));
+  else say(t(settings.talk ? "talkSayOn" : "talkSayOff"), {speak: true});
+});
+$("#soundBtn").addEventListener("click", () => {
+  settings.sound = !settings.sound; saveSettings();
+  $("#soundBtn").setAttribute("aria-pressed", settings.sound);
+  $("#soundTxt").textContent = t(settings.sound ? "soundOn" : "soundOff");
+  if (settings.sound) sfx.click();
+});
+$$("[data-tool]").forEach(b => b.addEventListener("click", () => setTool(b.dataset.tool)));
+$("#mirrorBtn").addEventListener("click", () => setMirror({off: "lr", lr: "four", four: "off"}[settings.mirror] || "off"));
+$("#stackBtn").addEventListener("click", () => setStack(!settings.stack));
+$("#turnBtn").addEventListener("click", toggleTurn);
+$("#undoBtn").addEventListener("click", undo);
+$("#clearBtn").addEventListener("click", clearBoard);
+$("#saveBtn").addEventListener("click", savePicture);
+$("#selStamp").addEventListener("click", makeStampFromSelection);
+$("#selDelete").addEventListener("click", deleteSelection);
+$("#selCancel").addEventListener("click", () => { cancelSelection(); sfx.click(); });
+$("#nameInput").setAttribute("dir", "auto");
+$("#nameForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const v = $("#nameInput").value;
+  if (!isPixelText(v.toUpperCase())) await ensureFont(v);
+  buildName(v);
+});
+$$("[data-ins]").forEach(b => b.addEventListener("click", () => {
+  const inp = $("#nameInput"); if (inp.value.length >= 18) return;
+  inp.value += b.dataset.ins; inp.focus(); sfx.click();
+}));
+$$("[data-mode]").forEach(b => b.addEventListener("click", () => {
+  nameMode = b.dataset.mode; sfx.click();
+  $$("[data-mode]").forEach(x => x.setAttribute("aria-pressed", x.dataset.mode === nameMode));
+}));
+
+let rz;
+window.addEventListener("resize", () => {
+  clearTimeout(rz);
+  rz = setTimeout(() => { fitCell(); buildLogo(); buildShapes(); buildStamps(); emit("resize"); }, 120);
+});
+
+/* ---- go ---- */
+document.body.dataset.mode = "free";
+LANG = settings.lang === "ar" ? "ar" : "en";
+const hadSave = loadFree();
+B = FREE;
+$("#talkBtn").setAttribute("aria-pressed", settings.talk);
+$("#soundBtn").setAttribute("aria-pressed", settings.sound);
+setLang(LANG, true);
+setStack(!!settings.stack, true);
+applyBoard();
+if (!hadSave) starter();
+commit();
+updateUndo();
+emit("boot");
+say(t(hadSave ? "welcomeBack" : "hello"), {silent: true});
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fitCell(); });
+
+})();
+</script>
+<script>if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
+</body>
+</html>

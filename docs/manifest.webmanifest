@@ -1,0 +1,15 @@
+{
+  "name": "Snappy Bricks",
+  "short_name": "Snappy Bricks",
+  "description": "Snap bricks, play word and puzzle games, and build your name in English or Arabic.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#5CC6FF",
+  "theme_color": "#5CC6FF",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
