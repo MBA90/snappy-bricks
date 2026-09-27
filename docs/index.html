@@ -58,10 +58,8 @@ button{font:inherit;color:inherit}
 .app{max-width:1520px;margin:0 auto;padding-block:14px 40px;display:flex;flex-direction:column;gap:14px}
 
 /* ---------- header ---------- */
-.top{display:flex;align-items:center;gap:12px 16px;flex-wrap:wrap}
 .logo{position:relative;flex:none}
 .logo .brick{box-shadow:inset 0 calc(var(--cell)*-.12) 0 var(--dk),0 2px 0 var(--ink);border-radius:2px}
-.tag{margin:0;font-size:1.12rem;font-weight:700;line-height:1.2;flex:1 1 220px;text-wrap:balance;color:var(--on-bg)}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{
   border:3px solid var(--ink);background:var(--paper);border-radius:999px;
@@ -74,7 +72,6 @@ button{font:inherit;color:inherit}
 .chip .ar{font-family:"Baloo Bhaijaan 2","Baloo 2",sans-serif}
 
 /* ---------- layout ---------- */
-.studio{display:grid;gap:18px;grid-template-columns:260px minmax(0,1fr) 290px;align-items:start}
 .panel{
   background:var(--paper);border:3px solid var(--ink);border-radius:24px;
   box-shadow:0 7px 0 var(--ink);padding:16px;display:flex;flex-direction:column;gap:12px;
@@ -195,7 +192,6 @@ button{font:inherit;color:inherit}
 .toggle[aria-pressed="false"]{background:#fff}
 
 /* ---------- board area ---------- */
-.board-area{display:flex;flex-direction:column;gap:12px;min-width:0}
 .helper{display:flex;align-items:center;gap:12px}
 .bricky{width:58px;height:58px;flex:none}
 .bricky.hop{animation:hop .45s ease}
@@ -210,9 +206,6 @@ button{font:inherit;color:inherit}
   border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:12px solid var(--ink);
 }
 [dir="rtl"] .bubble::before{border-right:0;border-left:12px solid var(--ink)}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.toolbar .spacer{flex:1}
-.toolbar .divider{width:3px;align-self:stretch;background:rgba(43,30,92,.25);border-radius:3px}
 .selbar{
   display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#fff;border:3px solid var(--ink);
   border-radius:18px;padding:8px 10px;box-shadow:0 4px 0 var(--ink);
@@ -292,51 +285,9 @@ button{font:inherit;color:inherit}
 .toast small{display:block;font-weight:600;color:var(--ink-soft)}
 @keyframes toastIn{from{transform:translateY(120%)}to{transform:none}}
 
-/* ---------- responsive ---------- */
-@media (max-width:1180px){
-  .studio{grid-template-columns:1fr 1fr}
-  .board-area{grid-column:1 / -1;order:-1}
-}
-@media (max-width:720px){
-  .studio{grid-template-columns:1fr}
-  .tag{font-size:1rem}
-  .helper .bricky{width:46px;height:46px}
-  .bubble{font-size:.96rem}
-  .shapes{grid-template-columns:repeat(4,1fr)}
-  .toolbar .btn .txt{display:none}
-  .toolbar .btn{padding:6px 8px 4px}
-  .toolbar .divider{display:none}
-  .chip .txt{display:none}
-}
-@media (max-width:720px) and (min-height:700px){
-  .board-area{
-    position:sticky;top:env(safe-area-inset-top, 0px);z-index:50;
-    margin-inline:-16px;padding:8px 16px 6px;gap:8px;
-    background-color:var(--bg);
-    box-shadow:0 10px 14px -10px rgba(43,30,92,.45);
-  }
-  .helper .bricky{width:36px;height:36px}
-  .bubble{font-size:.88rem;min-height:36px;padding:4px 10px 2px}
-  .plate-wrap{padding:6px 4px 14px}
-  .below{flex-wrap:nowrap}
-  .trash{font-size:.82rem;padding:4px 10px 2px}
-  .trash svg{width:20px;height:20px}
-}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
-
-/* ---------- play modes ---------- */
-.modebar{display:flex;gap:6px;flex-wrap:wrap;background:rgba(255,255,255,.55);border:3px solid var(--ink);border-radius:20px;padding:6px}
-.mode{
-  flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  border:3px solid transparent;border-radius:14px;background:transparent;padding:6px 10px 4px;
-  font-weight:800;cursor:pointer;line-height:1.1;color:var(--ink);
-}
-.mode .mi{font-size:1.2rem}
-.mode:hover{background:rgba(255,255,255,.7)}
-.mode[aria-pressed="true"]{background:#fff;border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
-body:not([data-mode="free"]) .board-settings{display:none}
 
 .gamepanel{
   display:flex;gap:14px;align-items:stretch;background:#fff;border:3px solid var(--ink);border-radius:22px;
@@ -395,24 +346,6 @@ body:not([data-mode="free"]) .board-settings{display:none}
 .lv-pic canvas{width:100%;height:auto;border-radius:8px}
 .lv-emo{font-size:2rem;line-height:1}
 .lv-stars{color:#F5B400;letter-spacing:1px}
-
-@media (max-width:720px){
-  .mode span:not(.mi){font-size:.8rem}
-  .mode{padding:4px 6px 2px;flex-direction:column;gap:0}
-  .gamepanel{flex-direction:row;gap:10px;padding:10px}
-  .gp-target{flex-basis:92px;min-height:90px}
-  .gp-emoji{font-size:2.4rem}
-  .gp-num{font-size:2.8rem}
-  .gp-head h2{font-size:1.05rem}
-  .gp-text{font-size:.88rem}
-  .gletter{min-width:40px;height:40px;font-size:1.25rem}
-}
-@media (max-width:720px) and (min-height:700px){
-  body:not([data-mode="free"]) .board-area .helper{display:none}
-}
-@media (max-width:720px) and (min-height:700px){
-  body:not([data-mode="free"]) .board-area{position:static;box-shadow:none;margin-inline:0;padding:0;background:none}
-}
 
 /* ---------- themes ---------- */
 body[data-kit="space"]{
@@ -514,194 +447,419 @@ html{touch-action:manipulation}
   .card-form input{min-height:48px}
 }
 
-/* ---------- tablet, landscape: bricks beside the board, extras underneath ---------- */
-@media (min-width:900px) and (max-width:1279px) and (orientation:landscape){
-  .app{gap:10px;padding-block:10px 30px}
-  .top{gap:10px 14px}
-  .tag{display:none}
-  .chips{margin-inline-start:auto}
-  .studio{grid-template-columns:236px minmax(0,1fr);gap:16px}
-  .tray{
-    grid-column:1;grid-row:1 / span 2;order:0;
-    position:sticky;top:calc(env(safe-area-inset-top, 0px) + 10px);
-    max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);overflow-y:auto;overscroll-behavior:contain;
-    padding:14px;gap:14px;
-  }
-  .tray .hint{display:none}
-  .board-area{grid-column:2;grid-row:1;order:0;gap:10px}
-  .helper .bricky{width:44px;height:44px}
-  .bubble{min-height:40px;font-size:1rem}
-  .toolbar{gap:6px}
-  .toolbar .btn{padding-inline:10px;font-size:.92rem}
-  .toolbar .divider{display:none}
-  .plate-wrap{padding-block:6px 14px}
-  .side{grid-column:2;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
-}
-
-/* ---------- tablet, portrait: a brick dock fixed to the bottom of the screen ---------- */
-@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
-  body{padding-bottom:calc(var(--dock-h, 210px) + 16px)}
-  .studio{grid-template-columns:minmax(0,1fr)}
-  .board-area{grid-column:1;order:-1}
-  .side{grid-column:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
-  .side .board-settings{grid-column:1 / -1}
-  .tray{
-    position:fixed;left:0;right:0;bottom:0;z-index:80;
-    flex-direction:row;align-items:flex-start;gap:18px;
-    overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;
-    border-radius:26px 26px 0 0;border-bottom:0;
-    box-shadow:0 -8px 22px rgba(43,30,92,.28);
-    padding:10px 18px calc(12px + env(safe-area-inset-bottom, 0px));
-    transition:transform .25s ease;
-    scrollbar-width:thin;
-  }
-  .tray-sec{flex:none;gap:6px}
-  .tray h2,.tray h3{font-size:.85rem;margin:0;white-space:nowrap;color:var(--ink-soft)}
-  .tray .hint{display:none}
-  .swatches{grid-template-columns:repeat(5,46px);gap:6px}
-  .styles{grid-template-columns:repeat(3,64px);grid-template-rows:auto auto}
-  .shapes{grid-template-columns:none;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:minmax(92px,auto);gap:8px}
-  .stamps{grid-template-columns:none;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:78px;gap:8px}
-  .sec-bricks{flex-direction:column}
-  .sec-bricks .row{margin-top:2px}
-  .card{touch-action:pan-x}
-  body.typing .tray{transform:translateY(110%)}
-}
-@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
-  .sec-bricks{display:grid;grid-template-columns:auto auto;align-items:center;justify-content:start;column-gap:10px;row-gap:6px}
-  .sec-bricks .shapes{grid-column:1 / -1}
-  .sec-bricks .row{margin:0}
-  .sec-bricks .row .btn{min-height:36px;padding:2px 10px 0;font-size:.85rem;border-radius:12px;box-shadow:0 3px 0 var(--ink)}
-  .sec-bricks .row .btn svg{width:18px;height:18px}
-}
-
-/* ---------- tablet refinements ---------- */
-@media (min-width:900px) and (max-width:1279px) and (orientation:landscape){
-  .swatches{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .styles{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .modebar{flex-wrap:nowrap;padding:5px;gap:4px}
-  .mode{padding:4px 6px 2px;font-size:.9rem;gap:4px;min-height:46px}
-  .mode .mi{font-size:1.05rem}
-  /* toolbar: one row of icon buttons with small labels underneath */
-  .toolbar{flex-wrap:nowrap;gap:5px}
-  .toolbar .seg{flex-wrap:nowrap;gap:5px}
-  .toolbar .spacer{display:none}
-  .toolbar .btn{flex-direction:column;gap:1px;padding:4px 2px 2px;min-width:0;flex:1 1 0;min-height:56px;font-size:.64rem;line-height:1.1;border-radius:14px}
-  .toolbar .btn svg{width:22px;height:22px}
-  .toolbar .btn .txt{white-space:normal;text-align:center;line-height:1;max-width:100%;overflow-wrap:normal;word-break:keep-all}
-  .toolbar .seg{flex:5 1 0;display:flex}
-  .toolbar #mirrorBtn,.toolbar #stackBtn,.toolbar #undoBtn,.toolbar #replayBtn,.toolbar #clearBtn,.toolbar #saveBtn{flex:1 1 0}
-  .below{min-height:0}
-}
-@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
-  .tag{display:none}
-  .chips{margin-inline-start:auto}
-  .chip .txt{display:none}
-  .below{display:none}
-  .swatches{grid-template-columns:repeat(5,38px);gap:6px}
-  .swatch{min-width:38px;min-height:38px}
-  .styles{grid-template-columns:repeat(3,54px)}
-  .shapes{grid-auto-columns:82px}
-  .tray{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
-}
 /* dropping a board brick back on the brick tray puts it away */
 .tray.hot{outline:4px dashed #FF8A5C;outline-offset:-8px;background:#FFF1EA}
 
-/* ---------- games on tablets ---------- */
-@media (min-width:900px) and (max-width:1279px) and (orientation:landscape){
-  body:not([data-mode="free"]) .board-area{
-    display:grid;grid-template-columns:minmax(0,1fr) 250px;align-items:start;column-gap:14px;
-    grid-template-areas:"mode mode" "helper helper" "tools tools" "sel sel" "plate game" "below below";
+/* ===================== screens, zones and kid-friendly layout ===================== */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+body{--area:#FF2E8A;--area-soft:#FFE0EE}
+body[data-area="build"]{--area:#FF2E8A;--area-soft:#FFE0EE}
+body[data-area="games"],body[data-area="copy"]{--area:#2F8CF0;--area-soft:#DDEEFF}
+body[data-area="trace"]{--area:#3DC45A;--area-soft:#DDF6E3}
+body[data-area="spell"]{--area:#F5B400;--area-soft:#FFF3C4}
+body[data-area="math"]{--area:#8A4DE0;--area-soft:#ECE1FB}
+
+.app{max-width:1600px;margin:0 auto;padding-block:12px 20px}
+.screen{display:flex;flex-direction:column;gap:12px}
+.screen[hidden]{display:none!important}
+
+/* ---------- home ---------- */
+.home{align-items:center;text-align:center;gap:18px;padding-block:4px 16px;min-height:calc(100vh - 40px);min-height:calc(100dvh - 40px)}
+.home-top{align-self:stretch;display:flex;justify-content:flex-end}
+.home .logo{filter:drop-shadow(0 4px 0 rgba(43,30,92,.35))}
+.home-hello{display:flex;align-items:center;justify-content:center;gap:14px;max-width:100%}
+.bricky.big{width:86px;height:86px}
+.home .bubble{font-size:1.25rem;text-align:start}
+.doors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;width:min(1040px,100%)}
+.door{
+  display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 14px 20px;
+  border:4px solid var(--ink);border-radius:30px;box-shadow:0 9px 0 var(--ink);
+  font:inherit;color:var(--ink);cursor:pointer;transition:transform .12s, box-shadow .12s;
+}
+#doorBuild{background:#FFD6E8}
+#doorGames{background:#D6E9FF}
+#doorCard{background:#FFF1B8}
+.door:active{transform:translateY(6px);box-shadow:0 3px 0 var(--ink)}
+@media (hover:hover){ .door:hover{transform:translateY(-4px) rotate(-1deg)} }
+.door-pic{height:118px;display:flex;align-items:flex-end;justify-content:center;gap:8px}
+.door-name{font-size:1.8rem;font-weight:800;line-height:1.05}
+.door-sub{font-size:1rem;font-weight:600;color:var(--ink-soft);line-height:1.25;text-wrap:balance}
+.home-extras{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.pill{
+  border:3px solid var(--ink);border-radius:999px;background:#fff;box-shadow:0 4px 0 var(--ink);
+  padding:8px 18px 6px;font:inherit;font-weight:800;cursor:pointer;color:var(--ink);min-height:50px;
+  display:inline-flex;align-items:center;gap:8px;font-size:1.02rem;
+}
+.pill:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.lock{
+  position:relative;display:inline-flex;align-items:center;gap:6px;overflow:hidden;
+  border:3px dashed rgba(43,30,92,.55);background:rgba(255,255,255,.65);border-radius:999px;
+  padding:6px 14px;font:inherit;font-weight:700;font-size:.85rem;color:var(--ink);cursor:pointer;min-height:44px;
+  touch-action:none;
+}
+.lock-ring{position:absolute;inset:0;background:linear-gradient(90deg,var(--mint) var(--p,0%),transparent var(--p,0%))}
+.lock > :not(.lock-ring){position:relative}
+
+/* ---------- top bar ---------- */
+.topbar{
+  display:flex;align-items:center;gap:10px;min-height:66px;
+  background:var(--area-soft);border:3px solid var(--ink);border-radius:22px;box-shadow:0 5px 0 var(--ink);padding:6px 8px;
+  transition:background-color .3s;
+}
+.tb-home{
+  width:54px;height:54px;flex:none;display:grid;place-items:center;cursor:pointer;color:var(--ink);
+  border:3px solid var(--ink);border-radius:16px;background:#fff;box-shadow:0 3px 0 var(--ink);
+}
+.tb-home svg{width:30px;height:30px}
+.tb-btn{
+  min-height:50px;flex:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--ink);
+  border:3px solid var(--ink);border-radius:16px;background:#fff;box-shadow:0 3px 0 var(--ink);
+  font:inherit;font-weight:800;padding:4px 12px;
+}
+.tb-home:active,.tb-btn:active{transform:translateY(3px);box-shadow:0 0 0 var(--ink)}
+.tb-title{margin:0;font-size:1.5rem;line-height:1.1}
+.topbar .helper{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.topbar .bricky{width:48px;height:48px}
+.topbar .bubble{flex:1;min-width:0;box-shadow:none;min-height:42px;font-size:1.02rem;padding:4px 12px 2px}
+.area-chip{
+  flex:none;white-space:nowrap;font-weight:800;color:#fff;background:var(--area);border:3px solid var(--ink);
+  border-radius:999px;padding:6px 14px 4px;text-shadow:0 2px 0 rgba(43,30,92,.35);
+}
+
+/* ---------- games picker ---------- */
+.gcards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.gcard{
+  display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:22px 12px 18px;
+  border:4px solid var(--ink);border-radius:28px;box-shadow:0 8px 0 var(--ink);
+  font:inherit;color:var(--ink);cursor:pointer;transition:transform .12s, box-shadow .12s;
+}
+.gcard[data-area="copy"]{background:#D6E9FF}
+.gcard[data-area="trace"]{background:#D8F5DF}
+.gcard[data-area="spell"]{background:#FFF1B8}
+.gcard[data-area="math"]{background:#E8DDFB}
+.gcard:active{transform:translateY(6px);box-shadow:0 2px 0 var(--ink)}
+@media (hover:hover){ .gcard:hover{transform:translateY(-4px)} }
+.gc-icon{font-size:3.6rem;line-height:1.1}
+.gc-name{font-size:1.5rem;font-weight:800;line-height:1.1}
+.gc-sub{font-size:.98rem;font-weight:600;color:var(--ink-soft);line-height:1.25}
+.gc-prog{font-weight:800;background:#fff;border-radius:999px;padding:2px 12px;margin-top:4px;font-variant-numeric:tabular-nums}
+.gc-prog:empty{display:none}
+
+/* ---------- studio: toy box | board | tools ---------- */
+.studio{
+  display:grid;gap:14px;align-items:start;
+  grid-template-columns:240px minmax(0,1fr) 94px;grid-template-areas:"tray board tools";
+}
+body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,1fr) 240px;grid-template-areas:"tools board tray"}
+.tray{
+  grid-area:tray;position:sticky;top:10px;
+  max-height:calc(100vh - 104px);max-height:calc(100dvh - 104px);overflow-y:auto;overscroll-behavior:contain;
+  padding:14px;gap:14px;
+}
+.tray .swatches{grid-template-columns:repeat(4,minmax(0,1fr))}
+.tray .hint{display:none}
+.name-open{width:100%;font-size:1.15rem;padding:10px 12px 8px}
+.board-col{grid-area:board;display:flex;flex-direction:column;gap:10px;min-width:0}
+.below{display:none!important}
+.tools{
+  grid-area:tools;position:sticky;top:10px;display:flex;flex-direction:column;gap:8px;
+  height:calc(100vh - 104px);height:calc(100dvh - 104px);max-height:880px;
+}
+.tools-main{display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1 1 auto;min-height:0;padding:2px 2px 6px;overscroll-behavior:contain}
+.tbtn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:none;
+  width:100%;min-height:64px;padding:6px 4px 4px;cursor:pointer;color:var(--ink);text-align:center;
+  border:3px solid var(--ink);border-radius:18px;background:#fff;box-shadow:0 4px 0 var(--ink);
+  font:inherit;font-weight:800;font-size:.76rem;line-height:1.05;
+  transition:transform .08s, box-shadow .08s;
+}
+.tbtn svg{width:28px;height:28px;flex:none}
+.tbtn[aria-pressed="true"]{background:var(--sun)}
+.tbtn.toggle[aria-pressed="true"]{background:var(--mint)}
+.tbtn.warn{background:#FFD9C9;min-height:54px}
+.tbtn.pink{background:var(--blush)}
+.tbtn.lav{background:var(--lav)}
+.tbtn.undo{background:var(--mint);min-height:88px;font-size:.95rem;border-width:4px}
+.tbtn.undo svg{width:40px;height:40px}
+.tbtn:disabled{opacity:.45;cursor:not-allowed}
+.tbtn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.plate-wrap{padding:6px 4px 16px}
+/* short landscape screens (iPad, laptops): every tool still fits without scrolling */
+@media (min-width:900px) and (orientation:landscape) and (max-height:960px){
+  .tools,.tools-main{gap:6px}
+  .tbtn{min-height:50px;padding:4px 3px 3px;font-size:.7rem}
+  .tbtn svg{width:22px;height:22px}
+  .tbtn.warn{min-height:48px}
+  .tbtn.undo{min-height:72px}
+  .tbtn.undo svg{width:34px;height:34px}
+}
+
+/* games inside the studio */
+.gamepanel{border-color:var(--area)}
+.gamepanel{box-shadow:0 6px 0 var(--ink)}
+
+/* ---------- Little builders: fewer, bigger choices ---------- */
+body[data-age="little"] .big-only,
+body[data-age="little"] .sec-styles,
+body[data-age="little"] .sec-mine{display:none!important}
+
+/* ---------- upright screens: toy box becomes a dock along the bottom ---------- */
+@media (orientation:portrait), (max-width:899px){
+  body[data-screen="studio"]{padding-bottom:calc(var(--dock-h, 200px) + 12px)}
+  .studio,body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr);grid-template-areas:"tools" "board";gap:10px}
+  .tools{position:static;flex-direction:row;height:auto;max-height:none;gap:8px}
+  body[data-hand="left"] .tools,body[data-hand="left"] .tools-main{flex-direction:row-reverse}
+  .tools-main{flex-direction:row;flex-wrap:wrap;overflow:visible;padding:2px 2px 6px}
+  body[data-hand="left"] .tools-main{flex-wrap:wrap}
+  .tbtn{width:auto;min-width:70px;min-height:62px}
+  .tools-main .tbtn{flex:1 0 70px}
+  .tbtn.warn{min-height:62px}
+  .tbtn.undo{min-height:62px;min-width:84px;font-size:.85rem}
+  .tbtn.undo svg{width:30px;height:30px}
+  .tray{
+    position:fixed;left:0;right:0;bottom:0;top:auto;z-index:80;max-height:none;
+    flex-direction:row;align-items:flex-start;gap:16px;overflow-x:auto;overflow-y:hidden;
+    border-radius:26px 26px 0 0;border-bottom:0;box-shadow:0 -8px 22px rgba(43,30,92,.28);
+    padding:10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    transition:transform .25s ease;scrollbar-width:thin;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
   }
-  body:not([data-mode="free"]) .modebar{grid-area:mode}
-  body:not([data-mode="free"]) .helper{grid-area:helper}
-  body:not([data-mode="free"]) .toolbar{grid-area:tools}
-  body:not([data-mode="free"]) .selbar{grid-area:sel}
-  body:not([data-mode="free"]) .plate-wrap{grid-area:plate}
-  body:not([data-mode="free"]) .below{grid-area:below}
-  body:not([data-mode="free"]) .gamepanel{grid-area:game;flex-direction:column;gap:10px;padding:12px}
-  body:not([data-mode="free"]) .gp-target{flex-basis:auto;min-height:110px}
+  [dir="rtl"] .tray{-webkit-mask-image:linear-gradient(270deg,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(270deg,#000 calc(100% - 26px),transparent)}
+  .tray-sec{flex:none;gap:6px}
+  .tray h2,.tray h3{font-size:.85rem;margin:0;white-space:nowrap;color:var(--ink-soft)}
+  .sec-name{align-self:stretch}
+  .name-open{flex-direction:column;width:92px;height:100%;min-height:120px;font-size:.95rem;padding:8px 6px;white-space:normal;line-height:1.1}
+  .name-open > span:first-child{font-size:1.8rem}
+  .swatches{grid-template-columns:repeat(5,40px);gap:6px}
+  .swatch{min-width:40px;min-height:40px}
+  .styles{grid-template-columns:repeat(3,56px)}
+  .sec-bricks{display:grid;grid-template-columns:auto auto;align-items:center;justify-content:start;column-gap:10px;row-gap:6px}
+  .sec-bricks .shapes{grid-column:1 / -1}
+  .sec-bricks .row{margin:0}
+  .sec-bricks .row .btn{min-height:34px;padding:2px 10px 0;font-size:.82rem;border-radius:12px;box-shadow:0 3px 0 var(--ink)}
+  .sec-bricks .row .btn svg{width:18px;height:18px}
+  .shapes{grid-template-columns:none;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:84px;gap:8px}
+  .stamps{grid-template-columns:none;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:74px;gap:8px}
+  .plates{grid-template-columns:repeat(4,40px)}
+  .card{touch-action:pan-x}
+  body.typing .tray{transform:translateY(110%)}
+  .gcards{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media (min-width:700px) and (max-width:1100px) and (orientation:portrait){
-  body:not([data-mode="free"]) .helper{display:none}
-  body:not([data-mode="free"]) .gamepanel{padding:10px;gap:12px}
-  body:not([data-mode="free"]) .gp-target{flex-basis:112px;min-height:96px}
-  body:not([data-mode="free"]) .gp-emoji{font-size:2.6rem}
-  body:not([data-mode="free"]) .gp-num{font-size:3rem}
+
+/* ---------- phones: tools become a row above the board ---------- */
+@media (max-width:699px){
+  .app{padding-block:8px 12px}
+  .home{gap:12px}
+  .doors{grid-template-columns:1fr;gap:14px}
+  .door{flex-direction:row;text-align:start;padding:12px 14px;gap:14px;border-radius:24px}
+  .door-pic{height:auto;width:96px;flex:none;align-items:center}
+  .door-name{font-size:1.4rem}
+  .door-sub{font-size:.9rem}
+  .door > .door-name,.door > .door-sub{display:block}
+  .door{display:grid;grid-template-columns:96px 1fr;grid-template-rows:auto auto;align-items:center}
+  .door-pic{grid-row:1 / span 2}
+  .bricky.big{width:60px;height:60px}
+  .home .bubble{font-size:1.02rem}
+  .topbar{min-height:56px;gap:6px;padding:5px 6px;border-radius:18px}
+  .tb-home{width:46px;height:46px}
+  .topbar .bricky{width:34px;height:34px}
+  .topbar .bubble{font-size:.86rem;min-height:36px;padding:3px 8px 1px}
+  .area-chip{display:none}
+  .tb-btn .txt,.tb-btn span[data-i18n]{display:none}
+  .studio,body[data-hand="left"] .studio{gap:8px}
+  .tools{gap:6px}
+  .tbtn{min-width:60px;min-height:56px;font-size:.66rem}
+  .tools-main .tbtn{flex:1 0 60px}
+  .topbar .bubble{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  #badgesBtn{display:none}
+  .tbtn svg{width:24px;height:24px}
+  .tbtn.warn,.tbtn.undo{min-height:56px;min-width:62px;font-size:.7rem}
+  .tbtn.undo svg{width:28px;height:28px}
+  .swatches{grid-template-columns:repeat(5,34px)}
+  .swatch{min-width:34px;min-height:34px}
+  .shapes{grid-auto-columns:74px}
+  .card{min-height:58px}
+  .gcards{grid-template-columns:1fr}
+  .gcard{display:grid;grid-template-columns:70px 1fr;text-align:start;align-items:center;padding:12px 14px;gap:2px 12px}
+  .gc-icon{grid-row:1 / span 3;font-size:2.8rem}
+  .gamepanel{gap:10px;padding:10px}
+  .gp-target{flex-basis:88px;min-height:84px}
+  .gp-emoji{font-size:2.2rem}
+  .gp-num{font-size:2.6rem}
+  .gp-head h2{font-size:1.05rem}
+  .gp-text{font-size:.85rem}
+  .gletter{min-width:46px;height:46px;font-size:1.35rem}
 }
+
+/* ---------- sheets (name keyboard, save, grown-ups, welcome) ---------- */
+.sheet{position:fixed;inset:0;z-index:9000;background:rgba(43,30,92,.55);display:grid;place-items:center;padding:16px}
+.sheet[hidden]{display:none!important}
+.sheet-card{
+  background:#fff;border:4px solid var(--ink);border-radius:26px;box-shadow:0 8px 0 var(--ink);padding:18px;
+  width:min(640px,100%);max-height:92vh;max-height:92dvh;overflow:auto;display:flex;flex-direction:column;gap:12px;
+}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sheet-head h2{margin:0;font-size:1.5rem;line-height:1.1}
+.sheet-x{
+  width:50px;height:50px;flex:none;border-radius:50%;border:3px solid var(--ink);background:#fff;
+  font:inherit;font-size:1.8rem;font-weight:800;line-height:1;cursor:pointer;color:var(--ink);box-shadow:0 3px 0 var(--ink);
+}
+.share-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.share-grid .btn{min-height:68px;font-size:1.1rem;justify-content:flex-start;gap:10px;padding-inline:14px}
+.share-grid .btn > span:first-child{font-size:1.6rem}
+.btn.sun{background:var(--sun)}
+.gu-rows{display:flex;flex-direction:column;gap:8px}
+.gu-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:16px;background:var(--tint)}
+.gu-label{font-weight:800}
+
+/* picture keyboard */
+.name-card{width:min(780px,100%)}
+.name-show{display:flex;gap:8px;align-items:stretch}
+.name-show .name-input{flex:1;min-width:0;font-size:2rem;text-align:center;min-height:64px}
+.kbtn{
+  width:70px;flex:none;border:3px solid var(--ink);border-radius:16px;background:#FFD9C9;
+  font-size:1.7rem;cursor:pointer;box-shadow:0 4px 0 var(--ink);color:var(--ink);
+}
+.kbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:7px}
+.tile{
+  height:60px;border:3px solid var(--ink);border-radius:14px;background:var(--tc,#fff);color:var(--ink);
+  font:inherit;font-size:1.7rem;font-weight:800;cursor:pointer;box-shadow:0 4px 0 var(--ink);line-height:1;
+}
+.tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.kb-row{display:flex;gap:6px;flex-wrap:wrap}
+.kb-row .btn{min-height:50px;font-size:1.1rem}
+.kb-space{flex:1;min-width:120px}
+@media (max-width:699px){
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:5px}
+  .tile{height:50px;font-size:1.35rem;border-radius:12px}
+  .name-show .name-input{font-size:1.5rem}
+}
+
+/* welcome tour */
+.big-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.big-choice{
+  min-height:120px;border:4px solid var(--ink);border-radius:24px;box-shadow:0 7px 0 var(--ink);cursor:pointer;
+  font:inherit;font-size:1.5rem;font-weight:800;color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+}
+.big-choice .em{font-size:2.6rem;line-height:1}
+.big-choice:active{transform:translateY(5px);box-shadow:0 2px 0 var(--ink)}
+.tour-head{display:flex;align-items:center;gap:12px}
+.tour-head .bricky{width:70px;height:70px}
+.tour-head h2{margin:0;font-size:1.6rem;line-height:1.15}
+.coach{
+  position:fixed;z-index:9500;left:50%;bottom:calc(var(--dock-h, 0px) + 18px);translate:-50% 0;
+  background:#fff;border:4px solid var(--ink);border-radius:24px;box-shadow:0 8px 0 var(--ink);padding:12px 14px;
+  display:flex;gap:12px;align-items:center;width:max-content;max-width:calc(100% - 32px);
+}
+body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
+.coach .bricky{width:54px;height:54px}
+.coach p{margin:0;font-weight:800;font-size:1.1rem;line-height:1.3}
+.coach .btn{flex:none}
+.hand{position:fixed;left:0;top:0;z-index:9600;font-size:3rem;line-height:1;pointer-events:none;filter:drop-shadow(0 4px 4px rgba(0,0,0,.3))}
+.pointing{outline:5px solid var(--sun);outline-offset:4px;animation:pointPulse 1s ease infinite}
+@keyframes pointPulse{50%{outline-color:#fff}}
+
+/* press and hold to hear */
+.saying{animation:sayPop .6s ease}
+@keyframes sayPop{40%{transform:scale(1.12)}}
+/* idle nudge: the toy box wiggles */
+.tray.nudge .card{animation:wiggle .45s ease 2}
+.tray.nudge .name-open{animation:wiggle .45s ease 2}
 
 </style>
 <div class="app">
-  <header class="top">
-    <div class="logo" id="logo" role="img" aria-label="Snappy Bricks"></div>
-    <p class="tag" data-i18n="tagline">Snap bricks onto the board, make pictures, and build your name!</p>
-    <div class="chips">
-      <button class="chip" id="themeBtn" type="button" data-i18n-title="theme">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.8 2-1.8 0-.5-.2-.9-.5-1.3-.3-.3-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4C21 6.4 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor"/><circle cx="10.5" cy="7" r="1.3" fill="currentColor"/><circle cx="15.5" cy="7.5" r="1.3" fill="currentColor"/></svg>
-        <span class="txt" data-i18n="theme">Theme</span>
-      </button>
-      <button class="chip" id="badgesBtn" type="button" data-i18n-title="badges">
-        <span aria-hidden="true">🏅</span><span id="badgeCount">0</span>
-      </button>
-      
 
-      <button class="chip" id="langBtn" type="button" aria-label="Language">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
-        <span id="langTxt" class="ar">عربي</span>
-      </button>
-      <button class="chip" id="talkBtn" type="button" aria-pressed="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path class="on-only" d="M8 10h8M8 13h5"/></svg>
-        <span class="txt" id="talkTxt" data-i18n="talkOn">Talking on</span>
-      </button>
-      <button class="chip" id="soundBtn" type="button" aria-pressed="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
-        <span class="txt" id="soundTxt" data-i18n="soundOn">Sound on</span>
+  <!-- ===================== HOME ===================== -->
+  <section class="screen home" id="homeScreen" aria-labelledby="homeTitle">
+    <div class="home-top">
+      <button class="lock" id="lockBtn" type="button" data-i18n-aria="lockAria">
+        <span class="lock-ring" aria-hidden="true"></span>
+        <span class="lock-ico" aria-hidden="true">🔒</span>
+        <span class="lock-txt" data-i18n="grownUps">Grown-ups</span>
       </button>
     </div>
-  </header>
+    <h1 class="sr-only" id="homeTitle" data-i18n="appName">Snappy Bricks</h1>
+    <div class="logo" id="logo" role="img" aria-label="Snappy Bricks"></div>
+    <div class="home-hello">
+      <svg class="bricky big" viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="11" y="4" width="15" height="11" rx="3" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
+        <rect x="38" y="4" width="15" height="11" rx="3" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
+        <rect x="4" y="12" width="56" height="47" rx="9" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
+        <circle cx="22" cy="31" r="4.5" fill="#2B1E5C"/><circle cx="42" cy="31" r="4.5" fill="#2B1E5C"/>
+        <circle cx="23.5" cy="29.5" r="1.4" fill="#fff"/><circle cx="43.5" cy="29.5" r="1.4" fill="#fff"/>
+        <circle cx="14" cy="40" r="3.5" fill="#FF8FB8"/><circle cx="50" cy="40" r="3.5" fill="#FF8FB8"/>
+        <path d="M23 42q9 9 18 0" fill="none" stroke="#2B1E5C" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <p class="bubble" id="homeBubble" aria-live="polite"></p>
+    </div>
+    <div class="doors">
+      <button class="door" id="doorBuild" type="button" data-area="build">
+        <span class="door-pic" id="picBuild" aria-hidden="true"></span>
+        <span class="door-name" data-i18n="doorBuild">Build</span>
+        <span class="door-sub" data-i18n="doorBuildSub">Snap bricks and make anything</span>
+      </button>
+      <button class="door" id="doorGames" type="button" data-area="games">
+        <span class="door-pic" id="picGames" aria-hidden="true"></span>
+        <span class="door-name" data-i18n="doorGames">Play games</span>
+        <span class="door-sub" data-i18n="doorGamesSub">Pictures, letters, words and numbers</span>
+      </button>
+      <button class="door" id="doorCard" type="button" data-area="card">
+        <span class="door-pic" id="picCard" aria-hidden="true"></span>
+        <span class="door-name" data-i18n="doorCard">Make a card</span>
+        <span class="door-sub" data-i18n="doorCardSub">Send your picture to someone you love</span>
+      </button>
+    </div>
+    <div class="home-extras">
+      <button class="pill" id="homeCreations" type="button"><span aria-hidden="true">🖼️</span> <span data-i18n="myCreations">My creations</span></button>
+      <button class="pill" id="homeBadges" type="button"><span aria-hidden="true">🏅</span> <span data-i18n="badges">Badges</span> <b id="homeBadgeCount">0</b></button>
+      <button class="pill" id="themeBtn" type="button"><span aria-hidden="true">🎨</span> <span data-i18n="theme">Theme</span></button>
+    </div>
+  </section>
 
-  <main class="studio">
-    <!-- Brick tray -->
-    <section class="panel tray" id="tray" aria-labelledby="trayTitle">
-      <div class="tray-sec sec-colors">
-        <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
-        <div class="swatches" id="swatches"></div>
-      </div>
-      <div class="tray-sec sec-styles">
-        <h3 data-i18n="brickStyle">Brick style</h3>
-        <div class="styles" id="styles"></div>
-      </div>
-      <div class="tray-sec sec-bricks">
-        <h2 data-i18n="dragBrick">Drag a brick</h2>
-        <p class="hint" data-i18n="dragHint">Drag it to the board, or tap it and then tap the board.</p>
-        <div class="shapes" id="shapes"></div>
-        <div class="row">
-          <button class="btn lav" id="turnBtn" type="button" aria-pressed="false">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>
-            <span data-i18n="turnBricks">Turn bricks</span>
-          </button>
-        </div>
-      </div>
-      <div class="tray-sec sec-stamps">
-        <h3 data-i18n="funShapes">Fun shapes</h3>
-        <div class="stamps" id="stamps"></div>
-      </div>
-      <div class="tray-sec sec-mine" id="myStampsWrap" hidden>
-        <h3 data-i18n="myStamps">My stamps</h3>
-        <div class="stamps" id="myStamps"></div>
-      </div>
-    </section>
+  <!-- ===================== GAMES PICKER ===================== -->
+  <section class="screen gamespick" id="gamesScreen" aria-labelledby="gamesTitle" hidden>
+    <div class="topbar">
+      <button class="tb-home" type="button" data-go="home" data-i18n-aria="goHome">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+      </button>
+      <h2 class="tb-title" id="gamesTitle" data-i18n="pickGame">Pick a game</h2>
+    </div>
+    <div class="gcards">
+      <button class="gcard" type="button" data-gmode="copy" data-area="copy">
+        <span class="gc-icon" aria-hidden="true">🖼️</span>
+        <span class="gc-name" data-i18n="modeCopy">Copy it</span>
+        <span class="gc-sub" data-i18n="modeCopySub">Build the same picture</span>
+        <span class="gc-prog" id="progCopy"></span>
+      </button>
+      <button class="gcard" type="button" data-gmode="trace" data-area="trace">
+        <span class="gc-icon" aria-hidden="true">✏️</span>
+        <span class="gc-name" data-i18n="modeTrace">Trace letters</span>
+        <span class="gc-sub" data-i18n="modeTraceSub">Fill a big letter with bricks</span>
+        <span class="gc-prog" id="progTrace"></span>
+      </button>
+      <button class="gcard" type="button" data-gmode="spell" data-area="spell">
+        <span class="gc-icon" aria-hidden="true">🔤</span>
+        <span class="gc-name" data-i18n="modeSpell">Spell it</span>
+        <span class="gc-sub" data-i18n="modeSpellSub">Tap the letters of the word</span>
+        <span class="gc-prog" id="progSpell"></span>
+      </button>
+      <button class="gcard" type="button" data-gmode="math" data-area="math">
+        <span class="gc-icon" aria-hidden="true">➕</span>
+        <span class="gc-name" data-i18n="modeMath">Brick math</span>
+        <span class="gc-sub" data-i18n="modeMathSub">Count the bumps</span>
+        <span class="gc-prog" id="progMath"></span>
+      </button>
+    </div>
+  </section>
 
-    <!-- Board -->
-    <section class="board-area" aria-label="Building board">
-      <nav class="modebar" id="modebar" data-i18n-aria="playModes">
-        <button type="button" class="mode" data-gmode="free" aria-pressed="true"><span class="mi" aria-hidden="true">🧱</span><span data-i18n="modeFree">Free build</span></button>
-        <button type="button" class="mode" data-gmode="copy" aria-pressed="false"><span class="mi" aria-hidden="true">🖼️</span><span data-i18n="modeCopy">Copy it</span></button>
-        <button type="button" class="mode" data-gmode="trace" aria-pressed="false"><span class="mi" aria-hidden="true">✏️</span><span data-i18n="modeTrace">Trace letters</span></button>
-        <button type="button" class="mode" data-gmode="spell" aria-pressed="false"><span class="mi" aria-hidden="true">🔤</span><span data-i18n="modeSpell">Spell it</span></button>
-        <button type="button" class="mode" data-gmode="math" aria-pressed="false"><span class="mi" aria-hidden="true">➕</span><span data-i18n="modeMath">Brick math</span></button>
-      </nav>
-
+  <!-- ===================== STUDIO (build + games) ===================== -->
+  <section class="screen studio-screen" id="studioScreen" hidden>
+    <div class="topbar">
+      <button class="tb-home" type="button" data-go="home" data-i18n-aria="goHome">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+      </button>
+      <button class="tb-btn" id="gamesBtn" type="button" data-go="games" hidden><span aria-hidden="true">🎮</span> <span data-i18n="games">Games</span></button>
       <div class="helper">
         <svg class="bricky" id="bricky" viewBox="0 0 64 64" aria-hidden="true">
           <rect x="11" y="4" width="15" height="11" rx="3" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
@@ -714,140 +872,226 @@ html{touch-action:manipulation}
         </svg>
         <p class="bubble" id="bubble" aria-live="polite"></p>
       </div>
-      <div class="gamepanel" id="gamePanel" hidden>
-        <div class="gp-target" id="gTarget"></div>
-        <div class="gp-main">
-          <div class="gp-head">
-            <h2 id="gTitle"></h2>
-            <span class="gp-stars" id="gStars"></span>
-          </div>
-          <p class="gp-text" id="gText"></p>
-          <div class="gp-bar" aria-hidden="true"><span id="gBarFill"></span></div>
-          <p class="gp-prog" id="gProg" aria-live="polite"></p>
-          <div class="gp-letters" id="gLetters"></div>
-          <div class="gp-actions">
-            <button class="btn white small" id="gHint" type="button" data-i18n="hint">Hint</button>
-            <button class="btn white small" id="gReset" type="button" data-i18n="startOver">Start over</button>
-            <button class="btn lav small" id="gLevels" type="button" data-i18n="levels">Levels</button>
-            <button class="btn white small" id="gAlpha" type="button">ABC</button>
-            <button class="btn mint small" id="gNext" type="button"><span data-i18n="next">Next</span> <span class="arr" aria-hidden="true">➜</span></button>
+      <span class="area-chip" id="areaChip"></span>
+      <button class="tb-btn" id="badgesBtn" type="button" data-i18n-aria="badges"><span aria-hidden="true">🏅</span> <span id="badgeCount">0</span></button>
+    </div>
+
+    <main class="studio">
+      <!-- the toy box -->
+      <section class="panel tray" id="tray" aria-labelledby="trayTitle">
+        <div class="tray-sec sec-name">
+          <button class="btn big name-open" id="nameOpenBtn" type="button"><span aria-hidden="true">✍️</span> <span data-i18n="writeName">Write my name</span></button>
+        </div>
+        <div class="tray-sec sec-colors">
+          <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
+          <div class="swatches" id="swatches"></div>
+        </div>
+        <div class="tray-sec sec-styles">
+          <h3 data-i18n="brickStyle">Brick style</h3>
+          <div class="styles" id="styles"></div>
+        </div>
+        <div class="tray-sec sec-bricks">
+          <h2 data-i18n="dragBrick">Drag a brick</h2>
+          <p class="hint" data-i18n="dragHint">Drag it to the board, or tap it and then tap the board.</p>
+          <div class="shapes" id="shapes"></div>
+          <div class="row">
+            <button class="btn lav" id="turnBtn" type="button" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>
+              <span data-i18n="turnBricks">Turn bricks</span>
+            </button>
           </div>
         </div>
-      </div>
-
-
-      <div class="toolbar" role="toolbar" aria-label="Tools">
-        <div class="seg" role="group">
-          <button class="btn" data-tool="move" aria-pressed="true" data-i18n-title="tt_move">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>
-            <span class="txt" data-i18n="move">Move</span>
-          </button>
-          <button class="btn" data-tool="paint" aria-pressed="false" data-i18n-title="tt_paint">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 3l3 3-9 9-3-3z"/><path d="M9 12c-3 0-5 2-5 5 0 1.5-1 2.5-2 3 4 1 9 0 10-5"/></svg>
-            <span class="txt" data-i18n="paint">Paint</span>
-          </button>
-          <button class="btn" data-tool="fill" aria-pressed="false" data-i18n-title="tt_fill">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11l7-7 8 8-7 7z"/><path d="M5 11h15"/><path d="M20 16s2 2.4 2 3.6a2 2 0 0 1-4 0c0-1.2 2-3.6 2-3.6z" fill="currentColor"/></svg>
-            <span class="txt" data-i18n="fill">Fill</span>
-          </button>
-          <button class="btn" data-tool="erase" aria-pressed="false" data-i18n-title="tt_erase">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l5 5-10 10H6l-3-3z"/><path d="M9 21h12"/><path d="M11 8l5 5"/></svg>
-            <span class="txt" data-i18n="eraser">Eraser</span>
-          </button>
-          <button class="btn" data-tool="select" aria-pressed="false" data-i18n-title="tt_select">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4" /><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
-            <span class="txt" data-i18n="stampTool">Stamp maker</span>
-          </button>
+        <div class="tray-sec sec-stamps">
+          <h3 data-i18n="funShapes">Fun shapes</h3>
+          <div class="stamps" id="stamps"></div>
         </div>
-        <span class="divider"></span>
-        <button class="btn toggle" id="mirrorBtn" type="button" aria-pressed="false" data-i18n-title="tt_mirror">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20" stroke-dasharray="3 3"/><path d="M9 6L3 18h6z"/><path d="M15 6l6 12h-6z"/></svg>
-          <span class="txt" id="mirrorTxt">Mirror off</span>
-        </button>
-        <button class="btn toggle" id="stackBtn" type="button" aria-pressed="false" data-i18n-title="tt_stack">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="14" width="18" height="6" rx="1.5"/><rect x="6" y="8" width="12" height="6" rx="1.5"/><rect x="9" y="3" width="6" height="5" rx="1.5"/></svg>
-          <span class="txt" data-i18n="stack">Stack</span>
-        </button>
-        <span class="spacer"></span>
-        <button class="btn mint" id="undoBtn" type="button" disabled data-i18n-title="undo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
-          <span class="txt" data-i18n="undo">Undo</span>
-        </button>
-        <button class="btn lav" id="replayBtn" type="button" data-i18n-title="replay">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>
-          <span class="txt" data-i18n="replay">Replay</span>
-        </button>
+        <div class="tray-sec sec-mine" id="myStampsWrap" hidden>
+          <h3 data-i18n="myStamps">My stamps</h3>
+          <div class="stamps" id="myStamps"></div>
+        </div>
+        <div class="tray-sec sec-plates">
+          <h3 data-i18n="boardColor">Board color</h3>
+          <div class="plates" id="plates"></div>
+        </div>
+      </section>
 
-        <button class="btn warn" id="clearBtn" type="button" data-i18n-title="tt_clear">
+      <!-- the board -->
+      <section class="board-col" aria-label="Building board">
+        <div class="gamepanel" id="gamePanel" hidden>
+          <div class="gp-target" id="gTarget"></div>
+          <div class="gp-main">
+            <div class="gp-head">
+              <h2 id="gTitle"></h2>
+              <span class="gp-stars" id="gStars"></span>
+            </div>
+            <p class="gp-text" id="gText"></p>
+            <div class="gp-bar" aria-hidden="true"><span id="gBarFill"></span></div>
+            <p class="gp-prog" id="gProg" aria-live="polite"></p>
+            <div class="gp-letters" id="gLetters"></div>
+            <div class="gp-actions">
+              <button class="btn white small" id="gHint" type="button" data-i18n="hint">Hint</button>
+              <button class="btn white small" id="gReset" type="button" data-i18n="startOver">Start over</button>
+              <button class="btn lav small" id="gLevels" type="button" data-i18n="levels">Levels</button>
+              <button class="btn white small" id="gAlpha" type="button">ABC</button>
+              <button class="btn mint small" id="gNext" type="button"><span data-i18n="next">Next</span> <span class="arr" aria-hidden="true">➜</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="selbar" id="selbar" hidden>
+          <strong id="selCount"></strong>
+          <button class="btn mint small" id="selStamp" type="button" data-i18n="makeStamp">Make a stamp</button>
+          <button class="btn warn small" id="selDelete" type="button" data-i18n="deleteThese">Delete them</button>
+          <button class="btn white small" id="selCancel" type="button" data-i18n="cancel">Cancel</button>
+        </div>
+
+        <div class="plate-wrap" id="plateWrap">
+          <div class="plate tool-move" id="plate" aria-label="Brick board"></div>
+        </div>
+
+        <div class="below" aria-hidden="true">
+          <span class="count" id="count">0</span>
+          <div class="trash" id="trash"><span data-i18n="dropTrash">Drop here to throw away</span></div>
+        </div>
+      </section>
+
+      <!-- the tools: always on the same side, Undo always at the bottom -->
+      <nav class="tools" id="tools" aria-label="Tools">
+        <button class="tbtn warn" id="clearBtn" type="button" data-i18n-title="tt_clear">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
           <span class="txt" id="clearTxt" data-i18n="clear">Clear</span>
         </button>
-        <button class="btn pink" id="saveBtn" type="button" data-i18n-title="savePicture">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
-          <span class="txt" data-i18n="savePicture">Save picture</span>
+        <div class="tools-main">
+          <button class="tbtn" data-tool="move" aria-pressed="true" data-i18n-title="tt_move">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>
+            <span class="txt" data-i18n="move">Move</span>
+          </button>
+          <button class="tbtn" data-tool="paint" aria-pressed="false" data-i18n-title="tt_paint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 3l3 3-9 9-3-3z"/><path d="M9 12c-3 0-5 2-5 5 0 1.5-1 2.5-2 3 4 1 9 0 10-5"/></svg>
+            <span class="txt" data-i18n="paint">Paint</span>
+          </button>
+          <button class="tbtn" data-tool="erase" aria-pressed="false" data-i18n-title="tt_erase">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l5 5-10 10H6l-3-3z"/><path d="M9 21h12"/><path d="M11 8l5 5"/></svg>
+            <span class="txt" data-i18n="eraser">Eraser</span>
+          </button>
+          <button class="tbtn big-only" data-tool="fill" aria-pressed="false" data-i18n-title="tt_fill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11l7-7 8 8-7 7z"/><path d="M5 11h15"/><path d="M20 16s2 2.4 2 3.6a2 2 0 0 1-4 0c0-1.2 2-3.6 2-3.6z" fill="currentColor"/></svg>
+            <span class="txt" data-i18n="fill">Fill</span>
+          </button>
+          <button class="tbtn big-only" data-tool="select" aria-pressed="false" data-i18n-title="tt_select">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4" /><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+            <span class="txt" data-i18n="stampTool">Stamp maker</span>
+          </button>
+          <button class="tbtn toggle big-only" id="mirrorBtn" type="button" aria-pressed="false" data-i18n-title="tt_mirror">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20" stroke-dasharray="3 3"/><path d="M9 6L3 18h6z"/><path d="M15 6l6 12h-6z"/></svg>
+            <span class="txt" id="mirrorTxt">Mirror</span>
+          </button>
+          <button class="tbtn toggle big-only" id="stackBtn" type="button" aria-pressed="false" data-i18n-title="tt_stack">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="14" width="18" height="6" rx="1.5"/><rect x="6" y="8" width="12" height="6" rx="1.5"/><rect x="9" y="3" width="6" height="5" rx="1.5"/></svg>
+            <span class="txt" data-i18n="stack">Stack</span>
+          </button>
+          <button class="tbtn lav" id="replayBtn" type="button" data-i18n-title="replay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>
+            <span class="txt" data-i18n="replay">Replay</span>
+          </button>
+          <button class="tbtn pink" id="saveMenuBtn" type="button" data-i18n-title="saveShare">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            <span class="txt" data-i18n="save">Save</span>
+          </button>
+        </div>
+        <button class="tbtn undo" id="undoBtn" type="button" disabled data-i18n-title="undo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+          <span class="txt" data-i18n="undo">Undo</span>
         </button>
-      </div>
+      </nav>
+    </main>
+  </section>
+</div>
 
-      <div class="selbar" id="selbar" hidden>
-        <strong id="selCount"></strong>
-        <button class="btn mint small" id="selStamp" type="button" data-i18n="makeStamp">Make a stamp</button>
-        <button class="btn warn small" id="selDelete" type="button" data-i18n="deleteThese">Delete them</button>
-        <button class="btn white small" id="selCancel" type="button" data-i18n="cancel">Cancel</button>
+<!-- ===================== SHEETS ===================== -->
+<div class="sheet" id="nameSheet" hidden>
+  <div class="sheet-card name-card" role="dialog" aria-modal="true" aria-labelledby="nameTitle">
+    <div class="sheet-head">
+      <h2 id="nameTitle" data-i18n="writeName">Write my name</h2>
+      <button class="sheet-x" type="button" data-close-sheet data-i18n-aria="close">×</button>
+    </div>
+    <form class="name-form" id="nameForm" autocomplete="off">
+      <div class="name-show">
+        <input class="name-input" id="nameInput" maxlength="18" data-i18n-ph="namePh" placeholder="Your name here" spellcheck="false" data-i18n-aria="writeName">
+        <button class="kbtn" id="kbBack" type="button" data-i18n-aria="kbBack">⌫</button>
       </div>
+      <div class="tiles" id="nameTiles"></div>
+      <div class="kb-row">
+        <button class="btn white small" id="kbSwitch" type="button">أ ب ت</button>
+        <button class="btn white small kb-space" id="kbSpace" type="button" data-i18n="kbSpace">space</button>
+        <button class="btn white small" type="button" data-ins="♥" data-i18n-aria="addHeart">♥</button>
+        <button class="btn white small" type="button" data-ins="★" data-i18n-aria="addStar">★</button>
+        <button class="btn white small" id="kbType" type="button" data-i18n-aria="kbType">⌨️</button>
+      </div>
+      <p class="label" data-i18n="letterColors">Letter colors</p>
+      <div class="seg" id="nameModes">
+        <button class="btn" type="button" data-mode="rainbow" aria-pressed="true" data-i18n="rainbow">Rainbow</button>
+        <button class="btn" type="button" data-mode="pastel" aria-pressed="false" data-i18n="candy">Candy</button>
+        <button class="btn" type="button" data-mode="one" aria-pressed="false" data-i18n="myColor">My color</button>
+      </div>
+      <button class="btn big" type="submit" data-i18n="buildName">Build my name!</button>
+    </form>
+  </div>
+</div>
 
-      <div class="plate-wrap" id="plateWrap">
-        <div class="plate tool-move" id="plate" aria-label="Brick board"></div>
-      </div>
+<div class="sheet" id="saveSheet" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="saveTitle">
+    <div class="sheet-head">
+      <h2 id="saveTitle" data-i18n="saveShare">Save and share</h2>
+      <button class="sheet-x" type="button" data-close-sheet data-i18n-aria="close">×</button>
+    </div>
+    <div class="share-grid" id="shareGrid">
+      <button class="btn pink" id="saveBtn" type="button"><span aria-hidden="true">📸</span><span data-i18n="savePicture">Save picture</span></button>
+      <button class="btn mint" id="gallerySaveBtn" type="button"><span aria-hidden="true">💾</span><span data-i18n="saveCreation">Save to My creations</span></button>
+      <button class="btn white" id="galleryBtn" type="button"><span aria-hidden="true">🖼️</span><span data-i18n="myCreations">My creations</span></button>
+      <button class="btn sun" id="cardBtn" type="button"><span aria-hidden="true">💌</span><span data-i18n="makeCard">Make a card</span></button>
+    </div>
+  </div>
+</div>
 
-      <div class="below">
-        <span class="count" id="count">0</span>
-        <div class="trash" id="trash">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>
-          <span data-i18n="dropTrash">Drop here to throw away</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Name + board settings -->
-    <section class="panel side" aria-labelledby="nameTitle">
-      <div class="name-box">
-      <h2 id="nameTitle" data-i18n="writeName">Write your name</h2>
-      <form class="name-form" id="nameForm" autocomplete="off">
-        <label class="label" for="nameInput" data-i18n="typeLetters">Type letters or numbers</label>
-        <input class="name-input" id="nameInput" maxlength="18" data-i18n-ph="namePh" placeholder="Your name here" spellcheck="false">
-        <div class="extras">
-          <button class="btn" type="button" data-ins="♥" data-i18n-aria="addHeart">♥</button>
-          <button class="btn" type="button" data-ins="★" data-i18n-aria="addStar">★</button>
-          <button class="btn" type="button" data-ins="!" aria-label="!">!</button>
-          <button class="btn" type="button" data-ins="?" aria-label="?">?</button>
-        </div>
-        <p class="label" data-i18n="letterColors">Letter colors</p>
-        <div class="seg" id="nameModes">
-          <button class="btn" type="button" data-mode="rainbow" aria-pressed="true" data-i18n="rainbow">Rainbow</button>
-          <button class="btn" type="button" data-mode="pastel" aria-pressed="false" data-i18n="candy">Candy</button>
-          <button class="btn" type="button" data-mode="one" aria-pressed="false" data-i18n="myColor">My color</button>
-        </div>
-        <button class="btn big" type="submit" data-i18n="buildName">Build my name!</button>
-      </form>
-      </div>
-      <div class="share-box">
-        <h2 data-i18n="saveShare">Save and share</h2>
-        <div class="share-grid" id="shareGrid">
-          <button class="btn mint" id="gallerySaveBtn" type="button"><span aria-hidden="true">💾</span><span data-i18n="saveCreation">Save to My creations</span></button>
-          <button class="btn white" id="galleryBtn" type="button"><span aria-hidden="true">🖼️</span><span data-i18n="myCreations">My creations</span></button>
-          <button class="btn pink" id="cardBtn" type="button"><span aria-hidden="true">💌</span><span data-i18n="makeCard">Make a card</span></button>
-        </div>
-      </div>
-
-      <div class="board-settings">
-        <h2 data-i18n="board">Board</h2>
-        <p class="label" data-i18n="size">Size</p>
-        <div class="seg" id="sizes"></div>
-        <p class="label" data-i18n="boardColor">Board color</p>
-        <div class="plates" id="plates"></div>
-      </div>
-    </section>
-  </main>
+<div class="sheet" id="grownups" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="guTitle">
+    <div class="sheet-head">
+      <h2 id="guTitle" data-i18n="guTitle">For grown-ups</h2>
+      <button class="sheet-x" type="button" data-close-sheet data-i18n-aria="close">×</button>
+    </div>
+    <p class="hint" style="margin:0" data-i18n="guIntro">Settings for parents and teachers. Children can't open this without holding the lock for 3 seconds.</p>
+    <div class="gu-rows">
+      <div class="gu-row"><span class="gu-label" data-i18n="guLanguage">Language</span>
+        <button class="chip" id="langBtn" type="button"><span id="langTxt" class="ar">عربي</span></button></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guAge">Builder age</span>
+        <div class="seg" id="ageSeg">
+          <button class="btn" type="button" data-age="little" aria-pressed="false" data-i18n="ageLittle">Little (5–6)</button>
+          <button class="btn" type="button" data-age="big" aria-pressed="true" data-i18n="ageBig">Big (7–12)</button>
+        </div></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guTalk">Reading aloud</span>
+        <button class="chip" id="talkBtn" type="button" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path class="on-only" d="M8 10h8M8 13h5"/></svg>
+          <span class="txt" id="talkTxt" data-i18n="talkOn">Talking on</span>
+        </button></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guSound">Sounds</span>
+        <button class="chip" id="soundBtn" type="button" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+          <span class="txt" id="soundTxt" data-i18n="soundOn">Sound on</span>
+        </button></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="boardSize">Board size</span><div class="seg" id="sizes"></div></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guHand">Toy box side</span>
+        <div class="seg" id="handSeg">
+          <button class="btn" type="button" data-hand="right" aria-pressed="true" data-i18n="handRight">Right-handed</button>
+          <button class="btn" type="button" data-hand="left" aria-pressed="false" data-i18n="handLeft">Left-handed</button>
+        </div></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guTour">Welcome tour</span>
+        <button class="btn white small" id="tourBtn" type="button" data-i18n="guTourBtn">Show it again</button></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guReset">Start fresh</span>
+        <button class="btn warn small" id="resetBtn" type="button" data-i18n="guResetBtn">Delete saved work on this device</button></div>
+    </div>
+    <p class="hint" style="margin:0" data-i18n="guPrivacy">Snappy Bricks collects nothing. Everything is saved only in this browser.</p>
+  </div>
 </div>
 
 <script>
@@ -983,7 +1227,7 @@ addStrings({
   savePicture: ["Save picture", "احفظ الصورة"],
   makeStamp: ["Make a stamp", "اصنع ختمًا"], deleteThese: ["Delete them", "احذفها"], cancel: ["Cancel", "إلغاء"],
   dropTrash: ["Drop here to throw away", "أفلت هنا للرمي"],
-  writeName: ["Write your name", "اكتب اسمك"],
+  writeName: ["Write my name", "اكتب اسمي"],
   typeLetters: ["Type in English or Arabic", "اكتب بالعربية أو الإنجليزية"],
   namePh: ["Your name here", "اسمك هنا"],
   addHeart: ["Add a heart", "أضف قلبًا"], addStar: ["Add a star", "أضف نجمة"],
@@ -1296,21 +1540,17 @@ function applyBoard(){
 }
 function fitCell(){
   const wrap = $("#plateWrap");
-  const w = wrap.clientWidth - 16;
-  const top = wrap.getBoundingClientRect().top + window.scrollY;
-  // on tablets in portrait the bricks sit in a dock at the bottom of the screen
+  if (!wrap || !wrap.offsetParent) return;          // the studio is not on screen
+  const w = wrap.clientWidth - 12;
+  // on upright screens the toy box is a dock fixed to the bottom
   const tray = $("#tray");
   const docked = !!tray && getComputedStyle(tray).position === "fixed";
   const dock = docked ? tray.offsetHeight : 0;
   document.body.style.setProperty("--dock-h", dock + "px");
   const H = window.innerHeight;
-  let maxH;
-  if (window.innerWidth <= 720) maxH = Math.max(240, H * .6);
-  else {
-    const landscapeTablet = window.innerWidth < 1280 && window.innerWidth > window.innerHeight;
-    maxH = Math.max(H * (docked ? .25 : landscapeTablet ? .35 : .55), H - top - dock - (docked ? 24 : 70));
-  }
-  cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), 7, 46));
+  const top = wrap.getBoundingClientRect().top + window.scrollY;
+  const maxH = Math.max(H * .3, H - top - dock - 22);
+  cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), 7, 48));
   plate.style.setProperty("--cell", cell + "px");
 }
 
@@ -1639,6 +1879,7 @@ function makeCard(piece, px, label, sel, ariaLabel){
 function buildShapes(){
   const box = $("#shapes"); box.innerHTML = "";
   SHAPES.forEach((s, i) => {
+    if (settings.age === "little" && !LITTLE_SHAPES.includes(i)) return;
     const p = brickPiece(i);
     const lab = `${Math.min(p.w, p.h)}×${Math.max(p.w, p.h)}`;
     box.appendChild(makeCard(p, trayCell(), lab, {kind: "brick", i}, t("brickAria", {s: lab})));
@@ -2369,7 +2610,7 @@ function buildName(raw){
 /* ---- logo made of bricks ---- */
 function buildLogo(){
   const logo = $("#logo");
-  const px = window.innerWidth < 1280 ? 8 : 11;
+  const px = window.innerWidth < 520 ? 9 : window.innerWidth < 900 ? 12 : 14;
   const words = ["SNAPPY", "BRICKS"];
   const W = Math.max(...words.map(wordWidth)), H = 11;
   logo.style.setProperty("--cell", px + "px");
@@ -2488,7 +2729,8 @@ function artCanvas(pix, plateHex, c){
   cv.className = "gp-canvas"; return cv;
 }
 function startCopy(i){
-  i = mod(i, PUZZLES.length); progress.puzzleIdx = i; saveProgress();
+  i = mod(i, PUZZLES.length);
+  if (settings.age === "little") for (let k = 0; k < PUZZLES.length && PUZZLES[i].lvl !== "easy"; k++) i = mod(i + 1, PUZZLES.length); progress.puzzleIdx = i; saveProgress();
   const pz = PUZZLES[i], pix = artToPix(ART[pz.art].art);
   const h = pix.length, w = pix[0].length;
   const colors = [...new Set(pix.flat().filter(Boolean))];
@@ -2573,7 +2815,8 @@ function checkTrace(){
 
 /* ---------- Spell it ---------- */
 function startSpell(i){
-  const list = spellList(gAlpha); i = mod(i, list.length); progress.spellIdx[gAlpha] = i; saveProgress();
+  const list = spellList(gAlpha); i = mod(i, list.length);
+  if (settings.age === "little") for (let k = 0; k < list.length && [...list[i][0]].length > 3; k++) i = mod(i + 1, list.length); progress.spellIdx[gAlpha] = i; saveProgress();
   const [word, emo] = list[i];
   gameBoard(24, 18, "#3DC45A");
   Object.assign(G, {word, emo, letters: [...word], pos: 0});
@@ -2633,7 +2876,7 @@ function spellHint(){
 
 /* ---------- Brick math ---------- */
 function startMath(){
-  const L = progress.mathLevel || 1, r = n => Math.floor(Math.random() * n);
+  const L = settings.age === "little" ? Math.min(progress.mathLevel || 1, 3) : (progress.mathLevel || 1), r = n => Math.floor(Math.random() * n);
   let n, k = null;
   if (L <= 3) n = 2 + r(9);
   else if (L <= 6) n = 10 + r(11);
@@ -2932,7 +3175,7 @@ function openGallery(){
   html += `<div class="modal-actions"><button class="btn white" data-close>${esc(t("close"))}</button></div>`;
   const card = openModal(html, t("myCreations"), "wide");
   card.querySelector("#gNew").addEventListener("click", () => {
-    closeModal(); if (currentMode !== "free") setMode("free", true);
+    closeModal(); if (currentMode !== "free") setMode("free", true); else if (typeof showScreen === "function") showScreen("studio");
     pushHistory(); FREE.bricks = []; commit(); sfx.whoosh(); say(t("newBoardSay"));
   });
   card.querySelectorAll(".gal-item").forEach(it => {
@@ -3040,6 +3283,394 @@ function openCardMaker(){
 $("#cardBtn").addEventListener("click", openCardMaker);
 
 on("boot", () => { updateBadgeCount(); applyTheme(settings.theme, false); });
+
+/* ===================== screens, grown-ups corner, hold-to-hear, name keyboard, welcome tour ===================== */
+addStrings({
+  lockAria: ["Grown-ups settings: press and hold for 3 seconds", "إعدادات الكبار: اضغط مطولًا 3 ثوانٍ"],
+  grownUps: ["Grown-ups", "للكبار"],
+  doorBuild: ["Build", "ابنِ"], doorBuildSub: ["Snap bricks and make anything", "ركّب المكعبات واصنع ما تحب"],
+  doorGames: ["Play games", "العب"], doorGamesSub: ["Pictures, letters, words and numbers", "صور وحروف وكلمات وأرقام"],
+  doorCard: ["Make a card", "اصنع بطاقة"], doorCardSub: ["Send your picture to someone you love", "أرسل صورتك لمن تحب"],
+  goHome: ["Go home", "الصفحة الرئيسية"], pickGame: ["Pick a game", "اختر لعبة"], games: ["Games", "الألعاب"],
+  modeCopySub: ["Build the same picture", "ابنِ الصورة نفسها"], modeTraceSub: ["Fill a big letter with bricks", "املأ حرفًا كبيرًا بالمكعبات"],
+  modeSpellSub: ["Tap the letters of the word", "اضغط على حروف الكلمة"], modeMathSub: ["Count the bumps", "عُدّ النتوءات"],
+  save: ["Save", "حفظ"],
+  kbBack: ["Delete a letter", "احذف حرفًا"], kbSpace: ["space", "مسافة"], kbType: ["Use the keyboard", "استخدم لوحة المفاتيح"],
+  guTitle: ["For grown-ups", "للكبار"],
+  guIntro: ["Settings for parents and teachers. Children can't open this without holding the lock for 3 seconds.", "إعدادات للآباء والمعلمين. لا يستطيع الأطفال فتحها إلا بالضغط على القفل 3 ثوانٍ."],
+  guLanguage: ["Language", "اللغة"], guAge: ["Builder age", "عمر البنّاء"],
+  ageLittle: ["Little (5–6)", "صغير (5–6)"], ageBig: ["Big (7–12)", "كبير (7–12)"],
+  guTalk: ["Reading aloud", "القراءة بصوت عالٍ"], guSound: ["Sounds", "الأصوات"], boardSize: ["Board size", "حجم اللوحة"],
+  guHand: ["Toy box side", "جهة صندوق الألعاب"], handRight: ["Right-handed", "باليد اليمنى"], handLeft: ["Left-handed", "باليد اليسرى"],
+  guTour: ["Welcome tour", "جولة الترحيب"], guTourBtn: ["Show it again", "اعرضها مرة أخرى"],
+  guReset: ["Start fresh", "البدء من جديد"], guResetBtn: ["Delete saved work on this device", "احذف الأعمال المحفوظة على هذا الجهاز"],
+  guResetSure: ["Tap again to delete everything", "اضغط مرة أخرى لحذف كل شيء"],
+  guPrivacy: ["Snappy Bricks collects nothing. Everything is saved only in this browser.", "مكعبات سنابي لا تجمع أي بيانات. كل شيء يُحفظ في هذا المتصفح فقط."],
+  lockHint: ["Grown-ups: press and hold the lock for 3 seconds.", "للكبار: اضغطوا على القفل مطولًا 3 ثوانٍ."],
+  homeHi: ["Hi {n}! What do you want to do today?", "مرحبًا يا {n}! ماذا تريد أن تفعل اليوم؟"],
+  homeHiNoName: ["Hi! What do you want to do today?", "مرحبًا! ماذا تريد أن تفعل اليوم؟"],
+  cardNeedBuild: ["Build a picture first. Then tap Save to make a card!", "ابنِ صورة أولًا، ثم اضغط حفظ لتصنع بطاقة!"],
+  buildHi: ["Let's build! Drag a brick from the toy box.", "هيا نبني! اسحب مكعبًا من صندوق الألعاب."],
+  idleHint: ["Pick a brick from the toy box and drag it onto the board!", "اختر مكعبًا من صندوق الألعاب واسحبه إلى اللوحة!"],
+  tourLang: ["Pick your language", "اختر لغتك"], tourAge: ["How old are you?", "كم عمرك؟"],
+  tourName: ["Tap the letters of your name, then tap Build!", "اضغط على حروف اسمك، ثم اضغط ابنِ اسمي!"],
+  tourDrag: ["Now drag a brick onto your board!", "الآن اسحب مكعبًا إلى لوحتك!"],
+  tourHome: ["Great job! Tap the house to go home and find games.", "أحسنت! اضغط على البيت لتعود وتجد الألعاب."],
+  tourDone: ["Let's play!", "هيا نلعب!"], skip: ["Skip", "تخطَّ"],
+  years: ["{a}–{b} years", "{a}–{b} سنوات"],
+});
+const LITTLE_SHAPES = [1, 4, 6, 7];   // 1×2, 2×2, 2×4, 2×6: like a real starter set
+const AR_TILES = "ا أ إ آ ب ت ة ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي ى ء ئ ؤ".split(" ");
+const EN_TILES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const TILE_COLORS = ["#FFD6E8", "#D6E9FF", "#FFF1B8", "#D8F5DF", "#E8DDFB", "#FFE2CC"];
+if (!settings.age) settings.age = "big";
+if (!settings.hand) settings.hand = "right";
+let screen = "home";
+
+/* ---------- screens ---------- */
+function showScreen(name){
+  screen = name;
+  $("#homeScreen").hidden = name !== "home";
+  $("#gamesScreen").hidden = name !== "games";
+  $("#studioScreen").hidden = name !== "studio";
+  document.body.dataset.screen = name;
+  closeSheets();
+  if (name === "home"){ document.body.dataset.area = "home"; refreshHome(); }
+  if (name === "games"){ document.body.dataset.area = "games"; refreshGamesPick(); }
+  if (name === "studio"){ refreshArea(); requestAnimationFrame(() => { fitCell(); requestAnimationFrame(fitCell); }); }
+  window.scrollTo(0, 0);
+}
+function refreshArea(){
+  const m = currentMode;
+  document.body.dataset.area = m === "free" ? "build" : m;
+  $("#areaChip").textContent = t(m === "free" ? "doorBuild" : {copy: "modeCopy", trace: "modeTrace", spell: "modeSpell", math: "modeMath"}[m]);
+  $("#gamesBtn").hidden = m === "free";
+}
+function refreshHome(){
+  const n = settings.kidName;
+  $("#homeBubble").textContent = n ? t("homeHi", {n}) : t("homeHiNoName");
+  $("#homeBadgeCount").textContent = `${earned.size}/${BADGES.length}`;
+}
+function refreshGamesPick(){
+  const a = gAlpha || LANG;
+  $("#progCopy").textContent = `⭐ ${Object.keys(progress.puzzles).length}/${PUZZLES.length}`;
+  $("#progTrace").textContent = `✓ ${progress.traced[a].length}/${TRACE[a].length}`;
+  $("#progSpell").textContent = `✓ ${progress.spelled[a].length}/${spellList(a).length}`;
+  $("#progMath").textContent = t("mathLevel", {n: progress.mathLevel || 1});
+}
+// every game or build switch lands in the studio
+const _setMode = setMode;
+setMode = function(m, quiet){
+  if (screen !== "studio") showScreen("studio");
+  _setMode(m, quiet);
+  refreshArea();
+  requestAnimationFrame(fitCell);
+};
+const _loadIntoFree = loadIntoFree;
+loadIntoFree = function(cb){ _loadIntoFree(cb); if (screen !== "studio") showScreen("studio"); refreshArea(); };
+
+$$("[data-go]").forEach(b => b.addEventListener("click", () => { sfx.click(); showScreen(b.dataset.go); if (b.dataset.go === "home") speakHome(); }));
+function speakHome(){ speak($("#homeBubble").textContent, LANG); }
+$("#doorBuild").addEventListener("click", () => {
+  sfx.click();
+  showScreen("studio");
+  if (currentMode !== "free") setMode("free", true); else refreshArea();
+  say(t("buildHi"), {speak: true});
+});
+$("#doorGames").addEventListener("click", () => { sfx.click(); showScreen("games"); speak(t("pickGame"), LANG); });
+$("#doorCard").addEventListener("click", () => {
+  sfx.click();
+  if (currentMode !== "free") setMode("free", true);
+  if (!FREE.bricks.length){ showScreen("studio"); say(t("cardNeedBuild"), {speak: true}); return; }
+  openCardMaker();
+});
+$("#homeCreations").addEventListener("click", () => openGallery());
+$("#homeBadges").addEventListener("click", () => openBadges());
+
+/* ---------- sheets ---------- */
+function openSheet(id){
+  closeSheets(); closeModal();
+  const s = $("#" + id); s.hidden = false;
+  const f = s.querySelector("[data-autofocus]") || s.querySelector(".sheet-x");
+  if (f) f.focus();
+}
+function closeSheets(){ $$(".sheet").forEach(s => { s.hidden = true; }); }
+$$("[data-close-sheet]").forEach(b => b.addEventListener("click", () => { sfx.click(); closeSheets(); }));
+$$(".sheet").forEach(s => s.addEventListener("click", e => { if (e.target === s) closeSheets(); }));
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheets(); });
+$("#saveMenuBtn").addEventListener("click", () => { sfx.click(); openSheet("saveSheet"); });
+// any choice in the save sheet closes it before doing its job
+$("#shareGrid").addEventListener("click", e => { if (e.target.closest("button")) closeSheets(); }, true);
+
+/* ---------- name keyboard ---------- */
+let kbLang = null;
+function buildTiles(){
+  const box = $("#nameTiles"); box.innerHTML = "";
+  const list = kbLang === "ar" ? AR_TILES : EN_TILES;
+  box.setAttribute("dir", kbLang === "ar" ? "rtl" : "ltr");
+  list.forEach((ch, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "tile"; b.textContent = ch;
+    b.style.setProperty("--tc", TILE_COLORS[i % TILE_COLORS.length]);
+    b.addEventListener("click", () => {
+      const inp = $("#nameInput"); if ([...inp.value].length >= 18) return;
+      inp.value += ch; sfx.soft(); speak(ch, kbLang);
+    });
+    box.appendChild(b);
+  });
+  $("#kbSwitch").textContent = kbLang === "ar" ? "ABC" : "أ ب ت";
+}
+function openNameSheet(){
+  kbLang = kbLang || LANG;
+  buildTiles();
+  const inp = $("#nameInput");
+  if (coarse) inp.setAttribute("inputmode", "none"); else inp.removeAttribute("inputmode");
+  openSheet("nameSheet");
+  speak(t("writeName"), LANG);
+}
+$("#nameOpenBtn").addEventListener("click", () => { sfx.click(); openNameSheet(); });
+$("#kbSwitch").addEventListener("click", () => { kbLang = kbLang === "ar" ? "en" : "ar"; sfx.click(); buildTiles(); });
+$("#kbSpace").addEventListener("click", () => { const inp = $("#nameInput"); if ([...inp.value].length < 18){ inp.value += " "; sfx.soft(); } });
+$("#kbBack").addEventListener("click", () => { const inp = $("#nameInput"); inp.value = [...inp.value].slice(0, -1).join(""); sfx.click(); });
+$("#kbType").addEventListener("click", () => { const inp = $("#nameInput"); inp.setAttribute("inputmode", "text"); inp.focus(); });
+// building a name closes the keyboard and shows the board
+$("#nameForm").addEventListener("submit", () => {
+  const v = $("#nameInput").value.trim();
+  if (!v) return;
+  closeSheets();
+  if (screen !== "studio") showScreen("studio");
+}, true);
+on("nameBuilt", r => { if (r && r.text && !settings.kidName){ settings.kidName = r.text; saveSettings(); } refreshArea(); });
+
+/* ---------- Little / Big builders ---------- */
+function applyAge(age, fromUser){
+  settings.age = age === "little" ? "little" : "big"; saveSettings();
+  document.body.dataset.age = settings.age;
+  $$("#ageSeg [data-age]").forEach(b => b.setAttribute("aria-pressed", b.dataset.age === settings.age));
+  if (settings.age === "little"){
+    if (brickStyle !== "std"){ brickStyle = "std"; buildStyles(); }
+    if (settings.mirror !== "off") setMirror("off", true);
+    if (settings.stack) setStack(false, true);
+    if (tool === "fill" || tool === "select") setTool("move", true);
+    if (selected && selected.kind === "brick" && !LITTLE_SHAPES.includes(selected.i)) selected = null;
+    if (fromUser && !settings.talk) $("#talkBtn").click();
+  }
+  buildShapes(); buildStamps();
+}
+$$("#ageSeg [data-age]").forEach(b => b.addEventListener("click", () => { sfx.click(); applyAge(b.dataset.age, true); }));
+
+/* ---------- left / right handed ---------- */
+function applyHand(h){
+  settings.hand = h === "left" ? "left" : "right"; saveSettings();
+  document.body.dataset.hand = settings.hand;
+  $$("#handSeg [data-hand]").forEach(b => b.setAttribute("aria-pressed", b.dataset.hand === settings.hand));
+  requestAnimationFrame(fitCell);
+}
+$$("#handSeg [data-hand]").forEach(b => b.addEventListener("click", () => { sfx.click(); applyHand(b.dataset.hand); }));
+
+/* ---------- grown-ups corner: hold the lock for 3 seconds ---------- */
+(function lockSetup(){
+  const lock = $("#lockBtn"); let raf = 0, start = 0, opened = false;
+  const reset = () => { cancelAnimationFrame(raf); raf = 0; lock.style.setProperty("--p", "0%"); };
+  const begin = () => {
+    if (raf) return; opened = false; start = performance.now();
+    const step = () => {
+      const p = Math.min(1, (performance.now() - start) / 3000);
+      lock.style.setProperty("--p", p * 100 + "%");
+      if (p >= 1){ reset(); opened = true; sfx.badge(); openSheet("grownups"); return; }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  };
+  lock.addEventListener("pointerdown", e => { e.preventDefault(); begin(); });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(ev => lock.addEventListener(ev, () => {
+    const was = raf && !opened; reset();
+    if (was && ev === "pointerup"){ $("#homeBubble").textContent = t("lockHint"); }
+  }));
+  lock.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); begin(); } });
+  lock.addEventListener("keyup", e => { if (e.key === "Enter" || e.key === " ") reset(); });
+  lock.addEventListener("contextmenu", e => e.preventDefault());
+})();
+$("#tourBtn").addEventListener("click", () => { closeSheets(); showScreen("home"); setTimeout(startTour, 200); });
+(function resetSetup(){
+  const b = $("#resetBtn"); let armed = null;
+  b.addEventListener("click", () => {
+    if (!armed){ b.textContent = t("guResetSure"); armed = setTimeout(() => { armed = null; b.textContent = t("guResetBtn"); }, 3000); return; }
+    clearTimeout(armed);
+    try { Object.keys(localStorage).filter(k => k.startsWith("snappy-")).forEach(k => localStorage.removeItem(k)); } catch(e){}
+    location.reload();
+  });
+})();
+
+/* ---------- press and hold any button to hear what it does ---------- */
+(function holdToHear(){
+  let timer = 0, el = null, xy = null, held = null;
+  const labelOf = n => (n.dataset.say || n.getAttribute("aria-label") || n.title || n.textContent || "").replace(/\s+/g, " ").trim();
+  document.addEventListener("pointerdown", e => {
+    const n = e.target.closest && e.target.closest("button, .card, .swatch, [data-say]");
+    if (!n || n.id === "lockBtn" || n.closest("#plate")) return;
+    el = n; xy = [e.clientX, e.clientY]; clearTimeout(timer);
+    timer = setTimeout(() => {
+      const txt = labelOf(n); if (!txt) return;
+      n.classList.remove("saying"); void n.offsetWidth; n.classList.add("saying");
+      speak(txt.replace(/×/g, LANG === "ar" ? " في " : " by "), LANG);
+      held = n;
+    }, 650);
+  }, true);
+  document.addEventListener("pointermove", e => {
+    if (el && xy && Math.hypot(e.clientX - xy[0], e.clientY - xy[1]) > 10){ clearTimeout(timer); el = null; }
+  }, true);
+  ["pointerup", "pointercancel"].forEach(ev => document.addEventListener(ev, () => { clearTimeout(timer); el = null; }, true));
+  // after a long press, don't also run the button
+  document.addEventListener("click", e => {
+    if (held && held.contains(e.target)){ e.preventDefault(); e.stopPropagation(); }
+    held = null;
+  }, true);
+  document.addEventListener("contextmenu", e => { if (e.target.closest && e.target.closest("button, .card, .swatch")) e.preventDefault(); });
+})();
+
+/* ---------- gentle nudge when nothing happens for a while ---------- */
+(function idleNudge(){
+  let last = Date.now(), nudges = 0;
+  document.addEventListener("pointerdown", () => { last = Date.now(); }, true);
+  setInterval(() => {
+    if (screen !== "studio" || currentMode !== "free" || document.hidden || $(".sheet:not([hidden])") || $(".modal")) return;
+    if (Date.now() - last > 25000 && nudges < 3){
+      nudges++; last = Date.now();
+      const tr = $("#tray"); tr.classList.remove("nudge"); void tr.offsetWidth; tr.classList.add("nudge");
+      setTimeout(() => tr.classList.remove("nudge"), 1200);
+      say(t("idleHint"), {speak: nudges === 1});
+    }
+  }, 5000);
+})();
+
+/* ---------- welcome tour ---------- */
+const BRICKY_SVG = $("#bricky").outerHTML.replace('id="bricky"', "");
+let coachEl = null, handEl = null, handAnim = null, tourStep = null;
+function tourSheet(html){
+  let s = $("#tourSheet");
+  if (!s){ s = document.createElement("div"); s.className = "sheet"; s.id = "tourSheet"; document.body.appendChild(s); }
+  s.innerHTML = `<div class="sheet-card" role="dialog" aria-modal="true">${html}</div>`;
+  s.hidden = false;
+  return s;
+}
+function closeTourSheet(){ const s = $("#tourSheet"); if (s) s.hidden = true; }
+function coach(text, buttons = []){
+  clearCoach();
+  coachEl = document.createElement("div"); coachEl.className = "coach"; coachEl.setAttribute("role", "status");
+  coachEl.innerHTML = `${BRICKY_SVG}<p></p>`;
+  coachEl.querySelector("p").textContent = text;
+  buttons.forEach(([label, cls, fn]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "btn small " + cls; b.textContent = label;
+    b.addEventListener("click", fn); coachEl.appendChild(b);
+  });
+  document.body.appendChild(coachEl);
+  speak(text, LANG);
+}
+function clearCoach(){
+  if (coachEl){ coachEl.remove(); coachEl = null; }
+  if (handAnim){ handAnim.cancel(); handAnim = null; }
+  if (handEl){ handEl.remove(); handEl = null; }
+  $$(".pointing").forEach(e => e.classList.remove("pointing"));
+}
+function showHand(fromEl, toEl){
+  handEl = document.createElement("div"); handEl.className = "hand"; handEl.textContent = "👆"; handEl.setAttribute("aria-hidden", "true");
+  document.body.appendChild(handEl);
+  const a = fromEl.getBoundingClientRect(), b = toEl.getBoundingClientRect();
+  const p1 = [a.left + a.width / 2 - 14, a.top + a.height / 2 - 6], p2 = [b.left + b.width / 2 - 14, b.top + b.height / 2 - 6];
+  if (reduceMotion){ handEl.style.transform = `translate(${p1[0]}px, ${p1[1]}px)`; return; }
+  handAnim = handEl.animate([
+    {transform: `translate(${p1[0]}px, ${p1[1]}px) scale(1)`, opacity: 0},
+    {transform: `translate(${p1[0]}px, ${p1[1]}px) scale(.85)`, opacity: 1, offset: .15},
+    {transform: `translate(${p2[0]}px, ${p2[1]}px) scale(.85)`, opacity: 1, offset: .75},
+    {transform: `translate(${p2[0]}px, ${p2[1]}px) scale(1)`, opacity: 0},
+  ], {duration: 2200, iterations: Infinity, easing: "ease-in-out"});
+}
+function finishTour(){
+  clearCoach(); closeTourSheet(); tourStep = null;
+  settings.toured = true; saveSettings();
+}
+function startTour(){
+  tourStep = "lang";
+  const s = tourSheet(`
+    <div class="tour-head">${BRICKY_SVG}<h2>Hello! · مرحبًا!<br><small>Pick your language · اختر لغتك</small></h2></div>
+    <div class="big-choices">
+      <button class="big-choice" data-l="en" style="background:#D6E9FF"><span class="em">🔤</span>English</button>
+      <button class="big-choice" data-l="ar" style="background:#FFF1B8"><span class="em">🌙</span>العربية</button>
+    </div>
+    <div class="modal-actions"><button class="btn white small" data-skip>Skip · تخطَّ</button></div>`);
+  s.querySelectorAll("[data-l]").forEach(b => b.addEventListener("click", () => { sfx.click(); setLang(b.dataset.l, true); tourAge(); }));
+  s.querySelector("[data-skip]").addEventListener("click", finishTour);
+}
+function tourAge(){
+  tourStep = "age";
+  const s = tourSheet(`
+    <div class="tour-head">${BRICKY_SVG}<h2>${esc(t("tourAge"))}</h2></div>
+    <div class="big-choices">
+      <button class="big-choice" data-age="little" style="background:#FFD6E8"><span class="em">🐣</span>${esc(t("years", {a: 5, b: 6}))}</button>
+      <button class="big-choice" data-age="big" style="background:#D8F5DF"><span class="em">🐥</span>${esc(t("years", {a: 7, b: 9}))}</button>
+      <button class="big-choice" data-age="big" style="background:#E8DDFB"><span class="em">🦅</span>${esc(t("years", {a: 10, b: 12}))}</button>
+    </div>
+    <div class="modal-actions"><button class="btn white small" data-skip>${esc(t("skip"))}</button></div>`);
+  speak(t("tourAge"), LANG);
+  s.querySelectorAll("[data-age]").forEach(b => b.addEventListener("click", () => { sfx.click(); applyAge(b.dataset.age, true); tourName(); }));
+  s.querySelector("[data-skip]").addEventListener("click", finishTour);
+}
+function tourName(){
+  tourStep = "name";
+  closeTourSheet();
+  showScreen("studio");
+  if (currentMode !== "free") setMode("free", true);
+  if (FREE.bricks.length){ pushHistory(); FREE.bricks = []; commit(); }
+  $("#nameInput").value = "";
+  openNameSheet();
+  coach(t("tourName"), [[t("skip"), "white", () => { closeSheets(); tourDrag(); }]]);
+}
+on("nameBuilt", () => { if (tourStep === "name"){ clearCoach(); setTimeout(tourDrag, reduceMotion ? 300 : 2600); } });
+function tourDrag(){
+  tourStep = "drag";
+  closeSheets();
+  const card = $$("#shapes .card").find(c => c.offsetParent) ;
+  coach(t("tourDrag"), [[t("skip"), "white", tourHome]]);
+  if (card) requestAnimationFrame(() => showHand(card, $("#plate")));
+}
+on("placed", () => { if (tourStep === "drag") setTimeout(tourHome, 700); });
+function tourHome(){
+  if (tourStep === "home" || !tourStep) return;
+  tourStep = "home";
+  clearCoach();
+  const home = $("#studioScreen .tb-home"); home.classList.add("pointing");
+  coach(t("tourHome"), [[t("tourDone"), "mint", finishTour]]);
+  home.classList.add("pointing");
+}
+$$("#studioScreen [data-go='home']").forEach(b => b.addEventListener("click", () => { if (tourStep === "home") finishTour(); }));
+
+/* ---------- door pictures, made of bricks ---------- */
+function doorPics(){
+  const pic = (id, names, px) => {
+    const box = $("#" + id); box.innerHTML = "";
+    names.forEach(n => {
+      const pix = artToPix(ART[n].art);
+      box.appendChild(pieceEl({w: pix[0].length, h: pix.length, bricks: decompose(pix).map(b => ({...b, t: "std"}))}, px));
+    });
+  };
+  const px = window.innerWidth < 700 ? 6 : 11;
+  pic("picBuild", ["house", "tree"], px);
+  pic("picGames", ["star", "smile"], px);
+  pic("picCard", ["heart", "flower"], px);
+}
+
+/* ---------- start ---------- */
+on("boot", () => {
+  document.body.dataset.age = settings.age;
+  document.body.dataset.hand = settings.hand;
+  applyAge(settings.age, false);
+  applyHand(settings.hand);
+  doorPics();
+  showScreen("home");
+  if (!settings.toured) setTimeout(startTour, 500);
+});
+on("lang", () => { if (screen === "home") refreshHome(); if (screen === "games") refreshGamesPick(); if (screen === "studio") refreshArea(); if ($("#nameSheet") && !$("#nameSheet").hidden) buildTiles(); });
+on("resize", () => { doorPics(); });
 
 /* ===================== start-up + wiring ===================== */
 const SAVE_KEY = "snappy-bricks-v2";
