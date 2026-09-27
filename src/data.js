@@ -193,5 +193,6 @@ addStrings({
   welcomeBack: ["Welcome back! Your board is just how you left it.", "أهلًا بعودتك! لوحتك كما تركتها."],
   talkSayOn: ["I'll read letters and words out loud.", "سأقرأ الحروف والكلمات بصوت عالٍ."],
   talkSayOff: ["Okay, I'll stay quiet.", "حسنًا، سأبقى هادئًا."],
+  tipTwoFinger: ["Tip: while you drag a long brick, tap the screen with another finger to turn it!", "نصيحة: أثناء سحب مكعب طويل، اضغط على الشاشة بإصبع آخر لتلفّه!"],
   noArabicVoice: ["This device has no Arabic voice, so I'll read in English only.", "هذا الجهاز لا يملك صوتًا عربيًا، لذلك سأقرأ بالإنجليزية فقط."],
 });
