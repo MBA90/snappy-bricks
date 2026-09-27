@@ -127,7 +127,7 @@ addStrings({
   savePicture: ["Save picture", "احفظ الصورة"],
   makeStamp: ["Make a stamp", "اصنع ختمًا"], deleteThese: ["Delete them", "احذفها"], cancel: ["Cancel", "إلغاء"],
   dropTrash: ["Drop here to throw away", "أفلت هنا للرمي"],
-  writeName: ["Write your name", "اكتب اسمك"],
+  writeName: ["Write my name", "اكتب اسمي"],
   typeLetters: ["Type in English or Arabic", "اكتب بالعربية أو الإنجليزية"],
   namePh: ["Your name here", "اسمك هنا"],
   addHeart: ["Add a heart", "أضف قلبًا"], addStar: ["Add a star", "أضف نجمة"],

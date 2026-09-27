@@ -1,59 +1,95 @@
 <div class="app">
-  <header class="top">
-    <div class="logo" id="logo" role="img" aria-label="Snappy Bricks"></div>
-    <p class="tag" data-i18n="tagline">Snap bricks onto the board, make pictures, and build your name!</p>
-    <div class="chips">
-      <!--HEADER_EXTRA-->
-      <button class="chip" id="langBtn" type="button" aria-label="Language">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
-        <span id="langTxt" class="ar">عربي</span>
-      </button>
-      <button class="chip" id="talkBtn" type="button" aria-pressed="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path class="on-only" d="M8 10h8M8 13h5"/></svg>
-        <span class="txt" id="talkTxt" data-i18n="talkOn">Talking on</span>
-      </button>
-      <button class="chip" id="soundBtn" type="button" aria-pressed="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
-        <span class="txt" id="soundTxt" data-i18n="soundOn">Sound on</span>
+
+  <!-- ===================== HOME ===================== -->
+  <section class="screen home" id="homeScreen" aria-labelledby="homeTitle">
+    <div class="home-top">
+      <button class="lock" id="lockBtn" type="button" data-i18n-aria="lockAria">
+        <span class="lock-ring" aria-hidden="true"></span>
+        <span class="lock-ico" aria-hidden="true">🔒</span>
+        <span class="lock-txt" data-i18n="grownUps">Grown-ups</span>
       </button>
     </div>
-  </header>
+    <h1 class="sr-only" id="homeTitle" data-i18n="appName">Snappy Bricks</h1>
+    <div class="logo" id="logo" role="img" aria-label="Snappy Bricks"></div>
+    <div class="home-hello">
+      <svg class="bricky big" viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="11" y="4" width="15" height="11" rx="3" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
+        <rect x="38" y="4" width="15" height="11" rx="3" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
+        <rect x="4" y="12" width="56" height="47" rx="9" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
+        <circle cx="22" cy="31" r="4.5" fill="#2B1E5C"/><circle cx="42" cy="31" r="4.5" fill="#2B1E5C"/>
+        <circle cx="23.5" cy="29.5" r="1.4" fill="#fff"/><circle cx="43.5" cy="29.5" r="1.4" fill="#fff"/>
+        <circle cx="14" cy="40" r="3.5" fill="#FF8FB8"/><circle cx="50" cy="40" r="3.5" fill="#FF8FB8"/>
+        <path d="M23 42q9 9 18 0" fill="none" stroke="#2B1E5C" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <p class="bubble" id="homeBubble" aria-live="polite"></p>
+    </div>
+    <div class="doors">
+      <button class="door" id="doorBuild" type="button" data-area="build">
+        <span class="door-pic" id="picBuild" aria-hidden="true"></span>
+        <span class="door-name" data-i18n="doorBuild">Build</span>
+        <span class="door-sub" data-i18n="doorBuildSub">Snap bricks and make anything</span>
+      </button>
+      <button class="door" id="doorGames" type="button" data-area="games">
+        <span class="door-pic" id="picGames" aria-hidden="true"></span>
+        <span class="door-name" data-i18n="doorGames">Play games</span>
+        <span class="door-sub" data-i18n="doorGamesSub">Pictures, letters, words and numbers</span>
+      </button>
+      <button class="door" id="doorCard" type="button" data-area="card">
+        <span class="door-pic" id="picCard" aria-hidden="true"></span>
+        <span class="door-name" data-i18n="doorCard">Make a card</span>
+        <span class="door-sub" data-i18n="doorCardSub">Send your picture to someone you love</span>
+      </button>
+    </div>
+    <div class="home-extras">
+      <button class="pill" id="homeCreations" type="button"><span aria-hidden="true">🖼️</span> <span data-i18n="myCreations">My creations</span></button>
+      <button class="pill" id="homeBadges" type="button"><span aria-hidden="true">🏅</span> <span data-i18n="badges">Badges</span> <b id="homeBadgeCount">0</b></button>
+      <button class="pill" id="themeBtn" type="button"><span aria-hidden="true">🎨</span> <span data-i18n="theme">Theme</span></button>
+    </div>
+  </section>
 
-  <main class="studio">
-    <!-- Brick tray -->
-    <section class="panel tray" id="tray" aria-labelledby="trayTitle">
-      <div class="tray-sec sec-colors">
-        <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
-        <div class="swatches" id="swatches"></div>
-      </div>
-      <div class="tray-sec sec-styles">
-        <h3 data-i18n="brickStyle">Brick style</h3>
-        <div class="styles" id="styles"></div>
-      </div>
-      <div class="tray-sec sec-bricks">
-        <h2 data-i18n="dragBrick">Drag a brick</h2>
-        <p class="hint" data-i18n="dragHint">Drag it to the board, or tap it and then tap the board.</p>
-        <div class="shapes" id="shapes"></div>
-        <div class="row">
-          <button class="btn lav" id="turnBtn" type="button" aria-pressed="false">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>
-            <span data-i18n="turnBricks">Turn bricks</span>
-          </button>
-        </div>
-      </div>
-      <div class="tray-sec sec-stamps">
-        <h3 data-i18n="funShapes">Fun shapes</h3>
-        <div class="stamps" id="stamps"></div>
-      </div>
-      <div class="tray-sec sec-mine" id="myStampsWrap" hidden>
-        <h3 data-i18n="myStamps">My stamps</h3>
-        <div class="stamps" id="myStamps"></div>
-      </div>
-    </section>
+  <!-- ===================== GAMES PICKER ===================== -->
+  <section class="screen gamespick" id="gamesScreen" aria-labelledby="gamesTitle" hidden>
+    <div class="topbar">
+      <button class="tb-home" type="button" data-go="home" data-i18n-aria="goHome">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+      </button>
+      <h2 class="tb-title" id="gamesTitle" data-i18n="pickGame">Pick a game</h2>
+    </div>
+    <div class="gcards">
+      <button class="gcard" type="button" data-gmode="copy" data-area="copy">
+        <span class="gc-icon" aria-hidden="true">🖼️</span>
+        <span class="gc-name" data-i18n="modeCopy">Copy it</span>
+        <span class="gc-sub" data-i18n="modeCopySub">Build the same picture</span>
+        <span class="gc-prog" id="progCopy"></span>
+      </button>
+      <button class="gcard" type="button" data-gmode="trace" data-area="trace">
+        <span class="gc-icon" aria-hidden="true">✏️</span>
+        <span class="gc-name" data-i18n="modeTrace">Trace letters</span>
+        <span class="gc-sub" data-i18n="modeTraceSub">Fill a big letter with bricks</span>
+        <span class="gc-prog" id="progTrace"></span>
+      </button>
+      <button class="gcard" type="button" data-gmode="spell" data-area="spell">
+        <span class="gc-icon" aria-hidden="true">🔤</span>
+        <span class="gc-name" data-i18n="modeSpell">Spell it</span>
+        <span class="gc-sub" data-i18n="modeSpellSub">Tap the letters of the word</span>
+        <span class="gc-prog" id="progSpell"></span>
+      </button>
+      <button class="gcard" type="button" data-gmode="math" data-area="math">
+        <span class="gc-icon" aria-hidden="true">➕</span>
+        <span class="gc-name" data-i18n="modeMath">Brick math</span>
+        <span class="gc-sub" data-i18n="modeMathSub">Count the bumps</span>
+        <span class="gc-prog" id="progMath"></span>
+      </button>
+    </div>
+  </section>
 
-    <!-- Board -->
-    <section class="board-area" aria-label="Building board">
-      <!--MODEBAR-->
+  <!-- ===================== STUDIO (build + games) ===================== -->
+  <section class="screen studio-screen" id="studioScreen" hidden>
+    <div class="topbar">
+      <button class="tb-home" type="button" data-go="home" data-i18n-aria="goHome">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+      </button>
+      <button class="tb-btn" id="gamesBtn" type="button" data-go="games" hidden><span aria-hidden="true">🎮</span> <span data-i18n="games">Games</span></button>
       <div class="helper">
         <svg class="bricky" id="bricky" viewBox="0 0 64 64" aria-hidden="true">
           <rect x="11" y="4" width="15" height="11" rx="3" fill="#FFE838" stroke="#2B1E5C" stroke-width="3"/>
@@ -66,106 +102,224 @@
         </svg>
         <p class="bubble" id="bubble" aria-live="polite"></p>
       </div>
-      <!--GAMEPANEL-->
+      <span class="area-chip" id="areaChip"></span>
+      <button class="tb-btn" id="badgesBtn" type="button" data-i18n-aria="badges"><span aria-hidden="true">🏅</span> <span id="badgeCount">0</span></button>
+    </div>
 
-      <div class="toolbar" role="toolbar" aria-label="Tools">
-        <div class="seg" role="group">
-          <button class="btn" data-tool="move" aria-pressed="true" data-i18n-title="tt_move">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>
-            <span class="txt" data-i18n="move">Move</span>
-          </button>
-          <button class="btn" data-tool="paint" aria-pressed="false" data-i18n-title="tt_paint">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 3l3 3-9 9-3-3z"/><path d="M9 12c-3 0-5 2-5 5 0 1.5-1 2.5-2 3 4 1 9 0 10-5"/></svg>
-            <span class="txt" data-i18n="paint">Paint</span>
-          </button>
-          <button class="btn" data-tool="fill" aria-pressed="false" data-i18n-title="tt_fill">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11l7-7 8 8-7 7z"/><path d="M5 11h15"/><path d="M20 16s2 2.4 2 3.6a2 2 0 0 1-4 0c0-1.2 2-3.6 2-3.6z" fill="currentColor"/></svg>
-            <span class="txt" data-i18n="fill">Fill</span>
-          </button>
-          <button class="btn" data-tool="erase" aria-pressed="false" data-i18n-title="tt_erase">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l5 5-10 10H6l-3-3z"/><path d="M9 21h12"/><path d="M11 8l5 5"/></svg>
-            <span class="txt" data-i18n="eraser">Eraser</span>
-          </button>
-          <button class="btn" data-tool="select" aria-pressed="false" data-i18n-title="tt_select">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4" /><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
-            <span class="txt" data-i18n="stampTool">Stamp maker</span>
-          </button>
+    <main class="studio">
+      <!-- the toy box -->
+      <section class="panel tray" id="tray" aria-labelledby="trayTitle">
+        <div class="tray-sec sec-name">
+          <button class="btn big name-open" id="nameOpenBtn" type="button"><span aria-hidden="true">✍️</span> <span data-i18n="writeName">Write my name</span></button>
         </div>
-        <span class="divider"></span>
-        <button class="btn toggle" id="mirrorBtn" type="button" aria-pressed="false" data-i18n-title="tt_mirror">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20" stroke-dasharray="3 3"/><path d="M9 6L3 18h6z"/><path d="M15 6l6 12h-6z"/></svg>
-          <span class="txt" id="mirrorTxt">Mirror off</span>
-        </button>
-        <button class="btn toggle" id="stackBtn" type="button" aria-pressed="false" data-i18n-title="tt_stack">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="14" width="18" height="6" rx="1.5"/><rect x="6" y="8" width="12" height="6" rx="1.5"/><rect x="9" y="3" width="6" height="5" rx="1.5"/></svg>
-          <span class="txt" data-i18n="stack">Stack</span>
-        </button>
-        <span class="spacer"></span>
-        <button class="btn mint" id="undoBtn" type="button" disabled data-i18n-title="undo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
-          <span class="txt" data-i18n="undo">Undo</span>
-        </button>
-        <!--TOOLBAR_EXTRA-->
-        <button class="btn warn" id="clearBtn" type="button" data-i18n-title="tt_clear">
+        <div class="tray-sec sec-colors">
+          <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
+          <div class="swatches" id="swatches"></div>
+        </div>
+        <div class="tray-sec sec-styles">
+          <h3 data-i18n="brickStyle">Brick style</h3>
+          <div class="styles" id="styles"></div>
+        </div>
+        <div class="tray-sec sec-bricks">
+          <h2 data-i18n="dragBrick">Drag a brick</h2>
+          <p class="hint" data-i18n="dragHint">Drag it to the board, or tap it and then tap the board.</p>
+          <div class="shapes" id="shapes"></div>
+          <div class="row">
+            <button class="btn lav" id="turnBtn" type="button" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>
+              <span data-i18n="turnBricks">Turn bricks</span>
+            </button>
+          </div>
+        </div>
+        <div class="tray-sec sec-stamps">
+          <h3 data-i18n="funShapes">Fun shapes</h3>
+          <div class="stamps" id="stamps"></div>
+        </div>
+        <div class="tray-sec sec-mine" id="myStampsWrap" hidden>
+          <h3 data-i18n="myStamps">My stamps</h3>
+          <div class="stamps" id="myStamps"></div>
+        </div>
+        <div class="tray-sec sec-plates">
+          <h3 data-i18n="boardColor">Board color</h3>
+          <div class="plates" id="plates"></div>
+        </div>
+      </section>
+
+      <!-- the board -->
+      <section class="board-col" aria-label="Building board">
+        <div class="gamepanel" id="gamePanel" hidden>
+          <div class="gp-target" id="gTarget"></div>
+          <div class="gp-main">
+            <div class="gp-head">
+              <h2 id="gTitle"></h2>
+              <span class="gp-stars" id="gStars"></span>
+            </div>
+            <p class="gp-text" id="gText"></p>
+            <div class="gp-bar" aria-hidden="true"><span id="gBarFill"></span></div>
+            <p class="gp-prog" id="gProg" aria-live="polite"></p>
+            <div class="gp-letters" id="gLetters"></div>
+            <div class="gp-actions">
+              <button class="btn white small" id="gHint" type="button" data-i18n="hint">Hint</button>
+              <button class="btn white small" id="gReset" type="button" data-i18n="startOver">Start over</button>
+              <button class="btn lav small" id="gLevels" type="button" data-i18n="levels">Levels</button>
+              <button class="btn white small" id="gAlpha" type="button">ABC</button>
+              <button class="btn mint small" id="gNext" type="button"><span data-i18n="next">Next</span> <span class="arr" aria-hidden="true">➜</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="selbar" id="selbar" hidden>
+          <strong id="selCount"></strong>
+          <button class="btn mint small" id="selStamp" type="button" data-i18n="makeStamp">Make a stamp</button>
+          <button class="btn warn small" id="selDelete" type="button" data-i18n="deleteThese">Delete them</button>
+          <button class="btn white small" id="selCancel" type="button" data-i18n="cancel">Cancel</button>
+        </div>
+
+        <div class="plate-wrap" id="plateWrap">
+          <div class="plate tool-move" id="plate" aria-label="Brick board"></div>
+        </div>
+
+        <div class="below" aria-hidden="true">
+          <span class="count" id="count">0</span>
+          <div class="trash" id="trash"><span data-i18n="dropTrash">Drop here to throw away</span></div>
+        </div>
+      </section>
+
+      <!-- the tools: always on the same side, Undo always at the bottom -->
+      <nav class="tools" id="tools" aria-label="Tools">
+        <button class="tbtn warn" id="clearBtn" type="button" data-i18n-title="tt_clear">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
           <span class="txt" id="clearTxt" data-i18n="clear">Clear</span>
         </button>
-        <button class="btn pink" id="saveBtn" type="button" data-i18n-title="savePicture">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
-          <span class="txt" data-i18n="savePicture">Save picture</span>
+        <div class="tools-main">
+          <button class="tbtn" data-tool="move" aria-pressed="true" data-i18n-title="tt_move">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>
+            <span class="txt" data-i18n="move">Move</span>
+          </button>
+          <button class="tbtn" data-tool="paint" aria-pressed="false" data-i18n-title="tt_paint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 3l3 3-9 9-3-3z"/><path d="M9 12c-3 0-5 2-5 5 0 1.5-1 2.5-2 3 4 1 9 0 10-5"/></svg>
+            <span class="txt" data-i18n="paint">Paint</span>
+          </button>
+          <button class="tbtn" data-tool="erase" aria-pressed="false" data-i18n-title="tt_erase">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l5 5-10 10H6l-3-3z"/><path d="M9 21h12"/><path d="M11 8l5 5"/></svg>
+            <span class="txt" data-i18n="eraser">Eraser</span>
+          </button>
+          <button class="tbtn big-only" data-tool="fill" aria-pressed="false" data-i18n-title="tt_fill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11l7-7 8 8-7 7z"/><path d="M5 11h15"/><path d="M20 16s2 2.4 2 3.6a2 2 0 0 1-4 0c0-1.2 2-3.6 2-3.6z" fill="currentColor"/></svg>
+            <span class="txt" data-i18n="fill">Fill</span>
+          </button>
+          <button class="tbtn big-only" data-tool="select" aria-pressed="false" data-i18n-title="tt_select">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4" /><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+            <span class="txt" data-i18n="stampTool">Stamp maker</span>
+          </button>
+          <button class="tbtn toggle big-only" id="mirrorBtn" type="button" aria-pressed="false" data-i18n-title="tt_mirror">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20" stroke-dasharray="3 3"/><path d="M9 6L3 18h6z"/><path d="M15 6l6 12h-6z"/></svg>
+            <span class="txt" id="mirrorTxt">Mirror</span>
+          </button>
+          <button class="tbtn toggle big-only" id="stackBtn" type="button" aria-pressed="false" data-i18n-title="tt_stack">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="14" width="18" height="6" rx="1.5"/><rect x="6" y="8" width="12" height="6" rx="1.5"/><rect x="9" y="3" width="6" height="5" rx="1.5"/></svg>
+            <span class="txt" data-i18n="stack">Stack</span>
+          </button>
+          <button class="tbtn lav" id="replayBtn" type="button" data-i18n-title="replay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>
+            <span class="txt" data-i18n="replay">Replay</span>
+          </button>
+          <button class="tbtn pink" id="saveMenuBtn" type="button" data-i18n-title="saveShare">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            <span class="txt" data-i18n="save">Save</span>
+          </button>
+        </div>
+        <button class="tbtn undo" id="undoBtn" type="button" disabled data-i18n-title="undo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+          <span class="txt" data-i18n="undo">Undo</span>
         </button>
-      </div>
+      </nav>
+    </main>
+  </section>
+</div>
 
-      <div class="selbar" id="selbar" hidden>
-        <strong id="selCount"></strong>
-        <button class="btn mint small" id="selStamp" type="button" data-i18n="makeStamp">Make a stamp</button>
-        <button class="btn warn small" id="selDelete" type="button" data-i18n="deleteThese">Delete them</button>
-        <button class="btn white small" id="selCancel" type="button" data-i18n="cancel">Cancel</button>
+<!-- ===================== SHEETS ===================== -->
+<div class="sheet" id="nameSheet" hidden>
+  <div class="sheet-card name-card" role="dialog" aria-modal="true" aria-labelledby="nameTitle">
+    <div class="sheet-head">
+      <h2 id="nameTitle" data-i18n="writeName">Write my name</h2>
+      <button class="sheet-x" type="button" data-close-sheet data-i18n-aria="close">×</button>
+    </div>
+    <form class="name-form" id="nameForm" autocomplete="off">
+      <div class="name-show">
+        <input class="name-input" id="nameInput" maxlength="18" data-i18n-ph="namePh" placeholder="Your name here" spellcheck="false" data-i18n-aria="writeName">
+        <button class="kbtn" id="kbBack" type="button" data-i18n-aria="kbBack">⌫</button>
       </div>
+      <div class="tiles" id="nameTiles"></div>
+      <div class="kb-row">
+        <button class="btn white small" id="kbSwitch" type="button">أ ب ت</button>
+        <button class="btn white small kb-space" id="kbSpace" type="button" data-i18n="kbSpace">space</button>
+        <button class="btn white small" type="button" data-ins="♥" data-i18n-aria="addHeart">♥</button>
+        <button class="btn white small" type="button" data-ins="★" data-i18n-aria="addStar">★</button>
+        <button class="btn white small" id="kbType" type="button" data-i18n-aria="kbType">⌨️</button>
+      </div>
+      <p class="label" data-i18n="letterColors">Letter colors</p>
+      <div class="seg" id="nameModes">
+        <button class="btn" type="button" data-mode="rainbow" aria-pressed="true" data-i18n="rainbow">Rainbow</button>
+        <button class="btn" type="button" data-mode="pastel" aria-pressed="false" data-i18n="candy">Candy</button>
+        <button class="btn" type="button" data-mode="one" aria-pressed="false" data-i18n="myColor">My color</button>
+      </div>
+      <button class="btn big" type="submit" data-i18n="buildName">Build my name!</button>
+    </form>
+  </div>
+</div>
 
-      <div class="plate-wrap" id="plateWrap">
-        <div class="plate tool-move" id="plate" aria-label="Brick board"></div>
-      </div>
+<div class="sheet" id="saveSheet" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="saveTitle">
+    <div class="sheet-head">
+      <h2 id="saveTitle" data-i18n="saveShare">Save and share</h2>
+      <button class="sheet-x" type="button" data-close-sheet data-i18n-aria="close">×</button>
+    </div>
+    <div class="share-grid" id="shareGrid">
+      <button class="btn pink" id="saveBtn" type="button"><span aria-hidden="true">📸</span><span data-i18n="savePicture">Save picture</span></button>
+      <button class="btn mint" id="gallerySaveBtn" type="button"><span aria-hidden="true">💾</span><span data-i18n="saveCreation">Save to My creations</span></button>
+      <button class="btn white" id="galleryBtn" type="button"><span aria-hidden="true">🖼️</span><span data-i18n="myCreations">My creations</span></button>
+      <button class="btn sun" id="cardBtn" type="button"><span aria-hidden="true">💌</span><span data-i18n="makeCard">Make a card</span></button>
+    </div>
+  </div>
+</div>
 
-      <div class="below">
-        <span class="count" id="count">0</span>
-        <div class="trash" id="trash">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>
-          <span data-i18n="dropTrash">Drop here to throw away</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Name + board settings -->
-    <section class="panel side" aria-labelledby="nameTitle">
-      <div class="name-box">
-      <h2 id="nameTitle" data-i18n="writeName">Write your name</h2>
-      <form class="name-form" id="nameForm" autocomplete="off">
-        <label class="label" for="nameInput" data-i18n="typeLetters">Type letters or numbers</label>
-        <input class="name-input" id="nameInput" maxlength="18" data-i18n-ph="namePh" placeholder="Your name here" spellcheck="false">
-        <div class="extras">
-          <button class="btn" type="button" data-ins="♥" data-i18n-aria="addHeart">♥</button>
-          <button class="btn" type="button" data-ins="★" data-i18n-aria="addStar">★</button>
-          <button class="btn" type="button" data-ins="!" aria-label="!">!</button>
-          <button class="btn" type="button" data-ins="?" aria-label="?">?</button>
-        </div>
-        <p class="label" data-i18n="letterColors">Letter colors</p>
-        <div class="seg" id="nameModes">
-          <button class="btn" type="button" data-mode="rainbow" aria-pressed="true" data-i18n="rainbow">Rainbow</button>
-          <button class="btn" type="button" data-mode="pastel" aria-pressed="false" data-i18n="candy">Candy</button>
-          <button class="btn" type="button" data-mode="one" aria-pressed="false" data-i18n="myColor">My color</button>
-        </div>
-        <button class="btn big" type="submit" data-i18n="buildName">Build my name!</button>
-      </form>
-      </div>
-      <!--SIDE_EXTRA-->
-      <div class="board-settings">
-        <h2 data-i18n="board">Board</h2>
-        <p class="label" data-i18n="size">Size</p>
-        <div class="seg" id="sizes"></div>
-        <p class="label" data-i18n="boardColor">Board color</p>
-        <div class="plates" id="plates"></div>
-      </div>
-    </section>
-  </main>
+<div class="sheet" id="grownups" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="guTitle">
+    <div class="sheet-head">
+      <h2 id="guTitle" data-i18n="guTitle">For grown-ups</h2>
+      <button class="sheet-x" type="button" data-close-sheet data-i18n-aria="close">×</button>
+    </div>
+    <p class="hint" style="margin:0" data-i18n="guIntro">Settings for parents and teachers. Children can't open this without holding the lock for 3 seconds.</p>
+    <div class="gu-rows">
+      <div class="gu-row"><span class="gu-label" data-i18n="guLanguage">Language</span>
+        <button class="chip" id="langBtn" type="button"><span id="langTxt" class="ar">عربي</span></button></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guAge">Builder age</span>
+        <div class="seg" id="ageSeg">
+          <button class="btn" type="button" data-age="little" aria-pressed="false" data-i18n="ageLittle">Little (5–6)</button>
+          <button class="btn" type="button" data-age="big" aria-pressed="true" data-i18n="ageBig">Big (7–12)</button>
+        </div></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guTalk">Reading aloud</span>
+        <button class="chip" id="talkBtn" type="button" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path class="on-only" d="M8 10h8M8 13h5"/></svg>
+          <span class="txt" id="talkTxt" data-i18n="talkOn">Talking on</span>
+        </button></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guSound">Sounds</span>
+        <button class="chip" id="soundBtn" type="button" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+          <span class="txt" id="soundTxt" data-i18n="soundOn">Sound on</span>
+        </button></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="boardSize">Board size</span><div class="seg" id="sizes"></div></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guHand">Toy box side</span>
+        <div class="seg" id="handSeg">
+          <button class="btn" type="button" data-hand="right" aria-pressed="true" data-i18n="handRight">Right-handed</button>
+          <button class="btn" type="button" data-hand="left" aria-pressed="false" data-i18n="handLeft">Left-handed</button>
+        </div></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guTour">Welcome tour</span>
+        <button class="btn white small" id="tourBtn" type="button" data-i18n="guTourBtn">Show it again</button></div>
+      <div class="gu-row"><span class="gu-label" data-i18n="guReset">Start fresh</span>
+        <button class="btn warn small" id="resetBtn" type="button" data-i18n="guResetBtn">Delete saved work on this device</button></div>
+    </div>
+    <p class="hint" style="margin:0" data-i18n="guPrivacy">Snappy Bricks collects nothing. Everything is saved only in this browser.</p>
+  </div>
 </div>

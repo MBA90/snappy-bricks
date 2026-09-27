@@ -130,6 +130,7 @@ function makeCard(piece, px, label, sel, ariaLabel){
 function buildShapes(){
   const box = $("#shapes"); box.innerHTML = "";
   SHAPES.forEach((s, i) => {
+    if (settings.age === "little" && !LITTLE_SHAPES.includes(i)) return;
     const p = brickPiece(i);
     const lab = `${Math.min(p.w, p.h)}×${Math.max(p.w, p.h)}`;
     box.appendChild(makeCard(p, trayCell(), lab, {kind: "brick", i}, t("brickAria", {s: lab})));

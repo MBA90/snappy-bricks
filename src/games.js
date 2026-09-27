@@ -94,7 +94,8 @@ function artCanvas(pix, plateHex, c){
   cv.className = "gp-canvas"; return cv;
 }
 function startCopy(i){
-  i = mod(i, PUZZLES.length); progress.puzzleIdx = i; saveProgress();
+  i = mod(i, PUZZLES.length);
+  if (settings.age === "little") for (let k = 0; k < PUZZLES.length && PUZZLES[i].lvl !== "easy"; k++) i = mod(i + 1, PUZZLES.length); progress.puzzleIdx = i; saveProgress();
   const pz = PUZZLES[i], pix = artToPix(ART[pz.art].art);
   const h = pix.length, w = pix[0].length;
   const colors = [...new Set(pix.flat().filter(Boolean))];
@@ -179,7 +180,8 @@ function checkTrace(){
 
 /* ---------- Spell it ---------- */
 function startSpell(i){
-  const list = spellList(gAlpha); i = mod(i, list.length); progress.spellIdx[gAlpha] = i; saveProgress();
+  const list = spellList(gAlpha); i = mod(i, list.length);
+  if (settings.age === "little") for (let k = 0; k < list.length && [...list[i][0]].length > 3; k++) i = mod(i + 1, list.length); progress.spellIdx[gAlpha] = i; saveProgress();
   const [word, emo] = list[i];
   gameBoard(24, 18, "#3DC45A");
   Object.assign(G, {word, emo, letters: [...word], pos: 0});
@@ -239,7 +241,7 @@ function spellHint(){
 
 /* ---------- Brick math ---------- */
 function startMath(){
-  const L = progress.mathLevel || 1, r = n => Math.floor(Math.random() * n);
+  const L = settings.age === "little" ? Math.min(progress.mathLevel || 1, 3) : (progress.mathLevel || 1), r = n => Math.floor(Math.random() * n);
   let n, k = null;
   if (L <= 3) n = 2 + r(9);
   else if (L <= 6) n = 10 + r(11);
