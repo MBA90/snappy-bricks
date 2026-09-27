@@ -172,9 +172,18 @@ function fitCell(){
   const wrap = $("#plateWrap");
   const w = wrap.clientWidth - 16;
   const top = wrap.getBoundingClientRect().top + window.scrollY;
+  // on tablets in portrait the bricks sit in a dock at the bottom of the screen
+  const tray = $("#tray");
+  const docked = !!tray && getComputedStyle(tray).position === "fixed";
+  const dock = docked ? tray.offsetHeight : 0;
+  document.body.style.setProperty("--dock-h", dock + "px");
+  const H = window.innerHeight;
   let maxH;
-  if (window.innerWidth > 1180) maxH = Math.max(300, window.innerHeight - top - 96);
-  else maxH = Math.max(240, window.innerHeight * .6);
+  if (window.innerWidth <= 720) maxH = Math.max(240, H * .6);
+  else {
+    const landscapeTablet = window.innerWidth < 1280 && window.innerWidth > window.innerHeight;
+    maxH = Math.max(H * (docked ? .25 : landscapeTablet ? .35 : .55), H - top - dock - (docked ? 24 : 70));
+  }
   cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), 7, 46));
   plate.style.setProperty("--cell", cell + "px");
 }
