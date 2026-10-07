@@ -238,11 +238,27 @@ button{font:inherit;color:inherit}
   animation:lamptwinkle 3.2s ease-in-out infinite;
 }
 @keyframes lamppulse{0%,100%{opacity:.55}50%{opacity:1}}
+/* on the board each lamp keeps a steady halo, and the breathing comes from one layer of halos under the bricks
+   (see renderAuras): a pulse on every brick made the phone redo every lamp on every frame */
+.plate .brick.t-light::before{animation:none;opacity:.55}
+.auras{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;animation:aurapulse 3.2s ease-in-out infinite}
+@keyframes aurapulse{50%{opacity:1}}
+.aura{
+  position:absolute;border-radius:calc(var(--cell)*.24);
+  translate:calc(var(--z, 0) * -2px) calc(var(--z, 0) * -3px);
+  box-shadow:0 0 calc(var(--cell)*.6) calc(var(--cell)*.1) var(--glo),0 0 calc(var(--cell)*.22) rgba(255,255,255,.9);
+}
+.aura.lifted{opacity:.25}
+.aura.drop{animation:auraIn .42s ease-out both}
+@keyframes auraIn{from{opacity:0}}
+/* lots of lamps: a few sparkles here and there instead of one on every brick */
+.plate.lamps .brick.t-light:not(.tw)::after{display:none}
 @keyframes lamptwinkle{0%,100%{opacity:0;transform:scale(.4) rotate(0)}45%,55%{opacity:1;transform:scale(1) rotate(45deg)}}
 /* boards with hundreds of bricks keep their look but stop the endless shimmer, glow and flicker */
 .plate.calm .brick::before,.plate.calm .brick::after{animation:none}
 .plate.calm .brick.t-glow::before,.plate.calm .brick.t-light::before{opacity:.7}
 .plate.calm .brick.t-light::after{display:none}
+.plate.calm .auras{display:none}
 .brick.lifted{opacity:.25}
 .brick.selected{outline:3px dashed #fff;outline-offset:1px;filter:brightness(1.12)}
 .brick.drop{animation:drop .42s cubic-bezier(.3,1.6,.5,1) both}
@@ -2103,7 +2119,8 @@ function placeEl(el, b){
 // only touches what changed, so redrawing a board of thousands of bricks after one move stays quick
 function styleBrickEl(el, b){
   const t = b.t || "std", z = b.z || 0;
-  if (el._t !== t){ el._t = t; el.className = "brick t-" + t; }
+  // on a board full of lamps only every fourth one twinkles (.tw), picked by its id so the sparkles stay put
+  if (el._t !== t){ el._t = t; el.className = "brick t-" + t + (t === "light" && b.id % 4 === 1 ? " tw" : ""); }
   const pos = b.x + "," + b.y + "," + b.w + "," + b.h;
   if (el._pos !== pos){ el._pos = pos; placeEl(el, b); }
   if (el._c !== b.c){ el._c = b.c; paintVars(el, b.c); }
@@ -2174,6 +2191,7 @@ let cell = 30;
 let boardZoom = 1, zoomMax = 1, zoomDims = "";
 const ZOOM_CELL = 40;                               // zooming stops once a stud is this many pixels wide
 const CALM_AT = 400;                                // more bricks than this: no endless shimmer, glow or flicker
+const LAMPS_AT = 24;                                // more lamp bricks than this: only every fourth one twinkles
 const plate = $("#plate");
 const els = new Map();
 
@@ -2245,11 +2263,44 @@ function render(anim){
     seen.add(b.id);
   }
   for (const [id, el] of els) if (!seen.has(id)){ el.remove(); els.delete(id); }
+  renderAuras(anim);
   const n = B.bricks.length;
   plate.classList.toggle("calm", n > CALM_AT);
   const cnt = $("#count"); if (cnt) cnt.textContent = t(n === 1 ? "oneBrick" : "nBricks", {n});
 }
-function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); }
+function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); for (const a of auras.values()) a.remove(); auras.clear(); }
+
+/* ---- the soft light round every lamp (Light) brick ----
+   All the halos sit in one layer under the bricks, and that one layer breathes. A pulse on each brick
+   of its own made the phone redo every lamp on every frame, so boards full of lamps stuttered. */
+const auras = new Map();
+const auraLayer = document.createElement("div");
+auraLayer.className = "auras";
+plate.prepend(auraLayer);
+function auraFor(id){ return auras.get(id); }
+function renderAuras(anim){
+  let n = 0; const lit = new Set();
+  for (const b of B.bricks){
+    if ((b.t || "std") !== "light") continue;
+    n++;
+    let a = auras.get(b.id);
+    if (!a){
+      a = document.createElement("div"); a.className = "aura"; auraLayer.appendChild(a); auras.set(b.id, a);
+      if (anim && anim.has(b.id) && !reduceMotion){
+        a.style.animationDelay = anim.get(b.id) + "ms"; a.classList.add("drop");
+        a.addEventListener("animationend", () => { a.classList.remove("drop"); a.style.animationDelay = ""; }, {once: true});
+      }
+    }
+    const pos = b.x + "," + b.y + "," + b.w + "," + b.h;
+    if (a._pos !== pos){ a._pos = pos; placeEl(a, b); }
+    if (a._c !== b.c){ a._c = b.c; a.style.setProperty("--glo", colorVars(b.c).find(v => v[0] === "--glo")[1]); }
+    const z = b.z || 0;
+    if (a._z !== z){ a._z = z; a.style.setProperty("--z", z); }
+    lit.add(b.id);
+  }
+  for (const [id, a] of auras) if (!lit.has(id)){ a.remove(); auras.delete(id); }
+  plate.classList.toggle("lamps", n > LAMPS_AT);
+}
 function switchBoard(board){
   if (B === board) return;
   cancelSelection();
@@ -2879,7 +2930,7 @@ function startBoardDrag(e, b){
 function showFloat(){
   floatEl = document.createElement("div"); floatEl.className = "floating";
   floatEl.appendChild(pieceEl(ptr.piece, cell)); document.body.appendChild(floatEl);
-  if (ptr.source === "board"){ const el = els.get(ptr.brick.id); if (el) el.classList.add("lifted"); }
+  if (ptr.source === "board"){ const el = els.get(ptr.brick.id); if (el) el.classList.add("lifted"); const a = auraFor(ptr.brick.id); if (a) a.classList.add("lifted"); }
 }
 function moveFloat(e){ floatEl.style.transform = `translate(${e.clientX - ptr.grabX}px, ${e.clientY - ptr.grabY - ptr.lift}px)`; }
 function hideGhost(){ if (ghostEl){ ghostEl.remove(); ghostEl = null; } }
@@ -2915,7 +2966,7 @@ function endDrag(e, cancelled){
   const p = ptr; ptr = null;
   hideGhost(); trash.classList.remove("hot"); $("#tray").classList.remove("hot");
   if (floatEl){ floatEl.remove(); floatEl = null; }
-  if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); }
+  if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); const a = auraFor(p.brick.id); if (a) a.classList.remove("lifted"); }
   if (cancelled) return;
   if (!p.moved){
     if (p.source === "tray") toggleSelect(p.sel); else tapBrick(p.brick);
@@ -2983,7 +3034,7 @@ function brushOp(b){
   } else if (tool === "paint" && (b.c !== color || (b.t || "std") !== brickStyle)){
     if (!ptr.changed){ pushHistory(); ptr.changed = true; }
     b.c = color; b.t = brickStyle; const el = els.get(b.id); if (el){ styleBrickEl(el, b); flash(el); }
-    emit("change"); sfx.paint();
+    renderAuras(); emit("change"); sfx.paint();
   }
 }
 function brushAt(e){
@@ -3041,7 +3092,7 @@ function fillAt(x, y, opts = {}){
   }
   if (!opts.noHistory) pushHistory();
   hit.forEach(b => { b.c = color; b.t = brickStyle; const el = els.get(b.id); if (el){ styleBrickEl(el, b); flash(el); } });
-  emit("change");
+  renderAuras(); emit("change");
   return hit.size;
 }
 function doFill(e){
@@ -4097,7 +4148,7 @@ function replay(){
   const per = Math.ceil(list.length / 240), steps = Math.ceil(list.length / per);
   const step = clamp(Math.round(4200 / steps), 18, 260);
   list.forEach(b => { const el = els.get(b.id); if (el) el.classList.add("hidden-replay"); });
-  plate.style.pointerEvents = "none";
+  plate.style.pointerEvents = "none"; auraLayer.style.visibility = "hidden";   // lamps light up again when the replay ends
   say(t("replaySay"));
   for (let i = 0; i < steps; i++) setTimeout(() => {
     for (const b of list.slice(i * per, (i + 1) * per)){
@@ -4108,7 +4159,7 @@ function replay(){
     if (i % Math.max(1, Math.round(60 / step)) === 0) sfx.soft();
   }, i * step);
   setTimeout(() => {
-    replaying = false; plate.style.pointerEvents = "";
+    replaying = false; plate.style.pointerEvents = ""; auraLayer.style.visibility = "";
     $$(".brick.hidden-replay").forEach(e => e.classList.remove("hidden-replay"));
     sfx.cheer(); say(t("replayDone")); emit("replay");
   }, steps * step + 500);

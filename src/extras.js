@@ -157,7 +157,7 @@ function replay(){
   const per = Math.ceil(list.length / 240), steps = Math.ceil(list.length / per);
   const step = clamp(Math.round(4200 / steps), 18, 260);
   list.forEach(b => { const el = els.get(b.id); if (el) el.classList.add("hidden-replay"); });
-  plate.style.pointerEvents = "none";
+  plate.style.pointerEvents = "none"; auraLayer.style.visibility = "hidden";   // lamps light up again when the replay ends
   say(t("replaySay"));
   for (let i = 0; i < steps; i++) setTimeout(() => {
     for (const b of list.slice(i * per, (i + 1) * per)){
@@ -168,7 +168,7 @@ function replay(){
     if (i % Math.max(1, Math.round(60 / step)) === 0) sfx.soft();
   }, i * step);
   setTimeout(() => {
-    replaying = false; plate.style.pointerEvents = "";
+    replaying = false; plate.style.pointerEvents = ""; auraLayer.style.visibility = "";
     $$(".brick.hidden-replay").forEach(e => e.classList.remove("hidden-replay"));
     sfx.cheer(); say(t("replayDone")); emit("replay");
   }, steps * step + 500);

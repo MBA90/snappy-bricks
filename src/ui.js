@@ -222,7 +222,7 @@ function startBoardDrag(e, b){
 function showFloat(){
   floatEl = document.createElement("div"); floatEl.className = "floating";
   floatEl.appendChild(pieceEl(ptr.piece, cell)); document.body.appendChild(floatEl);
-  if (ptr.source === "board"){ const el = els.get(ptr.brick.id); if (el) el.classList.add("lifted"); }
+  if (ptr.source === "board"){ const el = els.get(ptr.brick.id); if (el) el.classList.add("lifted"); const a = auraFor(ptr.brick.id); if (a) a.classList.add("lifted"); }
 }
 function moveFloat(e){ floatEl.style.transform = `translate(${e.clientX - ptr.grabX}px, ${e.clientY - ptr.grabY - ptr.lift}px)`; }
 function hideGhost(){ if (ghostEl){ ghostEl.remove(); ghostEl = null; } }
@@ -258,7 +258,7 @@ function endDrag(e, cancelled){
   const p = ptr; ptr = null;
   hideGhost(); trash.classList.remove("hot"); $("#tray").classList.remove("hot");
   if (floatEl){ floatEl.remove(); floatEl = null; }
-  if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); }
+  if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); const a = auraFor(p.brick.id); if (a) a.classList.remove("lifted"); }
   if (cancelled) return;
   if (!p.moved){
     if (p.source === "tray") toggleSelect(p.sel); else tapBrick(p.brick);
@@ -326,7 +326,7 @@ function brushOp(b){
   } else if (tool === "paint" && (b.c !== color || (b.t || "std") !== brickStyle)){
     if (!ptr.changed){ pushHistory(); ptr.changed = true; }
     b.c = color; b.t = brickStyle; const el = els.get(b.id); if (el){ styleBrickEl(el, b); flash(el); }
-    emit("change"); sfx.paint();
+    renderAuras(); emit("change"); sfx.paint();
   }
 }
 function brushAt(e){
@@ -384,7 +384,7 @@ function fillAt(x, y, opts = {}){
   }
   if (!opts.noHistory) pushHistory();
   hit.forEach(b => { b.c = color; b.t = brickStyle; const el = els.get(b.id); if (el){ styleBrickEl(el, b); flash(el); } });
-  emit("change");
+  renderAuras(); emit("change");
   return hit.size;
 }
 function doFill(e){
