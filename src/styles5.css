@@ -23,10 +23,7 @@
 .pp-chip{display:inline-flex;align-items:center;gap:5px;padding:2px 9px 2px 4px;border:2px solid var(--ink);border-radius:999px;background:#fff;font-weight:800;font-size:.85rem}
 .pp-chip i{width:18px;height:18px;border-radius:5px;border:2px solid rgba(43,30,92,.35)}
 .photo-zbtn{min-width:52px;font-size:1.4rem;line-height:1}
-#photoTurnBtn{min-width:52px;font-size:1.3rem;line-height:1}
 .photo-zbtn:disabled{opacity:.4}
-#photoSheet.little .photo-big{display:none}
-.gu-row[hidden]{display:none}
 .photo-build{align-self:stretch}
 .photo-build:disabled{opacity:.45}
 @media (orientation:portrait), (max-width:899px){
