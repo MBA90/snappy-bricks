@@ -232,21 +232,29 @@ function applyBoard(){
   drawMirrorLines();
   emit("board");
 }
+let refitting = false;
 function fitCell(){
   const wrap = $("#plateWrap");
   if (!wrap || !wrap.offsetParent) return;          // the studio is not on screen
-  const w = wrap.clientWidth - 12;
-  // on upright screens the toy box is a dock fixed to the bottom
+  wrap.style.setProperty("--cols", B.cols); wrap.style.setProperty("--rows", B.rows);
+  // phones lock the studio to the screen and give the board a box of its own: fill that box
+  const cs = getComputedStyle(wrap);
+  const boxed = cs.getPropertyValue("--fit").trim() === "box";
+  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+  const w = boxed ? wrap.clientWidth - padX : wrap.clientWidth - 12;
+  // on upright tablets the toy box is a dock fixed to the bottom
   const tray = $("#tray");
   const docked = !!tray && getComputedStyle(tray).position === "fixed";
   const dock = docked ? tray.offsetHeight : 0;
-  document.body.style.setProperty("--dock-h", dock + "px");
+  const below = docked || boxed && getComputedStyle(tray).getPropertyValue("--below").trim() === "1";
+  document.body.style.setProperty("--dock-h", (below ? tray.offsetHeight : 0) + "px");
   const H = window.innerHeight;
   const top = wrap.getBoundingClientRect().top + window.scrollY;
   const zb = $("#zoomBar");
-  const zbH = zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
-  const maxH = Math.max(H * .3, H - top - dock - 22 - zbH);
-  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, 48));
+  const zbH = !boxed && zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
+  const maxH = boxed ? wrap.clientHeight - padY : Math.max(H * .3, H - top - dock - 22 - zbH);
+  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 64 : 48));
   // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted
   const dims = B.cols + "x" + B.rows;
   if (dims !== zoomDims){ zoomDims = dims; boardZoom = 1; }
@@ -256,10 +264,24 @@ function fitCell(){
   const zoomed = boardZoom > 1;
   cell = zoomed ? Math.round(fit * boardZoom) : fit;
   wrap.classList.toggle("zoomed", zoomed);
-  wrap.style.height = zoomed ? (fit * B.rows + 28) + "px" : "";
-  if (zb) zb.hidden = zoomMax < 1.6;                  // only when the studs are small enough to be fiddly
+  wrap.style.height = zoomed && !boxed ? (fit * B.rows + 28) + "px" : "";
   plate.style.setProperty("--cell", cell + "px");
   plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
+  if (zb){
+    const hide = zoomMax < 1.6;                       // only when the studs are small enough to be fiddly
+    // showing or hiding the zoom buttons changes the board's box: fit once more
+    if (zb.hidden !== hide){ zb.hidden = hide; if (boxed && !refitting){ refitting = true; fitCell(); refitting = false; } }
+  }
+  updateZoomBtns();
+}
+// the board's box changes size when a game panel or the selection bar comes and goes
+if (window.ResizeObserver){
+  let lastBox = "";
+  new ResizeObserver(([e]) => {
+    const box = Math.round(e.contentRect.width) + "x" + Math.round(e.contentRect.height);
+    if (box === lastBox) return; lastBox = box;
+    if (getComputedStyle(e.target).getPropertyValue("--fit").trim() === "box") requestAnimationFrame(fitCell);
+  }).observe($("#plateWrap"));
 }
 
 /* ---- helper speech bubble ---- */
@@ -363,6 +385,11 @@ function drawStud(ctx, x, y, c, col, flat){
   const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
   g.addColorStop(0, shade(col, .3)); g.addColorStop(flat ? .36 : .5, shade(col, .3)); g.addColorStop(1, col);
   ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r - c * .005, 0, 7); ctx.fill();
+  if (!flat){
+    // the faint embossed ring on top of a real stud
+    ctx.strokeStyle = shade(col, .3); ctx.lineWidth = c * .012;
+    ctx.beginPath(); ctx.arc(cx, cy, c * .163, 0, 7); ctx.stroke();
+  }
   const gx = x + c * .41, gy = y + c * .37, gr = c * (flat ? .09 : .1);
   const gl = ctx.createRadialGradient(gx, gy, 0, gx, gy, gr);
   gl.addColorStop(0, `rgba(255,255,255,${flat ? .55 : .9})`); gl.addColorStop(.3, `rgba(255,255,255,${flat ? .55 : .9})`); gl.addColorStop(1, "rgba(255,255,255,0)");
@@ -371,7 +398,7 @@ function drawStud(ctx, x, y, c, col, flat){
 // the soft top-left-to-bottom-right light across a whole brick or board
 function sheen(ctx, x, y, w, h, a, b){
   const g = ctx.createLinearGradient(x, y, x + w * .42, y + h);
-  g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(.42, "rgba(255,255,255,0)");
+  g.addColorStop(0, `rgba(255,255,255,${a * 1.38})`); g.addColorStop(.14, `rgba(255,255,255,${a * .54})`); g.addColorStop(.42, "rgba(255,255,255,0)");
   g.addColorStop(.62, "rgba(30,10,60,0)"); g.addColorStop(1, `rgba(30,10,60,${b})`);
   return g;
 }
@@ -379,6 +406,10 @@ function drawBoard(ctx, board, ox, oy, c){
   const bw = board.cols * c, bh = board.rows * c;
   ctx.fillStyle = board.plate; rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
   ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
+  // a little depth at the board's edges
+  ctx.save(); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.clip();
+  ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
+  rrect(ctx, ox - c / 2, oy - c / 2, bw + c, bh + c, c * .8); ctx.stroke(); ctx.restore();
   for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) stud(ctx, ox + x * c, oy + y * c, c, board.plate, true);
   const list = [...board.bricks].sort((a, b) => (a.z || 0) - (b.z || 0));
   for (const b of list){
@@ -457,10 +488,12 @@ function drawBoard(ctx, board, ox, oy, c){
           rg.addColorStop(.72, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.16)");
           ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
         }
-        // lit top and left edges
+        // bevels that grow with the brick: lit top and left edges, a shaded right edge
+        const bt = Math.max(1.5, c * .05), bl = Math.max(1.5, c * .04);
         ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
-        ctx.strokeStyle = "rgba(255,255,255,.5)"; ctx.lineWidth = 2;
-        rrect(ctx, x + 1, y + 1, w, h, rad); ctx.stroke();
+        ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.fillRect(x, y, w, bt);
+        ctx.fillStyle = "rgba(255,255,255,.22)"; ctx.fillRect(x, y + bt, bl, h - bt);
+        ctx.fillStyle = "rgba(30,10,60,.1)"; ctx.fillRect(x + w - bl, y, bl, h);
         ctx.restore();
       }
     }

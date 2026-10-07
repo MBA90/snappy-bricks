@@ -194,3 +194,123 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .sheet-x{width:42px;height:42px;font-size:1.5rem}
   .home{gap:10px}
 }
+
+/* ===================== the studio fills the screen and the board takes every pixel it can ===================== */
+/* a long press (to hear a button's name) must never select its text or pop up the copy menu */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+
+/* the studio is exactly one screen tall: no page scrolling, and the board gets a box of its own.
+   fitCell() reads --fit and sizes the studs to fill that box. */
+body[data-screen="studio"]{height:100vh;height:100dvh;overflow:hidden;padding-bottom:0}
+body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-bottom, 0px))}
+#studioScreen{flex:1 1 auto;min-height:0}
+.studio{flex:1 1 0;min-height:0;grid-template-rows:minmax(0,1fr);align-items:stretch}
+.tray,.tools{position:static;top:auto;height:auto;max-height:none;min-height:0}
+.board-col{min-height:0}
+.plate-wrap{--fit:box;flex:1 1 0;min-height:0;overflow:hidden;align-items:center;justify-content:center;padding:4px 4px 16px}
+.plate-wrap.zoomed{overflow:auto;align-items:flex-start;padding:4px 4px 16px}
+/* beside the board, the zoom buttons live in the tools column above Undo, so they never cover the board */
+.tools .zoombar{position:static;inset:auto;flex:none;align-self:center;flex-direction:column;margin:0;padding:3px;gap:5px}
+.tools .zbtn{width:40px;height:40px}
+
+/* ---------- upright screens: tools, board, then the toy box along the bottom ---------- */
+@media (orientation:portrait), (max-width:899px) and (min-height:541px){
+  .studio,body[data-hand="left"] .studio{display:flex;flex-direction:column;align-items:stretch}
+  .tools{order:1;flex:none}
+  .board-col{order:2;flex:1 1 0}
+  .tray{
+    order:3;position:relative;left:auto;right:auto;bottom:auto;z-index:2;--below:1;flex:none;
+    margin-inline:calc(-1 * var(--side, 16px));
+  }
+  body[data-screen="studio"] .app{padding-bottom:0}
+  .zoombar{position:static;align-self:center;margin:0}
+}
+
+/* ---------- upright phones: the board as wide as the phone, the toy box takes whatever height is left ---------- */
+@media (orientation:portrait) and (max-width:699px){
+  body[data-screen="studio"]{--side:max(5px, env(safe-area-inset-left, 0px));padding-inline:var(--side)}
+  body[data-screen="studio"] .app{padding-top:max(6px, env(safe-area-inset-top, 0px));gap:6px}
+  #studioScreen{gap:6px}
+  .topbar{min-height:50px;padding:4px 5px}
+  .tb-home{width:42px;height:42px}
+  .tb-home svg{width:26px;height:26px}
+  .topbar .bricky{width:32px;height:32px}
+  .topbar .bubble{min-height:34px;font-size:.84rem;line-height:1.2}
+  .studio,body[data-hand="left"] .studio{gap:6px}
+  .tools{padding-inline:1px}
+  .board-col{flex:0 1 auto;gap:2px;container-type:inline-size}
+  .plate-wrap{flex:0 1 auto;padding:2px 1px 12px;height:calc((100cqw - 2px) * var(--rows, 18) / var(--cols, 24) + 14px)}
+  .tray{flex:1 0 auto;grid-template-rows:auto minmax(0,1fr)}
+  /* a tall toy box shows more at once: the colors under the bricks, then the styles */
+  .tray-body{height:auto;min-height:112px;align-self:stretch;align-items:center;align-content:center;flex-wrap:wrap;row-gap:10px;container:traybody / size}
+  /* the zoom buttons: a slim pill tucked under the board */
+  .zoombar{padding:2px;gap:4px;border-width:2px;box-shadow:0 2px 0 var(--ink)}
+  .zbtn{width:34px;height:34px;border-width:2px;font-size:1.3rem}
+  .zbtn svg{width:17px;height:17px}
+}
+@container traybody (min-height:200px){
+  .tray[data-tab="bricks"] .tray-body > .sec-bricks{order:-1}
+  .tray[data-tab="bricks"] .tray-body > .sec-colors{display:flex!important;flex-basis:100%}
+  .tray[data-tab="bricks"] .shapes .card{min-height:96px}
+}
+@container traybody (min-height:330px){
+  body:not([data-age="little"]) .tray[data-tab="bricks"] .tray-body > .sec-styles{display:flex!important;flex-basis:100%}
+}
+@media (orientation:portrait) and (max-width:699px) and (max-height:720px){
+  .tray-body{min-height:88px}
+  .topbar{min-height:44px}
+  .tb-home{width:38px;height:38px}
+}
+
+/* ---------- phones on their side: a thin top bar, so the board gets the height ---------- */
+@media (orientation:landscape) and (max-height:540px){
+  body[data-screen="studio"] .app{padding-block:max(4px, env(safe-area-inset-top, 0px)) max(4px, env(safe-area-inset-bottom, 0px));gap:4px}
+  #studioScreen{gap:5px}
+  .topbar{min-height:38px;padding:2px 5px;gap:6px;border-width:2px;box-shadow:0 3px 0 var(--ink);border-radius:14px}
+  .tb-home{width:34px;height:34px;border-width:2px;border-radius:11px;box-shadow:0 2px 0 var(--ink)}
+  .tb-home svg{width:22px;height:22px}
+  .topbar .bricky{width:26px;height:26px}
+  .topbar .bubble{min-height:28px;font-size:.8rem;border-width:2px;box-shadow:0 2px 0 var(--ink)}
+  .tb-btn{min-height:32px;padding:0 9px;font-size:.8rem;border-width:2px;box-shadow:0 2px 0 var(--ink)}
+  .area-chip{min-height:30px}
+  .studio,body[data-hand="left"] .studio{grid-template-columns:172px minmax(0,1fr) 136px;gap:6px}
+  body[data-hand="left"] .studio{grid-template-columns:136px minmax(0,1fr) 172px}
+  .tray{padding:7px;gap:8px}
+  .name-open,.photo-open{font-size:.72rem!important}
+  .tools{grid-template-rows:auto minmax(0,1fr) auto auto;gap:5px}
+  .tools-main{gap:5px}
+  .board-col{gap:4px}
+  .plate-wrap{padding:2px 2px 12px}
+  .tools .zoombar{grid-column:1 / -1;grid-row:3;flex-direction:row;padding:2px;gap:4px;border-width:2px;box-shadow:0 2px 0 var(--ink)}
+  .tools .zbtn{width:34px;height:34px;border-width:2px;font-size:1.3rem}
+  .tools .zbtn svg{width:17px;height:17px}
+  .tbtn.undo{grid-row:4;min-height:48px}
+}
+
+/* ---------- games on phones: Bricky's bubble already says what to do, so the panel stays one slim block ---------- */
+@media (orientation:portrait) and (max-width:699px), (orientation:landscape) and (max-height:540px){
+  .gamepanel{flex:none;padding:6px 8px;gap:8px}
+  .gp-text,.gp-bar{display:none}
+  .gp-target{flex-basis:64px;min-height:64px}
+  .gp-letters{gap:4px}
+  .gletter{min-width:34px;height:34px;font-size:1.05rem;border-radius:10px}
+  .gp-actions{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .gp-actions .btn{flex:none}
+}
+/* in a game the board matters more than a roomy toy box */
+@media (orientation:portrait) and (max-width:699px){
+  body:not([data-mode="free"]) .board-col{flex:1 1 0}
+  body:not([data-mode="free"]) .plate-wrap{flex:1 1 0;height:auto}
+  body:not([data-mode="free"]) .tray{flex:none}
+}
+/* sideways phones: the game panel is a single short row, so the board keeps the height */
+@media (orientation:landscape) and (max-height:540px){
+  .gamepanel{align-items:center;padding:4px 8px}
+  .gp-target{flex-basis:52px;min-height:52px}
+  .gp-emoji{font-size:1.5rem}
+  .gp-head,.gp-prog{display:none}
+  .gp-main{flex-direction:row;align-items:center;gap:8px;min-width:0}
+  .gp-letters{flex:none;flex-wrap:nowrap}
+  .gp-actions{flex:1 1 auto;min-width:0;padding-bottom:0}
+}

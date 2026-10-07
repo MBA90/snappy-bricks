@@ -88,11 +88,11 @@ button{font:inherit;color:inherit}
   --c:#FF2E8A;--lt:#ff7ab4;--dk:#c21666;--spark:rgba(255,255,255,.9);--z:0;
   --studs:
     radial-gradient(circle at 41% 37%, rgba(255,255,255,.9) 0 calc(var(--cell)*.03), rgba(255,255,255,0) calc(var(--cell)*.1)),
-    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.12), var(--c) calc(var(--cell)*.235), transparent calc(var(--cell)*.245)),
+    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.09), var(--c) calc(var(--cell)*.15), var(--lt) calc(var(--cell)*.158) calc(var(--cell)*.168), var(--c) calc(var(--cell)*.182) calc(var(--cell)*.235), transparent calc(var(--cell)*.245)),
     radial-gradient(circle at 48% 47.5%, rgba(255,255,255,.75) 0 calc(var(--cell)*.235), transparent calc(var(--cell)*.25)),
     radial-gradient(circle at 52% 54%, var(--dk) 0 calc(var(--cell)*.245), transparent calc(var(--cell)*.26)),
     radial-gradient(circle at 56% 61%, rgba(30,10,50,.34) 0 calc(var(--cell)*.22), transparent calc(var(--cell)*.32));
-  --sheen:linear-gradient(155deg, rgba(255,255,255,.26) 0, rgba(255,255,255,0) 42%, rgba(30,10,60,0) 62%, rgba(30,10,60,.12) 100%);
+  --sheen:linear-gradient(155deg, rgba(255,255,255,.36) 0, rgba(255,255,255,.14) 14%, rgba(255,255,255,0) 42%, rgba(30,10,60,0) 62%, rgba(30,10,60,.12) 100%);
   background-color:var(--c);
   background-image:var(--studs);
   background-size:var(--cell) var(--cell);
@@ -108,9 +108,9 @@ button{font:inherit;color:inherit}
   box-shadow:
     inset 0 calc(var(--cell)*-.09) 0 var(--dk),
     inset 0 calc(var(--cell)*-.09 - 1px) 0 rgba(255,255,255,.12),
-    inset 0 1.5px 0 rgba(255,255,255,.6),
-    inset 1.5px 0 0 rgba(255,255,255,.25),
-    inset -1px 0 0 rgba(30,10,60,.08),
+    inset 0 max(1.5px, calc(var(--cell)*.05)) 0 rgba(255,255,255,.55),
+    inset max(1.5px, calc(var(--cell)*.04)) 0 0 rgba(255,255,255,.22),
+    inset min(-1px, calc(var(--cell)*-.04)) 0 0 rgba(30,10,60,.1),
     0 0 0 1px rgba(30,10,60,.2),
     0 1px 1px rgba(30,10,60,.25),
     calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.34);
@@ -251,7 +251,8 @@ button{font:inherit;color:inherit}
 .brick.fly{transition:transform .5s cubic-bezier(.5,-0.4,.8,.6),opacity .5s;opacity:0;pointer-events:none}
 .brick.flash{animation:flash .3s ease}
 .brick.hidden-replay{visibility:hidden}
-@keyframes drop{0%{transform:translateY(-120%) scale(1.15);opacity:0}60%{opacity:1}100%{transform:none;opacity:1}}
+@keyframes drop{0%{transform:translateY(-120%) scale(1.15);opacity:0}55%{opacity:1;transform:translateY(0) scale(1.02)}72%{transform:scale(1.04,.93);filter:brightness(1.3)}88%{transform:scale(.99,1.02)}100%{transform:none;opacity:1;filter:none}}
+@media (hover:hover){ .plate.tool-move .brick:hover{filter:brightness(1.07) saturate(1.05)} }
 @keyframes poof{to{transform:scale(1.5) rotate(12deg);opacity:0}}
 @keyframes wiggle{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
 @keyframes flash{50%{filter:brightness(1.35)}}
@@ -341,6 +342,7 @@ button{font:inherit;color:inherit}
   box-shadow:
     inset 0 2px 0 rgba(255,255,255,.35),
     inset 0 -3px 0 rgba(30,10,60,.14),
+    inset 0 0 calc(var(--cell)*1.4) rgba(20,5,40,.16),
     0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
   touch-action:none;user-select:none;-webkit-user-select:none;
   /* baseplate studs: lower and softer than brick studs, so the bricks stand out */
@@ -1223,6 +1225,126 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .sheet-card{max-height:calc(100dvh - 16px);padding:12px;gap:8px;border-radius:20px}
   .sheet-x{width:42px;height:42px;font-size:1.5rem}
   .home{gap:10px}
+}
+
+/* ===================== the studio fills the screen and the board takes every pixel it can ===================== */
+/* a long press (to hear a button's name) must never select its text or pop up the copy menu */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+
+/* the studio is exactly one screen tall: no page scrolling, and the board gets a box of its own.
+   fitCell() reads --fit and sizes the studs to fill that box. */
+body[data-screen="studio"]{height:100vh;height:100dvh;overflow:hidden;padding-bottom:0}
+body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-bottom, 0px))}
+#studioScreen{flex:1 1 auto;min-height:0}
+.studio{flex:1 1 0;min-height:0;grid-template-rows:minmax(0,1fr);align-items:stretch}
+.tray,.tools{position:static;top:auto;height:auto;max-height:none;min-height:0}
+.board-col{min-height:0}
+.plate-wrap{--fit:box;flex:1 1 0;min-height:0;overflow:hidden;align-items:center;justify-content:center;padding:4px 4px 16px}
+.plate-wrap.zoomed{overflow:auto;align-items:flex-start;padding:4px 4px 16px}
+/* beside the board, the zoom buttons live in the tools column above Undo, so they never cover the board */
+.tools .zoombar{position:static;inset:auto;flex:none;align-self:center;flex-direction:column;margin:0;padding:3px;gap:5px}
+.tools .zbtn{width:40px;height:40px}
+
+/* ---------- upright screens: tools, board, then the toy box along the bottom ---------- */
+@media (orientation:portrait), (max-width:899px) and (min-height:541px){
+  .studio,body[data-hand="left"] .studio{display:flex;flex-direction:column;align-items:stretch}
+  .tools{order:1;flex:none}
+  .board-col{order:2;flex:1 1 0}
+  .tray{
+    order:3;position:relative;left:auto;right:auto;bottom:auto;z-index:2;--below:1;flex:none;
+    margin-inline:calc(-1 * var(--side, 16px));
+  }
+  body[data-screen="studio"] .app{padding-bottom:0}
+  .zoombar{position:static;align-self:center;margin:0}
+}
+
+/* ---------- upright phones: the board as wide as the phone, the toy box takes whatever height is left ---------- */
+@media (orientation:portrait) and (max-width:699px){
+  body[data-screen="studio"]{--side:max(5px, env(safe-area-inset-left, 0px));padding-inline:var(--side)}
+  body[data-screen="studio"] .app{padding-top:max(6px, env(safe-area-inset-top, 0px));gap:6px}
+  #studioScreen{gap:6px}
+  .topbar{min-height:50px;padding:4px 5px}
+  .tb-home{width:42px;height:42px}
+  .tb-home svg{width:26px;height:26px}
+  .topbar .bricky{width:32px;height:32px}
+  .topbar .bubble{min-height:34px;font-size:.84rem;line-height:1.2}
+  .studio,body[data-hand="left"] .studio{gap:6px}
+  .tools{padding-inline:1px}
+  .board-col{flex:0 1 auto;gap:2px;container-type:inline-size}
+  .plate-wrap{flex:0 1 auto;padding:2px 1px 12px;height:calc((100cqw - 2px) * var(--rows, 18) / var(--cols, 24) + 14px)}
+  .tray{flex:1 0 auto;grid-template-rows:auto minmax(0,1fr)}
+  /* a tall toy box shows more at once: the colors under the bricks, then the styles */
+  .tray-body{height:auto;min-height:112px;align-self:stretch;align-items:center;align-content:center;flex-wrap:wrap;row-gap:10px;container:traybody / size}
+  /* the zoom buttons: a slim pill tucked under the board */
+  .zoombar{padding:2px;gap:4px;border-width:2px;box-shadow:0 2px 0 var(--ink)}
+  .zbtn{width:34px;height:34px;border-width:2px;font-size:1.3rem}
+  .zbtn svg{width:17px;height:17px}
+}
+@container traybody (min-height:200px){
+  .tray[data-tab="bricks"] .tray-body > .sec-bricks{order:-1}
+  .tray[data-tab="bricks"] .tray-body > .sec-colors{display:flex!important;flex-basis:100%}
+  .tray[data-tab="bricks"] .shapes .card{min-height:96px}
+}
+@container traybody (min-height:330px){
+  body:not([data-age="little"]) .tray[data-tab="bricks"] .tray-body > .sec-styles{display:flex!important;flex-basis:100%}
+}
+@media (orientation:portrait) and (max-width:699px) and (max-height:720px){
+  .tray-body{min-height:88px}
+  .topbar{min-height:44px}
+  .tb-home{width:38px;height:38px}
+}
+
+/* ---------- phones on their side: a thin top bar, so the board gets the height ---------- */
+@media (orientation:landscape) and (max-height:540px){
+  body[data-screen="studio"] .app{padding-block:max(4px, env(safe-area-inset-top, 0px)) max(4px, env(safe-area-inset-bottom, 0px));gap:4px}
+  #studioScreen{gap:5px}
+  .topbar{min-height:38px;padding:2px 5px;gap:6px;border-width:2px;box-shadow:0 3px 0 var(--ink);border-radius:14px}
+  .tb-home{width:34px;height:34px;border-width:2px;border-radius:11px;box-shadow:0 2px 0 var(--ink)}
+  .tb-home svg{width:22px;height:22px}
+  .topbar .bricky{width:26px;height:26px}
+  .topbar .bubble{min-height:28px;font-size:.8rem;border-width:2px;box-shadow:0 2px 0 var(--ink)}
+  .tb-btn{min-height:32px;padding:0 9px;font-size:.8rem;border-width:2px;box-shadow:0 2px 0 var(--ink)}
+  .area-chip{min-height:30px}
+  .studio,body[data-hand="left"] .studio{grid-template-columns:172px minmax(0,1fr) 136px;gap:6px}
+  body[data-hand="left"] .studio{grid-template-columns:136px minmax(0,1fr) 172px}
+  .tray{padding:7px;gap:8px}
+  .name-open,.photo-open{font-size:.72rem!important}
+  .tools{grid-template-rows:auto minmax(0,1fr) auto auto;gap:5px}
+  .tools-main{gap:5px}
+  .board-col{gap:4px}
+  .plate-wrap{padding:2px 2px 12px}
+  .tools .zoombar{grid-column:1 / -1;grid-row:3;flex-direction:row;padding:2px;gap:4px;border-width:2px;box-shadow:0 2px 0 var(--ink)}
+  .tools .zbtn{width:34px;height:34px;border-width:2px;font-size:1.3rem}
+  .tools .zbtn svg{width:17px;height:17px}
+  .tbtn.undo{grid-row:4;min-height:48px}
+}
+
+/* ---------- games on phones: Bricky's bubble already says what to do, so the panel stays one slim block ---------- */
+@media (orientation:portrait) and (max-width:699px), (orientation:landscape) and (max-height:540px){
+  .gamepanel{flex:none;padding:6px 8px;gap:8px}
+  .gp-text,.gp-bar{display:none}
+  .gp-target{flex-basis:64px;min-height:64px}
+  .gp-letters{gap:4px}
+  .gletter{min-width:34px;height:34px;font-size:1.05rem;border-radius:10px}
+  .gp-actions{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .gp-actions .btn{flex:none}
+}
+/* in a game the board matters more than a roomy toy box */
+@media (orientation:portrait) and (max-width:699px){
+  body:not([data-mode="free"]) .board-col{flex:1 1 0}
+  body:not([data-mode="free"]) .plate-wrap{flex:1 1 0;height:auto}
+  body:not([data-mode="free"]) .tray{flex:none}
+}
+/* sideways phones: the game panel is a single short row, so the board keeps the height */
+@media (orientation:landscape) and (max-height:540px){
+  .gamepanel{align-items:center;padding:4px 8px}
+  .gp-target{flex-basis:52px;min-height:52px}
+  .gp-emoji{font-size:1.5rem}
+  .gp-head,.gp-prog{display:none}
+  .gp-main{flex-direction:row;align-items:center;gap:8px;min-width:0}
+  .gp-letters{flex:none;flex-wrap:nowrap}
+  .gp-actions{flex:1 1 auto;min-width:0;padding-bottom:0}
 }
 
 </style>
@@ -2135,21 +2257,29 @@ function applyBoard(){
   drawMirrorLines();
   emit("board");
 }
+let refitting = false;
 function fitCell(){
   const wrap = $("#plateWrap");
   if (!wrap || !wrap.offsetParent) return;          // the studio is not on screen
-  const w = wrap.clientWidth - 12;
-  // on upright screens the toy box is a dock fixed to the bottom
+  wrap.style.setProperty("--cols", B.cols); wrap.style.setProperty("--rows", B.rows);
+  // phones lock the studio to the screen and give the board a box of its own: fill that box
+  const cs = getComputedStyle(wrap);
+  const boxed = cs.getPropertyValue("--fit").trim() === "box";
+  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+  const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+  const w = boxed ? wrap.clientWidth - padX : wrap.clientWidth - 12;
+  // on upright tablets the toy box is a dock fixed to the bottom
   const tray = $("#tray");
   const docked = !!tray && getComputedStyle(tray).position === "fixed";
   const dock = docked ? tray.offsetHeight : 0;
-  document.body.style.setProperty("--dock-h", dock + "px");
+  const below = docked || boxed && getComputedStyle(tray).getPropertyValue("--below").trim() === "1";
+  document.body.style.setProperty("--dock-h", (below ? tray.offsetHeight : 0) + "px");
   const H = window.innerHeight;
   const top = wrap.getBoundingClientRect().top + window.scrollY;
   const zb = $("#zoomBar");
-  const zbH = zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
-  const maxH = Math.max(H * .3, H - top - dock - 22 - zbH);
-  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, 48));
+  const zbH = !boxed && zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
+  const maxH = boxed ? wrap.clientHeight - padY : Math.max(H * .3, H - top - dock - 22 - zbH);
+  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 64 : 48));
   // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted
   const dims = B.cols + "x" + B.rows;
   if (dims !== zoomDims){ zoomDims = dims; boardZoom = 1; }
@@ -2159,10 +2289,24 @@ function fitCell(){
   const zoomed = boardZoom > 1;
   cell = zoomed ? Math.round(fit * boardZoom) : fit;
   wrap.classList.toggle("zoomed", zoomed);
-  wrap.style.height = zoomed ? (fit * B.rows + 28) + "px" : "";
-  if (zb) zb.hidden = zoomMax < 1.6;                  // only when the studs are small enough to be fiddly
+  wrap.style.height = zoomed && !boxed ? (fit * B.rows + 28) + "px" : "";
   plate.style.setProperty("--cell", cell + "px");
   plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
+  if (zb){
+    const hide = zoomMax < 1.6;                       // only when the studs are small enough to be fiddly
+    // showing or hiding the zoom buttons changes the board's box: fit once more
+    if (zb.hidden !== hide){ zb.hidden = hide; if (boxed && !refitting){ refitting = true; fitCell(); refitting = false; } }
+  }
+  updateZoomBtns();
+}
+// the board's box changes size when a game panel or the selection bar comes and goes
+if (window.ResizeObserver){
+  let lastBox = "";
+  new ResizeObserver(([e]) => {
+    const box = Math.round(e.contentRect.width) + "x" + Math.round(e.contentRect.height);
+    if (box === lastBox) return; lastBox = box;
+    if (getComputedStyle(e.target).getPropertyValue("--fit").trim() === "box") requestAnimationFrame(fitCell);
+  }).observe($("#plateWrap"));
 }
 
 /* ---- helper speech bubble ---- */
@@ -2266,6 +2410,11 @@ function drawStud(ctx, x, y, c, col, flat){
   const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
   g.addColorStop(0, shade(col, .3)); g.addColorStop(flat ? .36 : .5, shade(col, .3)); g.addColorStop(1, col);
   ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r - c * .005, 0, 7); ctx.fill();
+  if (!flat){
+    // the faint embossed ring on top of a real stud
+    ctx.strokeStyle = shade(col, .3); ctx.lineWidth = c * .012;
+    ctx.beginPath(); ctx.arc(cx, cy, c * .163, 0, 7); ctx.stroke();
+  }
   const gx = x + c * .41, gy = y + c * .37, gr = c * (flat ? .09 : .1);
   const gl = ctx.createRadialGradient(gx, gy, 0, gx, gy, gr);
   gl.addColorStop(0, `rgba(255,255,255,${flat ? .55 : .9})`); gl.addColorStop(.3, `rgba(255,255,255,${flat ? .55 : .9})`); gl.addColorStop(1, "rgba(255,255,255,0)");
@@ -2274,7 +2423,7 @@ function drawStud(ctx, x, y, c, col, flat){
 // the soft top-left-to-bottom-right light across a whole brick or board
 function sheen(ctx, x, y, w, h, a, b){
   const g = ctx.createLinearGradient(x, y, x + w * .42, y + h);
-  g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(.42, "rgba(255,255,255,0)");
+  g.addColorStop(0, `rgba(255,255,255,${a * 1.38})`); g.addColorStop(.14, `rgba(255,255,255,${a * .54})`); g.addColorStop(.42, "rgba(255,255,255,0)");
   g.addColorStop(.62, "rgba(30,10,60,0)"); g.addColorStop(1, `rgba(30,10,60,${b})`);
   return g;
 }
@@ -2282,6 +2431,10 @@ function drawBoard(ctx, board, ox, oy, c){
   const bw = board.cols * c, bh = board.rows * c;
   ctx.fillStyle = board.plate; rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
   ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
+  // a little depth at the board's edges
+  ctx.save(); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.clip();
+  ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
+  rrect(ctx, ox - c / 2, oy - c / 2, bw + c, bh + c, c * .8); ctx.stroke(); ctx.restore();
   for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) stud(ctx, ox + x * c, oy + y * c, c, board.plate, true);
   const list = [...board.bricks].sort((a, b) => (a.z || 0) - (b.z || 0));
   for (const b of list){
@@ -2360,10 +2513,12 @@ function drawBoard(ctx, board, ox, oy, c){
           rg.addColorStop(.72, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.16)");
           ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
         }
-        // lit top and left edges
+        // bevels that grow with the brick: lit top and left edges, a shaded right edge
+        const bt = Math.max(1.5, c * .05), bl = Math.max(1.5, c * .04);
         ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
-        ctx.strokeStyle = "rgba(255,255,255,.5)"; ctx.lineWidth = 2;
-        rrect(ctx, x + 1, y + 1, w, h, rad); ctx.stroke();
+        ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.fillRect(x, y, w, bt);
+        ctx.fillStyle = "rgba(255,255,255,.22)"; ctx.fillRect(x, y + bt, bl, h - bt);
+        ctx.fillStyle = "rgba(30,10,60,.1)"; ctx.fillRect(x + w - bl, y, bl, h);
         ctx.restore();
       }
     }
@@ -2567,7 +2722,7 @@ function placePiece(piece, gx, gy, opts = {}){
 
 /* ===================== tray UI ===================== */
 const coarse = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
-function trayCell(){ return window.innerWidth < 720 ? 14 : coarse ? 18 : 16; }
+function trayCell(){ return window.innerWidth < 720 || window.innerHeight < 541 ? 14 : coarse ? 18 : 16; }
 function buildSwatches(){
   const box = $("#swatches"); box.innerHTML = "";
   for (const c of COLORS){
@@ -4572,6 +4727,18 @@ function updateZoomBtns(){
   $("#zoomFitBtn").disabled = boardZoom <= 1;
   $("#zoomInBtn").disabled = boardZoom >= zoomMax - .01;
 }
+// when the tools stand in a column beside the board, the zoom buttons move into it, above Undo, so they never cover the board
+(function zoomHome(){
+  const zb = $("#zoomBar"), home = zb.parentNode, after = zb.nextSibling;
+  const upright = matchMedia("(orientation:portrait), (max-width:899px) and (min-height:541px)");
+  const place = () => {
+    if (!upright.matches) $("#tools").insertBefore(zb, $("#undoBtn"));
+    else home.insertBefore(zb, after);
+    fitCell();
+  };
+  upright.addEventListener ? upright.addEventListener("change", place) : upright.addListener(place);
+  place();
+})();
 $("#zoomInBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom * 1.6); });
 $("#zoomOutBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom / 1.6); });
 $("#zoomFitBtn").addEventListener("click", () => { sfx.click(); zoomTo(1); });
