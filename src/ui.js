@@ -83,7 +83,7 @@ function placePiece(piece, gx, gy, opts = {}){
 
 /* ===================== tray UI ===================== */
 const coarse = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
-function trayCell(){ return window.innerWidth < 720 ? 14 : coarse ? 18 : 16; }
+function trayCell(){ return window.innerWidth < 720 || window.innerHeight < 541 ? 14 : coarse ? 18 : 16; }
 function buildSwatches(){
   const box = $("#swatches"); box.innerHTML = "";
   for (const c of COLORS){
