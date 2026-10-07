@@ -14,13 +14,8 @@ function brickPiece(i){
   let [w, h] = SHAPES[i]; if (turned) [w, h] = [h, w];
   return {w, h, single: true, bricks: [{x: 0, y: 0, w, h, c: color, t: brickStyle}]};
 }
-// the detailed picture when it fits the board, the small one on little boards
-function artSrc(name){
-  const a = ART[name], big = a.big && a.big.split("|");
-  return big && big[0].length <= B.cols && big.length <= B.rows ? a.big : a.art;
-}
 function artPiece(name){
-  const pix = artToPix(artSrc(name));
+  const pix = artToPix(ART[name].art);
   return {w: pix[0].length, h: pix.length, single: false,
           bricks: decompose(pix).map(b => ({...b, t: brickStyle === "round" ? "std" : brickStyle}))};
 }
@@ -148,7 +143,7 @@ function buildStamps(){
   const names = [...BASE_STAMPS, ...(THEMES[settings.theme] || THEMES.classic).stamps];
   for (const name of names){
     const p = artPiece(name);
-    const px = Math.max(4, Math.min(8, Math.floor(80 / Math.max(p.w, p.h))));
+    const px = Math.max(4, Math.min(8, Math.floor(56 / Math.max(p.w, p.h))));
     box.appendChild(makeCard(p, px, ART[name][LANG], {kind: "art", name}));
   }
   const mine = $("#myStamps"); mine.innerHTML = "";
@@ -648,25 +643,11 @@ function buildBoardControls(){
     });
     pl.appendChild(b);
   }
-  const ps = $("#plateStyles"); ps.innerHTML = "";
-  for (const s of PLATE_STYLES){
-    const b = document.createElement("button"); b.type = "button"; b.className = "stylebtn"; b.dataset.ps = s.id; b.title = s[LANG];
-    const prev = document.createElement("span"); prev.className = "pprev"; prev.dataset.ps = s.id; b.appendChild(prev);
-    const lab = document.createElement("span"); lab.textContent = s[LANG]; b.appendChild(lab);
-    b.addEventListener("click", () => {
-      if (plateStyle(B.ps) === s.id) return;
-      pushHistory(); B.ps = s.id; applyBoard(); emit("change"); sfx.click();
-      say(t("plateStyleSay_" + s.id));
-    });
-    ps.appendChild(b);
-  }
   syncBoardControls();
 }
 function syncBoardControls(){
   $$("#sizes .btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === sizeOf().id));
   $$("#plates .swatch").forEach(b => b.setAttribute("aria-pressed", b.dataset.hex === B.plate));
-  $$("#plateStyles .stylebtn").forEach(b => b.setAttribute("aria-pressed", b.dataset.ps === plateStyle(B.ps)));
-  $$("#plateStyles .pprev").forEach(e => paintVars(e, B.plate));
 }
 // boards can also stand upright (tall photos), so a size matches either way round
 const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);
@@ -690,5 +671,3 @@ function setSize(s, fromUser){
   if (fromUser){ sfx.click(); say(before > B.bricks.length ? t("sizeCut") : t("sizeSay", {s: s[LANG], c: s.cols, r: s.rows})); }
 }
 on("board", syncBoardControls);
-let stampFit = "";
-on("board", () => { const k = Object.keys(ART).map(n => artSrc(n) === ART[n].big ? 1 : 0).join(""); if (k !== stampFit){ const first = !stampFit; stampFit = k; if (!first) buildStamps(); } });

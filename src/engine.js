@@ -50,24 +50,12 @@ function neonColor(c){
   return l < 90 ? shade(c, .45) : c;
 }
 function neonGlass(c){ return shade(c, -.8); }
-// the night sky board: the board color sunk into a deep blue night
-function deepColor(c){
-  const n = parseInt(c.slice(1), 16), m = (v, d) => Math.round(v * .28 + d * .72);
-  return `rgb(${m(n >> 16, 18)},${m((n >> 8) & 255, 22)},${m(n & 255, 58)})`;
-}
-const plateStyle = v => PLATE_STYLES.some(s => s.id === v) ? v : "studs";
-// the colour a board shows to the eye (night boards are dark whatever their color)
-function plateTone(board){
-  if (plateStyle(board.ps) !== "night") return board.plate;
-  const m = deepColor(board.plate).match(/\d+/g).map(Number);
-  return "#" + m.map(v => v.toString(16).padStart(2, "0")).join("");
-}
 // the colour variables every brick, swatch and board needs, worked out once per colour
 const varsCache = new Map();
 function colorVars(c){
   let v = varsCache.get(c);
   if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)], ["--spark2", spark2Color(c)],
-    ["--pl", pastel(c)], ["--plt", shade(pastel(c), .45)], ["--pdk", shade(pastel(c), -.16)], ["--glo", lampColor(c, .75)], ["--deep", deepColor(c)], ["--line", isLight(c) ? shade(c, -.2) : shade(c, .3)]]; varsCache.set(c, v); }
+    ["--pl", pastel(c)], ["--plt", shade(pastel(c), .45)], ["--pdk", shade(pastel(c), -.16)], ["--glo", lampColor(c, .75)]]; varsCache.set(c, v); }
   return v;
 }
 function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
@@ -146,7 +134,7 @@ function artToPix(art, recolor){
 }
 
 /* ===================== boards ===================== */
-function newBoard(cols, rows, plate, ps = "studs"){ return {cols, rows, plate, ps, bricks: [], hist: []}; }
+function newBoard(cols, rows, plate){ return {cols, rows, plate, bricks: [], hist: []}; }
 let FREE = newBoard(24, 18, "#FF2E8A");
 let B = FREE;            // the board on screen
 let nextId = 1;
@@ -191,7 +179,7 @@ function canPlace(bricks, gx, gy, ignore = 0){
 }
 
 /* ---- history ---- */
-function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, ps: B.ps, bricks: B.bricks}); }
+function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, bricks: B.bricks}); }
 function pushHistory(){
   B.hist.push(snapshot()); if (B.hist.length > 60) B.hist.shift();
   updateUndo();
@@ -200,7 +188,7 @@ function updateUndo(){ const u = $("#undoBtn"); if (u) u.disabled = !B.hist.leng
 function undo(){
   if (!B.hist.length) return;
   const d = JSON.parse(B.hist.pop());
-  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.ps = plateStyle(d.ps); B.bricks = d.bricks;
+  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.bricks = d.bricks;
   applyBoard(); commit(); sfx.turn(); updateUndo();
   say(t("undone"));
 }
@@ -273,7 +261,6 @@ function switchBoard(board){
 }
 function applyBoard(){
   paintVars(plate, B.plate);
-  plate.dataset.ps = plateStyle(B.ps);
   plate.style.width  = `calc(var(--cell) * ${B.cols})`;
   plate.style.height = `calc(var(--cell) * ${B.rows})`;
   fitCell();
@@ -310,11 +297,9 @@ function fitBox(wrap){
   const H = window.innerHeight;
   const top = wrap.getBoundingClientRect().top + window.scrollY;
   const zb = $("#zoomBar");
-  const zbH = !boxed && zb && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
+  const zbH = !boxed && zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
   const maxH = boxed ? wrap.clientHeight - padY : Math.max(H * .3, H - top - dock - 22 - zbH);
-  // studs land on whole screen pixels (not whole CSS pixels), so the board uses the room a rounded-down size used to waste
-  const dpr = Math.min(3, Math.max(1, Math.round(window.devicePixelRatio || 1)));
-  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 64 : 48) * dpr) / dpr;
+  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 64 : 48));
   // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted
   const dims = B.cols + "x" + B.rows;
   if (dims !== zoomDims){ zoomDims = dims; boardZoom = 1; }
@@ -322,15 +307,15 @@ function fitBox(wrap){
   boardZoom = clamp(boardZoom, 1, zoomMax);
   if (boardZoom < 1.05) boardZoom = 1;
   const zoomed = boardZoom > 1;
-  cell = zoomed ? Math.round(fit * boardZoom * dpr) / dpr : fit;
+  cell = zoomed ? Math.round(fit * boardZoom) : fit;
   wrap.classList.toggle("zoomed", zoomed);
   wrap.style.height = zoomed && !boxed ? (fit * B.rows + 28) + "px" : "";
   plate.style.setProperty("--cell", cell + "px");
   plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
   if (zb){
-    const hide = zoomMax < 1.6;                       // only when the studs are small enough to be fiddly (Big board stays)
+    const hide = zoomMax < 1.6;                       // only when the studs are small enough to be fiddly
     // showing or hiding the zoom buttons changes the board's box: fit once more
-    if (zb.classList.contains("nozoom") !== hide){ zb.classList.toggle("nozoom", hide); if (boxed && !refitting){ refitting = true; fitCell(); refitting = false; } }
+    if (zb.hidden !== hide){ zb.hidden = hide; if (boxed && !refitting){ refitting = true; fitCell(); refitting = false; } }
   }
   updateZoomBtns();
 }
@@ -464,61 +449,15 @@ function sheen(ctx, x, y, w, h, a, b){
   g.addColorStop(.62, "rgba(30,10,60,0)"); g.addColorStop(1, `rgba(30,10,60,${b})`);
   return g;
 }
-// the plate under the bricks in each board style (matches styles7.css)
-function drawPlate(ctx, board, ox, oy, c){
-  const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = board.plate;
-  ctx.save(); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.clip();
-  ctx.fillStyle = ps === "night" ? deepColor(col) : col; ctx.fillRect(ox, oy, bw, bh);
-  // seeded, so the same board always gets the same stars and glitter
-  let sd = board.cols * 7919 + board.rows * 104729;
-  const rnd = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
-  if (ps === "night"){
-    const glow = (gx, gy, rx, ry, rgb, a) => {
-      ctx.save(); ctx.translate(gx, gy); ctx.scale(rx, ry);
-      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); g.addColorStop(0, `rgba(${rgb},${a})`); g.addColorStop(.7, `rgba(${rgb},0)`);
-      ctx.fillStyle = g; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
-    };
-    glow(ox + bw * .18, oy, bw * .9, bh * .6, "255,255,255", .13);
-    glow(ox + bw * .92, oy + bh, bw * .7, bh * .55, "150,110,255", .2);
-    const k = c / 30;                                  // stars keep their size relative to the studs
-    for (const [n, r, rgb] of [[1 / 2800, 1.6, "255,255,255"], [1 / 1500, 1, "255,255,255"], [1 / 6000, 1.8, "255,232,140"], [1 / 1100, .9, "170,200,255"]]){
-      const count = Math.round(bw * bh / (k * k) * n);
-      for (let i = 0; i < count; i++){
-        const sx = ox + rnd() * bw, sy = oy + rnd() * bh, sr = r * Math.max(.6, k) * (.7 + rnd() * .6);
-        const g = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr * 2); g.addColorStop(0, `rgba(${rgb},.95)`); g.addColorStop(.45, `rgba(${rgb},.8)`); g.addColorStop(1, `rgba(${rgb},0)`);
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, sr * 2, 0, 7); ctx.fill();
-      }
-    }
-    ctx.strokeStyle = "rgba(255,255,255,.13)"; ctx.lineWidth = c * .035; ctx.beginPath();
-    for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++){
-      const sx = ox + (x + .5) * c, sy = oy + (y + .5) * c; ctx.moveTo(sx + c * .218, sy); ctx.arc(sx, sy, c * .218, 0, 7);
-    }
-    ctx.stroke();
-  } else {
-    ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, ps === "smooth" ? .17 : .14, ps === "smooth" ? .12 : .1); ctx.fillRect(ox, oy, bw, bh);
-  }
-  if (ps === "smooth" || ps === "grid"){
-    // tile seams (smooth) or squared paper with a stronger line every 4 squares (grid)
-    const line = isLight(col) ? shade(col, -.2) : shade(col, .3);
-    ctx.fillStyle = ps === "grid" ? line : "rgba(30,10,60,.06)";
-    for (let x = 0; x < board.cols; x++) ctx.fillRect(ox + x * c, oy, ps === "grid" && x % 4 === 0 ? 2 : 1, bh);
-    for (let y = 0; y < board.rows; y++) ctx.fillRect(ox, oy + y * c, bw, ps === "grid" && y % 4 === 0 ? 2 : 1);
-  }
-  if (ps === "sparkle"){
-    const n = board.cols * board.rows;
-    for (const [m, r, f] of [[5, .028, sparkColor(col)], [3, .02, spark2Color(col)], [4, .014, "rgba(255,255,255,.8)"]]){
-      ctx.fillStyle = f;
-      for (let i = 0; i < n * m; i++){ ctx.beginPath(); ctx.arc(ox + rnd() * bw, oy + rnd() * bh, c * r * (.7 + rnd() * .6), 0, 7); ctx.fill(); }
-    }
-  }
+function drawBoard(ctx, board, ox, oy, c){
+  const bw = board.cols * c, bh = board.rows * c;
+  ctx.fillStyle = board.plate; rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
+  ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
   // a little depth at the board's edges
+  ctx.save(); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.clip();
   ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
   rrect(ctx, ox - c / 2, oy - c / 2, bw + c, bh + c, c * .8); ctx.stroke(); ctx.restore();
-  if (ps === "studs" || ps === "sparkle")
-    for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) stud(ctx, ox + x * c, oy + y * c, c, col, true);
-}
-function drawBoard(ctx, board, ox, oy, c){
-  drawPlate(ctx, board, ox, oy, c);
+  for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) stud(ctx, ox + x * c, oy + y * c, c, board.plate, true);
   const list = [...board.bricks].sort((a, b) => (a.z || 0) - (b.z || 0));
   for (const b of list){
     const z = b.z || 0, t = b.t || "std";

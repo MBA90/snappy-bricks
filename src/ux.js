@@ -49,7 +49,6 @@ function showScreen(name){
   $("#studioScreen").hidden = name !== "studio";
   $("#mapScreen").hidden = name !== "map";
   document.body.dataset.screen = name;
-  if (name !== "studio" && document.body.classList.contains("bigboard")) setBigBoard(false);
   closeSheets();
   if (name === "home"){ document.body.dataset.area = "home"; refreshHome(); }
   if (name === "games"){ document.body.dataset.area = "games"; refreshGamesPick(); }
@@ -373,8 +372,8 @@ function doorPics(){
   const pic = (id, names, px) => {
     const box = $("#" + id); box.innerHTML = "";
     names.forEach(n => {
-      const pix = artToPix(ART[n].big);
-      box.appendChild(pieceEl({w: pix[0].length, h: pix.length, bricks: decompose(pix).map(b => ({...b, t: "std"}))}, Math.round(px * 7 / 11)));
+      const pix = artToPix(ART[n].art);
+      box.appendChild(pieceEl({w: pix[0].length, h: pix.length, bricks: decompose(pix).map(b => ({...b, t: "std"}))}, px));
     });
   };
   const px = window.innerWidth < 700 ? 6 : 11;

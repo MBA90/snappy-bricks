@@ -1,6 +1,6 @@
 /* ===================== start-up + wiring ===================== */
 const SAVE_KEY = "snappy-bricks-v2";
-const saveFree = later(() => store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, ps: FREE.ps, bricks: FREE.bricks}), 300);
+const saveFree = later(() => store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, bricks: FREE.bricks}), 300);
 on("change", () => { if (B === FREE) saveFree(); });
 // never lose the last few moves when the tab is closed or put away
 window.addEventListener("pagehide", saveFree.flush);
@@ -8,7 +8,7 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) saveF
 function loadFree(){
   const d = store(SAVE_KEY) || store("snappy-bricks-v1");
   if (!d || !Array.isArray(d.bricks) || !isBoardSize(d.cols, d.rows)) return false;
-  FREE.cols = d.cols; FREE.rows = d.rows; FREE.plate = typeof d.plate === "string" ? d.plate : "#FF2E8A"; FREE.ps = plateStyle(d.ps);
+  FREE.cols = d.cols; FREE.rows = d.rows; FREE.plate = typeof d.plate === "string" ? d.plate : "#FF2E8A";
   FREE.bricks = fitBricks(d.bricks.filter(b => b && [b.x, b.y, b.w, b.h].every(Number.isFinite) && typeof b.c === "string")
     .map(b => ({id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: b.z || 0})));
   return true;
@@ -17,7 +17,7 @@ function starter(){
   FREE.cols = 24; FREE.rows = 18; FREE.plate = "#FF2E8A"; FREE.bricks = [];
   rebuildGrid();
   buildText("HELLO", {quiet: true, noHistory: true, y: 2, mode: "rainbow", style: "std"});
-  const put = (name, gx, gy) => decompose(artToPix(ART[name].art)).forEach(b => FREE.bricks.push({id: nextId++, x: gx + b.x, y: gy + b.y, w: b.w, h: b.h, c: b.c, t: "std", z: 0}));
+  const put = (name, gx, gy) => artPiece(name).bricks.forEach(b => FREE.bricks.push({id: nextId++, x: gx + b.x, y: gy + b.y, w: b.w, h: b.h, c: b.c, t: "std", z: 0}));
   put("heart", 3, 10); put("star", 14, 10);
   [[0,0,2,2,"#7FE3C0"],[22,0,2,2,"#A9A6F0"],[0,16,2,2,"#FFE838"],[22,16,2,2,"#FBFAF5"],[10,14,4,2,"#FFB3CF"]]
     .forEach(([x, y, w, h, c]) => FREE.bricks.push({id: nextId++, x, y, w, h, c, t: "std", z: 0}));
