@@ -167,7 +167,7 @@ function buildText(raw, opts = {}){
   if (!text) return {ok: false, reason: "empty"};
   const up = text.toUpperCase();
   const shown = (!hasArabic(text) && isPixelText(up)) ? up : text;
-  const startIdx = Math.max(0, SIZES.findIndex(s => s.cols === B.cols));
+  const startIdx = Math.max(0, SIZES.indexOf(sizeOf()));
   const sizes = opts.grow ? SIZES.slice(startIdx) : [sizeOf()];
   let plan = null, size = null;
   for (const s of sizes){
@@ -176,7 +176,7 @@ function buildText(raw, opts = {}){
   }
   if (!plan) return {ok: false, reason: "tooLong"};
   if (!opts.noHistory) pushHistory();
-  if (size.cols !== B.cols) setSize(size, false);
+  if (size.cols !== B.cols || size.rows !== B.rows) setSize(size, false);
   rebuildGrid();
   const gx = opts.x != null ? opts.x : Math.floor((B.cols - plan.w) / 2);
   const rel = plan.bricks.map(b => ({...b, x: b.x + gx}));
