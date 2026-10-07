@@ -826,6 +826,11 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
   .photo-pick .btn{flex-basis:120px;min-height:52px;font-size:.95rem}
 }
 
+/* tiny cells (giant photo boards on small screens): flat tiles, no studs or drop shadows */
+.plate.tiny{background-image:none;--gap:0px}
+.plate.tiny .brick{background-image:none;border-radius:0;box-shadow:inset -1px -1px 0 var(--dk);translate:none}
+.plate.tiny .brick::before{display:none}
+
 /* ===================== adventure map ===================== */
 body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
 .tb-space{flex:1}
@@ -1321,6 +1326,12 @@ const SIZES = [
   {id: "l", en: "Large",  ar: "كبيرة", cols: 32, rows: 24},
   {id: "x", en: "Huge",   ar: "ضخمة",  cols: 40, rows: 30},
 ];
+// extra-big boards for photos, where more studs mean a picture you can recognise
+const PHOTO_SIZES = [
+  {id: "g", en: "Giant",  ar: "عملاقة", cols: 64, rows: 48},
+  {id: "p", en: "Poster", ar: "ملصق",   cols: 96, rows: 72},
+];
+const ALL_SIZES = SIZES.concat(PHOTO_SIZES);
 const PLATES = [
   {en: "Pink",   ar: "وردية",   hex: "#FF2E8A"},
   {en: "Blue",   ar: "زرقاء",   hex: "#2F9BF0"},
@@ -1626,10 +1637,10 @@ function colorDist(a, b){
   return Math.abs((x >> 16) - (y >> 16)) + Math.abs(((x >> 8) & 255) - ((y >> 8) & 255)) + Math.abs((x & 255) - (y & 255));
 }
 function placeEl(el, b){
-  el.style.left   = `calc(var(--cell) * ${b.x} + 1px)`;
-  el.style.top    = `calc(var(--cell) * ${b.y} + 1px)`;
-  el.style.width  = `calc(var(--cell) * ${b.w} - 2px)`;
-  el.style.height = `calc(var(--cell) * ${b.h} - 2px)`;
+  el.style.left   = `calc(var(--cell) * ${b.x} + var(--gap, 1px))`;
+  el.style.top    = `calc(var(--cell) * ${b.y} + var(--gap, 1px))`;
+  el.style.width  = `calc(var(--cell) * ${b.w} - 2 * var(--gap, 1px))`;
+  el.style.height = `calc(var(--cell) * ${b.h} - 2 * var(--gap, 1px))`;
 }
 function styleBrickEl(el, b){
   el.className = "brick t-" + (b.t || "std");
@@ -1775,8 +1786,9 @@ function fitCell(){
   const H = window.innerHeight;
   const top = wrap.getBoundingClientRect().top + window.scrollY;
   const maxH = Math.max(H * .3, H - top - dock - 22);
-  cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), 7, 48));
+  cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, 48));
   plate.style.setProperty("--cell", cell + "px");
+  plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
 }
 
 /* ---- helper speech bubble ---- */
@@ -2551,7 +2563,7 @@ async function saveFile(blob, filename, previewUrl){
 async function savePicture(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
   sfx.click();
-  const cv = boardCanvas(B, 40);
+  const cv = boardCanvas(B, Math.min(40, Math.floor(2600 / Math.max(B.cols, B.rows))));
   const blob = await new Promise(res => cv.toBlob(res, "image/png"));
   const r = await saveFile(blob, "my-brick-picture.png", cv.toDataURL("image/png"));
   if (r === "saved"){ say(t("savedPic")); sfx.cheer(); emit("saved"); }
@@ -2603,8 +2615,8 @@ function syncBoardControls(){
 }
 // boards can also stand upright (tall photos), so a size matches either way round
 const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);
-function isBoardSize(cols, rows){ return SIZES.some(s => sizeFits(s, cols, rows)); }
-function sizeOf(){ return SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES[1]; }
+function isBoardSize(cols, rows){ return ALL_SIZES.some(s => sizeFits(s, cols, rows)); }
+function sizeOf(){ return ALL_SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES[1]; }
 function setSize(s, fromUser){
   if (s.cols === B.cols && s.rows === B.rows) return;
   if (fromUser && sizeFits(s, B.cols, B.rows)) return;
@@ -2787,8 +2799,8 @@ function buildText(raw, opts = {}){
   if (!text) return {ok: false, reason: "empty"};
   const up = text.toUpperCase();
   const shown = (!hasArabic(text) && isPixelText(up)) ? up : text;
-  const startIdx = Math.max(0, SIZES.indexOf(sizeOf()));
-  const sizes = opts.grow ? SIZES.slice(startIdx) : [sizeOf()];
+  const startIdx = Math.max(0, ALL_SIZES.indexOf(sizeOf()));
+  const sizes = opts.grow ? ALL_SIZES.slice(startIdx) : [sizeOf()];
   let plan = null, size = null;
   for (const s of sizes){
     const p = compose(text, s.cols, s.rows, opts.mode || nameMode, opts.colors);
@@ -4033,7 +4045,7 @@ addStrings({
 BADGES.push({id: "photo", icon: "📷", en: ["Photo artist", "Turn a photo into bricks"], ar: ["فنان الصور", "حوّل صورة إلى مكعبات"]});
 
 const PHOTO = {
-  img: null, work: null, size: "l", tall: false, colors: 16, look: "color", dither: false, light: 0,
+  img: null, work: null, size: "p", tall: false, colors: 16, look: "color", dither: null, light: 0,
   mirror: false, zoom: 1, cx: .5, cy: .5, peek: false, pix: null, bricks: null, crop: null,
 };
 const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
@@ -4186,9 +4198,17 @@ function quantize(px){
   const labs = px.flat().map(toLab);
   const pal = pickPalette(labs, PHOTO.colors);
   const dist = byL ? (a, b) => Math.abs(a[0] - b[0]) : de2000;
-  const nearest = l => { let bi = 0, bd = Infinity; pal.forEach((p, i) => { const d = dist(l, p.lab); if (d < bd){ bd = d; bi = i; } }); return bi; };
+  // remembered by rounded colour: big boards repeat the same colours a lot
+  const memo = new Map();
+  const nearest = l => {
+    const key = Math.round(l[0]) * 1e6 + Math.round(l[1] + 128) * 1e3 + Math.round(l[2] + 128);
+    let bi = memo.get(key); if (bi !== undefined) return bi;
+    let bd = Infinity; bi = 0;
+    pal.forEach((p, i) => { const d = dist(l, p.lab); if (d < bd){ bd = d; bi = i; } });
+    memo.set(key, bi); return bi;
+  };
   const grid = Array.from({length: H}, () => new Array(W));
-  if (PHOTO.dither){
+  if (ditherOn()){
     // Floyd–Steinberg in Lab, back and forth, with softened error so flat areas stay calm
     const L = labs.map(l => l.slice()), str = .6, lim = [18, 24, 24];
     for (let y = 0; y < H; y++){
@@ -4248,8 +4268,10 @@ function mosaicBricks(pix){
   return [run(lying, false), run(standing, true), run(standing, false), run(lying, true)]
     .reduce((a, b) => b.length < a.length ? b : a);
 }
+// smooth shading looks noisy on small boards but brings out faces on big ones, so it follows the size until chosen
+function ditherOn(){ if (PHOTO.dither != null) return PHOTO.dither; const [c, r] = photoDims(); return c * r >= 2000; }
 function photoDims(){
-  const s = SIZES.find(z => z.id === PHOTO.size) || SIZES[2];
+  const s = ALL_SIZES.find(z => z.id === PHOTO.size) || PHOTO_SIZES[0];
   return PHOTO.tall ? [s.rows, s.cols] : [s.cols, s.rows];
 }
 let photoQueued = false;
@@ -4269,7 +4291,7 @@ function drawPhotoPreview(){
   const rows = pix.length, cols = pix[0].length;
   const box = ($("#photoStage").clientWidth || 480) - 24;
   const maxH = Math.max(170, Math.min(window.innerHeight * .38, 420));
-  const c = Math.max(4, Math.floor(Math.min(box / cols, maxH / rows)));
+  const c = Math.max(2, Math.floor(Math.min(box / cols, maxH / rows)));
   const dpr = window.devicePixelRatio || 1;
   cv.width = cols * c * dpr; cv.height = rows * c * dpr; cv.style.width = cols * c + "px"; cv.style.height = rows * c + "px";
   const x = cv.getContext("2d"); x.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -4285,8 +4307,8 @@ function drawPhotoPreview(){
         x.fillStyle = "rgba(255,255,255,.22)"; x.fillRect(X, Y, w, Math.max(1, c * .1)); x.fillRect(X, Y, Math.max(1, c * .1), h);
         x.fillStyle = "rgba(0,0,0,.16)"; x.fillRect(X, Y + h - Math.max(1, c * .1), w, Math.max(1, c * .1)); x.fillRect(X + w - Math.max(1, c * .1), Y, Math.max(1, c * .1), h);
       }
-      x.strokeStyle = "rgba(0,0,0,.3)"; x.lineWidth = 1; x.strokeRect(X + .5, Y + .5, w - 1, h - 1);
-      for (let j = 0; j < b.h; j++) for (let i = 0; i < b.w; i++){
+      if (c >= 4){ x.strokeStyle = "rgba(0,0,0,.3)"; x.lineWidth = 1; x.strokeRect(X + .5, Y + .5, w - 1, h - 1); }
+      if (c >= 6) for (let j = 0; j < b.h; j++) for (let i = 0; i < b.w; i++){
         const cx = X + (i + .5) * c, cy = Y + (j + .5) * c;
         x.beginPath(); x.arc(cx + c * .04, cy + c * .06, c * .3, 0, Math.PI * 2); x.fillStyle = "rgba(0,0,0,.18)"; x.fill();
         x.beginPath(); x.arc(cx, cy, c * .3, 0, Math.PI * 2); x.fillStyle = b.c; x.fill();
@@ -4337,7 +4359,6 @@ function photoSample(){
   photoLoad("data:image/svg+xml;charset=utf-8," + encodeURIComponent(wrapped));
 }
 function openPhotoSheet(){
-  PHOTO.size = (settings.age === "little") ? "m" : "l";
   $("#photoSheet").classList.toggle("little", settings.age === "little");
   syncPhotoSegs();
   $("#photoMsg").textContent = PHOTO.work ? t("photoMove") : t("photoHint");
@@ -4347,8 +4368,9 @@ function openPhotoSheet(){
 }
 function buildPhotoSizes(){
   const box = $("#photoSizeSeg"); box.innerHTML = "";
-  SIZES.forEach(z => {
+  ALL_SIZES.forEach(z => {
     const b = document.createElement("button"); b.className = "btn"; b.type = "button"; b.dataset.size = z.id; b.textContent = z[LANG];
+    b.title = `${z.cols} × ${z.rows}`;
     b.addEventListener("click", () => { PHOTO.size = z.id; sfx.click(); syncPhotoSegs(); photoMake(); });
     box.appendChild(b);
   });
@@ -4363,7 +4385,7 @@ function syncPhotoSegs(){
   $$("#photoSizeSeg [data-size]").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === PHOTO.size));
   $$("#photoColorSeg [data-k]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.k === PHOTO.colors));
   $$("#photoLookSeg [data-look]").forEach(b => b.setAttribute("aria-pressed", b.dataset.look === PHOTO.look));
-  $$("#photoShadeSeg [data-dither]").forEach(b => b.setAttribute("aria-pressed", (b.dataset.dither === "1") === PHOTO.dither));
+  $$("#photoShadeSeg [data-dither]").forEach(b => b.setAttribute("aria-pressed", (b.dataset.dither === "1") === ditherOn()));
   $$("#photoLightSeg [data-light]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.light === PHOTO.light));
   $("#photoWholeBtn").setAttribute("aria-pressed", PHOTO.zoom === 1);
   $("#photoFlipBtn").setAttribute("aria-pressed", PHOTO.mirror);
@@ -4394,7 +4416,9 @@ function buildPhoto(){
   pushHistory();
   FREE.cols = cols; FREE.rows = rows; FREE.plate = "#FBFAF5";
   FREE.bricks = PHOTO.bricks.map(b => ({id: nextId++, ...b, t: st, z: 0}));
-  B = FREE; clearEls(); applyBoard(); commit(new Map(FREE.bricks.map(b => [b.id, Math.min(1400, b.y * 45 + b.x * 8)])));
+  B = FREE; clearEls(); applyBoard();
+  // the brick-by-brick drop is lovely on small boards but too much work for thousands of bricks
+  commit(FREE.bricks.length <= 900 ? new Map(FREE.bricks.map(b => [b.id, Math.min(1400, b.y * 45 + b.x * 8)])) : undefined);
   sfx.cheer(); say(t("photoDone"), {speak: true});
   award("photo");
   emit("photoBuilt", FREE.bricks.length);

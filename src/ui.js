@@ -563,7 +563,7 @@ async function saveFile(blob, filename, previewUrl){
 async function savePicture(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
   sfx.click();
-  const cv = boardCanvas(B, 40);
+  const cv = boardCanvas(B, Math.min(40, Math.floor(2600 / Math.max(B.cols, B.rows))));
   const blob = await new Promise(res => cv.toBlob(res, "image/png"));
   const r = await saveFile(blob, "my-brick-picture.png", cv.toDataURL("image/png"));
   if (r === "saved"){ say(t("savedPic")); sfx.cheer(); emit("saved"); }
@@ -615,8 +615,8 @@ function syncBoardControls(){
 }
 // boards can also stand upright (tall photos), so a size matches either way round
 const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);
-function isBoardSize(cols, rows){ return SIZES.some(s => sizeFits(s, cols, rows)); }
-function sizeOf(){ return SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES[1]; }
+function isBoardSize(cols, rows){ return ALL_SIZES.some(s => sizeFits(s, cols, rows)); }
+function sizeOf(){ return ALL_SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES[1]; }
 function setSize(s, fromUser){
   if (s.cols === B.cols && s.rows === B.rows) return;
   if (fromUser && sizeFits(s, B.cols, B.rows)) return;

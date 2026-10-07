@@ -38,10 +38,10 @@ function colorDist(a, b){
   return Math.abs((x >> 16) - (y >> 16)) + Math.abs(((x >> 8) & 255) - ((y >> 8) & 255)) + Math.abs((x & 255) - (y & 255));
 }
 function placeEl(el, b){
-  el.style.left   = `calc(var(--cell) * ${b.x} + 1px)`;
-  el.style.top    = `calc(var(--cell) * ${b.y} + 1px)`;
-  el.style.width  = `calc(var(--cell) * ${b.w} - 2px)`;
-  el.style.height = `calc(var(--cell) * ${b.h} - 2px)`;
+  el.style.left   = `calc(var(--cell) * ${b.x} + var(--gap, 1px))`;
+  el.style.top    = `calc(var(--cell) * ${b.y} + var(--gap, 1px))`;
+  el.style.width  = `calc(var(--cell) * ${b.w} - 2 * var(--gap, 1px))`;
+  el.style.height = `calc(var(--cell) * ${b.h} - 2 * var(--gap, 1px))`;
 }
 function styleBrickEl(el, b){
   el.className = "brick t-" + (b.t || "std");
@@ -187,8 +187,9 @@ function fitCell(){
   const H = window.innerHeight;
   const top = wrap.getBoundingClientRect().top + window.scrollY;
   const maxH = Math.max(H * .3, H - top - dock - 22);
-  cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), 7, 48));
+  cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, 48));
   plate.style.setProperty("--cell", cell + "px");
+  plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
 }
 
 /* ---- helper speech bubble ---- */
