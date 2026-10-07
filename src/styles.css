@@ -217,11 +217,27 @@ button{font:inherit;color:inherit}
   animation:lamptwinkle 3.2s ease-in-out infinite;
 }
 @keyframes lamppulse{0%,100%{opacity:.55}50%{opacity:1}}
+/* on the board each lamp keeps a steady halo, and the breathing comes from one layer of halos under the bricks
+   (see renderAuras): a pulse on every brick made the phone redo every lamp on every frame */
+.plate .brick.t-light::before{animation:none;opacity:.55}
+.auras{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;animation:aurapulse 3.2s ease-in-out infinite}
+@keyframes aurapulse{50%{opacity:1}}
+.aura{
+  position:absolute;border-radius:calc(var(--cell)*.24);
+  translate:calc(var(--z, 0) * -2px) calc(var(--z, 0) * -3px);
+  box-shadow:0 0 calc(var(--cell)*.6) calc(var(--cell)*.1) var(--glo),0 0 calc(var(--cell)*.22) rgba(255,255,255,.9);
+}
+.aura.lifted{opacity:.25}
+.aura.drop{animation:auraIn .42s ease-out both}
+@keyframes auraIn{from{opacity:0}}
+/* lots of lamps: a few sparkles here and there instead of one on every brick */
+.plate.lamps .brick.t-light:not(.tw)::after{display:none}
 @keyframes lamptwinkle{0%,100%{opacity:0;transform:scale(.4) rotate(0)}45%,55%{opacity:1;transform:scale(1) rotate(45deg)}}
 /* boards with hundreds of bricks keep their look but stop the endless shimmer, glow and flicker */
 .plate.calm .brick::before,.plate.calm .brick::after{animation:none}
 .plate.calm .brick.t-glow::before,.plate.calm .brick.t-light::before{opacity:.7}
 .plate.calm .brick.t-light::after{display:none}
+.plate.calm .auras{display:none}
 .brick.lifted{opacity:.25}
 .brick.selected{outline:3px dashed #fff;outline-offset:1px;filter:brightness(1.12)}
 .brick.drop{animation:drop .42s cubic-bezier(.3,1.6,.5,1) both}

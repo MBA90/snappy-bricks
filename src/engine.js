@@ -72,7 +72,8 @@ function placeEl(el, b){
 // only touches what changed, so redrawing a board of thousands of bricks after one move stays quick
 function styleBrickEl(el, b){
   const t = b.t || "std", z = b.z || 0;
-  if (el._t !== t){ el._t = t; el.className = "brick t-" + t; }
+  // on a board full of lamps only every fourth one twinkles (.tw), picked by its id so the sparkles stay put
+  if (el._t !== t){ el._t = t; el.className = "brick t-" + t + (t === "light" && b.id % 4 === 1 ? " tw" : ""); }
   const pos = b.x + "," + b.y + "," + b.w + "," + b.h;
   if (el._pos !== pos){ el._pos = pos; placeEl(el, b); }
   if (el._c !== b.c){ el._c = b.c; paintVars(el, b.c); }
@@ -143,6 +144,7 @@ let cell = 30;
 let boardZoom = 1, zoomMax = 1, zoomDims = "";
 const ZOOM_CELL = 40;                               // zooming stops once a stud is this many pixels wide
 const CALM_AT = 400;                                // more bricks than this: no endless shimmer, glow or flicker
+const LAMPS_AT = 24;                                // more lamp bricks than this: only every fourth one twinkles
 const plate = $("#plate");
 const els = new Map();
 
@@ -214,11 +216,44 @@ function render(anim){
     seen.add(b.id);
   }
   for (const [id, el] of els) if (!seen.has(id)){ el.remove(); els.delete(id); }
+  renderAuras(anim);
   const n = B.bricks.length;
   plate.classList.toggle("calm", n > CALM_AT);
   const cnt = $("#count"); if (cnt) cnt.textContent = t(n === 1 ? "oneBrick" : "nBricks", {n});
 }
-function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); }
+function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); for (const a of auras.values()) a.remove(); auras.clear(); }
+
+/* ---- the soft light round every lamp (Light) brick ----
+   All the halos sit in one layer under the bricks, and that one layer breathes. A pulse on each brick
+   of its own made the phone redo every lamp on every frame, so boards full of lamps stuttered. */
+const auras = new Map();
+const auraLayer = document.createElement("div");
+auraLayer.className = "auras";
+plate.prepend(auraLayer);
+function auraFor(id){ return auras.get(id); }
+function renderAuras(anim){
+  let n = 0; const lit = new Set();
+  for (const b of B.bricks){
+    if ((b.t || "std") !== "light") continue;
+    n++;
+    let a = auras.get(b.id);
+    if (!a){
+      a = document.createElement("div"); a.className = "aura"; auraLayer.appendChild(a); auras.set(b.id, a);
+      if (anim && anim.has(b.id) && !reduceMotion){
+        a.style.animationDelay = anim.get(b.id) + "ms"; a.classList.add("drop");
+        a.addEventListener("animationend", () => { a.classList.remove("drop"); a.style.animationDelay = ""; }, {once: true});
+      }
+    }
+    const pos = b.x + "," + b.y + "," + b.w + "," + b.h;
+    if (a._pos !== pos){ a._pos = pos; placeEl(a, b); }
+    if (a._c !== b.c){ a._c = b.c; a.style.setProperty("--glo", colorVars(b.c).find(v => v[0] === "--glo")[1]); }
+    const z = b.z || 0;
+    if (a._z !== z){ a._z = z; a.style.setProperty("--z", z); }
+    lit.add(b.id);
+  }
+  for (const [id, a] of auras) if (!lit.has(id)){ a.remove(); auras.delete(id); }
+  plate.classList.toggle("lamps", n > LAMPS_AT);
+}
 function switchBoard(board){
   if (B === board) return;
   cancelSelection();
