@@ -61,44 +61,61 @@ button{font:inherit;color:inherit}
 .label{font-size:.95rem;font-weight:800;margin:0;color:var(--ink-soft)}
 
 /* ---------- bricks ---------- */
+/* light comes from the top left. A stud is a short cylinder seen from above:
+   a top face, a thin lit rim on the top left, its side wall on the bottom right
+   and a soft shadow it casts on the brick. Layers are listed top first. */
 .brick,.plate,.swatch-face{
   --c:#FF2E8A;--lt:#ff7ab4;--dk:#c21666;--spark:rgba(255,255,255,.9);--z:0;
   --studs:
-    radial-gradient(circle at 42% 38%, rgba(255,255,255,.75) 0 calc(var(--cell)*.06), transparent calc(var(--cell)*.12)),
-    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.2), var(--c) calc(var(--cell)*.29), transparent calc(var(--cell)*.3)),
-    radial-gradient(circle at 57% 61%, rgba(30,10,50,.32) 0 calc(var(--cell)*.29), transparent calc(var(--cell)*.33));
+    radial-gradient(circle at 41% 37%, rgba(255,255,255,.9) 0 calc(var(--cell)*.03), rgba(255,255,255,0) calc(var(--cell)*.1)),
+    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.12), var(--c) calc(var(--cell)*.235), transparent calc(var(--cell)*.245)),
+    radial-gradient(circle at 48% 47.5%, rgba(255,255,255,.75) 0 calc(var(--cell)*.235), transparent calc(var(--cell)*.25)),
+    radial-gradient(circle at 52% 54%, var(--dk) 0 calc(var(--cell)*.245), transparent calc(var(--cell)*.26)),
+    radial-gradient(circle at 56% 61%, rgba(30,10,50,.34) 0 calc(var(--cell)*.22), transparent calc(var(--cell)*.32));
+  --sheen:linear-gradient(155deg, rgba(255,255,255,.26) 0, rgba(255,255,255,0) 42%, rgba(30,10,60,0) 62%, rgba(30,10,60,.12) 100%);
   background-color:var(--c);
   background-image:var(--studs);
   background-size:var(--cell) var(--cell);
 }
 .brick{
+  --at:calc(-1 * var(--gap, 1px));
   position:absolute;border-radius:calc(var(--cell)*.14);
-  background-position:-1px -1px;
+  background-image:var(--studs),var(--sheen);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%;
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat;
   translate:calc(var(--z) * -2px) calc(var(--z) * -3px);
   box-shadow:
     inset 0 calc(var(--cell)*-.09) 0 var(--dk),
-    inset 0 1px 0 rgba(255,255,255,.55),
-    0 0 0 1px rgba(30,10,60,.1),
-    calc(var(--z) * 1px) calc(2px + var(--z) * 3px) calc(3px + var(--z) * 3px) rgba(30,10,60,.38);
+    inset 0 calc(var(--cell)*-.09 - 1px) 0 rgba(255,255,255,.12),
+    inset 0 1.5px 0 rgba(255,255,255,.6),
+    inset 1.5px 0 0 rgba(255,255,255,.25),
+    inset -1px 0 0 rgba(30,10,60,.08),
+    0 0 0 1px rgba(30,10,60,.2),
+    0 1px 1px rgba(30,10,60,.25),
+    calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.34);
 }
-/* smooth: one sheen across the whole brick, not one per stud cell */
 .brick.t-round{border-radius:999px}
 /* glitter: fine flecks sized to the stud grid, drawn under the studs;
    --spark is dark on light colors so the flecks always show */
 .brick.t-glitter{
   background-image:
     var(--studs),
-    radial-gradient(circle, var(--spark) 0 calc(var(--cell)*.035), transparent calc(var(--cell)*.06)),
-    radial-gradient(circle, var(--spark) 0 calc(var(--cell)*.025), transparent calc(var(--cell)*.05));
-  /* --studs is three layers, so it takes three sizes and positions */
-  background-size:var(--cell) var(--cell), var(--cell) var(--cell), var(--cell) var(--cell),
-    calc(var(--cell)*.37) calc(var(--cell)*.43), calc(var(--cell)*.53) calc(var(--cell)*.29);
-  background-position:-1px -1px, -1px -1px, -1px -1px, 0 calc(var(--cell)*.1), calc(var(--cell)*.2) 0;
+    radial-gradient(circle, var(--spark) 0 calc(var(--cell)*.03), transparent calc(var(--cell)*.055)),
+    radial-gradient(circle, var(--spark) 0 calc(var(--cell)*.02), transparent calc(var(--cell)*.045)),
+    radial-gradient(circle, rgba(255,255,255,.75) 0 calc(var(--cell)*.012), transparent calc(var(--cell)*.03)),
+    var(--sheen);
+  /* --studs is five layers, so it takes five sizes and positions */
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),
+    calc(var(--cell)*.37) calc(var(--cell)*.43), calc(var(--cell)*.53) calc(var(--cell)*.29), calc(var(--cell)*.23) calc(var(--cell)*.31), 100% 100%;
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),
+    0 calc(var(--cell)*.1), calc(var(--cell)*.2) 0, calc(var(--cell)*.07) calc(var(--cell)*.17), 0 0;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,repeat,repeat,repeat,no-repeat;
   overflow:hidden;
 }
 .brick.t-glitter::after{
   content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:linear-gradient(110deg, transparent 38%, rgba(255,255,255,.6) 50%, transparent 62%);
+  background:linear-gradient(110deg, transparent 38%, rgba(255,255,255,.55) 50%, transparent 62%);
   background-size:260% 100%;animation:shine 2.6s linear infinite;
 }
 @keyframes shine{from{background-position:130% 0}to{background-position:-130% 0}}
@@ -108,15 +125,15 @@ button{font:inherit;color:inherit}
   background-image:
     var(--studs),
     radial-gradient(ellipse at 50% 45%, rgba(255,255,255,.7) 0, var(--lt) 45%, var(--c) 100%);
-  background-size:var(--cell) var(--cell), var(--cell) var(--cell), var(--cell) var(--cell), 100% 100%;
-  background-position:-1px -1px, -1px -1px, -1px -1px, 0 0;
-  background-repeat:repeat, repeat, repeat, no-repeat;
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%;
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat;
   box-shadow:
     inset 0 0 calc(var(--cell)*.22) rgba(255,255,255,.85),
     inset 0 calc(var(--cell)*-.07) 0 var(--c),
-    0 0 0 1px rgba(30,10,60,.12),
+    0 0 0 1px rgba(30,10,60,.16),
     0 0 calc(var(--cell)*.3) var(--c),
-    calc(var(--z) * 1px) calc(2px + var(--z) * 3px) calc(3px + var(--z) * 3px) rgba(30,10,60,.25);
+    calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.25);
 }
 .brick.t-glow::before{
   content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
@@ -149,7 +166,7 @@ button{font:inherit;color:inherit}
   content:"";position:absolute;inset-inline-end:-4px;top:-4px;width:14px;height:14px;border-radius:50%;
   background:var(--ink);border:2px solid #fff;
 }
-.styles{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:4px}
+.styles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
 .stylebtn{
   display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 2px;border-radius:12px;
   border:3px solid transparent;background:var(--tint);cursor:pointer;font-size:.7rem;font-weight:800;line-height:1.1;color:var(--ink-soft);
@@ -219,12 +236,21 @@ button{font:inherit;color:inherit}
 .plate-wrap{display:flex;justify-content:center;padding:10px 6px 18px;position:relative}
 .plate{
   position:relative;border-radius:calc(var(--cell)*.3);
-  box-shadow:0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,.35),
+    inset 0 -3px 0 rgba(30,10,60,.14),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
   touch-action:none;user-select:none;-webkit-user-select:none;
+  /* baseplate studs: lower and softer than brick studs, so the bricks stand out */
   background-image:
-    radial-gradient(circle at 42% 38%, rgba(255,255,255,.55) 0 calc(var(--cell)*.05), transparent calc(var(--cell)*.11)),
-    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.18), var(--c) calc(var(--cell)*.27), transparent calc(var(--cell)*.28)),
-    radial-gradient(circle at 57% 61%, rgba(30,10,50,.3) 0 calc(var(--cell)*.27), transparent calc(var(--cell)*.31));
+    radial-gradient(circle at 41% 37%, rgba(255,255,255,.55) 0 calc(var(--cell)*.025), rgba(255,255,255,0) calc(var(--cell)*.09)),
+    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.08), var(--c) calc(var(--cell)*.215), transparent calc(var(--cell)*.225)),
+    radial-gradient(circle at 48% 47.5%, rgba(255,255,255,.5) 0 calc(var(--cell)*.215), transparent calc(var(--cell)*.23)),
+    radial-gradient(circle at 52% 54%, var(--dk) 0 calc(var(--cell)*.225), transparent calc(var(--cell)*.24)),
+    radial-gradient(circle at 55% 59%, rgba(30,10,50,.24) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.29)),
+    linear-gradient(160deg, rgba(255,255,255,.14) 0, rgba(255,255,255,0) 40%, rgba(30,10,60,0) 65%, rgba(30,10,60,.1) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat;
 }
 .plate.tool-paint,.plate.tool-fill{cursor:crosshair}
 .plate.tool-erase{cursor:not-allowed}
