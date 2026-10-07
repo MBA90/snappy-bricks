@@ -34,14 +34,14 @@ function neonColor(c){
   return l < 90 ? shade(c, .45) : c;
 }
 function neonGlass(c){ return shade(c, -.8); }
-function paintVars(el, c){
-  el.style.setProperty("--c", c);
-  el.style.setProperty("--neon", neonColor(c));
-  el.style.setProperty("--glass", neonGlass(c));
-  el.style.setProperty("--lt", shade(c, .3));
-  el.style.setProperty("--dk", shade(c, -.24));
-  el.style.setProperty("--spark", sparkColor(c));
+// the colour variables every brick, swatch and board needs, worked out once per colour
+const varsCache = new Map();
+function colorVars(c){
+  let v = varsCache.get(c);
+  if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)]]; varsCache.set(c, v); }
+  return v;
 }
+function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
 function colorDist(a, b){
   const x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16);
   return Math.abs((x >> 16) - (y >> 16)) + Math.abs(((x >> 8) & 255) - ((y >> 8) & 255)) + Math.abs((x & 255) - (y & 255));
@@ -52,11 +52,24 @@ function placeEl(el, b){
   el.style.width  = `calc(var(--cell) * ${b.w} - 2 * var(--gap, 1px))`;
   el.style.height = `calc(var(--cell) * ${b.h} - 2 * var(--gap, 1px))`;
 }
+// only touches what changed, so redrawing a board of thousands of bricks after one move stays quick
 function styleBrickEl(el, b){
-  el.className = "brick t-" + (b.t || "std");
-  placeEl(el, b); paintVars(el, b.c);
-  el.style.setProperty("--z", b.z || 0);
-  el.style.zIndex = 1 + (b.z || 0) * 10;
+  const t = b.t || "std", z = b.z || 0;
+  if (el._t !== t){ el._t = t; el.className = "brick t-" + t; }
+  const pos = b.x + "," + b.y + "," + b.w + "," + b.h;
+  if (el._pos !== pos){ el._pos = pos; placeEl(el, b); }
+  if (el._c !== b.c){ el._c = b.c; paintVars(el, b.c); }
+  if (el._z !== z){ el._z = z; el.style.setProperty("--z", z); el.style.zIndex = 1 + z * 10; }
+}
+
+// run fn once things have been quiet for ms: a paint swipe over a big board saves once, not once per brick
+function later(fn, ms){
+  let tm = 0;
+  const run = () => { clearTimeout(tm); tm = 0; fn(); };
+  const f = () => { clearTimeout(tm); tm = setTimeout(run, ms); };
+  f.flush = () => { if (tm) run(); };
+  f.cancel = () => { clearTimeout(tm); tm = 0; };
+  return f;
 }
 
 /* ---- tiny event bus ---- */
@@ -65,7 +78,7 @@ function on(ev, fn){ (bus[ev] = bus[ev] || []).push(fn); }
 function emit(ev, data){ (bus[ev] || []).forEach(fn => { try { fn(data); } catch(e){ console.error(e); } }); }
 
 /* ---- pixel pictures -> bricks ---- */
-// pix: 2D array of color strings or null. maxRun: longest horizontal brick to use.
+// pix: 2D array of color strings or null.
 // fill a picture with the toy-box brick sizes, biggest first, lying down before standing up
 function decompose(pix){
   const H = pix.length, W = H ? pix[0].length : 0;
@@ -112,6 +125,7 @@ const byId = new Map();
 let cell = 30;
 let boardZoom = 1, zoomMax = 1, zoomDims = "";
 const ZOOM_CELL = 40;                               // zooming stops once a stud is this many pixels wide
+const CALM_AT = 400;                                // more bricks than this: no endless shimmer, glow or flicker
 const plate = $("#plate");
 const els = new Map();
 
@@ -177,13 +191,14 @@ function render(anim){
         el.addEventListener("animationend", () => { el.classList.remove("drop"); el.style.animationDelay = ""; }, {once: true});
       }
     } else {
-      const keep = ["drop", "flash", "wiggle", "selected"].filter(c => el.classList.contains(c));
-      styleBrickEl(el, b); keep.forEach(c => el.classList.add(c));
+      const keep = el._t !== (b.t || "std") ? ["drop", "flash", "wiggle", "selected"].filter(c => el.classList.contains(c)) : null;
+      styleBrickEl(el, b); if (keep) keep.forEach(c => el.classList.add(c));
     }
     seen.add(b.id);
   }
   for (const [id, el] of els) if (!seen.has(id)){ el.remove(); els.delete(id); }
   const n = B.bricks.length;
+  plate.classList.toggle("calm", n > CALM_AT);
   const cnt = $("#count"); if (cnt) cnt.textContent = t(n === 1 ? "oneBrick" : "nBricks", {n});
 }
 function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); }
@@ -301,12 +316,27 @@ function confetti(){
 
 /* ===================== picture drawing (canvas) ===================== */
 function rrect(ctx, x, y, w, h, r){
-  r = Math.min(r, w / 2, h / 2);
+  w = Math.max(0, w); h = Math.max(0, h);
+  r = Math.max(0, Math.min(r, w / 2, h / 2));          // a negative radius throws
   ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
   ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
 }
-// matches the CSS studs: cast shadow, side wall, lit rim, top face, gloss (light from the top left)
+// matches the CSS studs: cast shadow, side wall, lit rim, top face, gloss (light from the top left).
+// Each kind of stud is drawn once into a little tile and then stamped, which keeps big pictures quick.
+const studTiles = new Map();
 function stud(ctx, x, y, c, col, flat){
+  const key = c + "|" + col + "|" + (flat ? 1 : 0);
+  let tile = studTiles.get(key);
+  if (!tile){
+    if (studTiles.size > 300) studTiles.clear();
+    const s = Math.ceil(c);
+    tile = document.createElement("canvas"); tile.width = s; tile.height = s;
+    drawStud(tile.getContext("2d"), 0, 0, c, col, flat);
+    studTiles.set(key, tile);
+  }
+  ctx.drawImage(tile, x, y);
+}
+function drawStud(ctx, x, y, c, col, flat){
   const cx = x + c * .5, cy = y + c * .5, r = c * (flat ? .22 : .24);
   const sh = ctx.createRadialGradient(x + c * (flat ? .55 : .56), y + c * (flat ? .59 : .61), 0, x + c * (flat ? .55 : .56), y + c * (flat ? .59 : .61), c * (flat ? .29 : .32));
   sh.addColorStop(0, `rgba(30,10,50,${flat ? .24 : .34})`); sh.addColorStop(.7, `rgba(30,10,50,${flat ? .24 : .34})`); sh.addColorStop(1, "rgba(30,10,50,0)");
@@ -336,7 +366,9 @@ function drawBoard(ctx, board, ox, oy, c){
   const list = [...board.bricks].sort((a, b) => (a.z || 0) - (b.z || 0));
   for (const b of list){
     const z = b.z || 0, t = b.t || "std";
-    const x = ox + b.x * c + 1.5 - z * 2, y = oy + b.y * c + 1.5 - z * 3, w = b.w * c - 3, h = b.h * c - 3;
+    // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
+    const gap = Math.min(1.5, c * .2);
+    const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
     const rad = t === "round" ? Math.min(w, h) / 2 : c * .14;
     ctx.save();
     ctx.save(); ctx.shadowColor = "rgba(30,10,60,.34)"; ctx.shadowBlur = 4 + z * 3;
@@ -352,7 +384,7 @@ function drawBoard(ctx, board, ox, oy, c){
       ctx.lineWidth = Math.max(1, c * .025); ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.shadowBlur = 0;
       rrect(ctx, x + c * .025, y + c * .025, w - c * .05, h - c * .05, Math.max(0, rad - c * .025)); ctx.stroke();
       for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++){
-        const sx = x - 1.5 + (xx + .5) * c, sy = y - 1.5 + (yy + .5) * c;
+        const sx = x - gap + (xx + .5) * c, sy = y - gap + (yy + .5) * c;
         ctx.shadowColor = nc; ctx.shadowBlur = c * .2;
         ctx.strokeStyle = nc; ctx.lineWidth = c * .065; ctx.beginPath(); ctx.arc(sx, sy, c * .185, 0, 7); ctx.stroke();
         ctx.shadowBlur = 0; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = c * .028;
@@ -391,7 +423,7 @@ function drawBoard(ctx, board, ox, oy, c){
       for (let i = 0; i < b.w * b.h * 10; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * .014, 0, 7); ctx.fill(); }
       ctx.restore();
     }
-    for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - 1.5 + xx * c, y - 1.5 + yy * c, c, b.c);
+    for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - gap + xx * c, y - gap + yy * c, c, b.c);
     // faint outline so light bricks read on light boards
     ctx.strokeStyle = "rgba(30,10,60,.2)"; ctx.lineWidth = 1;
     rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();

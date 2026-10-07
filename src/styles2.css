@@ -77,7 +77,6 @@ body[data-kit="eid"]{
   --bg-img:radial-gradient(circle at 30% 30%, #FFE08A 0 2px, transparent 2.6px),radial-gradient(circle at 65% 70%, rgba(255,224,138,.7) 0 1.4px, transparent 2px),radial-gradient(circle at 50% 50%, rgba(255,224,138,.1) 0 16px, transparent 17px);
   --bg-size:80px 80px, 53px 53px, 160px 160px;
 }
-body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(255,255,255,.85)}
 
 .theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .theme-card{
@@ -102,7 +101,6 @@ body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(25
 .badge.got .bi{filter:none;opacity:1}
 
 /* ---------- save & share ---------- */
-.share-box{display:flex;flex-direction:column;gap:10px}
 .share-grid{display:grid;gap:8px}
 .share-grid .btn{justify-content:flex-start}
 .modal-card.wide{width:min(900px,100%)}
@@ -117,7 +115,6 @@ body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(25
 .card-preview{border-radius:14px;overflow:hidden;border:3px solid var(--ink)}
 .card-canvas{display:block;width:100%;height:auto}
 
-.board-settings{display:flex;flex-direction:column;gap:10px}
 /* ---------- class wall ---------- */
 .wall-post{display:flex;flex-direction:column;gap:8px;background:var(--tint);border-radius:16px;padding:12px}
 .wall-item{display:flex;flex-direction:column;gap:6px;border:3px solid var(--ink);border-radius:16px;padding:8px;background:#fff;cursor:pointer;font:inherit;font-weight:800;color:var(--ink)}

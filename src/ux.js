@@ -3,7 +3,7 @@ addStrings({
   lockAria: ["Grown-ups settings: press and hold for 3 seconds", "إعدادات الكبار: اضغط مطولًا 3 ثوانٍ"],
   grownUps: ["Grown-ups", "للكبار"],
   doorBuild: ["Build", "ابنِ"], doorBuildSub: ["Snap bricks and make anything", "ركّب المكعبات واصنع ما تحب"],
-  doorGames: ["Play games", "العب"], doorGamesSub: ["Pictures, letters, words and numbers", "صور وحروف وكلمات وأرقام"],
+  doorGames: ["Play games", "العب"],
   doorCard: ["Make a card", "اصنع بطاقة"], doorCardSub: ["Send your picture to someone you love", "أرسل صورتك لمن تحب"],
   goHome: ["Go home", "الصفحة الرئيسية"], pickGame: ["Pick a game", "اختر لعبة"], games: ["Games", "الألعاب"],
   modeCopySub: ["Build the same picture", "ابنِ الصورة نفسها"], modeTraceSub: ["Fill a big letter with bricks", "املأ حرفًا كبيرًا بالمكعبات"],
@@ -26,7 +26,7 @@ addStrings({
   cardNeedBuild: ["Build a picture first. Then tap Save to make a card!", "ابنِ صورة أولًا، ثم اضغط حفظ لتصنع بطاقة!"],
   buildHi: ["Let's build! Drag a brick from the toy box.", "هيا نبني! اسحب مكعبًا من صندوق الألعاب."],
   idleHint: ["Pick a brick from the toy box and drag it onto the board!", "اختر مكعبًا من صندوق الألعاب واسحبه إلى اللوحة!"],
-  tourLang: ["Pick your language", "اختر لغتك"], tourAge: ["How old are you?", "كم عمرك؟"],
+  tourAge: ["How old are you?", "كم عمرك؟"],
   tourName: ["Tap the letters of your name, then tap Build!", "اضغط على حروف اسمك، ثم اضغط ابنِ اسمي!"],
   tourDrag: ["Now drag a brick onto your board!", "الآن اسحب مكعبًا إلى لوحتك!"],
   tourHome: ["Great job! Tap the house to go home and find games.", "أحسنت! اضغط على البيت لتعود وتجد الألعاب."],
@@ -143,6 +143,7 @@ function buildTiles(){
 }
 function openNameSheet(){
   kbLang = kbLang || LANG;
+  warmVoice(LANG === "ar" ? "en" : "ar");          // names may be in either language
   buildTiles();
   const inp = $("#nameInput");
   if (coarse) inp.setAttribute("inputmode", "none"); else inp.removeAttribute("inputmode");
@@ -150,7 +151,7 @@ function openNameSheet(){
   speak(t("writeName"), LANG);
 }
 $("#nameOpenBtn").addEventListener("click", () => { sfx.click(); openNameSheet(); });
-$("#kbSwitch").addEventListener("click", () => { kbLang = kbLang === "ar" ? "en" : "ar"; sfx.click(); buildTiles(); });
+$("#kbSwitch").addEventListener("click", () => { kbLang = kbLang === "ar" ? "en" : "ar"; warmVoice(kbLang); sfx.click(); buildTiles(); });
 $("#kbSpace").addEventListener("click", () => { const inp = $("#nameInput"); if ([...inp.value].length < 18){ inp.value += " "; sfx.soft(); } });
 $("#kbBack").addEventListener("click", () => { const inp = $("#nameInput"); inp.value = [...inp.value].slice(0, -1).join(""); sfx.click(); });
 $("#kbType").addEventListener("click", () => { const inp = $("#nameInput"); inp.setAttribute("inputmode", "text"); inp.focus(); });
@@ -217,7 +218,7 @@ $("#tourBtn").addEventListener("click", () => { closeSheets(); showScreen("home"
   const b = $("#resetBtn"); let armed = null;
   b.addEventListener("click", () => {
     if (!armed){ b.textContent = t("guResetSure"); armed = setTimeout(() => { armed = null; b.textContent = t("guResetBtn"); }, 3000); return; }
-    clearTimeout(armed);
+    clearTimeout(armed); saveFree.cancel();
     try { Object.keys(localStorage).filter(k => k.startsWith("snappy-")).forEach(k => localStorage.removeItem(k)); } catch(e){}
     location.reload();
   });

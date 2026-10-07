@@ -1,8 +1,10 @@
 /* ===================== start-up + wiring ===================== */
 const SAVE_KEY = "snappy-bricks-v2";
-on("change", () => {
-  if (B === FREE) store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, bricks: FREE.bricks});
-});
+const saveFree = later(() => store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, bricks: FREE.bricks}), 300);
+on("change", () => { if (B === FREE) saveFree(); });
+// never lose the last few moves when the tab is closed or put away
+window.addEventListener("pagehide", saveFree.flush);
+document.addEventListener("visibilitychange", () => { if (document.hidden) saveFree.flush(); });
 function loadFree(){
   const d = store(SAVE_KEY) || store("snappy-bricks-v1");
   if (!d || !Array.isArray(d.bricks) || !isBoardSize(d.cols, d.rows)) return false;

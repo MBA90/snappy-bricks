@@ -31,9 +31,8 @@ const AR_LETTERS = "ابتثجحخدذرزسشصضطظعغفقكلمنهوي";
 
 addStrings({
   praise1: ["Great job!", "أحسنت!"], praise2: ["Amazing!", "رائع!"], praise3: ["You did it!", "لقد نجحت!"], praise4: ["Super builder!", "بنّاء رائع!"],
-  modeFree: ["Free build", "بناء حر"], modeCopy: ["Copy it", "انسخ الصورة"], modeTrace: ["Trace letters", "تتبّع الحروف"],
+  modeCopy: ["Copy it", "انسخ الصورة"], modeTrace: ["Trace letters", "تتبّع الحروف"],
   modeSpell: ["Spell it", "تهجئة"], modeMath: ["Brick math", "حساب المكعبات"],
-  playModes: ["Play modes", "طرق اللعب"],
   copyTitle: ["Copy the {n}", "انسخ: {n}"],
   copyText_easy: ["Cover the faint colors with bricks of the same color.", "غطِّ الألوان الباهتة بمكعبات من نفس اللون."],
   copyText_medium: ["Fill the dashed spots. Look at the picture to pick the colors!", "املأ الأماكن المنقّطة. انظر إلى الصورة لتختار الألوان!"],

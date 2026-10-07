@@ -115,7 +115,6 @@ const STR = {en: {}, ar: {}};
 function addStrings(pairs){ for (const k in pairs){ STR.en[k] = pairs[k][0]; STR.ar[k] = pairs[k][1]; } }
 addStrings({
   appName: ["Snappy Bricks", "مكعبات سنابي"],
-  tagline: ["Snap bricks onto the board, make pictures, and build your name!", "ركّب المكعبات على اللوحة، وارسم صورًا، واكتب اسمك!"],
   talkOn: ["Talking on", "الكلام مفعّل"], talkOff: ["Talking off", "الكلام متوقف"],
   soundOn: ["Sound on", "الصوت مفعّل"], soundOff: ["Sound off", "الصوت متوقف"],
   pickColor: ["Pick a color", "اختر لونًا"],
@@ -140,7 +139,6 @@ addStrings({
   makeStamp: ["Make a stamp", "اصنع ختمًا"], deleteThese: ["Delete them", "احذفها"], cancel: ["Cancel", "إلغاء"],
   dropTrash: ["Drop here to throw away", "أفلت هنا للرمي"],
   writeName: ["Write my name", "اكتب اسمي"],
-  typeLetters: ["Type in English or Arabic", "اكتب بالعربية أو الإنجليزية"],
   namePh: ["Your name here", "اسمك هنا"],
   addHeart: ["Add a heart", "أضف قلبًا"], addStar: ["Add a star", "أضف نجمة"],
   letterColors: ["Letter colors", "ألوان الحروف"],

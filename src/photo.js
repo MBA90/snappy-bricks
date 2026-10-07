@@ -57,7 +57,9 @@ function de2000(a, b){
   const RT = -2 * Math.sqrt(Cpm ** 7 / (Cpm ** 7 + 25 ** 7)) * Math.sin(60 * Math.exp(-(((hm - 275) / 25) ** 2)) * rad);
   return Math.sqrt((dL / SL) ** 2 + (dC / SC) ** 2 + (dH / SH) ** 2 + RT * (dC / SC) * (dH / SH));
 }
-const PAL_LAB = () => COLORS.map(c => ({hex: c.hex, name: c, lab: toLab(hexRgb(c.hex))}));
+let palLab = null;
+// nearest brick colour for each rounded Lab colour, kept between rebuilds so dragging and zooming stay smooth
+const nearMemo = new Map();
 
 // 0. a smaller working copy of the photo, made once, so moving and zooming stay quick
 function halveTo(src, sx, sy, sw, sh, tw, th){
@@ -142,33 +144,33 @@ function tune(px){
 // 3. match to brick colours
 function quantize(px){
   const H = px.length, W = px[0].length;
-  const labs = px.flat().map(toLab);
-  const pal = PAL_LAB();
+  const L = px.flat().map(toLab);
+  const pal = palLab = palLab || COLORS.map(c => ({hex: c.hex, lab: toLab(hexRgb(c.hex))}));
   // remembered by rounded colour: big boards repeat the same colours a lot
-  const memo = new Map();
   const nearest = l => {
     const key = Math.round(l[0]) * 1e6 + Math.round(l[1] + 128) * 1e3 + Math.round(l[2] + 128);
-    let bi = memo.get(key); if (bi !== undefined) return bi;
+    let bi = nearMemo.get(key); if (bi !== undefined) return bi;
     let bd = Infinity; bi = 0;
     pal.forEach((p, i) => { const d = de2000(l, p.lab); if (d < bd){ bd = d; bi = i; } });
-    memo.set(key, bi); return bi;
+    if (nearMemo.size > 200000) nearMemo.clear();
+    nearMemo.set(key, bi); return bi;
   };
   const grid = Array.from({length: H}, () => new Array(W));
-    // Floyd–Steinberg in Lab, back and forth, with softened error so flat areas stay calm
-    const L = labs.map(l => l.slice()), str = .6, lim = [18, 24, 24];
-    for (let y = 0; y < H; y++){
-      const rtl = y % 2 === 1;
-      for (let s = 0; s < W; s++){
-        const x = rtl ? W - 1 - s : s, i = y * W + x, cur = L[i];
-        const bi = nearest(cur); grid[y][x] = pal[bi].hex;
-        const e = cur.map((v, c) => clamp((v - pal[bi].lab[c]) * str, -lim[c], lim[c]));
-        const dx = rtl ? -1 : 1;
-        [[dx, 0, 7], [-dx, 1, 3], [0, 1, 5], [dx, 1, 1]].forEach(([ox, oy, w]) => {
-          const X = x + ox, Y = y + oy; if (X < 0 || X >= W || Y >= H) return;
-          const q = L[Y * W + X]; for (let c = 0; c < 3; c++) q[c] += e[c] * w / 16;
-        });
-      }
+  // Floyd–Steinberg in Lab, back and forth, with softened error so flat areas stay calm
+  const str = .6, lim = [18, 24, 24];
+  for (let y = 0; y < H; y++){
+    const rtl = y % 2 === 1;
+    for (let s = 0; s < W; s++){
+      const x = rtl ? W - 1 - s : s, i = y * W + x, cur = L[i];
+      const bi = nearest(cur); grid[y][x] = pal[bi].hex;
+      const e = cur.map((v, c) => clamp((v - pal[bi].lab[c]) * str, -lim[c], lim[c]));
+      const dx = rtl ? -1 : 1;
+      [[dx, 0, 7], [-dx, 1, 3], [0, 1, 5], [dx, 1, 1]].forEach(([ox, oy, w]) => {
+        const X = x + ox, Y = y + oy; if (X < 0 || X >= W || Y >= H) return;
+        const q = L[Y * W + X]; for (let c = 0; c < 3; c++) q[c] += e[c] * w / 16;
+      });
     }
+  }
   return grid;
 }
 // 4. real brick sizes: try a few ways of filling and keep the one with the fewest bricks
