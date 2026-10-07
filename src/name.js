@@ -36,7 +36,7 @@ function readable(c, plateHex){
 function textColors(mode, explicit){
   if (explicit) return explicit;
   if (mode === "one") return [color];
-  const ok = c => readable(c, B.plate);
+  const ok = c => readable(c, plateTone(B));
   let list = (mode === "pastel" ? CANDY : RAINBOW).filter(ok);
   if (!list.length) list = RAINBOW.filter(ok);
   return list.length ? list : ["#2E2A3A"];
