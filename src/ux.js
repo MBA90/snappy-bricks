@@ -33,7 +33,7 @@ addStrings({
   tourDone: ["Let's play!", "هيا نلعب!"], skip: ["Skip", "تخطَّ"],
   years: ["{a}–{b} years", "{a}–{b} سنوات"],
 });
-const LITTLE_SHAPES = [1, 4, 6, 7];   // 1×2, 2×2, 2×4, 2×6: like a real starter set
+const LITTLE_SHAPES = [1, 2, 3];   // 2×2, 2×3, 2×4: like a real starter set
 const AR_TILES = "ا أ إ آ ب ت ة ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي ى ء ئ ؤ".split(" ");
 const EN_TILES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const TILE_COLORS = ["#FFD6E8", "#D6E9FF", "#FFF1B8", "#D8F5DF", "#E8DDFB", "#FFE2CC"];

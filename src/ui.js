@@ -7,7 +7,7 @@ let color = "#7FE3C0";
 let brickStyle = "std";
 let turned = false;
 let selected = null;     // {kind:"brick",i} | {kind:"art",name} | {kind:"my",id}
-let myStamps = store("snappy-stamps") || [];
+let myStamps = (store("snappy-stamps") || []).map(s => ({...s, bricks: fitBricks(s.bricks || [])}));
 
 /* ---- pieces ---- */
 function brickPiece(i){
@@ -349,7 +349,7 @@ function fillAt(x, y, opts = {}){
     cells.forEach(([cx, cy]) => { pix[cy][cx] = color; });
     if (!opts.noHistory) pushHistory();
     const anim = new Map();
-    decompose(pix, 4).forEach(b => {
+    decompose(pix).forEach(b => {
       const nb = {id: nextId++, ...b, t: brickStyle, z: 0};
       B.bricks.push(nb); anim.set(nb.id, Math.min(500, (Math.abs(b.x - x) + Math.abs(b.y - y)) * 18));
     });
