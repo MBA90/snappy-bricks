@@ -116,7 +116,7 @@ function openPost(id){
   const c = card.querySelector("#pCopy");
   if (c) c.addEventListener("click", () => {
     const bd = p.board;
-    if (!bd || !Array.isArray(bd.b) || !SIZES.some(s => s.cols === bd.cols && s.rows === bd.rows)) return;
+    if (!bd || !Array.isArray(bd.b) || !isBoardSize(bd.cols, bd.rows)) return;
     bd.plate = /^#[0-9A-Fa-f]{6}$/.test(bd.plate) ? bd.plate : "#FF2E8A";
     bd.b = bd.b.filter(a => Array.isArray(a) && a.length >= 5 && a.slice(0, 4).every(Number.isFinite) && a[2] > 0 && a[3] > 0 && /^#[0-9A-Fa-f]{6}$/.test(a[4]))
       .map(a => [a[0], a[1], a[2], a[3], a[4], STYLES.some(s => s.id === a[5]) ? a[5] : "std", Number.isFinite(a[6]) ? clamp(a[6], 0, MAXZ - 1) : 0]);

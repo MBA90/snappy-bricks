@@ -613,13 +613,18 @@ function syncBoardControls(){
   $$("#sizes .btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === sizeOf().id));
   $$("#plates .swatch").forEach(b => b.setAttribute("aria-pressed", b.dataset.hex === B.plate));
 }
-function sizeOf(){ return SIZES.find(s => s.cols === B.cols) || SIZES[1]; }
+// boards can also stand upright (tall photos), so a size matches either way round
+const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);
+function isBoardSize(cols, rows){ return SIZES.some(s => sizeFits(s, cols, rows)); }
+function sizeOf(){ return SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES[1]; }
 function setSize(s, fromUser){
-  if (s.cols === B.cols) return;
+  if (s.cols === B.cols && s.rows === B.rows) return;
+  if (fromUser && sizeFits(s, B.cols, B.rows)) return;
+  const tall = fromUser && B.rows > B.cols;          // an upright photo board stays upright
   if (fromUser) pushHistory();
   const before = B.bricks.length;
-  B.cols = s.cols; B.rows = s.rows;
-  B.bricks = B.bricks.filter(b => b.x + b.w <= s.cols && b.y + b.h <= s.rows);
+  B.cols = tall ? s.rows : s.cols; B.rows = tall ? s.cols : s.rows;
+  B.bricks = B.bricks.filter(b => b.x + b.w <= B.cols && b.y + b.h <= B.rows);
   applyBoard(); commit();
   if (fromUser){ sfx.click(); say(before > B.bricks.length ? t("sizeCut") : t("sizeSay", {s: s[LANG], c: s.cols, r: s.rows})); }
 }

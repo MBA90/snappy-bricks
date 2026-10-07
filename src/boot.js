@@ -5,7 +5,7 @@ on("change", () => {
 });
 function loadFree(){
   const d = store(SAVE_KEY) || store("snappy-bricks-v1");
-  if (!d || !Array.isArray(d.bricks) || !SIZES.some(s => s.cols === d.cols && s.rows === d.rows)) return false;
+  if (!d || !Array.isArray(d.bricks) || !isBoardSize(d.cols, d.rows)) return false;
   FREE.cols = d.cols; FREE.rows = d.rows; FREE.plate = typeof d.plate === "string" ? d.plate : "#FF2E8A";
   FREE.bricks = d.bricks.filter(b => b && [b.x, b.y, b.w, b.h].every(Number.isFinite) && typeof b.c === "string")
     .map(b => ({id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: b.z || 0}));
