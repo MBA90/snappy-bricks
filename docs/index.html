@@ -248,14 +248,18 @@ button{font:inherit;color:inherit}
 .brick.drop{animation:drop .42s cubic-bezier(.3,1.6,.5,1) both}
 .brick.poof{animation:poof .28s ease-in forwards;pointer-events:none}
 .brick.wiggle{animation:wiggle .35s ease}
+.brick.wiggle2{animation:wiggle2 .35s ease}
 .brick.fly{transition:transform .5s cubic-bezier(.5,-0.4,.8,.6),opacity .5s;opacity:0;pointer-events:none}
 .brick.flash{animation:flash .3s ease}
+.brick.flash2{animation:flash2 .3s ease}
 .brick.hidden-replay{visibility:hidden}
 @keyframes drop{0%{transform:translateY(-120%) scale(1.15);opacity:0}55%{opacity:1;transform:translateY(0) scale(1.02)}72%{transform:scale(1.04,.93);filter:brightness(1.3)}88%{transform:scale(.99,1.02)}100%{transform:none;opacity:1;filter:none}}
 @media (hover:hover){ .plate.tool-move .brick:hover{filter:brightness(1.07) saturate(1.05)} }
 @keyframes poof{to{transform:scale(1.5) rotate(12deg);opacity:0}}
 @keyframes wiggle{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes wiggle2{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
 @keyframes flash{50%{filter:brightness(1.35)}}
+@keyframes flash2{50%{filter:brightness(1.35)}}
 
 /* ---------- tray ---------- */
 .swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
@@ -320,7 +324,9 @@ button{font:inherit;color:inherit}
 .helper{display:flex;align-items:center;gap:12px}
 .bricky{width:58px;height:58px;flex:none}
 .bricky.hop{animation:hop .45s ease}
+.bricky.hop2{animation:hop2 .45s ease}
 @keyframes hop{30%{transform:translateY(-10px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}}
+@keyframes hop2{30%{transform:translateY(-10px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}}
 .bubble{
   position:relative;margin:0;background:#fff;border:3px solid var(--ink);border-radius:18px;
   padding:6px 14px 4px;font-weight:700;font-size:1.06rem;line-height:1.3;box-shadow:0 4px 0 var(--ink);min-height:44px;
@@ -383,7 +389,7 @@ button{font:inherit;color:inherit}
 }
 .trash svg{width:26px;height:26px}
 .trash.hot{background:#FF8A5C;transform:scale(1.1);border-style:solid}
-.floating{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;filter:drop-shadow(0 10px 8px rgba(30,10,60,.4))}
+.floating{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;filter:drop-shadow(0 10px 8px rgba(30,10,60,.4));will-change:transform}
 .floating .piece{transform:scale(1.06) rotate(-2deg)}
 
 /* ---------- name panel ---------- */
@@ -2233,7 +2239,7 @@ function render(anim){
         el.addEventListener("animationend", () => { el.classList.remove("drop"); el.style.animationDelay = ""; }, {once: true});
       }
     } else {
-      const keep = el._t !== (b.t || "std") ? ["drop", "flash", "wiggle", "selected"].filter(c => el.classList.contains(c)) : null;
+      const keep = el._t !== (b.t || "std") ? ["drop", "flash", "flash2", "wiggle", "wiggle2", "selected"].filter(c => el.classList.contains(c)) : null;
       styleBrickEl(el, b); if (keep) keep.forEach(c => el.classList.add(c));
     }
     seen.add(b.id);
@@ -2258,9 +2264,19 @@ function applyBoard(){
   emit("board");
 }
 let refitting = false;
+// the studio was hidden, so its bricks have no styles yet: measure with them tucked away and
+// style them once at the right size (measuring first used to style hundreds of bricks twice)
+let fitStale = true;
 function fitCell(){
   const wrap = $("#plateWrap");
-  if (!wrap || !wrap.offsetParent) return;          // the studio is not on screen
+  if (!wrap || $("#studioScreen").hidden){ fitStale = true; return; }
+  const tuck = fitStale && !refitting;
+  fitStale = false;
+  if (tuck) plate.style.display = "none";
+  try { if (fitBox(wrap) === false) fitStale = true; } finally { if (tuck) plate.style.display = ""; }
+}
+function fitBox(wrap){
+  if (!wrap.offsetParent) return false;              // the studio is not on screen
   wrap.style.setProperty("--cols", B.cols); wrap.style.setProperty("--rows", B.rows);
   // phones lock the studio to the screen and give the board a box of its own: fill that box
   const cs = getComputedStyle(wrap);
@@ -2312,7 +2328,9 @@ if (window.ResizeObserver){
 /* ---- helper speech bubble ---- */
 function say(text, opts = {}){
   $("#bubble").textContent = text;
-  const b = $("#bricky"); b.classList.remove("hop"); void b.getBoundingClientRect(); b.classList.add("hop");
+  // two copies of the hop take turns, so it restarts without making the page work out its layout in the middle of a tap
+  const b = $("#bricky"), again = b.classList.contains("hop");
+  b.classList.remove("hop", "hop2"); b.classList.add(again ? "hop2" : "hop");
   if (opts.speak) speakHelper(text);
 }
 
@@ -2885,6 +2903,10 @@ function computeTarget(e){
   const res = canPlace(p.bricks, gx, gy, ptr.source === "board" ? ptr.brick.id : 0);
   ptr.target = {gx, gy, ...res};
   if (!ghostEl){ ghostEl = document.createElement("div"); ghostEl.className = "ghost"; plate.appendChild(ghostEl); }
+  // most finger moves land on the same spot: only touch the ghost when it really changes
+  const look = [gx, gy, p.w, p.h, res.ok, res.ok && res.z > 0 ? "▲" + (res.z + 1) : ""].join();
+  if (ghostEl._look === look) return;
+  ghostEl._look = look;
   placeEl(ghostEl, {x: gx, y: gy, w: p.w, h: p.h});
   ghostEl.classList.toggle("bad", !res.ok);
   ghostEl.textContent = res.ok && res.z > 0 ? "▲" + (res.z + 1) : "";
@@ -2913,9 +2935,14 @@ function endDrag(e, cancelled){
     removeBrick(b.id); say(t("byeBrick"));
   } else { sfx.nope(); const el = els.get(b.id); if (el) wiggle(el); if (!settings.stack) say(t("spotTaken")); }
 }
-function wiggle(el){ el.classList.remove("wiggle"); void el.offsetWidth; el.classList.add("wiggle"); }
+function wiggle(el){ const again = el.classList.contains("wiggle"); el.classList.remove("wiggle", "wiggle2"); el.classList.add(again ? "wiggle2" : "wiggle"); }
 // big boards skip the flash: repainting it under a fast paint swipe made the swipe lag
-function flash(el){ if (!el || reduceMotion || plate.classList.contains("calm")) return; el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+// two copies of the same flash take turns, so it restarts without making the page work out its whole layout again
+function flash(el){
+  if (!el || reduceMotion || plate.classList.contains("calm")) return;
+  const again = el.classList.contains("flash");
+  el.classList.remove("flash", "flash2"); el.classList.add(again ? "flash2" : "flash");
+}
 
 function removeBrick(id, noHistory){
   const i = B.bricks.findIndex(b => b.id === id); if (i < 0) return;
@@ -2960,10 +2987,9 @@ function brushOp(b){
   }
 }
 function brushAt(e){
-  const hit = document.elementFromPoint(e.clientX, e.clientY);
-  const el = hit && hit.closest && hit.closest(".brick");
-  if (!el || el.parentElement !== plate) return;
-  const b = byId.get(+el.dataset.id); if (!b || ptr.done.has(b.id)) return;
+  // the board grid knows which brick is on top under the finger: no hit test of the whole page on every move
+  const c = cellFromEvent(e);
+  const b = topAt(c.x, c.y); if (!b || ptr.done.has(b.id)) return;
   const mirrors = mirrorFns().map(fn => fn(b));
   brushOp(b);
   for (const r of mirrors){
@@ -3070,6 +3096,30 @@ function deleteSelection(){
 }
 
 /* ---- board pointer events ---- */
+// while a finger is on the board or the toy box, the endless glow, twinkle and shimmer of the bricks wait where they are:
+// every frame drawn while they run restyles each glowing brick, which made drags and paint swipes stutter on phones.
+// They are paused one by one (a class on the board would make the page restyle every brick twice per touch).
+(function holdShimmer(){
+  const down = new Set(); let held = [];
+  const canAnimate = !!plate.getAnimations;
+  window.addEventListener("pointerdown", e => {
+    if (!canAnimate || !e.target.closest || !e.target.closest("#plateWrap, #tray")) return;
+    down.add(e.pointerId);
+    if (held.length || plate.classList.contains("calm")) return;
+    held = plate.getAnimations({subtree: true}).filter(a => a.effect && a.effect.pseudoElement && a.playState === "running")
+      .map(a => { a.pause(); const el = a.effect.target; return [a, el, el._t]; });
+  }, true);
+  const up = e => {
+    if (!down.delete(e.pointerId) || down.size) return;
+    // only bricks still on the board with the same style get their shimmer back; asking each
+    // animation for its state here would make the page restyle once per brick
+    const calm = plate.classList.contains("calm");
+    for (const [a, el, t] of held) if (!calm && el.isConnected && el._t === t) a.play(); else a.cancel();
+    held = [];
+  };
+  window.addEventListener("pointerup", up, true);
+  window.addEventListener("pointercancel", up, true);
+})();
 plate.addEventListener("pointerdown", e => {
   if (e.button > 0 || ptr) return;
   e.preventDefault();
@@ -4734,6 +4784,7 @@ function updateZoomBtns(){
   const place = () => {
     if (!upright.matches) $("#tools").insertBefore(zb, $("#undoBtn"));
     else home.insertBefore(zb, after);
+    fitStale = true;                                   // the phone turned: every brick gets a new size, style them once
     fitCell();
   };
   upright.addEventListener ? upright.addEventListener("change", place) : upright.addListener(place);
@@ -4749,16 +4800,31 @@ plateWrap.addEventListener("wheel", e => {
   e.preventDefault(); zoomTo(boardZoom * Math.exp(-e.deltaY / 200), e.clientX, e.clientY);
 }, {passive: false});
 
-/* two fingers on the board: pinch to zoom, slide to move around. One finger still builds. */
+/* two fingers on the board: pinch to zoom, slide to move around. One finger still builds.
+   While the fingers move, the board is only stretched (a cheap picture scale); the bricks are
+   redrawn at their new size once, when the fingers lift. Redrawing every brick on every frame
+   made pinching a big board stutter on phones. */
 (function pinch(){
   const pts = new Map(); let g = null, want = null, raf = 0;
-  // fingers report many moves per frame; the board is resized at most once per frame
+  // fingers report many moves per frame; the preview moves at most once per frame
   const apply = () => {
     raf = 0; if (!g || !want) return;
     const {z, m} = want; want = null;
-    zoomTo(z, m.x, m.y);
-    plateWrap.scrollLeft -= m.x - g.m.x; plateWrap.scrollTop -= m.y - g.m.y;
-    g.m = m;
+    g.zEnd = clamp(z, 1, zoomMax); g.mEnd = m;
+    const s = g.zEnd / g.z;
+    plate.style.transform = `translate(${m.x - g.r.left - s * g.ax * g.c}px, ${m.y - g.r.top - s * g.ay * g.c}px) scale(${s})`;
+  };
+  // fingers lifted: drop the stretch and draw the board at the new zoom, the same spot under the fingers
+  const finish = () => {
+    if (raf){ cancelAnimationFrame(raf); raf = 0; apply(); }
+    const {zEnd, mEnd, ax, ay} = g; g = null; want = null;
+    plate.style.transform = ""; plate.style.transformOrigin = ""; plate.style.willChange = "";
+    if (zEnd == null) return;
+    boardZoom = zEnd; fitCell();
+    const r1 = plate.getBoundingClientRect();
+    plateWrap.scrollLeft += r1.left + ax * cell - mEnd.x;
+    plateWrap.scrollTop += r1.top + ay * cell - mEnd.y;
+    updateZoomBtns();
   };
   const two = () => [...pts.values()].slice(0, 2);
   const mid = ([a, b]) => ({x: (a.x + b.x) / 2, y: (a.y + b.y) / 2});
@@ -4775,7 +4841,9 @@ plateWrap.addEventListener("wheel", e => {
       ptr = null;
     }
     e.preventDefault(); e.stopPropagation();
-    const p = two(); g = {d: dist(p), z: boardZoom, m: mid(p)};
+    const p = two(), m = mid(p), r = plate.getBoundingClientRect();
+    g = {d: dist(p), z: boardZoom, r, c: cell, ax: (m.x - r.left) / cell, ay: (m.y - r.top) / cell};
+    plate.style.transformOrigin = "0 0"; plate.style.willChange = "transform";
   }, true);
   window.addEventListener("pointermove", e => {
     if (!pts.has(e.pointerId)) return;
@@ -4786,7 +4854,7 @@ plateWrap.addEventListener("wheel", e => {
     want = {z: g.z * dist(p) / g.d, m: mid(p)};
     if (!raf) raf = requestAnimationFrame(apply);
   }, {passive: false});
-  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) g = null; };
+  const up = e => { pts.delete(e.pointerId); if (pts.size < 2 && g) finish(); };
   window.addEventListener("pointerup", up);
   window.addEventListener("pointercancel", up);
 })();
