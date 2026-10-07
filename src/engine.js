@@ -21,10 +21,17 @@ function shade(hex, amt){
   else { r *= 1 + amt; g *= 1 + amt; b *= 1 + amt; }
   return `rgb(${r | 0},${g | 0},${b | 0})`;
 }
+// light colors (white, yellow, sky...) need dark glitter flecks to show up
+function isLight(hex){
+  const n = parseInt(hex.slice(1), 16);
+  return (n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114 > 200;
+}
+function sparkColor(c){ return isLight(c) ? shade(c, -.3) : "rgba(255,255,255,.9)"; }
 function paintVars(el, c){
   el.style.setProperty("--c", c);
   el.style.setProperty("--lt", shade(c, .3));
   el.style.setProperty("--dk", shade(c, -.24));
+  el.style.setProperty("--spark", sparkColor(c));
 }
 function colorDist(a, b){
   const x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16);
@@ -282,6 +289,15 @@ function drawBoard(ctx, board, ox, oy, c){
     ctx.fillStyle = "rgba(30,10,60,.3)"; rrect(ctx, x + z, y + 3 + z * 2, w, h, rad); ctx.fill();
     ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
     ctx.fillStyle = b.c; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
+    if (t === "glitter"){
+      // fine flecks under the studs, sized to the stud grid (like the board)
+      let s = b.id * 9301 + 49297;
+      const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
+      ctx.save(); rrect(ctx, x, y, w, h - c * .09, rad); ctx.clip();
+      ctx.fillStyle = sparkColor(b.c);
+      for (let i = 0; i < b.w * b.h * 10; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * (.025 + rnd() * .03), 0, 7); ctx.fill(); }
+      ctx.restore();
+    }
     if (t === "tile"){
       const g = ctx.createLinearGradient(x, y, x + w * .5, y + h * .5);
       g.addColorStop(0, "rgba(255,255,255,.45)"); g.addColorStop(1, "rgba(255,255,255,0)");
@@ -289,12 +305,17 @@ function drawBoard(ctx, board, ox, oy, c){
     } else {
       for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - 1.5 + xx * c, y - 1.5 + yy * c, c, b.c);
     }
-    if (t === "glitter"){
-      let s = b.id * 9301 + 49297;
-      const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
-      ctx.fillStyle = "rgba(255,255,255,.9)";
-      for (let i = 0; i < b.w * b.h * 6; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, 1 + rnd() * 1.5, 0, 7); ctx.fill(); }
+    if (t === "clear"){
+      // glassy rim and sheen, matching the board
+      const g = ctx.createLinearGradient(x, y, x + w * .4, y + h * .4);
+      g.addColorStop(0, "rgba(255,255,255,.55)"); g.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = g; rrect(ctx, x, y, w, h, rad); ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = Math.max(1.5, c * .05);
+      rrect(ctx, x + ctx.lineWidth / 2, y + ctx.lineWidth / 2, w - ctx.lineWidth, h - ctx.lineWidth, rad); ctx.stroke();
     }
+    // faint outline so light bricks read on light boards
+    ctx.strokeStyle = "rgba(30,10,60,.12)"; ctx.lineWidth = 1;
+    rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();
     ctx.restore();
   }
 }
