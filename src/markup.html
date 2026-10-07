@@ -129,6 +129,14 @@
           <button class="btn big name-open" id="nameOpenBtn" type="button"><span aria-hidden="true">✍️</span> <span data-i18n="writeName">Write my name</span></button>
           <button class="btn photo-open" id="photoOpenBtn" type="button"><span aria-hidden="true">📷</span> <span data-i18n="photoOpen">Brick my photo</span></button>
         </div>
+        <div class="tray-tabs" id="trayTabs" role="tablist" data-i18n-aria="toyBox">
+          <button class="ttab" type="button" role="tab" data-tab="bricks" aria-selected="true"><span class="ttab-ic" aria-hidden="true">🧱</span><span class="ttab-txt" data-i18n="tabBricks">Bricks</span></button>
+          <button class="ttab" type="button" role="tab" data-tab="colors" aria-selected="false"><span class="ttab-ic ttab-dot" aria-hidden="true"></span><span class="ttab-txt" data-i18n="tabColors">Colors</span></button>
+          <button class="ttab" type="button" role="tab" data-tab="styles" aria-selected="false"><span class="ttab-ic" aria-hidden="true">✨</span><span class="ttab-txt" data-i18n="tabStyles">Style</span></button>
+          <button class="ttab" type="button" role="tab" data-tab="stamps" aria-selected="false"><span class="ttab-ic" aria-hidden="true">⭐</span><span class="ttab-txt" data-i18n="tabShapes">Shapes</span></button>
+          <button class="ttab" type="button" role="tab" data-tab="plates" aria-selected="false"><span class="ttab-ic" aria-hidden="true">🟩</span><span class="ttab-txt" data-i18n="tabBoard">Board</span></button>
+        </div>
+        <div class="tray-body" id="trayBody">
         <div class="tray-sec sec-colors">
           <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
           <div class="swatches" id="swatches"></div>
@@ -159,6 +167,7 @@
         <div class="tray-sec sec-plates">
           <h3 data-i18n="boardColor">Board color</h3>
           <div class="plates" id="plates"></div>
+        </div>
         </div>
       </section>
 
@@ -194,6 +203,11 @@
 
         <div class="plate-wrap" id="plateWrap">
           <div class="plate tool-move" id="plate" aria-label="Brick board"></div>
+        </div>
+        <div class="zoombar" id="zoomBar" hidden>
+          <button class="zbtn" id="zoomOutBtn" type="button" data-i18n-title="zoomOut" data-i18n-aria="zoomOut">−</button>
+          <button class="zbtn zfit" id="zoomFitBtn" type="button" data-i18n-title="zoomFit" data-i18n-aria="zoomFit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+          <button class="zbtn" id="zoomInBtn" type="button" data-i18n-title="zoomIn" data-i18n-aria="zoomIn">+</button>
         </div>
 
         <div class="below" aria-hidden="true">
