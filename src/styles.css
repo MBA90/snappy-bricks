@@ -141,6 +141,34 @@ button{font:inherit;color:inherit}
   animation:brickglow 2.4s ease-in-out infinite;
 }
 @keyframes brickglow{0%,100%{opacity:.35}50%{opacity:1}}
+/* neon: a glowing tube of light around dark glass, with ring-shaped studs that hum and flicker now and then */
+.brick.t-neon{
+  background-color:var(--glass);
+  background-image:
+    radial-gradient(circle at 50% 50%, transparent 0 calc(var(--cell)*.115), rgba(255,255,255,.9) calc(var(--cell)*.13) calc(var(--cell)*.15), var(--neon) calc(var(--cell)*.17) calc(var(--cell)*.2), transparent calc(var(--cell)*.24)),
+    linear-gradient(155deg, rgba(255,255,255,.16) 0, rgba(255,255,255,0) 40%);
+  background-size:var(--cell) var(--cell),100% 100%;
+  background-position:var(--at) var(--at),0 0;
+  background-repeat:repeat,no-repeat;
+  box-shadow:
+    inset 0 0 0 calc(var(--cell)*.07) var(--neon),
+    inset 0 0 calc(var(--cell)*.3) var(--neon),
+    0 0 0 1px rgba(10,5,25,.55),
+    0 0 calc(var(--cell)*.2) var(--neon),
+    calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.3);
+}
+/* white-hot core of the tube */
+.brick.t-neon::before{
+  content:"";position:absolute;inset:calc(var(--cell)*.025);border-radius:inherit;pointer-events:none;
+  border:max(1px, calc(var(--cell)*.025)) solid rgba(255,255,255,.8);
+}
+/* outer glow that hums and flickers now and then */
+.brick.t-neon::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:0 0 calc(var(--cell)*.5) calc(var(--cell)*.06) var(--neon);
+  animation:neonflicker 5s linear infinite;
+}
+@keyframes neonflicker{0%,90%,94%,98%,100%{opacity:1}91%{opacity:.35}92%{opacity:.9}93%{opacity:.4}96%{opacity:.7}}
 .brick.lifted{opacity:.25}
 .brick.selected{outline:3px dashed #fff;outline-offset:1px;filter:brightness(1.12)}
 .brick.drop{animation:drop .42s cubic-bezier(.3,1.6,.5,1) both}
@@ -166,7 +194,7 @@ button{font:inherit;color:inherit}
   content:"";position:absolute;inset-inline-end:-4px;top:-4px;width:14px;height:14px;border-radius:50%;
   background:var(--ink);border:2px solid #fff;
 }
-.styles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.styles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
 .stylebtn{
   display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px 2px;border-radius:12px;
   border:3px solid transparent;background:var(--tint);cursor:pointer;font-size:.7rem;font-weight:800;line-height:1.1;color:var(--ink-soft);

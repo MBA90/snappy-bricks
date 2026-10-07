@@ -27,8 +27,17 @@ function isLight(hex){
   return (n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114 > 200;
 }
 function sparkColor(c){ return isLight(c) ? shade(c, -.3) : "rgba(255,255,255,.9)"; }
+// neon: a tube of light on dark glass; dark colors (black, brown) light up brighter so the tube still shows
+function neonColor(c){
+  const n = parseInt(c.slice(1), 16);
+  const l = (n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114;
+  return l < 90 ? shade(c, .45) : c;
+}
+function neonGlass(c){ return shade(c, -.8); }
 function paintVars(el, c){
   el.style.setProperty("--c", c);
+  el.style.setProperty("--neon", neonColor(c));
+  el.style.setProperty("--glass", neonGlass(c));
   el.style.setProperty("--lt", shade(c, .3));
   el.style.setProperty("--dk", shade(c, -.24));
   el.style.setProperty("--spark", sparkColor(c));
@@ -333,6 +342,26 @@ function drawBoard(ctx, board, ox, oy, c){
     ctx.save(); ctx.shadowColor = "rgba(30,10,60,.34)"; ctx.shadowBlur = 4 + z * 3;
     ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = 3 + z * 3;
     ctx.fillStyle = "rgba(30,10,60,.2)"; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.restore();
+    if (t === "neon"){
+      // dark glass, a glowing tube of light round the edge with a white-hot core, and ring studs
+      const nc = neonColor(b.c), lw = Math.max(2, c * .07);
+      ctx.fillStyle = neonGlass(b.c); rrect(ctx, x, y, w, h, rad); ctx.fill();
+      ctx.fillStyle = sheen(ctx, x, y, w, h, .16, 0); rrect(ctx, x, y, w, h, rad); ctx.fill();
+      ctx.save(); ctx.shadowColor = nc; ctx.shadowBlur = c * .45; ctx.strokeStyle = nc; ctx.lineWidth = lw;
+      rrect(ctx, x + lw / 2, y + lw / 2, w - lw, h - lw, Math.max(0, rad - lw / 2)); ctx.stroke(); ctx.stroke();
+      ctx.lineWidth = Math.max(1, c * .025); ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.shadowBlur = 0;
+      rrect(ctx, x + c * .025, y + c * .025, w - c * .05, h - c * .05, Math.max(0, rad - c * .025)); ctx.stroke();
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++){
+        const sx = x - 1.5 + (xx + .5) * c, sy = y - 1.5 + (yy + .5) * c;
+        ctx.shadowColor = nc; ctx.shadowBlur = c * .2;
+        ctx.strokeStyle = nc; ctx.lineWidth = c * .065; ctx.beginPath(); ctx.arc(sx, sy, c * .185, 0, 7); ctx.stroke();
+        ctx.shadowBlur = 0; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = c * .028;
+        ctx.beginPath(); ctx.arc(sx, sy, c * .14, 0, 7); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.restore();
+      continue;
+    }
     if (t === "glow"){
       // soft halo in the brick's own color, then a body that is brightest in the middle
       ctx.save(); ctx.shadowColor = b.c; ctx.shadowBlur = c * .55;

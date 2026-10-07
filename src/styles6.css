@@ -93,7 +93,7 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .tray .swatches{grid-template-columns:repeat(8,38px);gap:8px 6px;padding:4px 2px}
   .swatch{min-width:38px;min-height:38px}
 
-  .styles{grid-template-columns:repeat(4,78px);gap:8px}
+  .styles{grid-template-columns:repeat(5,minmax(0,64px));gap:6px}
   .stylebtn{min-height:76px;font-size:.8rem;justify-content:center}
   .stamps{grid-template-rows:none;grid-auto-flow:column;grid-auto-columns:74px;gap:6px}
   .stamps .card{min-height:104px}

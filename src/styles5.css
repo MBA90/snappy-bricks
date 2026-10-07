@@ -42,7 +42,8 @@
 /* tiny cells (giant photo boards on small screens): flat tiles, no studs or drop shadows */
 .plate.tiny{background-image:none;--gap:0px}
 .plate.tiny .brick{background-image:none;border-radius:0;box-shadow:inset -1px -1px 0 var(--dk);translate:none}
-.plate.tiny .brick::before{display:none}
+.plate.tiny .brick::before,.plate.tiny .brick::after{display:none}
+.plate.tiny .brick.t-neon{background-color:var(--neon)}
 
 /* ===================== adventure map ===================== */
 body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}

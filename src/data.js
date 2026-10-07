@@ -49,6 +49,7 @@ const STYLES = [
   {id: "round",   en: "Round",   ar: "دائري"},
   {id: "glitter", en: "Glitter", ar: "بريق"},
   {id: "glow",    en: "Glow",    ar: "مضيء"},
+  {id: "neon",    en: "Neon",    ar: "نيون"},
 ];
 // long side first (lying down)
 const SHAPES = [[1,1],[2,2],[3,2],[4,2]];
@@ -155,6 +156,7 @@ addStrings({
   styleSay_round: ["Round bricks, like buttons!", "مكعبات دائرية مثل الأزرار!"],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
   styleSay_glow: ["Glow bricks shine like magic lights!", "مكعبات مضيئة تلمع مثل الأضواء السحرية!"],
+  styleSay_neon: ["Neon bricks light up like signs at night!", "مكعبات النيون تضيء مثل اللافتات في الليل!"],
   brickAria: ["{s} brick", "مكعب {s}"],
   myStamp: ["Stamp", "ختم"], deleteStamp: ["Delete this stamp", "احذف هذا الختم"],
   tapToPlace: ["Now tap the board to put it there. Tap it again to stop.", "الآن اضغط على اللوحة لتضعه. اضغط عليه مرة أخرى للتوقف."],
