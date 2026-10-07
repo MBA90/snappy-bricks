@@ -155,7 +155,7 @@ addStrings({
   styleSay_round: ["Round bricks, like buttons!", "مكعبات دائرية مثل الأزرار!"],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
   styleSay_glow: ["Glow bricks shine like magic lights!", "مكعبات مضيئة تلمع مثل الأضواء السحرية!"],
-  styleSay_light: ["Light bricks in soft pastel colors!", "مكعبات فاتحة بألوان ناعمة!"],
+  styleSay_light: ["Light bricks shine like little lamps!", "مكعبات فاتحة تضيء مثل المصابيح الصغيرة!"],
   styleSay_neon: ["Neon bricks light up like signs at night!", "مكعبات النيون تضيء مثل اللافتات في الليل!"],
   brickAria: ["{s} brick", "مكعب {s}"],
   myStamp: ["Stamp", "ختم"], deleteStamp: ["Delete this stamp", "احذف هذا الختم"],

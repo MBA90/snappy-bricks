@@ -30,6 +30,15 @@ function sparkColor(c){ return isLight(c) ? shade(c, -.3) : "rgba(255,255,255,.9
 // a second, rainbow-ish fleck so glitter catches the light like the real thing: pink-violet on light bricks, warm gold on the rest
 function spark2Color(c){ return isLight(c) ? "rgba(176,92,255,.7)" : "rgba(255,226,140,.95)"; }
 // light: the brick's colour mixed with lots of white, a soft pastel (kept as #hex so studs can shade it)
+// the soft coloured light round each bulb of a light brick (dark colours lifted, like neon)
+function lampColor(c, a){
+  const n0 = parseInt(c.slice(1), 16), ch = [n0 >> 16, (n0 >> 8) & 255, n0 & 255];
+  if (isLight(c) && Math.max(...ch) - Math.min(...ch) < 40) return `rgba(255,196,80,${a})`;   // white: a warm lamp
+  const v = neonColor(c);
+  if (v[0] !== "#") return v.replace("rgb(", "rgba(").replace(")", `,${a})`);
+  const n = parseInt(v.slice(1), 16);
+  return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
+}
 function pastel(c){
   const n = parseInt(c.slice(1), 16), m = v => Math.round(v + (255 - v) * .55).toString(16).padStart(2, "0");
   return "#" + m(n >> 16) + m((n >> 8) & 255) + m(n & 255);
@@ -46,7 +55,7 @@ const varsCache = new Map();
 function colorVars(c){
   let v = varsCache.get(c);
   if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)], ["--spark2", spark2Color(c)],
-    ["--pl", pastel(c)], ["--plt", shade(pastel(c), .45)], ["--pdk", shade(pastel(c), -.16)]]; varsCache.set(c, v); }
+    ["--pl", pastel(c)], ["--plt", shade(pastel(c), .45)], ["--pdk", shade(pastel(c), -.16)], ["--glo", lampColor(c, .75)]]; varsCache.set(c, v); }
   return v;
 }
 function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
@@ -418,11 +427,15 @@ function drawBoard(ctx, board, ox, oy, c){
       g.addColorStop(0, "rgba(255,255,255,.92)"); g.addColorStop(.42, shade(b.c, .3)); g.addColorStop(1, b.c);
       ctx.fillStyle = g; rrect(ctx, x, y, w, h - c * .07, rad); ctx.fill();
     } else {
-      const light = t === "light";
-      ctx.fillStyle = shade(col, light ? -.16 : -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
-      ctx.fillStyle = col; rrect(ctx, x, y, w, h - c * (light ? .08 : .09), rad); ctx.fill();
-      if (light){
-        // chalky white wash from the top and a soft white inner rim
+      if (t === "light"){
+        // the lamp's soft coloured aura, then a frosted wash from the top and a soft white inner rim
+        ctx.save(); ctx.shadowColor = lampColor(b.c, .75); ctx.shadowBlur = c * .6;
+        ctx.fillStyle = col; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.restore();
+        ctx.fillStyle = shade(col, -.16); rrect(ctx, x, y, w, h, rad); ctx.fill();
+        ctx.fillStyle = col; rrect(ctx, x, y, w, h - c * .07, rad); ctx.fill();
+        const ig = ctx.createRadialGradient(x + w / 2, y + h / 2, Math.min(w, h) * .25, x + w / 2, y + h / 2, Math.max(w, h) * .72);
+        ig.addColorStop(0, "rgba(255,255,255,0)"); ig.addColorStop(1, "rgba(255,255,255,.6)");
+        ctx.fillStyle = ig; rrect(ctx, x, y, w, h, rad); ctx.fill();
         const wg = ctx.createLinearGradient(x, y, x + w * .17, y + h);
         wg.addColorStop(0, "rgba(255,255,255,.55)"); wg.addColorStop(.45, "rgba(255,255,255,0)");
         ctx.fillStyle = wg; rrect(ctx, x, y, w, h, rad); ctx.fill();
@@ -430,6 +443,8 @@ function drawBoard(ctx, board, ox, oy, c){
         ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.lineWidth = lw;
         rrect(ctx, x + lw / 2, y + lw / 2, w - lw, h - lw, Math.max(0, rad - lw / 2)); ctx.stroke();
       } else {
+        ctx.fillStyle = shade(col, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
+        ctx.fillStyle = col; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
         ctx.fillStyle = sheen(ctx, x, y, w, h, .26, .12); rrect(ctx, x, y, w, h, rad); ctx.fill();
         if (t === "round"){
           // domed button: a highlight on the top left and a darker rim
@@ -462,7 +477,23 @@ function drawBoard(ctx, board, ox, oy, c){
       for (let i = 0; i < b.w * b.h * 10; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * .014, 0, 7); ctx.fill(); }
       ctx.restore();
     }
-    for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - gap + xx * c, y - gap + yy * c, c, col);
+    if (t === "light"){
+      // each stud is a glowing bulb, and a sparkle twinkles on the top corner
+      const glo = lampColor(b.c, .75);
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++){
+        const sx = x - gap + (xx + .5) * c, sy = y - gap + (yy + .5) * c;
+        const bg = ctx.createRadialGradient(sx, sy, 0, sx, sy, c * .38);
+        bg.addColorStop(0, "#fff"); bg.addColorStop(.21, "#fff"); bg.addColorStop(.32, "rgba(255,255,255,.95)");
+        bg.addColorStop(.53, glo); bg.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(sx, sy, c * .38, 0, 7); ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.lineWidth = c * .018;
+        ctx.beginPath(); ctx.arc(sx, sy, c * .232, 0, 7); ctx.stroke();
+      }
+      const kx = LANG === "ar" ? x + c * .13 : x + w - c * .13, ky = y + c * .13, kr = c * .25;
+      ctx.save(); ctx.shadowColor = glo; ctx.shadowBlur = 3; ctx.fillStyle = "#fff";
+      ctx.beginPath(); ctx.moveTo(kx, ky - kr); ctx.quadraticCurveTo(kx, ky, kx + kr, ky); ctx.quadraticCurveTo(kx, ky, kx, ky + kr);
+      ctx.quadraticCurveTo(kx, ky, kx - kr, ky); ctx.quadraticCurveTo(kx, ky, kx, ky - kr); ctx.fill(); ctx.restore();
+    } else for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - gap + xx * c, y - gap + yy * c, c, col);
     // faint outline so light bricks read on light boards
     ctx.strokeStyle = "rgba(30,10,60,.2)"; ctx.lineWidth = 1;
     rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();
