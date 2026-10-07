@@ -807,10 +807,7 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
 .pp-chip{display:inline-flex;align-items:center;gap:5px;padding:2px 9px 2px 4px;border:2px solid var(--ink);border-radius:999px;background:#fff;font-weight:800;font-size:.85rem}
 .pp-chip i{width:18px;height:18px;border-radius:5px;border:2px solid rgba(43,30,92,.35)}
 .photo-zbtn{min-width:52px;font-size:1.4rem;line-height:1}
-#photoTurnBtn{min-width:52px;font-size:1.3rem;line-height:1}
 .photo-zbtn:disabled{opacity:.4}
-#photoSheet.little .photo-big{display:none}
-.gu-row[hidden]{display:none}
 .photo-build{align-self:stretch}
 .photo-build:disabled{opacity:.45}
 @media (orientation:portrait), (max-width:899px){
@@ -1228,31 +1225,7 @@ body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
           <button class="btn" id="photoWholeBtn" type="button" data-i18n="viewWhole">Whole photo</button>
           <button class="btn photo-zbtn" id="photoZoomInBtn" type="button" data-i18n-title="viewZoom">+</button>
           <button class="btn" id="photoFlipBtn" type="button" aria-pressed="false"><span aria-hidden="true">🪞</span> <span data-i18n="photoFlip">Flip</span></button>
-        </div></div>
-      <div class="gu-row"><span class="gu-label" data-i18n="boardSize">Board size</span><div class="seg" id="photoSizeSeg"></div></div>
-      <div class="gu-row"><span class="gu-label" data-i18n="photoLook">Look</span>
-        <div class="seg" id="photoLookSeg">
-          <button class="btn" type="button" data-look="color"><span aria-hidden="true">🌈</span> <span data-i18n="lookColor">Real colors</span></button>
-          <button class="btn" type="button" data-look="pop"><span aria-hidden="true">✨</span> <span data-i18n="lookPop">Bright</span></button>
-          <button class="btn" type="button" data-look="gray"><span aria-hidden="true">⚫</span> <span data-i18n="lookGray">Black and white</span></button>
-          <button class="btn" type="button" data-look="sepia"><span aria-hidden="true">🟤</span> <span data-i18n="lookSepia">Old photo</span></button>
-        </div></div>
-      <div class="gu-row" id="photoColorRow"><span class="gu-label" data-i18n="photoColors">Colors</span>
-        <div class="seg" id="photoColorSeg">
-          <button class="btn" type="button" data-k="4" data-i18n="colorsFew">4 colors</button>
-          <button class="btn" type="button" data-k="8" data-i18n="colorsSome">8 colors</button>
-          <button class="btn" type="button" data-k="16" data-i18n="colorsAll">All colors</button>
-        </div></div>
-      <div class="gu-row photo-big"><span class="gu-label" data-i18n="photoShade">Shading</span>
-        <div class="seg" id="photoShadeSeg">
-          <button class="btn" type="button" data-dither="1" data-i18n="shadeSmooth">Smooth shading</button>
-          <button class="btn" type="button" data-dither="0" data-i18n="shadeBold">Bold blocks</button>
-        </div></div>
-      <div class="gu-row photo-big"><span class="gu-label" data-i18n="photoLight">Light</span>
-        <div class="seg" id="photoLightSeg">
-          <button class="btn" type="button" data-light="-1"><span aria-hidden="true">🌙</span> <span data-i18n="lightDark">Darker</span></button>
-          <button class="btn" type="button" data-light="0" data-i18n="lightNormal">Normal</button>
-          <button class="btn" type="button" data-light="1"><span aria-hidden="true">☀️</span> <span data-i18n="lightBright">Lighter</span></button>
+          <button class="btn photo-zbtn" id="photoTurnBtn" type="button" data-i18n-title="photoTurn"><span aria-hidden="true">↻</span></button>
         </div></div>
     </div>
     <button class="btn big photo-build" id="photoBuildBtn" type="button" disabled data-i18n="photoBuild">Build it!</button>
@@ -4015,9 +3988,9 @@ on("resize", () => { doorPics(); });
 
 /* ===================== photo to bricks =====================
    A photo is framed (drag to move, + / − or pinch to zoom), shrunk to one colour per stud,
-   tidied (levels, light, colour, sharpness), matched to the brick colours with a colour
-   difference that follows the eye (CIEDE2000), optionally shaded with error diffusion,
-   and laid out with real brick sizes using as few bricks as it can. Everything happens
+   tidied (levels, colour, sharpness), matched to all the brick colours with a colour
+   difference that follows the eye (CIEDE2000), shaded with error diffusion on a
+   Poster-size board (96×72), and laid out with real brick sizes using as few bricks as it can. Everything happens
    on the device. */
 addStrings({
   photoOpen: ["Brick my photo", "صورتي بالمكعبات"],
@@ -4026,14 +3999,8 @@ addStrings({
   photoSample: ["Try Bricky", "جرّب بريكي"],
   photoHint: ["Pick a photo and I'll turn it into bricks!", "اختر صورة وسأحوّلها إلى مكعبات!"],
   photoMove: ["Drag the picture to move it. Press + to zoom in.", "اسحب الصورة لتحريكها. اضغط + للتكبير."],
-  photoColors: ["Colors", "الألوان"],
-  colorsFew: ["4 colors", "4 ألوان"], colorsSome: ["8 colors", "8 ألوان"], colorsAll: ["All colors", "كل الألوان"],
   photoView: ["Picture", "الصورة"], viewWhole: ["Whole photo", "الصورة كاملة"], viewZoom: ["Zoom in", "تكبير"],
   viewZoomOut: ["Zoom out", "تصغير"], photoFlip: ["Flip", "اقلب"], photoTurn: ["Turn the board", "أدر اللوحة"],
-  photoLook: ["Look", "الشكل"],
-  lookColor: ["Real colors", "ألوان حقيقية"], lookPop: ["Bright", "زاهية"], lookGray: ["Black and white", "أبيض وأسود"], lookSepia: ["Old photo", "صورة قديمة"],
-  photoShade: ["Shading", "التظليل"], shadeBold: ["Bold blocks", "مربعات واضحة"], shadeSmooth: ["Smooth shading", "تظليل ناعم"],
-  photoLight: ["Light", "الإضاءة"], lightDark: ["Darker", "أغمق"], lightNormal: ["Normal", "عادي"], lightBright: ["Lighter", "أفتح"],
   photoPeek: ["See my photo", "شاهد صورتي"], photoPeekBack: ["See the bricks", "شاهد المكعبات"],
   photoParts: ["Bricks you need", "المكعبات التي تحتاجها"],
   photoBuild: ["Build it!", "ابنِها!"],
@@ -4045,7 +4012,7 @@ addStrings({
 BADGES.push({id: "photo", icon: "📷", en: ["Photo artist", "Turn a photo into bricks"], ar: ["فنان الصور", "حوّل صورة إلى مكعبات"]});
 
 const PHOTO = {
-  img: null, work: null, size: "p", tall: false, colors: 16, look: "color", dither: null, light: 0,
+  img: null, work: null, tall: false,
   mirror: false, zoom: 1, cx: .5, cy: .5, peek: false, pix: null, bricks: null, crop: null,
 };
 const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
@@ -4079,8 +4046,6 @@ function de2000(a, b){
   return Math.sqrt((dL / SL) ** 2 + (dC / SC) ** 2 + (dH / SH) ** 2 + RT * (dC / SC) * (dH / SH));
 }
 const PAL_LAB = () => COLORS.map(c => ({hex: c.hex, name: c, lab: toLab(hexRgb(c.hex))}));
-// the bricks each look may use; black and white and old photo are matched by lightness only
-const LOOK_PAL = {gray: ["#FBFAF5", "#9AA0AE", "#2E2A3A"], sepia: ["#FBFAF5", "#E3A878", "#9A5B34", "#2E2A3A"]};
 
 // 0. a smaller working copy of the photo, made once, so moving and zooming stay quick
 function halveTo(src, sx, sy, sw, sh, tw, th){
@@ -4135,22 +4100,20 @@ function photoPixels(cols, rows){
   }
   return out;
 }
-// 2. tidy the colours: stretch dull photos, lighter or darker, livelier colour, crisper edges
+// 2. tidy the colours: stretch dull photos, livelier colour, crisper edges
 function tune(px){
   const H = px.length, W = px[0].length, lum = p => .299 * p[0] + .587 * p[1] + .114 * p[2];
   const ls = px.flat().map(lum).sort((a, b) => a - b);
   const lo = ls[Math.floor(ls.length * .02)], hi = ls[Math.ceil(ls.length * .98) - 1];
   const nlo = lo * .25, nhi = 255 - (255 - hi) * .25, gain = hi - lo > 8 ? (nhi - nlo) / (hi - lo) : 1;
-  const gamma = [1.45, 1, .68][PHOTO.light + 1];
-  const sat = {color: 1.12, pop: 1.6, gray: 0, sepia: 0}[PHOTO.look], con = PHOTO.look === "pop" ? 1.1 : 1;
+  const sat = 1.12;
   let out = px.map(row => row.map(p => {
     let [r, g, b] = p.map(v => clamp(nlo + (v - lo) * gain, 0, 255));
-    if (gamma !== 1) [r, g, b] = [r, g, b].map(v => 255 * Math.pow(v / 255, gamma));
     const m = lum([r, g, b]);
     // boost dull colours more than bright ones, so skin stays natural
     const s0 = (Math.max(r, g, b) - Math.min(r, g, b)) / 255;
-    const k = sat ? 1 + (sat - 1) * (1 - s0) : 0;
-    return [r, g, b].map(v => (m + (v - m) * k - 128) * con + 128);
+    const k = 1 + (sat - 1) * (1 - s0);
+    return [r, g, b].map(v => m + (v - m) * k);
   }));
   // a gentle sharpen so eyes, mouths and outlines survive the shrink
   const amt = Math.min(.45, 9 / Math.max(W, H));
@@ -4165,50 +4128,20 @@ function tune(px){
   return out;
 }
 // 3. match to brick colours
-function pickPalette(labs, k){
-  const pal = PAL_LAB();
-  if (LOOK_PAL[PHOTO.look]) return pal.filter(p => LOOK_PAL[PHOTO.look].includes(p.hex));
-  if (k >= pal.length) return pal;
-  // choose the k colours that fit this photo best: greedy start, then swap until nothing improves
-  const D = labs.map(l => pal.map(p => de2000(l, p.lab)));
-  const cost = set => { let s = 0; for (const row of D){ let m = Infinity; for (const p of set) if (row[p] < m) m = row[p]; s += m; } return s; };
-  let chosen = [];
-  while (chosen.length < k){
-    let pick = -1, score = Infinity;
-    for (let p = 0; p < pal.length; p++){
-      if (chosen.includes(p)) continue;
-      const s = cost([...chosen, p]); if (s < score){ score = s; pick = p; }
-    }
-    chosen.push(pick);
-  }
-  let best = cost(chosen);
-  for (let pass = 0; pass < 3; pass++){
-    let better = false;
-    for (let i = 0; i < chosen.length; i++) for (let p = 0; p < pal.length; p++){
-      if (chosen.includes(p)) continue;
-      const trial = chosen.slice(); trial[i] = p; const s = cost(trial);
-      if (s < best - 1e-6){ best = s; chosen = trial; better = true; }
-    }
-    if (!better) break;
-  }
-  return chosen.map(i => pal[i]);
-}
 function quantize(px){
-  const H = px.length, W = px[0].length, byL = !!LOOK_PAL[PHOTO.look];
+  const H = px.length, W = px[0].length;
   const labs = px.flat().map(toLab);
-  const pal = pickPalette(labs, PHOTO.colors);
-  const dist = byL ? (a, b) => Math.abs(a[0] - b[0]) : de2000;
+  const pal = PAL_LAB();
   // remembered by rounded colour: big boards repeat the same colours a lot
   const memo = new Map();
   const nearest = l => {
     const key = Math.round(l[0]) * 1e6 + Math.round(l[1] + 128) * 1e3 + Math.round(l[2] + 128);
     let bi = memo.get(key); if (bi !== undefined) return bi;
     let bd = Infinity; bi = 0;
-    pal.forEach((p, i) => { const d = dist(l, p.lab); if (d < bd){ bd = d; bi = i; } });
+    pal.forEach((p, i) => { const d = de2000(l, p.lab); if (d < bd){ bd = d; bi = i; } });
     memo.set(key, bi); return bi;
   };
   const grid = Array.from({length: H}, () => new Array(W));
-  if (ditherOn()){
     // Floyd–Steinberg in Lab, back and forth, with softened error so flat areas stay calm
     const L = labs.map(l => l.slice()), str = .6, lim = [18, 24, 24];
     for (let y = 0; y < H; y++){
@@ -4217,7 +4150,6 @@ function quantize(px){
         const x = rtl ? W - 1 - s : s, i = y * W + x, cur = L[i];
         const bi = nearest(cur); grid[y][x] = pal[bi].hex;
         const e = cur.map((v, c) => clamp((v - pal[bi].lab[c]) * str, -lim[c], lim[c]));
-        if (byL){ e[1] = 0; e[2] = 0; }
         const dx = rtl ? -1 : 1;
         [[dx, 0, 7], [-dx, 1, 3], [0, 1, 5], [dx, 1, 1]].forEach(([ox, oy, w]) => {
           const X = x + ox, Y = y + oy; if (X < 0 || X >= W || Y >= H) return;
@@ -4225,19 +4157,7 @@ function quantize(px){
         });
       }
     }
-    return grid;
-  }
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) grid[y][x] = pal[nearest(labs[y * W + x])].hex;
-  // tidy lonely specks
-  const out = grid.map(r => r.slice());
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
-    const me = grid[y][x], nb = [[0, -1], [0, 1], [-1, 0], [1, 0]].map(([a, b]) => (grid[y + b] || [])[x + a]).filter(Boolean);
-    if (nb.includes(me)) continue;
-    const cnt = {}; nb.forEach(c => cnt[c] = (cnt[c] || 0) + 1);
-    const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
-    if (top && top[1] >= 3) out[y][x] = top[0];
-  }
-  return out;
+  return grid;
 }
 // 4. real brick sizes: try a few ways of filling and keep the one with the fewest bricks
 function mosaicBricks(pix){
@@ -4268,10 +4188,8 @@ function mosaicBricks(pix){
   return [run(lying, false), run(standing, true), run(standing, false), run(lying, true)]
     .reduce((a, b) => b.length < a.length ? b : a);
 }
-// smooth shading looks noisy on small boards but brings out faces on big ones, so it follows the size until chosen
-function ditherOn(){ if (PHOTO.dither != null) return PHOTO.dither; const [c, r] = photoDims(); return c * r >= 2000; }
 function photoDims(){
-  const s = ALL_SIZES.find(z => z.id === PHOTO.size) || PHOTO_SIZES[0];
+  const s = PHOTO_SIZES.find(z => z.id === "p");          // always the Poster board: enough studs to recognise the photo
   return PHOTO.tall ? [s.rows, s.cols] : [s.cols, s.rows];
 }
 let photoQueued = false;
@@ -4359,38 +4277,16 @@ function photoSample(){
   photoLoad("data:image/svg+xml;charset=utf-8," + encodeURIComponent(wrapped));
 }
 function openPhotoSheet(){
-  $("#photoSheet").classList.toggle("little", settings.age === "little");
   syncPhotoSegs();
   $("#photoMsg").textContent = PHOTO.work ? t("photoMove") : t("photoHint");
   openSheet("photoSheet");
   speak(t("photoHint"), LANG);
   if (PHOTO.work) photoMake();
 }
-function buildPhotoSizes(){
-  const box = $("#photoSizeSeg"); box.innerHTML = "";
-  ALL_SIZES.forEach(z => {
-    const b = document.createElement("button"); b.className = "btn"; b.type = "button"; b.dataset.size = z.id; b.textContent = z[LANG];
-    b.title = `${z.cols} × ${z.rows}`;
-    b.addEventListener("click", () => { PHOTO.size = z.id; sfx.click(); syncPhotoSegs(); photoMake(); });
-    box.appendChild(b);
-  });
-  const turn = document.createElement("button"); turn.className = "btn"; turn.type = "button"; turn.id = "photoTurnBtn";
-  turn.innerHTML = `<span aria-hidden="true">↻</span>`; turn.title = t("photoTurn"); turn.setAttribute("aria-label", t("photoTurn"));
-  turn.addEventListener("click", () => { PHOTO.tall = !PHOTO.tall; sfx.turn(); syncPhotoSegs(); photoMake(); });
-  box.appendChild(turn);
-  syncPhotoSegs();
-}
-buildPhotoSizes();
 function syncPhotoSegs(){
-  $$("#photoSizeSeg [data-size]").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === PHOTO.size));
-  $$("#photoColorSeg [data-k]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.k === PHOTO.colors));
-  $$("#photoLookSeg [data-look]").forEach(b => b.setAttribute("aria-pressed", b.dataset.look === PHOTO.look));
-  $$("#photoShadeSeg [data-dither]").forEach(b => b.setAttribute("aria-pressed", (b.dataset.dither === "1") === ditherOn()));
-  $$("#photoLightSeg [data-light]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.light === PHOTO.light));
   $("#photoWholeBtn").setAttribute("aria-pressed", PHOTO.zoom === 1);
   $("#photoFlipBtn").setAttribute("aria-pressed", PHOTO.mirror);
   $("#photoZoomOutBtn").disabled = PHOTO.zoom <= 1;
-  $("#photoColorRow").hidden = !!LOOK_PAL[PHOTO.look];
   const pk = $("#photoPeekBtn"); pk.hidden = !PHOTO.work; pk.setAttribute("aria-pressed", PHOTO.peek);
   pk.lastElementChild.textContent = t(PHOTO.peek ? "photoPeekBack" : "photoPeek");
   pk.firstElementChild.textContent = PHOTO.peek ? "🧱" : "👀";
@@ -4472,10 +4368,6 @@ $("#photoPickBtn").addEventListener("click", () => $("#photoFile").click());
 $("#photoCamBtn").addEventListener("click", () => $("#photoCam").click());
 $("#photoCamBtn").hidden = !coarse;
 $("#photoSampleBtn").addEventListener("click", () => { sfx.click(); photoSample(); });
-$$("#photoColorSeg [data-k]").forEach(b => b.addEventListener("click", () => { PHOTO.colors = +b.dataset.k; sfx.click(); syncPhotoSegs(); photoMake(); }));
-$$("#photoLookSeg [data-look]").forEach(b => b.addEventListener("click", () => { PHOTO.look = b.dataset.look; sfx.click(); syncPhotoSegs(); photoMake(); }));
-$$("#photoShadeSeg [data-dither]").forEach(b => b.addEventListener("click", () => { PHOTO.dither = b.dataset.dither === "1"; sfx.click(); syncPhotoSegs(); photoMake(); }));
-$$("#photoLightSeg [data-light]").forEach(b => b.addEventListener("click", () => { PHOTO.light = +b.dataset.light; sfx.click(); syncPhotoSegs(); photoMake(); }));
 $("#photoZoomInBtn").addEventListener("click", () => {
   sfx.click();
   if (PHOTO.zoom === 1 && PHOTO.work && PHOTO.work.height >= PHOTO.work.width * .7) PHOTO.cy = .4;   // faces sit a little above the middle
@@ -4483,11 +4375,12 @@ $("#photoZoomInBtn").addEventListener("click", () => {
 });
 $("#photoZoomOutBtn").addEventListener("click", () => { sfx.click(); setZoom(PHOTO.zoom / 1.35 < 1.05 ? 1 : PHOTO.zoom / 1.35); });
 $("#photoWholeBtn").addEventListener("click", () => { sfx.click(); setZoom(1); });
+$("#photoTurnBtn").addEventListener("click", () => { PHOTO.tall = !PHOTO.tall; sfx.turn(); photoMake(); });
 $("#photoFlipBtn").addEventListener("click", () => { PHOTO.mirror = !PHOTO.mirror; sfx.turn(); syncPhotoSegs(); photoMake(); });
 $("#photoPeekBtn").addEventListener("click", () => { PHOTO.peek = !PHOTO.peek; sfx.click(); syncPhotoSegs(); drawPhotoPreview(); });
 $("#photoBuildBtn").addEventListener("click", buildPhoto);
 on("resize", () => { if (!$("#photoSheet").hidden) drawPhotoPreview(); });
-on("lang", () => { buildPhotoSizes(); if (PHOTO.bricks){ $("#photoCount").textContent = t("photoBricks", {n: PHOTO.bricks.length}); drawParts(); } });
+on("lang", () => { if (PHOTO.bricks){ $("#photoCount").textContent = t("photoBricks", {n: PHOTO.bricks.length}); drawParts(); } });
 
 /* ===================== Bricky's adventure map =====================
    Five islands with six stops each. Every stop is one game round; finishing it opens the next.
