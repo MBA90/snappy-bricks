@@ -199,7 +199,7 @@ function openGallery(){
   const card = openModal(html, t("myCreations"), "wide");
   card.querySelector("#gNew").addEventListener("click", () => {
     closeModal(); if (currentMode !== "free") setMode("free", true); else if (typeof showScreen === "function") showScreen("studio");
-    pushHistory(); FREE.bricks = []; commit(); sfx.whoosh(); say(t("newBoardSay"));
+    pushHistory(); FREE.bricks = []; leavePhotoBoard(); commit(); sfx.whoosh(); say(t("newBoardSay"));
   });
   card.querySelectorAll(".gal-item").forEach(it => {
     const g = gallery.find(x => x.id === it.dataset.id);

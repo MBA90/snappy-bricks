@@ -531,7 +531,7 @@ function clearBoard(){
       setTimeout(() => el.remove(), 520);
     }
   }
-  commit(); say(t("allClear"));
+  leavePhotoBoard(); commit(); say(t("allClear"));
 }
 
 /* ---- saving files ---- */
@@ -616,6 +616,12 @@ function syncBoardControls(){
 // boards can also stand upright (tall photos), so a size matches either way round
 const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);
 function isBoardSize(cols, rows){ return ALL_SIZES.some(s => sizeFits(s, cols, rows)); }
+function isPhotoBoard(){ return PHOTO_SIZES.some(s => sizeFits(s, B.cols, B.rows)); }
+// an emptied Poster board turns back into a normal Large board for building by hand
+function leavePhotoBoard(){
+  if (!isPhotoBoard()) return;
+  const s = SIZES.find(z => z.id === "l"); B.cols = s.cols; B.rows = s.rows; applyBoard();
+}
 function sizeOf(){ return ALL_SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES[1]; }
 function setSize(s, fromUser){
   if (s.cols === B.cols && s.rows === B.rows) return;

@@ -167,8 +167,9 @@ function buildText(raw, opts = {}){
   if (!text) return {ok: false, reason: "empty"};
   const up = text.toUpperCase();
   const shown = (!hasArabic(text) && isPixelText(up)) ? up : text;
-  const startIdx = Math.max(0, ALL_SIZES.indexOf(sizeOf()));
-  const sizes = opts.grow ? ALL_SIZES.slice(startIdx) : [sizeOf()];
+  // names grow through the normal sizes only; on a photo's Poster board they are written in place
+  const startIdx = Math.max(0, SIZES.indexOf(sizeOf()));
+  const sizes = opts.grow && !isPhotoBoard() ? SIZES.slice(startIdx) : [sizeOf()];
   let plan = null, size = null;
   for (const s of sizes){
     const p = compose(text, s.cols, s.rows, opts.mode || nameMode, opts.colors);
