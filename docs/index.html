@@ -1288,9 +1288,9 @@ const SIZES = [
   {id: "l", en: "Large",  ar: "كبيرة", cols: 32, rows: 24},
   {id: "x", en: "Huge",   ar: "ضخمة",  cols: 40, rows: 30},
 ];
-// extra-big boards for photos, where more studs mean a picture you can recognise
+// the Poster board belongs to Brick my photo only: it never shows in the board size picker,
+// and clearing it or starting a new board goes back to a normal size
 const PHOTO_SIZES = [
-  {id: "g", en: "Giant",  ar: "عملاقة", cols: 64, rows: 48},
   {id: "p", en: "Poster", ar: "ملصق",   cols: 96, rows: 72},
 ];
 const ALL_SIZES = SIZES.concat(PHOTO_SIZES);
@@ -2488,7 +2488,7 @@ function clearBoard(){
       setTimeout(() => el.remove(), 520);
     }
   }
-  commit(); say(t("allClear"));
+  leavePhotoBoard(); commit(); say(t("allClear"));
 }
 
 /* ---- saving files ---- */
@@ -2573,6 +2573,12 @@ function syncBoardControls(){
 // boards can also stand upright (tall photos), so a size matches either way round
 const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);
 function isBoardSize(cols, rows){ return ALL_SIZES.some(s => sizeFits(s, cols, rows)); }
+function isPhotoBoard(){ return PHOTO_SIZES.some(s => sizeFits(s, B.cols, B.rows)); }
+// an emptied Poster board turns back into a normal Large board for building by hand
+function leavePhotoBoard(){
+  if (!isPhotoBoard()) return;
+  const s = SIZES.find(z => z.id === "l"); B.cols = s.cols; B.rows = s.rows; applyBoard();
+}
 function sizeOf(){ return ALL_SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES[1]; }
 function setSize(s, fromUser){
   if (s.cols === B.cols && s.rows === B.rows) return;
@@ -2756,8 +2762,9 @@ function buildText(raw, opts = {}){
   if (!text) return {ok: false, reason: "empty"};
   const up = text.toUpperCase();
   const shown = (!hasArabic(text) && isPixelText(up)) ? up : text;
-  const startIdx = Math.max(0, ALL_SIZES.indexOf(sizeOf()));
-  const sizes = opts.grow ? ALL_SIZES.slice(startIdx) : [sizeOf()];
+  // names grow through the normal sizes only; on a photo's Poster board they are written in place
+  const startIdx = Math.max(0, SIZES.indexOf(sizeOf()));
+  const sizes = opts.grow && !isPhotoBoard() ? SIZES.slice(startIdx) : [sizeOf()];
   let plan = null, size = null;
   for (const s of sizes){
     const p = compose(text, s.cols, s.rows, opts.mode || nameMode, opts.colors);
@@ -3396,7 +3403,7 @@ function openGallery(){
   const card = openModal(html, t("myCreations"), "wide");
   card.querySelector("#gNew").addEventListener("click", () => {
     closeModal(); if (currentMode !== "free") setMode("free", true); else if (typeof showScreen === "function") showScreen("studio");
-    pushHistory(); FREE.bricks = []; commit(); sfx.whoosh(); say(t("newBoardSay"));
+    pushHistory(); FREE.bricks = []; leavePhotoBoard(); commit(); sfx.whoosh(); say(t("newBoardSay"));
   });
   card.querySelectorAll(".gal-item").forEach(it => {
     const g = gallery.find(x => x.id === it.dataset.id);
