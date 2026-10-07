@@ -54,13 +54,23 @@ function updateZoomBtns(){
   upright.addEventListener ? upright.addEventListener("change", place) : upright.addListener(place);
   place();
 })();
+// Big board: the toy box and the top bar step aside so the board gets the whole screen; tap again to bring them back
+function setBigBoard(on){
+  document.body.classList.toggle("bigboard", on);
+  $("#bigBoardBtn").setAttribute("aria-pressed", on);
+  fitStale = true; fitCell();
+}
+$("#bigBoardBtn").addEventListener("click", () => {
+  const on = !document.body.classList.contains("bigboard");
+  sfx.click(); setBigBoard(on); say(t(on ? "bigBoardOn" : "bigBoardOff"));
+});
 $("#zoomInBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom * 1.6); });
 $("#zoomOutBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom / 1.6); });
 $("#zoomFitBtn").addEventListener("click", () => { sfx.click(); zoomTo(1); });
 on("board", () => requestAnimationFrame(updateZoomBtns));
 on("resize", updateZoomBtns);
 plateWrap.addEventListener("wheel", e => {
-  if (!e.ctrlKey || $("#zoomBar").hidden) return;      // trackpad pinch / ctrl + wheel
+  if (!e.ctrlKey || $("#zoomBar").classList.contains("nozoom")) return;      // trackpad pinch / ctrl + wheel
   e.preventDefault(); zoomTo(boardZoom * Math.exp(-e.deltaY / 200), e.clientX, e.clientY);
 }, {passive: false});
 
@@ -96,7 +106,7 @@ plateWrap.addEventListener("wheel", e => {
   plateWrap.addEventListener("pointerdown", e => {
     if (e.pointerType !== "touch") return;
     pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
-    if (pts.size !== 2 || $("#zoomBar").hidden) return;
+    if (pts.size !== 2 || $("#zoomBar").classList.contains("nozoom")) return;
     if (ptr && ptr.kind === "drag" && ptr.moved) return;  // second finger turns a dragged brick
     if (ptr){
       // the first finger's action becomes part of the pinch: undo what it started

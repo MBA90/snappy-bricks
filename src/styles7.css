@@ -1,0 +1,111 @@
+/* ===================== board styles: Studs, Smooth, Grid, Night sky, Sparkle =====================
+   Each is a still picture painted once (nothing here animates), so even a Mega board stays smooth on phones.
+   --deep (the board colour sunk into a night blue) and --line (a grid line that shows on light and dark boards)
+   come from colorVars. */
+.pprev{
+  --cell:10px;display:block;width:40px;height:30px;margin:2px auto 3px;border-radius:5px;
+  background-color:var(--c);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 0 2px var(--ink),0 3px 0 2px var(--ink);
+}
+/* studs: the classic baseplate (the board's own look, see .plate in styles.css) */
+.pprev[data-ps="studs"]{
+  background-image:
+    radial-gradient(circle at 41% 37%, rgba(255,255,255,.55) 0 calc(var(--cell)*.025), rgba(255,255,255,0) calc(var(--cell)*.09)),
+    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.08), var(--c) calc(var(--cell)*.215), transparent calc(var(--cell)*.225)),
+    radial-gradient(circle at 48% 47.5%, rgba(255,255,255,.5) 0 calc(var(--cell)*.215), transparent calc(var(--cell)*.23)),
+    radial-gradient(circle at 52% 54%, var(--dk) 0 calc(var(--cell)*.225), transparent calc(var(--cell)*.24));
+  background-size:var(--cell) var(--cell);
+}
+/* smooth: flat tiles with the faintest seams, so pictures and photos read clean */
+:is(.plate,.pprev)[data-ps="smooth"]{
+  background-image:
+    linear-gradient(160deg, rgba(255,255,255,.24) 0, rgba(255,255,255,0) 45%, rgba(30,10,60,0) 62%, rgba(30,10,60,.12) 100%),
+    linear-gradient(90deg, rgba(30,10,60,.06) 0 1px, transparent 1px),
+    linear-gradient(rgba(30,10,60,.06) 0 1px, transparent 1px);
+  background-size:100% 100%,var(--cell) var(--cell),var(--cell) var(--cell);
+  background-repeat:no-repeat,repeat,repeat;
+}
+/* grid: squared paper, with a stronger line every 4 squares to help count */
+:is(.plate,.pprev)[data-ps="grid"]{
+  background-image:
+    linear-gradient(160deg, rgba(255,255,255,.16) 0, rgba(255,255,255,0) 40%, rgba(30,10,60,0) 65%, rgba(30,10,60,.1) 100%),
+    linear-gradient(90deg, var(--line) 0 2px, transparent 2px),
+    linear-gradient(var(--line) 0 2px, transparent 2px),
+    linear-gradient(90deg, var(--line) 0 1px, transparent 1px),
+    linear-gradient(var(--line) 0 1px, transparent 1px);
+  background-size:100% 100%,calc(var(--cell)*4) calc(var(--cell)*4),calc(var(--cell)*4) calc(var(--cell)*4),var(--cell) var(--cell),var(--cell) var(--cell);
+  background-position:0 0,-1px 0,0 -1px,0 0,0 0;
+  background-repeat:no-repeat,repeat,repeat,repeat,repeat;
+}
+/* night sky: the board colour sunk into a deep night, stars of a few sizes and faint ring studs to build on.
+   Glow, Neon and Light bricks shine brightest here. */
+:is(.plate,.pprev)[data-ps="night"]{
+  background-color:var(--deep);
+  background-image:
+    radial-gradient(circle at 50% 50%, transparent 0 calc(var(--cell)*.19), rgba(255,255,255,.13) calc(var(--cell)*.2) calc(var(--cell)*.235), transparent calc(var(--cell)*.25)),
+    radial-gradient(circle, #fff 0 1px, rgba(255,255,255,0) 2px),
+    radial-gradient(circle, rgba(255,255,255,.75) 0 .7px, rgba(255,255,255,0) 1.5px),
+    radial-gradient(circle, rgba(255,232,140,.95) 0 1px, rgba(255,232,140,0) 2.2px),
+    radial-gradient(circle, rgba(170,200,255,.85) 0 .8px, rgba(170,200,255,0) 1.8px),
+    radial-gradient(ellipse 90% 60% at 18% 0%, rgba(255,255,255,.13), rgba(255,255,255,0) 70%),
+    radial-gradient(ellipse 70% 55% at 92% 100%, rgba(150,110,255,.2), rgba(150,110,255,0) 70%);
+  background-size:var(--cell) var(--cell),113px 97px,71px 83px,173px 149px,59px 67px,100% 100%,100% 100%;
+  background-position:0 0,17px 31px,43px 9px,89px 61px,7px 23px,0 0,0 0;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat,no-repeat;
+}
+.pprev[data-ps="night"]{background-size:var(--cell) var(--cell),23px 19px,17px 13px,29px 23px,13px 17px,100% 100%,100% 100%;background-position:0 0,5px 3px,11px 7px,2px 15px,9px 1px,0 0,0 0}
+/* sparkle: the studded board dusted with still glitter (--spark is dark on light boards so the flecks show) */
+:is(.plate,.pprev)[data-ps="sparkle"]{
+  background-image:
+    radial-gradient(circle at 41% 37%, rgba(255,255,255,.55) 0 calc(var(--cell)*.025), rgba(255,255,255,0) calc(var(--cell)*.09)),
+    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.08), var(--c) calc(var(--cell)*.215), transparent calc(var(--cell)*.225)),
+    radial-gradient(circle at 48% 47.5%, rgba(255,255,255,.5) 0 calc(var(--cell)*.215), transparent calc(var(--cell)*.23)),
+    radial-gradient(circle at 52% 54%, var(--dk) 0 calc(var(--cell)*.225), transparent calc(var(--cell)*.24)),
+    radial-gradient(circle, var(--spark) 0 calc(var(--cell)*.028), transparent calc(var(--cell)*.05)),
+    radial-gradient(circle, var(--spark2) 0 calc(var(--cell)*.02), transparent calc(var(--cell)*.042)),
+    radial-gradient(circle, rgba(255,255,255,.8) 0 calc(var(--cell)*.014), transparent calc(var(--cell)*.03)),
+    linear-gradient(160deg, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 40%, rgba(30,10,60,0) 65%, rgba(30,10,60,.1) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),
+    calc(var(--cell)*.41) calc(var(--cell)*.47),calc(var(--cell)*.59) calc(var(--cell)*.37),calc(var(--cell)*.29) calc(var(--cell)*.33),100% 100%;
+  background-position:0 0,0 0,0 0,0 0,0 calc(var(--cell)*.12),calc(var(--cell)*.21) 0,calc(var(--cell)*.07) calc(var(--cell)*.19),0 0;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,repeat,repeat,no-repeat;
+}
+/* huge photo boards draw plain tiles whatever the style */
+.plate.tiny[data-ps]{background-image:none}
+.plate-styles .stylebtn{padding-top:6px}
+
+/* ===================== Big board: the toy box and the top bar step aside so the board gets the room =====================
+   The button lives with the zoom buttons, which now always show it (the − / fit / + only on boards big enough to need them). */
+.zoombar.nozoom .zbtn:not(.zbig){display:none}
+.zbtn .ic-shrink,.zbtn[aria-pressed="true"] .ic-grow{display:none}
+.zbtn[aria-pressed="true"] .ic-shrink{display:block}
+.zbtn.zbig{background:#FFE838}
+.zbtn.zbig[aria-pressed="true"]{background:var(--ink);color:#fff}
+body.bigboard #studioScreen > .topbar,body.bigboard .tray{display:none!important}
+body.bigboard .studio{grid-template-columns:minmax(0,1fr) 94px;grid-template-areas:"board tools"}
+body.bigboard[data-hand="left"] .studio{grid-template-columns:94px minmax(0,1fr);grid-template-areas:"tools board"}
+@media (orientation:landscape) and (max-height:540px){
+  body.bigboard .studio{grid-template-columns:minmax(0,1fr) 136px}
+  body.bigboard[data-hand="left"] .studio{grid-template-columns:136px minmax(0,1fr)}
+}
+@media (orientation:portrait) and (max-width:699px){
+  body.bigboard .board-col{flex:1 1 0}
+  body.bigboard .plate-wrap{flex:1 1 0;height:auto}
+}
+
+/* Fun shapes: the detailed pictures get bigger cards so their bricks read */
+.stamps{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+@media (orientation:portrait) and (max-width:699px){
+  .stamps{grid-auto-columns:100px}
+}
+@media (orientation:landscape) and (max-height:540px){
+  .stamps{grid-template-columns:1fr}
+}
+/* beside the board the zoom buttons plus Big board sit two by two, so the tools column keeps its width */
+.tools .zoombar:not(.nozoom){display:grid;grid-template-columns:repeat(2,36px)}
+.tools .zoombar:not(.nozoom) .zbtn{width:36px;height:36px}
+@media (orientation:landscape) and (max-height:540px){
+  .tools .zoombar:not(.nozoom){display:flex}
+  .tools .zoombar .zbtn,.tools .zoombar:not(.nozoom) .zbtn{width:28px;height:28px;font-size:1.1rem}
+  .tools .zoombar .zbtn svg{width:15px;height:15px}
+}
