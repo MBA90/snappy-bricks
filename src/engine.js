@@ -101,6 +101,8 @@ let nextId = 1;
 let grid = [];           // grid[y][x] = stack of brick ids, lowest first
 const byId = new Map();
 let cell = 30;
+let boardZoom = 1, zoomMax = 1, zoomDims = "";
+const ZOOM_CELL = 40;                               // zooming stops once a stud is this many pixels wide
 const plate = $("#plate");
 const els = new Map();
 
@@ -200,8 +202,21 @@ function fitCell(){
   document.body.style.setProperty("--dock-h", dock + "px");
   const H = window.innerHeight;
   const top = wrap.getBoundingClientRect().top + window.scrollY;
-  const maxH = Math.max(H * .3, H - top - dock - 22);
-  cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, 48));
+  const zb = $("#zoomBar");
+  const zbH = zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
+  const maxH = Math.max(H * .3, H - top - dock - 22 - zbH);
+  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, 48));
+  // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted
+  const dims = B.cols + "x" + B.rows;
+  if (dims !== zoomDims){ zoomDims = dims; boardZoom = 1; }
+  zoomMax = Math.max(1, ZOOM_CELL / fit);
+  boardZoom = clamp(boardZoom, 1, zoomMax);
+  if (boardZoom < 1.05) boardZoom = 1;
+  const zoomed = boardZoom > 1;
+  cell = zoomed ? Math.round(fit * boardZoom) : fit;
+  wrap.classList.toggle("zoomed", zoomed);
+  wrap.style.height = zoomed ? (fit * B.rows + 28) + "px" : "";
+  if (zb) zb.hidden = zoomMax < 1.6;                  // only when the studs are small enough to be fiddly
   plate.style.setProperty("--cell", cell + "px");
   plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
 }

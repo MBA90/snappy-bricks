@@ -234,7 +234,9 @@ function computeTarget(e){
   const inTrash = overTray || overEl(trash, e.clientX, e.clientY);
   trash.classList.toggle("hot", inTrash && !overTray);
   trayEl.classList.toggle("hot", overTray);
-  const near = cx > r.left - cell && cx < r.right + cell && cy > r.top - cell && cy < r.bottom + cell;
+  const wrapEl = $("#plateWrap");
+  const near = cx > r.left - cell && cx < r.right + cell && cy > r.top - cell && cy < r.bottom + cell
+    && (!wrapEl.classList.contains("zoomed") || overEl(wrapEl, cx, cy));   // a zoomed board hides its edges
   ptr.inTrash = inTrash;
   if (!near || inTrash){ ptr.target = null; hideGhost(); return; }
   const p = ptr.piece;

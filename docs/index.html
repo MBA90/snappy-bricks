@@ -630,7 +630,7 @@ body[data-age="little"] .sec-styles,
 body[data-age="little"] .sec-mine{display:none!important}
 
 /* ---------- upright screens: toy box becomes a dock along the bottom ---------- */
-@media (orientation:portrait), (max-width:899px){
+@media (orientation:portrait), (max-width:899px) and (min-height:541px){
   body[data-screen="studio"]{padding-bottom:calc(var(--dock-h, 200px) + 12px)}
   .studio,body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr);grid-template-areas:"tools" "board";gap:10px}
   .tools{position:static;flex-direction:row;height:auto;max-height:none;gap:8px}
@@ -821,7 +821,7 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
 .photo-zbtn:disabled{opacity:.4}
 .photo-build{align-self:stretch}
 .photo-build:disabled{opacity:.45}
-@media (orientation:portrait), (max-width:899px){
+@media (orientation:portrait), (max-width:899px) and (min-height:541px){
   .sec-name{display:flex;flex-direction:column;gap:6px}
   .name-open{height:auto;min-height:0;flex:1 1 auto;font-size:.9rem}
   .name-open > span:first-child{font-size:1.5rem}
@@ -922,6 +922,200 @@ body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
   #allGamesBtn span[data-i18n]{display:none}
 }
 @media (prefers-reduced-motion: reduce){ .stop.here,.stop-me{animation:none} }
+
+/* ===================== phones: full control on a small touch screen ===================== */
+.tray-tabs{display:none}
+.tray-body{display:contents}
+.lock{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(safe-area-inset-bottom, 0px))}
+
+/* ---------- board zoom ---------- */
+.board-col{position:relative}
+.plate-wrap.zoomed{
+  overflow:auto;justify-content:flex-start;align-items:flex-start;overscroll-behavior:contain;
+  padding:6px 6px 16px;border-radius:18px;background:rgba(255,255,255,.18);scrollbar-width:thin;
+}
+.plate-wrap.zoomed .plate{margin:auto;flex:none}
+.zoombar{
+  position:absolute;inset-inline-end:8px;bottom:22px;z-index:5;display:flex;gap:6px;
+  padding:4px;border-radius:999px;background:rgba(255,255,255,.85);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);
+}
+.zbtn{
+  width:40px;height:40px;border-radius:50%;border:3px solid var(--ink);background:#fff;color:var(--ink);
+  font:inherit;font-size:1.5rem;font-weight:800;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0;
+  -webkit-user-select:none;user-select:none;
+}
+.zbtn svg{width:20px;height:20px}
+.zbtn:active:not(:disabled){transform:translateY(2px)}
+.zbtn:disabled{opacity:.35;cursor:default}
+
+/* ---------- upright phones ---------- */
+@media (orientation:portrait) and (max-width:699px){
+  body{padding-inline:10px}
+  .app{padding-block:6px 10px;gap:8px}
+
+  /* all the tools in two short rows: Clear first, Undo last */
+  .tools,body[data-hand="left"] .tools{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;flex-direction:initial}
+  .tools-main,body[data-hand="left"] .tools-main{display:contents}
+  body[data-age="little"] .tools{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{
+    width:auto;min-width:0;min-height:50px;flex:none;padding:3px 2px 2px;border-radius:14px;border-width:3px;
+    font-size:.64rem;box-shadow:0 3px 0 var(--ink);gap:1px;
+  }
+  .tools .tbtn svg,.tbtn.undo svg{width:22px;height:22px}
+  .tbtn.undo{grid-column:-2 / -1;font-size:.72rem}
+  body[data-hand="left"] .tbtn.undo{grid-column:1 / 2;grid-row:2}
+  body[data-hand="left"] .tbtn.warn{grid-column:-2 / -1;grid-row:1}
+  body[data-hand="left"] .tools{grid-auto-flow:row dense}
+
+  /* the toy box: Name and Photo, then tabs, then one tidy row of choices */
+  .tray{
+    display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"name tabs" "body body";
+    gap:8px 8px;overflow:visible;padding:8px 10px calc(10px + env(safe-area-inset-bottom, 0px));
+    -webkit-mask-image:none;mask-image:none;
+  }
+  [dir="rtl"] .tray{-webkit-mask-image:none;mask-image:none}
+  .sec-name{grid-area:name;flex-direction:row!important;gap:6px;align-self:stretch}
+  .name-open,.photo-open{
+    width:54px!important;min-height:54px;height:auto;flex:none;flex-direction:column;gap:0;padding:3px 2px!important;
+    font-size:.6rem!important;line-height:1.05;border-radius:14px;white-space:normal;box-shadow:0 3px 0 var(--ink);
+  }
+  .name-open > span:first-child,.photo-open > span:first-child{font-size:1.25rem!important}
+  .tray-tabs{grid-area:tabs;display:flex;gap:4px;align-items:stretch;min-width:0}
+  .ttab{
+    flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+    padding:3px 1px 1px;border:3px solid transparent;border-radius:14px;background:var(--tint);cursor:pointer;
+    font:inherit;font-size:.62rem;font-weight:800;line-height:1.05;color:var(--ink-soft);
+    -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  }
+  .ttab-ic{font-size:1.25rem;line-height:1.1}
+  .ttab-txt{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
+  .ttab-dot{width:20px;height:20px;margin:2px 0 1px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
+  body[data-age="little"] .ttab[data-tab="styles"]{display:none}
+
+  .tray-body{
+    grid-area:body;display:flex;gap:12px;align-items:flex-start;min-width:0;height:116px;
+    overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;scrollbar-width:thin;padding-bottom:2px;
+  }
+  .tray-body .tray-sec{flex:none;gap:4px}
+  .tray-body h2,.tray-body h3{display:none}
+  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks),
+  .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
+  .tray[data-tab="styles"] .tray-body > :not(.sec-styles),
+  .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps):not(.sec-mine),
+  .tray[data-tab="plates"] .tray-body > :not(.sec-plates){display:none!important}
+
+  /* bricks: one row of big bricks to drag, with Turn at the end */
+  .sec-bricks{display:flex!important;flex-direction:row;align-items:stretch;gap:8px}
+  .shapes{grid-template-rows:none;grid-auto-flow:column;grid-auto-columns:minmax(66px,auto);gap:6px}
+  .shapes .card{min-height:108px;padding-bottom:22px}
+  .sec-bricks .row{margin:0;align-self:stretch}
+  .sec-bricks .row .btn{flex-direction:column;height:100%;min-height:0;width:58px;padding:4px 2px;font-size:.66rem;line-height:1.1;white-space:normal}
+  .sec-bricks .row .btn svg{width:26px;height:26px}
+
+  /* colors: all 16 in two rows */
+  .tray .swatches{grid-template-columns:repeat(8,38px);gap:8px 6px;padding:4px 2px}
+  .swatch{min-width:38px;min-height:38px}
+
+  .styles{grid-template-columns:repeat(4,78px);gap:8px}
+  .stylebtn{min-height:76px;font-size:.8rem;justify-content:center}
+  .stamps{grid-template-rows:none;grid-auto-flow:column;grid-auto-columns:74px;gap:6px}
+  .stamps .card{min-height:104px}
+  .plates{grid-template-columns:repeat(4,48px);gap:8px}
+  .plates > *{min-width:48px;min-height:48px}
+
+  /* the zoom buttons sit under the board instead of over it */
+  .zoombar{position:static;align-self:center;margin-top:-8px;padding:3px}
+  .zbtn{width:40px;height:40px}
+}
+/* games on phones: a slim panel so the board stays in view */
+@media (orientation:portrait) and (max-width:699px), (orientation:landscape) and (max-height:540px){
+  .gamepanel{padding:8px;gap:8px;border-radius:18px;border-width:3px;box-shadow:0 4px 0 var(--ink);align-items:flex-start}
+  .gp-target{flex:0 0 72px;min-height:72px;padding:4px;border-radius:12px}
+  .gp-emoji{font-size:1.9rem}
+  .gp-num{font-size:2.2rem}
+  .gp-word{font-size:.85rem}
+  .gp-main{gap:4px}
+  .gp-head h2{font-size:.98rem}
+  .gp-stars{font-size:1rem}
+  .gp-text{font-size:.78rem;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .gp-bar{height:10px;border-width:2px}
+  .gp-prog{font-size:.85rem}
+  .gp-actions{gap:5px}
+  .gp-actions .btn{min-height:36px;font-size:.78rem;padding:2px 9px 0;border-radius:11px;box-shadow:0 3px 0 var(--ink)}
+  .gletter{min-width:40px;height:40px;font-size:1.2rem}
+}
+/* short phones: a shorter toy box */
+@media (orientation:portrait) and (max-width:699px) and (max-height:720px){
+  .tray-body{height:96px}
+  .shapes .card{min-height:90px}
+  .stamps .card{min-height:88px}
+  .stylebtn{min-height:64px}
+  .plates{grid-template-columns:repeat(4,42px);gap:6px}
+  .plates > *{min-width:42px;min-height:42px}
+  .tray .swatches{gap:6px}
+  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{min-height:44px}
+  .tools .tbtn svg,.tbtn.undo svg{width:20px;height:20px}
+  .gp-text,.gp-bar{display:none}
+  .gp-actions{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .gp-actions .btn{flex:none}
+}
+@media (orientation:portrait) and (max-width:379px){
+  .tray .swatches{grid-template-columns:repeat(8,34px);gap:6px 5px}
+  .swatch{min-width:34px;min-height:34px}
+  .shapes{grid-auto-columns:minmax(60px,auto);gap:5px}
+  .sec-bricks .row .btn{width:52px}
+  .ttab-txt{font-size:.56rem}
+}
+
+/* ---------- phones on their side: toy box | board | tools, all at once ---------- */
+@media (orientation:landscape) and (max-height:540px){
+  body{padding-inline:max(8px, env(safe-area-inset-left, 0px)) max(8px, env(safe-area-inset-right, 0px))}
+  .app{padding-block:4px 6px;gap:6px}
+  .topbar{min-height:44px;gap:6px;padding:3px 6px;border-radius:16px}
+  .tb-home{width:40px;height:40px}
+  .topbar .bricky{width:30px;height:30px}
+  .topbar .bubble{font-size:.82rem;min-height:32px;padding:2px 8px 0;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+  .tb-btn{min-height:40px;padding:2px 10px;font-size:.85rem}
+  .area-chip{min-height:36px;padding:2px 12px;font-size:.85rem}
+  .studio,body[data-hand="left"] .studio{grid-template-columns:184px minmax(0,1fr) 150px;gap:8px}
+  body[data-hand="left"] .studio{grid-template-columns:150px minmax(0,1fr) 184px}
+  /* bricks to drag come right after Name and Photo, so they're on screen without scrolling */
+  .sec-bricks{order:1}
+  .sec-colors{order:2}
+  .sec-styles{order:3}
+  .sec-stamps{order:4}
+  .sec-mine{order:5}
+  .sec-plates{order:6}
+  .zoombar{flex-direction:column;bottom:16px;inset-inline-end:0}
+  .gp-text,.gp-bar{display:none}
+  .zbtn{width:38px;height:38px}
+  .tray{top:4px;max-height:calc(100dvh - 62px);padding:8px;gap:10px;border-radius:20px}
+  .tray h2,.tray h3{font-size:.8rem;margin:0}
+  .tray-sec{gap:6px}
+  .sec-name{flex-direction:row!important;gap:6px}
+  .name-open,.photo-open{flex:1 1 0;font-size:.78rem!important;padding:4px!important;min-height:44px;flex-direction:column;gap:0;line-height:1.05;white-space:normal}
+  .name-open > span:first-child,.photo-open > span:first-child{font-size:1.1rem!important}
+  .tray .swatches{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .swatch{min-width:0;min-height:0}
+  .shapes{grid-template-columns:1fr 1fr;gap:6px}
+  .card{min-height:56px}
+  .tools{top:4px;height:calc(100dvh - 62px);display:grid;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto;gap:6px}
+  .tbtn.warn{grid-column:1 / -1;grid-row:1}
+  .tools-main{grid-column:1 / -1;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start;gap:6px;overflow-y:auto;padding:2px 2px 4px}
+  .tbtn.undo{grid-column:1 / -1;grid-row:3}
+  .tools .tbtn,.tbtn.warn,.tbtn.undo{min-width:0;min-height:44px;padding:3px 1px 2px;font-size:.58rem;border-radius:14px;box-shadow:0 3px 0 var(--ink)}
+  .tbtn.warn{min-height:40px;flex-direction:row;gap:6px;font-size:.7rem}
+  .tools .tbtn svg{width:20px;height:20px}
+  .tbtn.undo{min-height:52px;font-size:.78rem}
+  .tbtn.undo svg{width:26px;height:26px}
+  .plate-wrap{padding:4px 4px 14px}
+  .sheet{padding:8px}
+  .sheet-card{max-height:calc(100dvh - 16px);padding:12px;gap:8px;border-radius:20px}
+  .sheet-x{width:42px;height:42px;font-size:1.5rem}
+  .home{gap:10px}
+}
 
 </style>
 <div class="app">
@@ -1055,6 +1249,14 @@ body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
           <button class="btn big name-open" id="nameOpenBtn" type="button"><span aria-hidden="true">✍️</span> <span data-i18n="writeName">Write my name</span></button>
           <button class="btn photo-open" id="photoOpenBtn" type="button"><span aria-hidden="true">📷</span> <span data-i18n="photoOpen">Brick my photo</span></button>
         </div>
+        <div class="tray-tabs" id="trayTabs" role="tablist" data-i18n-aria="toyBox">
+          <button class="ttab" type="button" role="tab" data-tab="bricks" aria-selected="true"><span class="ttab-ic" aria-hidden="true">🧱</span><span class="ttab-txt" data-i18n="tabBricks">Bricks</span></button>
+          <button class="ttab" type="button" role="tab" data-tab="colors" aria-selected="false"><span class="ttab-ic ttab-dot" aria-hidden="true"></span><span class="ttab-txt" data-i18n="tabColors">Colors</span></button>
+          <button class="ttab" type="button" role="tab" data-tab="styles" aria-selected="false"><span class="ttab-ic" aria-hidden="true">✨</span><span class="ttab-txt" data-i18n="tabStyles">Style</span></button>
+          <button class="ttab" type="button" role="tab" data-tab="stamps" aria-selected="false"><span class="ttab-ic" aria-hidden="true">⭐</span><span class="ttab-txt" data-i18n="tabShapes">Shapes</span></button>
+          <button class="ttab" type="button" role="tab" data-tab="plates" aria-selected="false"><span class="ttab-ic" aria-hidden="true">🟩</span><span class="ttab-txt" data-i18n="tabBoard">Board</span></button>
+        </div>
+        <div class="tray-body" id="trayBody">
         <div class="tray-sec sec-colors">
           <h2 id="trayTitle" data-i18n="pickColor">Pick a color</h2>
           <div class="swatches" id="swatches"></div>
@@ -1085,6 +1287,7 @@ body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
         <div class="tray-sec sec-plates">
           <h3 data-i18n="boardColor">Board color</h3>
           <div class="plates" id="plates"></div>
+        </div>
         </div>
       </section>
 
@@ -1120,6 +1323,11 @@ body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
 
         <div class="plate-wrap" id="plateWrap">
           <div class="plate tool-move" id="plate" aria-label="Brick board"></div>
+        </div>
+        <div class="zoombar" id="zoomBar" hidden>
+          <button class="zbtn" id="zoomOutBtn" type="button" data-i18n-title="zoomOut" data-i18n-aria="zoomOut">−</button>
+          <button class="zbtn zfit" id="zoomFitBtn" type="button" data-i18n-title="zoomFit" data-i18n-aria="zoomFit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
+          <button class="zbtn" id="zoomInBtn" type="button" data-i18n-title="zoomIn" data-i18n-aria="zoomIn">+</button>
         </div>
 
         <div class="below" aria-hidden="true">
@@ -1687,6 +1895,8 @@ let nextId = 1;
 let grid = [];           // grid[y][x] = stack of brick ids, lowest first
 const byId = new Map();
 let cell = 30;
+let boardZoom = 1, zoomMax = 1, zoomDims = "";
+const ZOOM_CELL = 40;                               // zooming stops once a stud is this many pixels wide
 const plate = $("#plate");
 const els = new Map();
 
@@ -1786,8 +1996,21 @@ function fitCell(){
   document.body.style.setProperty("--dock-h", dock + "px");
   const H = window.innerHeight;
   const top = wrap.getBoundingClientRect().top + window.scrollY;
-  const maxH = Math.max(H * .3, H - top - dock - 22);
-  cell = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, 48));
+  const zb = $("#zoomBar");
+  const zbH = zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
+  const maxH = Math.max(H * .3, H - top - dock - 22 - zbH);
+  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, 48));
+  // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted
+  const dims = B.cols + "x" + B.rows;
+  if (dims !== zoomDims){ zoomDims = dims; boardZoom = 1; }
+  zoomMax = Math.max(1, ZOOM_CELL / fit);
+  boardZoom = clamp(boardZoom, 1, zoomMax);
+  if (boardZoom < 1.05) boardZoom = 1;
+  const zoomed = boardZoom > 1;
+  cell = zoomed ? Math.round(fit * boardZoom) : fit;
+  wrap.classList.toggle("zoomed", zoomed);
+  wrap.style.height = zoomed ? (fit * B.rows + 28) + "px" : "";
+  if (zb) zb.hidden = zoomMax < 1.6;                  // only when the studs are small enough to be fiddly
   plate.style.setProperty("--cell", cell + "px");
   plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
 }
@@ -2230,7 +2453,9 @@ function computeTarget(e){
   const inTrash = overTray || overEl(trash, e.clientX, e.clientY);
   trash.classList.toggle("hot", inTrash && !overTray);
   trayEl.classList.toggle("hot", overTray);
-  const near = cx > r.left - cell && cx < r.right + cell && cy > r.top - cell && cy < r.bottom + cell;
+  const wrapEl = $("#plateWrap");
+  const near = cx > r.left - cell && cx < r.right + cell && cy > r.top - cell && cy < r.bottom + cell
+    && (!wrapEl.classList.contains("zoomed") || overEl(wrapEl, cx, cy));   // a zoomed board hides its edges
   ptr.inTrash = inTrash;
   if (!near || inTrash){ ptr.target = null; hideGhost(); return; }
   const p = ptr.piece;
@@ -3745,7 +3970,13 @@ function openSheet(id){
 }
 function closeSheets(){ $$(".sheet").forEach(s => { s.hidden = true; }); }
 $$("[data-close-sheet]").forEach(b => b.addEventListener("click", () => { sfx.click(); closeSheets(); }));
-$$(".sheet").forEach(s => s.addEventListener("click", e => { if (e.target === s) closeSheets(); }));
+// close on a tap on the dark backdrop, but only when the press started there too
+// (lifting the finger that held the grown-ups lock must not close the sheet it just opened)
+$$(".sheet").forEach(s => {
+  let downOnBackdrop = false;
+  s.addEventListener("pointerdown", e => { downOnBackdrop = e.target === s; });
+  s.addEventListener("click", e => { if (e.target === s && downOnBackdrop) closeSheets(); downOnBackdrop = false; });
+});
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheets(); });
 $("#saveMenuBtn").addEventListener("click", () => { sfx.click(); openSheet("saveSheet"); });
 // any choice in the save sheet closes it before doing its job
@@ -4020,6 +4251,94 @@ on("boot", () => {
 });
 on("lang", () => { if (screen === "home") refreshHome(); if (screen === "games") refreshGamesPick(); if (screen === "studio") refreshArea(); if ($("#nameSheet") && !$("#nameSheet").hidden) buildTiles(); });
 on("resize", () => { doorPics(); });
+
+/* ===================== phones: toy box tabs, board zoom (pinch or + / −) ===================== */
+addStrings({
+  toyBox: ["Toy box", "صندوق الألعاب"],
+  tabBricks: ["Bricks", "مكعبات"], tabColors: ["Colors", "ألوان"], tabStyles: ["Style", "الشكل"],
+  tabShapes: ["Shapes", "أشكال"], tabBoard: ["Board", "اللوحة"],
+  zoomIn: ["Make the board bigger", "كبّر اللوحة"], zoomOut: ["Make the board smaller", "صغّر اللوحة"],
+  zoomFit: ["Show the whole board", "اعرض اللوحة كلها"],
+});
+
+/* ---- toy box tabs (only shown on phones, where the toy box is a short dock) ---- */
+(function trayTabs(){
+  const tray = $("#tray");
+  const tabs = $$("#trayTabs .ttab");
+  function setTab(name){
+    tray.dataset.tab = name;
+    tabs.forEach(b => b.setAttribute("aria-selected", b.dataset.tab === name));
+    $("#trayBody").scrollLeft = 0;
+  }
+  tabs.forEach(b => b.addEventListener("click", () => { sfx.click(); setTab(b.dataset.tab); }));
+  const dot = $("#trayTabs .ttab-dot");
+  const showColor = c => paintVars(dot, c);
+  on("color", showColor); showColor(color);
+  setTab("bricks");
+})();
+
+/* ---- board zoom ---- */
+const plateWrap = $("#plateWrap");
+// keep the board point under (cx, cy) in place while the zoom changes
+function zoomTo(z, cx, cy){
+  const r0 = plate.getBoundingClientRect(), c0 = cell;
+  if (cx == null){ const w = plateWrap.getBoundingClientRect(); cx = w.left + w.width / 2; cy = w.top + w.height / 2; }
+  const ax = (cx - r0.left) / c0, ay = (cy - r0.top) / c0;
+  boardZoom = clamp(z, 1, zoomMax); fitCell();
+  const r1 = plate.getBoundingClientRect();
+  plateWrap.scrollLeft += r1.left - (cx - ax * cell);
+  plateWrap.scrollTop += r1.top - (cy - ay * cell);
+  updateZoomBtns();
+}
+function updateZoomBtns(){
+  $("#zoomOutBtn").disabled = boardZoom <= 1;
+  $("#zoomFitBtn").disabled = boardZoom <= 1;
+  $("#zoomInBtn").disabled = boardZoom >= zoomMax - .01;
+}
+$("#zoomInBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom * 1.6); });
+$("#zoomOutBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom / 1.6); });
+$("#zoomFitBtn").addEventListener("click", () => { sfx.click(); zoomTo(1); });
+on("board", () => requestAnimationFrame(updateZoomBtns));
+on("resize", updateZoomBtns);
+plateWrap.addEventListener("wheel", e => {
+  if (!e.ctrlKey || $("#zoomBar").hidden) return;      // trackpad pinch / ctrl + wheel
+  e.preventDefault(); zoomTo(boardZoom * Math.exp(-e.deltaY / 200), e.clientX, e.clientY);
+}, {passive: false});
+
+/* two fingers on the board: pinch to zoom, slide to move around. One finger still builds. */
+(function pinch(){
+  const pts = new Map(); let g = null;
+  const two = () => [...pts.values()].slice(0, 2);
+  const mid = ([a, b]) => ({x: (a.x + b.x) / 2, y: (a.y + b.y) / 2});
+  const dist = ([a, b]) => Math.hypot(a.x - b.x, a.y - b.y) || 1;
+  plateWrap.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "touch") return;
+    pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
+    if (pts.size !== 2 || $("#zoomBar").hidden) return;
+    if (ptr && ptr.kind === "drag" && ptr.moved) return;  // second finger turns a dragged brick
+    if (ptr){
+      // the first finger's action becomes part of the pinch: undo what it started
+      if (ptr.kind === "brush" && ptr.changed){ ptr = null; undo(); }
+      else if (ptr.kind === "select"){ ptr = null; cancelSelection(); }
+      ptr = null;
+    }
+    e.preventDefault(); e.stopPropagation();
+    const p = two(); g = {d: dist(p), z: boardZoom, m: mid(p)};
+  }, true);
+  window.addEventListener("pointermove", e => {
+    if (!pts.has(e.pointerId)) return;
+    pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
+    if (!g || pts.size < 2) return;
+    e.preventDefault();
+    const p = two(), m = mid(p);
+    zoomTo(g.z * dist(p) / g.d, m.x, m.y);
+    plateWrap.scrollLeft -= m.x - g.m.x; plateWrap.scrollTop -= m.y - g.m.y;
+    g.m = m;
+  }, {passive: false});
+  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) g = null; };
+  window.addEventListener("pointerup", up);
+  window.addEventListener("pointercancel", up);
+})();
 
 /* ===================== photo to bricks =====================
    A photo is framed (drag to move, + / − or pinch to zoom), shrunk to one colour per stud,

@@ -112,7 +112,13 @@ function openSheet(id){
 }
 function closeSheets(){ $$(".sheet").forEach(s => { s.hidden = true; }); }
 $$("[data-close-sheet]").forEach(b => b.addEventListener("click", () => { sfx.click(); closeSheets(); }));
-$$(".sheet").forEach(s => s.addEventListener("click", e => { if (e.target === s) closeSheets(); }));
+// close on a tap on the dark backdrop, but only when the press started there too
+// (lifting the finger that held the grown-ups lock must not close the sheet it just opened)
+$$(".sheet").forEach(s => {
+  let downOnBackdrop = false;
+  s.addEventListener("pointerdown", e => { downOnBackdrop = e.target === s; });
+  s.addEventListener("click", e => { if (e.target === s && downOnBackdrop) closeSheets(); downOnBackdrop = false; });
+});
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheets(); });
 $("#saveMenuBtn").addEventListener("click", () => { sfx.click(); openSheet("saveSheet"); });
 // any choice in the save sheet closes it before doing its job
