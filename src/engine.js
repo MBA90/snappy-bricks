@@ -27,8 +27,17 @@ function isLight(hex){
   return (n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114 > 200;
 }
 function sparkColor(c){ return isLight(c) ? shade(c, -.3) : "rgba(255,255,255,.9)"; }
+// neon: a tube of light on dark glass; dark colors (black, brown) light up brighter so the tube still shows
+function neonColor(c){
+  const n = parseInt(c.slice(1), 16);
+  const l = (n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114;
+  return l < 90 ? shade(c, .45) : c;
+}
+function neonGlass(c){ return shade(c, -.8); }
 function paintVars(el, c){
   el.style.setProperty("--c", c);
+  el.style.setProperty("--neon", neonColor(c));
+  el.style.setProperty("--glass", neonGlass(c));
   el.style.setProperty("--lt", shade(c, .3));
   el.style.setProperty("--dk", shade(c, -.24));
   el.style.setProperty("--spark", sparkColor(c));
@@ -296,18 +305,33 @@ function rrect(ctx, x, y, w, h, r){
   ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
   ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
 }
+// matches the CSS studs: cast shadow, side wall, lit rim, top face, gloss (light from the top left)
 function stud(ctx, x, y, c, col, flat){
-  const r = c * (flat ? .27 : .29);
-  ctx.fillStyle = "rgba(30,10,50,.3)";
-  ctx.beginPath(); ctx.arc(x + c * .57, y + c * .61, r, 0, 7); ctx.fill();
-  const g = ctx.createRadialGradient(x + c * .5, y + c * .5, 0, x + c * .5, y + c * .5, r);
-  g.addColorStop(0, shade(col, .3)); g.addColorStop(.7, shade(col, .3)); g.addColorStop(1, col);
-  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x + c * .5, y + c * .5, r, 0, 7); ctx.fill();
-  ctx.fillStyle = "rgba(255,255,255,.7)";
-  ctx.beginPath(); ctx.arc(x + c * .42, y + c * .38, c * .07, 0, 7); ctx.fill();
+  const cx = x + c * .5, cy = y + c * .5, r = c * (flat ? .22 : .24);
+  const sh = ctx.createRadialGradient(x + c * (flat ? .55 : .56), y + c * (flat ? .59 : .61), 0, x + c * (flat ? .55 : .56), y + c * (flat ? .59 : .61), c * (flat ? .29 : .32));
+  sh.addColorStop(0, `rgba(30,10,50,${flat ? .24 : .34})`); sh.addColorStop(.7, `rgba(30,10,50,${flat ? .24 : .34})`); sh.addColorStop(1, "rgba(30,10,50,0)");
+  ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(x + c * (flat ? .55 : .56), y + c * (flat ? .59 : .61), c * (flat ? .29 : .32), 0, 7); ctx.fill();
+  ctx.fillStyle = shade(col, -.24); ctx.beginPath(); ctx.arc(x + c * .52, y + c * .54, r + c * .005, 0, 7); ctx.fill();
+  ctx.fillStyle = `rgba(255,255,255,${flat ? .5 : .75})`; ctx.beginPath(); ctx.arc(x + c * .48, y + c * .475, r, 0, 7); ctx.fill();
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+  g.addColorStop(0, shade(col, .3)); g.addColorStop(flat ? .36 : .5, shade(col, .3)); g.addColorStop(1, col);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r - c * .005, 0, 7); ctx.fill();
+  const gx = x + c * .41, gy = y + c * .37, gr = c * (flat ? .09 : .1);
+  const gl = ctx.createRadialGradient(gx, gy, 0, gx, gy, gr);
+  gl.addColorStop(0, `rgba(255,255,255,${flat ? .55 : .9})`); gl.addColorStop(.3, `rgba(255,255,255,${flat ? .55 : .9})`); gl.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(gx, gy, gr, 0, 7); ctx.fill();
+}
+// the soft top-left-to-bottom-right light across a whole brick or board
+function sheen(ctx, x, y, w, h, a, b){
+  const g = ctx.createLinearGradient(x, y, x + w * .42, y + h);
+  g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(.42, "rgba(255,255,255,0)");
+  g.addColorStop(.62, "rgba(30,10,60,0)"); g.addColorStop(1, `rgba(30,10,60,${b})`);
+  return g;
 }
 function drawBoard(ctx, board, ox, oy, c){
-  ctx.fillStyle = board.plate; rrect(ctx, ox, oy, board.cols * c, board.rows * c, c * .3); ctx.fill();
+  const bw = board.cols * c, bh = board.rows * c;
+  ctx.fillStyle = board.plate; rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
+  ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
   for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) stud(ctx, ox + x * c, oy + y * c, c, board.plate, true);
   const list = [...board.bricks].sort((a, b) => (a.z || 0) - (b.z || 0));
   for (const b of list){
@@ -315,11 +339,33 @@ function drawBoard(ctx, board, ox, oy, c){
     const x = ox + b.x * c + 1.5 - z * 2, y = oy + b.y * c + 1.5 - z * 3, w = b.w * c - 3, h = b.h * c - 3;
     const rad = t === "round" ? Math.min(w, h) / 2 : c * .14;
     ctx.save();
-    ctx.fillStyle = "rgba(30,10,60,.3)"; rrect(ctx, x + z, y + 3 + z * 2, w, h, rad); ctx.fill();
+    ctx.save(); ctx.shadowColor = "rgba(30,10,60,.34)"; ctx.shadowBlur = 4 + z * 3;
+    ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = 3 + z * 3;
+    ctx.fillStyle = "rgba(30,10,60,.2)"; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.restore();
+    if (t === "neon"){
+      // dark glass, a glowing tube of light round the edge with a white-hot core, and ring studs
+      const nc = neonColor(b.c), lw = Math.max(2, c * .07);
+      ctx.fillStyle = neonGlass(b.c); rrect(ctx, x, y, w, h, rad); ctx.fill();
+      ctx.fillStyle = sheen(ctx, x, y, w, h, .16, 0); rrect(ctx, x, y, w, h, rad); ctx.fill();
+      ctx.save(); ctx.shadowColor = nc; ctx.shadowBlur = c * .45; ctx.strokeStyle = nc; ctx.lineWidth = lw;
+      rrect(ctx, x + lw / 2, y + lw / 2, w - lw, h - lw, Math.max(0, rad - lw / 2)); ctx.stroke(); ctx.stroke();
+      ctx.lineWidth = Math.max(1, c * .025); ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.shadowBlur = 0;
+      rrect(ctx, x + c * .025, y + c * .025, w - c * .05, h - c * .05, Math.max(0, rad - c * .025)); ctx.stroke();
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++){
+        const sx = x - 1.5 + (xx + .5) * c, sy = y - 1.5 + (yy + .5) * c;
+        ctx.shadowColor = nc; ctx.shadowBlur = c * .2;
+        ctx.strokeStyle = nc; ctx.lineWidth = c * .065; ctx.beginPath(); ctx.arc(sx, sy, c * .185, 0, 7); ctx.stroke();
+        ctx.shadowBlur = 0; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = c * .028;
+        ctx.beginPath(); ctx.arc(sx, sy, c * .14, 0, 7); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.restore();
+      continue;
+    }
     if (t === "glow"){
       // soft halo in the brick's own color, then a body that is brightest in the middle
-      ctx.save(); ctx.shadowColor = b.c; ctx.shadowBlur = c * .7;
-      ctx.fillStyle = b.c; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.fill();
+      ctx.save(); ctx.shadowColor = b.c; ctx.shadowBlur = c * .55;
+      ctx.fillStyle = b.c; rrect(ctx, x, y, w, h, rad); ctx.fill();
       ctx.restore();
       const g = ctx.createRadialGradient(x + w / 2, y + h * .45, 0, x + w / 2, y + h * .45, Math.max(w, h) * .6);
       g.addColorStop(0, "rgba(255,255,255,.95)"); g.addColorStop(.45, shade(b.c, .3)); g.addColorStop(1, b.c);
@@ -327,6 +373,12 @@ function drawBoard(ctx, board, ox, oy, c){
     } else {
       ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
       ctx.fillStyle = b.c; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
+      ctx.fillStyle = sheen(ctx, x, y, w, h, .26, .12); rrect(ctx, x, y, w, h, rad); ctx.fill();
+      // lit top and left edges
+      ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
+      ctx.strokeStyle = "rgba(255,255,255,.5)"; ctx.lineWidth = 2;
+      rrect(ctx, x + 1, y + 1, w, h, rad); ctx.stroke();
+      ctx.restore();
     }
     if (t === "glitter"){
       // fine flecks under the studs, sized to the stud grid (like the board)
@@ -334,12 +386,14 @@ function drawBoard(ctx, board, ox, oy, c){
       const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
       ctx.save(); rrect(ctx, x, y, w, h - c * .09, rad); ctx.clip();
       ctx.fillStyle = sparkColor(b.c);
-      for (let i = 0; i < b.w * b.h * 10; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * (.025 + rnd() * .03), 0, 7); ctx.fill(); }
+      for (let i = 0; i < b.w * b.h * 12; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * (.018 + rnd() * .022), 0, 7); ctx.fill(); }
+      ctx.fillStyle = "rgba(255,255,255,.75)";
+      for (let i = 0; i < b.w * b.h * 10; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * .014, 0, 7); ctx.fill(); }
       ctx.restore();
     }
     for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - 1.5 + xx * c, y - 1.5 + yy * c, c, b.c);
     // faint outline so light bricks read on light boards
-    ctx.strokeStyle = "rgba(30,10,60,.12)"; ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(30,10,60,.2)"; ctx.lineWidth = 1;
     rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();
     ctx.restore();
   }
