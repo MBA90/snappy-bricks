@@ -5,6 +5,12 @@ const SIZES = [
   {id: "l", en: "Large",  ar: "كبيرة", cols: 32, rows: 24},
   {id: "x", en: "Huge",   ar: "ضخمة",  cols: 40, rows: 30},
 ];
+// extra-big boards for photos, where more studs mean a picture you can recognise
+const PHOTO_SIZES = [
+  {id: "g", en: "Giant",  ar: "عملاقة", cols: 64, rows: 48},
+  {id: "p", en: "Poster", ar: "ملصق",   cols: 96, rows: 72},
+];
+const ALL_SIZES = SIZES.concat(PHOTO_SIZES);
 const PLATES = [
   {en: "Pink",   ar: "وردية",   hex: "#FF2E8A"},
   {en: "Blue",   ar: "زرقاء",   hex: "#2F9BF0"},
