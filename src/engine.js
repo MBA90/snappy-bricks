@@ -57,22 +57,36 @@ function emit(ev, data){ (bus[ev] || []).forEach(fn => { try { fn(data); } catch
 
 /* ---- pixel pictures -> bricks ---- */
 // pix: 2D array of color strings or null. maxRun: longest horizontal brick to use.
-function decompose(pix, maxRun = 2){
+// fill a picture with the toy-box brick sizes, biggest first, lying down before standing up
+function decompose(pix){
   const H = pix.length, W = H ? pix[0].length : 0;
   const used = pix.map(r => r.map(() => false));
+  const shapes = [];
+  SHAPES.slice().sort((a, b) => b[0] * b[1] - a[0] * a[1]).forEach(([w, h]) => { shapes.push([w, h]); if (w !== h) shapes.push([h, w]); });
+  const fits = (x, y, w, h, c) => {
+    if (x + w > W || y + h > H) return false;
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (used[y + j][x + i] || pix[y + j][x + i] !== c) return false;
+    return true;
+  };
   const out = [];
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
-    if (!pix[y][x] || used[y][x]) continue;
-    let n = 1;
-    while (n < maxRun && x + n < W && pix[y][x + n] === pix[y][x] && !used[y][x + n]) n++;
-    if (n >= 2){ for (let k = 0; k < n; k++) used[y][x + k] = true; out.push({x, y, w: n, h: 1, c: pix[y][x]}); }
+    const c = pix[y][x]; if (!c || used[y][x]) continue;
+    const [w, h] = shapes.find(([w, h]) => fits(x, y, w, h, c));
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) used[y + j][x + i] = true;
+    out.push({x, y, w, h, c});
   }
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
-    if (!pix[y][x] || used[y][x]) continue;
-    if (y + 1 < H && pix[y + 1][x] === pix[y][x] && !used[y + 1][x]){ used[y][x] = used[y + 1][x] = true; out.push({x, y, w: 1, h: 2, c: pix[y][x]}); }
+  return out;
+}
+// saved work may use styles and sizes that are gone: classic style, and split odd sizes into toy-box bricks
+function fitBricks(list){
+  const out = [];
+  for (const b of list){
+    const t = STYLES.some(s => s.id === b.t) ? b.t : "std";
+    if (SHAPES.some(([w, h]) => (w === b.w && h === b.h) || (w === b.h && h === b.w))){ out.push({...b, t}); continue; }
+    const pix = Array.from({length: b.h}, () => Array(b.w).fill(b.c));
+    decompose(pix).forEach((p, k) => out.push({...b, t, x: b.x + p.x, y: b.y + p.y, w: p.w, h: p.h,
+      ...(b.id != null ? {id: k ? nextId++ : b.id} : {})}));
   }
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++)
-    if (pix[y][x] && !used[y][x]){ used[y][x] = true; out.push({x, y, w: 1, h: 1, c: pix[y][x]}); }
   return out;
 }
 function artToPix(art, recolor){
@@ -286,7 +300,6 @@ function drawBoard(ctx, board, ox, oy, c){
     const x = ox + b.x * c + 1.5 - z * 2, y = oy + b.y * c + 1.5 - z * 3, w = b.w * c - 3, h = b.h * c - 3;
     const rad = t === "round" ? Math.min(w, h) / 2 : c * .14;
     ctx.save();
-    if (t === "clear") ctx.globalAlpha = .62;
     ctx.fillStyle = "rgba(30,10,60,.3)"; rrect(ctx, x + z, y + 3 + z * 2, w, h, rad); ctx.fill();
     ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
     ctx.fillStyle = b.c; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
@@ -299,21 +312,7 @@ function drawBoard(ctx, board, ox, oy, c){
       for (let i = 0; i < b.w * b.h * 10; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * (.025 + rnd() * .03), 0, 7); ctx.fill(); }
       ctx.restore();
     }
-    if (t === "tile"){
-      const g = ctx.createLinearGradient(x, y, x + w * .5, y + h * .5);
-      g.addColorStop(0, "rgba(255,255,255,.45)"); g.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = g; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
-    } else {
-      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - 1.5 + xx * c, y - 1.5 + yy * c, c, b.c);
-    }
-    if (t === "clear"){
-      // glassy rim and sheen, matching the board
-      const g = ctx.createLinearGradient(x, y, x + w * .4, y + h * .4);
-      g.addColorStop(0, "rgba(255,255,255,.55)"); g.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = g; rrect(ctx, x, y, w, h, rad); ctx.fill();
-      ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = Math.max(1.5, c * .05);
-      rrect(ctx, x + ctx.lineWidth / 2, y + ctx.lineWidth / 2, w - ctx.lineWidth, h - ctx.lineWidth, rad); ctx.stroke();
-    }
+    for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - 1.5 + xx * c, y - 1.5 + yy * c, c, b.c);
     // faint outline so light bricks read on light boards
     ctx.strokeStyle = "rgba(30,10,60,.12)"; ctx.lineWidth = 1;
     rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();

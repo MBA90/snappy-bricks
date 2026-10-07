@@ -174,7 +174,7 @@ $("#replayBtn").addEventListener("click", replay);
 /* ---------- my creations (gallery) ---------- */
 let gallery = store("snappy-gallery") || [];
 function compactBoard(bd){ return {cols: bd.cols, rows: bd.rows, plate: bd.plate, b: bd.bricks.map(b => [b.x, b.y, b.w, b.h, b.c, b.t || "std", b.z || 0])}; }
-function expandBricks(cb){ return cb.b.map(a => ({id: nextId++, x: a[0], y: a[1], w: a[2], h: a[3], c: a[4], t: a[5] || "std", z: a[6] || 0})); }
+function expandBricks(cb){ return fitBricks(cb.b.map(a => ({id: nextId++, x: a[0], y: a[1], w: a[2], h: a[3], c: a[4], t: a[5] || "std", z: a[6] || 0}))); }
 function saveToGallery(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
   const item = {id: "g" + Date.now().toString(36), at: Date.now(), thumb: thumbData(B), board: compactBoard(B)};

@@ -241,12 +241,17 @@ function spellHint(){
 }
 
 /* ---------- Brick math ---------- */
+const BUMPS = [...new Set(SHAPES.map(([w, h]) => w * h))];
+function canMakeBumps(n, k){ return k === 0 ? n === 0 : BUMPS.some(v => v <= n && canMakeBumps(n - v, k - 1)); }
 function startMath(){
   const L = G.adv && G.adv.level ? G.adv.level : settings.age === "little" ? Math.min(progress.mathLevel || 1, 3) : (progress.mathLevel || 1), r = n => Math.floor(Math.random() * n);
   let n, k = null;
   if (L <= 3) n = 2 + r(9);
   else if (L <= 6) n = 10 + r(11);
-  else { n = 12 + r(25); k = clamp(Math.ceil(n / 8) + r(2), 2, 5); }
+  else {
+    // pick a brick count that the toy-box sizes can really make
+    do { n = 12 + r(25); const k0 = clamp(Math.ceil(n / 8) + r(2), 2, 5); k = [k0, k0 + 1, k0 - 1, 5, 4, 3, 2].find(q => q >= 2 && q <= 5 && canMakeBumps(n, q)); } while (!k);
+  }
   Object.assign(G, {n, k, L});
   gameBoard(16, 12, "#8F7FEA");
   $("#gTarget").innerHTML = `<div class="gp-num">${n}</div>`;

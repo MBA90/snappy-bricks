@@ -41,13 +41,11 @@ const COLORS = [
 ];
 const STYLES = [
   {id: "std",     en: "Classic", ar: "كلاسيك"},
-  {id: "tile",    en: "Smooth",  ar: "أملس"},
   {id: "round",   en: "Round",   ar: "دائري"},
   {id: "glitter", en: "Glitter", ar: "بريق"},
-  {id: "clear",   en: "Clear",   ar: "شفاف"},
 ];
 // long side first (lying down)
-const SHAPES = [[1,1],[2,1],[3,1],[4,1],[2,2],[3,2],[4,2],[6,2]];
+const SHAPES = [[1,1],[2,2],[3,2],[4,2]];
 const PAL = {R:"#F2383A",W:"#FBFAF5",Y:"#FFE838",K:"#2E2A3A",P:"#FFB3CF",G:"#3DC45A",B:"#2F8CF0",O:"#FF9A1F",
              M:"#7FE3C0",L:"#A9A6F0",H:"#FF2E8A",V:"#8A4DE0",N:"#9A5B34",S:"#8FD3FF",A:"#9AA0AE"};
 const ART = {
@@ -148,10 +146,8 @@ addStrings({
   paintReady: ["{c} paint is ready. Tap or swipe over bricks!", "اللون {c} جاهز. اضغط أو مرّر على المكعبات!"],
   colorPicked: ["{c} it is! Now drag a brick.", "اخترت {c}! الآن اسحب مكعبًا."],
   styleSay_std: ["Classic bricks with bumps on top.", "مكعبات كلاسيكية بنتوءات صغيرة."],
-  styleSay_tile: ["Smooth tiles: flat and shiny.", "بلاط أملس: مسطح ولامع."],
   styleSay_round: ["Round bricks, like buttons!", "مكعبات دائرية مثل الأزرار!"],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
-  styleSay_clear: ["See-through bricks, like glass.", "مكعبات شفافة مثل الزجاج."],
   brickAria: ["{s} brick", "مكعب {s}"],
   myStamp: ["Stamp", "ختم"], deleteStamp: ["Delete this stamp", "احذف هذا الختم"],
   tapToPlace: ["Now tap the board to put it there. Tap it again to stop.", "الآن اضغط على اللوحة لتضعه. اضغط عليه مرة أخرى للتوقف."],
