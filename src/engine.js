@@ -27,7 +27,23 @@ function isLight(hex){
   return (n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114 > 200;
 }
 function sparkColor(c){ return isLight(c) ? shade(c, -.3) : "rgba(255,255,255,.9)"; }
-// neon: a tube of light on dark glass; dark colors (black, brown) light up brighter so the tube still shows
+// a second, rainbow-ish fleck so glitter catches the light like the real thing: pink-violet on light bricks, warm gold on the rest
+function spark2Color(c){ return isLight(c) ? "rgba(176,92,255,.7)" : "rgba(255,226,140,.95)"; }
+// light: the brick's colour mixed with lots of white, a soft pastel (kept as #hex so studs can shade it)
+// the soft coloured light round each bulb of a light brick (dark colours lifted, like neon)
+function lampColor(c, a){
+  const n0 = parseInt(c.slice(1), 16), ch = [n0 >> 16, (n0 >> 8) & 255, n0 & 255];
+  if (isLight(c) && Math.max(...ch) - Math.min(...ch) < 40) return `rgba(255,196,80,${a})`;   // white: a warm lamp
+  const v = neonColor(c);
+  if (v[0] !== "#") return v.replace("rgb(", "rgba(").replace(")", `,${a})`);
+  const n = parseInt(v.slice(1), 16);
+  return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
+}
+function pastel(c){
+  const n = parseInt(c.slice(1), 16), m = v => Math.round(v + (255 - v) * .55).toString(16).padStart(2, "0");
+  return "#" + m(n >> 16) + m((n >> 8) & 255) + m(n & 255);
+}
+// neon and glow: dark colors (black, brown) light up brighter so the light still shows
 function neonColor(c){
   const n = parseInt(c.slice(1), 16);
   const l = (n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114;
@@ -38,7 +54,8 @@ function neonGlass(c){ return shade(c, -.8); }
 const varsCache = new Map();
 function colorVars(c){
   let v = varsCache.get(c);
-  if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)]]; varsCache.set(c, v); }
+  if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)], ["--spark2", spark2Color(c)],
+    ["--pl", pastel(c)], ["--plt", shade(pastel(c), .45)], ["--pdk", shade(pastel(c), -.16)], ["--glo", lampColor(c, .75)]]; varsCache.set(c, v); }
   return v;
 }
 function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
@@ -369,16 +386,22 @@ function drawBoard(ctx, board, ox, oy, c){
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
     const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
-    const rad = t === "round" ? Math.min(w, h) / 2 : c * .14;
+    const rad = t === "round" ? Math.min(w, h) / 2 : t === "light" ? c * .24 : c * .14;
+    const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
     ctx.save();
-    ctx.save(); ctx.shadowColor = "rgba(30,10,60,.34)"; ctx.shadowBlur = 4 + z * 3;
-    ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = 3 + z * 3;
+    ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
+    ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = (t === "light" ? 4 : 3) + z * 3;
     ctx.fillStyle = "rgba(30,10,60,.2)"; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.restore();
     if (t === "neon"){
       // dark glass, a glowing tube of light round the edge with a white-hot core, and ring studs
       const nc = neonColor(b.c), lw = Math.max(2, c * .07);
       ctx.fillStyle = neonGlass(b.c); rrect(ctx, x, y, w, h, rad); ctx.fill();
       ctx.fillStyle = sheen(ctx, x, y, w, h, .16, 0); rrect(ctx, x, y, w, h, rad); ctx.fill();
+      // a thin streak of reflection across the glass
+      const rf = ctx.createLinearGradient(x, y, x + w, y + h * .58);
+      rf.addColorStop(.58, "rgba(255,255,255,0)"); rf.addColorStop(.58, "rgba(255,255,255,.09)");
+      rf.addColorStop(.66, "rgba(255,255,255,.09)"); rf.addColorStop(.66, "rgba(255,255,255,0)");
+      ctx.fillStyle = rf; rrect(ctx, x, y, w, h, rad); ctx.fill();
       ctx.save(); ctx.shadowColor = nc; ctx.shadowBlur = c * .45; ctx.strokeStyle = nc; ctx.lineWidth = lw;
       rrect(ctx, x + lw / 2, y + lw / 2, w - lw, h - lw, Math.max(0, rad - lw / 2)); ctx.stroke(); ctx.stroke();
       ctx.lineWidth = Math.max(1, c * .025); ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.shadowBlur = 0;
@@ -395,22 +418,51 @@ function drawBoard(ctx, board, ox, oy, c){
       continue;
     }
     if (t === "glow"){
-      // soft halo in the brick's own color, then a body that is brightest in the middle
-      ctx.save(); ctx.shadowColor = b.c; ctx.shadowBlur = c * .55;
+      // soft halo in the brick's own color (lifted for dark bricks), then a body that is white-hot in the middle
+      ctx.save(); ctx.shadowColor = neonColor(b.c); ctx.shadowBlur = c * .55;
       ctx.fillStyle = b.c; rrect(ctx, x, y, w, h, rad); ctx.fill();
       ctx.restore();
-      const g = ctx.createRadialGradient(x + w / 2, y + h * .45, 0, x + w / 2, y + h * .45, Math.max(w, h) * .6);
-      g.addColorStop(0, "rgba(255,255,255,.95)"); g.addColorStop(.45, shade(b.c, .3)); g.addColorStop(1, b.c);
-      ctx.fillStyle = g; rrect(ctx, x, y, w, h, rad); ctx.fill();
-    } else {
       ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
-      ctx.fillStyle = b.c; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
-      ctx.fillStyle = sheen(ctx, x, y, w, h, .26, .12); rrect(ctx, x, y, w, h, rad); ctx.fill();
-      // lit top and left edges
-      ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
-      ctx.strokeStyle = "rgba(255,255,255,.5)"; ctx.lineWidth = 2;
-      rrect(ctx, x + 1, y + 1, w, h, rad); ctx.stroke();
-      ctx.restore();
+      const g = ctx.createRadialGradient(x + w / 2, y + h * .45, 0, x + w / 2, y + h * .45, Math.max(w, h) * .6);
+      g.addColorStop(0, "rgba(255,255,255,.92)"); g.addColorStop(.42, shade(b.c, .3)); g.addColorStop(1, b.c);
+      ctx.fillStyle = g; rrect(ctx, x, y, w, h - c * .07, rad); ctx.fill();
+    } else {
+      if (t === "light"){
+        // the lamp's soft coloured aura, then a frosted wash from the top and a soft white inner rim
+        ctx.save(); ctx.shadowColor = lampColor(b.c, .75); ctx.shadowBlur = c * .6;
+        ctx.fillStyle = col; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.restore();
+        ctx.fillStyle = shade(col, -.16); rrect(ctx, x, y, w, h, rad); ctx.fill();
+        ctx.fillStyle = col; rrect(ctx, x, y, w, h - c * .07, rad); ctx.fill();
+        const ig = ctx.createRadialGradient(x + w / 2, y + h / 2, Math.min(w, h) * .25, x + w / 2, y + h / 2, Math.max(w, h) * .72);
+        ig.addColorStop(0, "rgba(255,255,255,0)"); ig.addColorStop(1, "rgba(255,255,255,.6)");
+        ctx.fillStyle = ig; rrect(ctx, x, y, w, h, rad); ctx.fill();
+        const wg = ctx.createLinearGradient(x, y, x + w * .17, y + h);
+        wg.addColorStop(0, "rgba(255,255,255,.55)"); wg.addColorStop(.45, "rgba(255,255,255,0)");
+        ctx.fillStyle = wg; rrect(ctx, x, y, w, h, rad); ctx.fill();
+        const lw = Math.max(1, c * .04);
+        ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.lineWidth = lw;
+        rrect(ctx, x + lw / 2, y + lw / 2, w - lw, h - lw, Math.max(0, rad - lw / 2)); ctx.stroke();
+      } else {
+        ctx.fillStyle = shade(col, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
+        ctx.fillStyle = col; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
+        ctx.fillStyle = sheen(ctx, x, y, w, h, .26, .12); rrect(ctx, x, y, w, h, rad); ctx.fill();
+        if (t === "round"){
+          // domed button: a highlight on the top left and a darker rim
+          const cx = x + w / 2, cy = y + h / 2;
+          const dg = ctx.createRadialGradient(x + w * .34, y + h * .28, 0, x + w * .34, y + h * .28, Math.max(w, h) * .7);
+          dg.addColorStop(0, "rgba(255,255,255,.34)"); dg.addColorStop(1, "rgba(255,255,255,0)");
+          ctx.fillStyle = dg; rrect(ctx, x, y, w, h, rad); ctx.fill();
+          ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip(); ctx.translate(cx, cy); ctx.scale(w / 2, h / 2);
+          const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+          rg.addColorStop(.72, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.16)");
+          ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
+        }
+        // lit top and left edges
+        ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
+        ctx.strokeStyle = "rgba(255,255,255,.5)"; ctx.lineWidth = 2;
+        rrect(ctx, x + 1, y + 1, w, h, rad); ctx.stroke();
+        ctx.restore();
+      }
     }
     if (t === "glitter"){
       // fine flecks under the studs, sized to the stud grid (like the board)
@@ -419,11 +471,29 @@ function drawBoard(ctx, board, ox, oy, c){
       ctx.save(); rrect(ctx, x, y, w, h - c * .09, rad); ctx.clip();
       ctx.fillStyle = sparkColor(b.c);
       for (let i = 0; i < b.w * b.h * 12; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * (.018 + rnd() * .022), 0, 7); ctx.fill(); }
+      ctx.fillStyle = spark2Color(b.c);
+      for (let i = 0; i < b.w * b.h * 8; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * (.014 + rnd() * .012), 0, 7); ctx.fill(); }
       ctx.fillStyle = "rgba(255,255,255,.75)";
       for (let i = 0; i < b.w * b.h * 10; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * .014, 0, 7); ctx.fill(); }
       ctx.restore();
     }
-    for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - gap + xx * c, y - gap + yy * c, c, b.c);
+    if (t === "light"){
+      // each stud is a glowing bulb, and a sparkle twinkles on the top corner
+      const glo = lampColor(b.c, .75);
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++){
+        const sx = x - gap + (xx + .5) * c, sy = y - gap + (yy + .5) * c;
+        const bg = ctx.createRadialGradient(sx, sy, 0, sx, sy, c * .38);
+        bg.addColorStop(0, "#fff"); bg.addColorStop(.21, "#fff"); bg.addColorStop(.32, "rgba(255,255,255,.95)");
+        bg.addColorStop(.53, glo); bg.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(sx, sy, c * .38, 0, 7); ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.lineWidth = c * .018;
+        ctx.beginPath(); ctx.arc(sx, sy, c * .232, 0, 7); ctx.stroke();
+      }
+      const kx = LANG === "ar" ? x + c * .13 : x + w - c * .13, ky = y + c * .13, kr = c * .25;
+      ctx.save(); ctx.shadowColor = glo; ctx.shadowBlur = 3; ctx.fillStyle = "#fff";
+      ctx.beginPath(); ctx.moveTo(kx, ky - kr); ctx.quadraticCurveTo(kx, ky, kx + kr, ky); ctx.quadraticCurveTo(kx, ky, kx, ky + kr);
+      ctx.quadraticCurveTo(kx, ky, kx - kr, ky); ctx.quadraticCurveTo(kx, ky, kx, ky - kr); ctx.fill(); ctx.restore();
+    } else for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - gap + xx * c, y - gap + yy * c, c, col);
     // faint outline so light bricks read on light boards
     ctx.strokeStyle = "rgba(30,10,60,.2)"; ctx.lineWidth = 1;
     rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();

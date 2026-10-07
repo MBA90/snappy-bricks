@@ -93,8 +93,9 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .tray .swatches{grid-template-columns:repeat(8,38px);gap:8px 6px;padding:4px 2px}
   .swatch{min-width:38px;min-height:38px}
 
-  .styles{grid-template-columns:repeat(5,minmax(0,64px));gap:6px}
-  .stylebtn{min-height:76px;font-size:.8rem;justify-content:center}
+  /* six styles in two rows of three, so all of them fit without scrolling */
+  .styles{grid-template-columns:repeat(3,minmax(0,104px));gap:6px}
+  .stylebtn{min-height:50px;font-size:.8rem;flex-direction:row;justify-content:center;gap:6px;padding:4px}
   .stamps{grid-template-rows:none;grid-auto-flow:column;grid-auto-columns:74px;gap:6px}
   .stamps .card{min-height:104px}
   .plates{grid-template-columns:repeat(4,48px);gap:8px}
@@ -126,7 +127,8 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .tray-body{height:96px}
   .shapes .card{min-height:90px}
   .stamps .card{min-height:88px}
-  .stylebtn{min-height:64px}
+  .styles{gap:4px}
+  .stylebtn{min-height:44px}
   .plates{grid-template-columns:repeat(4,42px);gap:6px}
   .plates > *{min-width:42px;min-height:42px}
   .tray .swatches{gap:6px}

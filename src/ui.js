@@ -106,7 +106,7 @@ function buildStyles(){
   for (const s of STYLES){
     const b = document.createElement("button"); b.type = "button"; b.className = "stylebtn";
     b.setAttribute("aria-pressed", s.id === brickStyle); b.title = s[LANG];
-    const prev = pieceEl({w: 2, h: 1, bricks: [{x: 0, y: 0, w: s.id === "round" ? 1 : 2, h: 1, c: color, t: s.id}]}, 14);
+    const prev = pieceEl({w: 2, h: 2, bricks: [{x: 0, y: 0, w: 2, h: 2, c: color, t: s.id}]}, 14);
     b.appendChild(prev);
     const lab = document.createElement("span"); lab.textContent = s[LANG]; b.appendChild(lab);
     b.addEventListener("click", () => {

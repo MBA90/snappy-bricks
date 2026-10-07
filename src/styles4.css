@@ -180,7 +180,7 @@ body[data-age="little"] .sec-mine{display:none!important}
   .name-open > span:first-child{font-size:1.8rem}
   .swatches{grid-template-columns:repeat(5,40px);gap:6px}
   .swatch{min-width:40px;min-height:40px}
-  .styles{grid-template-columns:repeat(5,56px)}
+  .styles{grid-template-columns:repeat(6,56px)}
   .sec-bricks{display:grid;grid-template-columns:auto auto;align-items:center;justify-content:start;column-gap:10px;row-gap:6px}
   .sec-bricks .shapes{grid-column:1 / -1}
   .sec-bricks .row{margin:0}
