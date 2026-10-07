@@ -643,11 +643,26 @@ function buildBoardControls(){
     });
     pl.appendChild(b);
   }
+  // board styles: the same buttons as the brick styles, each with a little board wearing that style
+  const ps = $("#plateStyles"); ps.innerHTML = "";
+  for (const s of STYLES){
+    const b = document.createElement("button"); b.type = "button"; b.className = "stylebtn"; b.dataset.ps = s.id; b.title = s[LANG];
+    const prev = document.createElement("span"); prev.className = "plate pprev"; prev.dataset.ps = s.id; b.appendChild(prev);
+    const lab = document.createElement("span"); lab.textContent = s[LANG]; b.appendChild(lab);
+    b.addEventListener("click", () => {
+      if (plateStyle(B.ps) === s.id) return;
+      pushHistory(); B.ps = s.id; applyBoard(); emit("change"); sfx.click();
+      say(t("plateStyleSay_" + s.id));
+    });
+    ps.appendChild(b);
+  }
   syncBoardControls();
 }
 function syncBoardControls(){
   $$("#sizes .btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === sizeOf().id));
   $$("#plates .swatch").forEach(b => b.setAttribute("aria-pressed", b.dataset.hex === B.plate));
+  $$("#plateStyles .stylebtn").forEach(b => b.setAttribute("aria-pressed", b.dataset.ps === plateStyle(B.ps)));
+  $$("#plateStyles .pprev").forEach(e => paintVars(e, B.plate));
 }
 // boards can also stand upright (tall photos), so a size matches either way round
 const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);

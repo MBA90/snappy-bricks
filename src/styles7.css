@@ -1,0 +1,137 @@
+/* ===================== board styles: the brick styles worn by the board =====================
+   Classic is the plain board (.plate in styles.css). The board's own picture is painted once; what moves
+   (glitter twinkles, the glow breathing, the neon flicker, the lamps pulsing) is one or two layers over the
+   board that only fade in and out, which the phone does without repainting anything. The layers sit under
+   the bricks (bricks are z-index 1 and up). */
+.plate{
+  /* baseplate studs (the same as the Classic board), shared by Round, Glitter and Glow */
+  --pstuds:
+    radial-gradient(circle at 41% 37%, rgba(255,255,255,.55) 0 calc(var(--cell)*.025), rgba(255,255,255,0) calc(var(--cell)*.09)),
+    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.08), var(--c) calc(var(--cell)*.215), transparent calc(var(--cell)*.225)),
+    radial-gradient(circle at 48% 47.5%, rgba(255,255,255,.5) 0 calc(var(--cell)*.215), transparent calc(var(--cell)*.23)),
+    radial-gradient(circle at 52% 54%, var(--dk) 0 calc(var(--cell)*.225), transparent calc(var(--cell)*.24)),
+    radial-gradient(circle at 55% 59%, rgba(30,10,50,.24) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.29));
+}
+.plate[data-ps]::before,.plate[data-ps]::after{
+  content:none;position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+}
+
+/* round: a soft pillow of a board, like the domed round bricks: big round corners, lit on the top left, darker rim */
+.plate[data-ps="round"]{
+  border-radius:calc(var(--cell)*.9);
+  background-image:var(--pstuds),
+    radial-gradient(ellipse 75% 75% at 30% 22%, rgba(255,255,255,.3) 0, rgba(255,255,255,0) 100%),
+    radial-gradient(closest-side, rgba(30,10,60,0) 80%, rgba(30,10,60,.14) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat,no-repeat;
+}
+
+/* glitter: the same fine flecks as glitter bricks under the studs, and little stars that twinkle in turn */
+.plate[data-ps="glitter"]{
+  background-image:var(--pstuds),
+    radial-gradient(circle, var(--spark) 0 calc(var(--cell)*.03), transparent calc(var(--cell)*.055)),
+    radial-gradient(circle, var(--spark2) 0 calc(var(--cell)*.02), transparent calc(var(--cell)*.045)),
+    radial-gradient(circle, rgba(255,255,255,.75) 0 calc(var(--cell)*.012), transparent calc(var(--cell)*.03)),
+    linear-gradient(160deg, rgba(255,255,255,.16) 0, rgba(255,255,255,0) 40%, rgba(30,10,60,0) 65%, rgba(30,10,60,.1) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),
+    calc(var(--cell)*.37) calc(var(--cell)*.43),calc(var(--cell)*.53) calc(var(--cell)*.29),calc(var(--cell)*.23) calc(var(--cell)*.31),100% 100%;
+  background-position:0 0,0 0,0 0,0 0,0 0,0 calc(var(--cell)*.1),calc(var(--cell)*.2) 0,calc(var(--cell)*.07) calc(var(--cell)*.17),0 0;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,repeat,repeat,repeat,no-repeat;
+}
+.plate[data-ps="glitter"]::before,.plate[data-ps="glitter"]::after{content:"";opacity:0;animation:boardtwinkle 2.6s ease-in-out infinite}
+/* two sets of twinkles on uneven patterns (so they never line up with the studs), the second half a beat later */
+.plate[data-ps="glitter"]::before{
+  background-image:radial-gradient(circle, #fff 0 calc(var(--cell)*.035), rgba(255,255,255,.7) calc(var(--cell)*.06), rgba(255,255,255,0) calc(var(--cell)*.18));
+  background-size:calc(var(--cell)*3.7) calc(var(--cell)*2.9);background-repeat:repeat;
+  background-position:calc(var(--cell)*-1.6) calc(var(--cell)*-1.2);
+}
+.plate[data-ps="glitter"]::after{
+  background-image:radial-gradient(circle, #fff 0 calc(var(--cell)*.03), rgba(255,255,255,.6) calc(var(--cell)*.05), rgba(255,255,255,0) calc(var(--cell)*.16));
+  background-size:calc(var(--cell)*2.9) calc(var(--cell)*3.3);background-repeat:repeat;
+  background-position:calc(var(--cell)*-.4) calc(var(--cell)*-.75);
+  animation-delay:-1.3s;
+}
+@keyframes boardtwinkle{0%,100%{opacity:0}50%{opacity:1}}
+
+/* glow: the board lit from inside like a glow brick, white-hot in the middle, with a halo of its own colour.
+   The middle breathes (a still layer fading in and out). */
+.plate[data-ps="glow"]{
+  background-image:var(--pstuds),
+    radial-gradient(ellipse 62% 62% at 50% 45%, rgba(255,255,255,.7) 0, var(--lt) 45%, var(--c) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat;
+  box-shadow:
+    inset 0 0 calc(var(--cell)*1.2) rgba(255,255,255,.4),
+    inset 0 -3px 0 rgba(30,10,60,.14),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink),
+    0 0 calc(var(--cell)*.9) calc(3px + var(--cell)*.12) var(--neon);
+}
+.plate[data-ps="glow"]::before{
+  content:"";
+  background:radial-gradient(ellipse 55% 55% at 50% 45%, rgba(255,255,255,.45) 0, rgba(255,255,255,0) 100%);
+  animation:brickglow 2.4s ease-in-out infinite;
+}
+
+/* neon: dark glass with a glowing tube round the edge and ring studs, like neon bricks; the glow flickers now and then */
+.plate[data-ps="neon"]{
+  background-color:var(--glass);
+  background-image:
+    radial-gradient(circle at 50% 50%, transparent 0 calc(var(--cell)*.12), rgba(255,255,255,.55) calc(var(--cell)*.13) calc(var(--cell)*.145), var(--neon) calc(var(--cell)*.16) calc(var(--cell)*.19), transparent calc(var(--cell)*.22)),
+    linear-gradient(155deg, rgba(255,255,255,.14) 0, rgba(255,255,255,0) 40%),
+    linear-gradient(120deg, rgba(255,255,255,0) 58%, rgba(255,255,255,.07) 58% 66%, rgba(255,255,255,0) 66%);
+  background-size:var(--cell) var(--cell),100% 100%,100% 100%;
+  background-repeat:repeat,no-repeat,no-repeat;
+  box-shadow:
+    inset 0 0 0 calc(var(--cell)*.12) var(--neon),
+    inset 0 0 calc(var(--cell)*.8) var(--neon),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="neon"]::before{
+  content:"";inset:calc(var(--cell)*.04);
+  border:max(1px, calc(var(--cell)*.03)) solid rgba(255,255,255,.8);
+}
+.plate[data-ps="neon"]::after{
+  content:"";
+  box-shadow:0 0 calc(var(--cell)*.7) calc(var(--cell)*.1) var(--neon),inset 0 0 calc(var(--cell)*.5) var(--neon);
+  animation:neonflicker 5s linear infinite;
+}
+
+/* light: a frosted pastel lamp of a board, every stud a little bulb, and a soft halo that slowly pulses */
+.plate[data-ps="light"]{
+  background-color:var(--pl);
+  background-image:
+    radial-gradient(circle at 50% 50%, #fff 0 calc(var(--cell)*.06), rgba(255,255,255,.85) calc(var(--cell)*.1), var(--glo) calc(var(--cell)*.18), transparent calc(var(--cell)*.32)),
+    radial-gradient(circle at 50% 50%, transparent calc(var(--cell)*.2), rgba(255,255,255,.7) calc(var(--cell)*.215) calc(var(--cell)*.23), transparent calc(var(--cell)*.25)),
+    linear-gradient(170deg, rgba(255,255,255,.55) 0, rgba(255,255,255,0) 50%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),100% 100%;
+  background-repeat:repeat,repeat,no-repeat;
+  box-shadow:
+    inset 0 0 calc(var(--cell)*1.4) rgba(255,255,255,.8),
+    inset 0 0 0 max(2px, calc(var(--cell)*.06)) rgba(255,255,255,.75),
+    inset 0 -3px 0 var(--pdk),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="light"]::before{
+  content:"";
+  box-shadow:0 0 calc(var(--cell)*.9) calc(3px + var(--cell)*.12) var(--glo),inset 0 0 calc(var(--cell)*.9) rgba(255,255,255,.9);
+  animation:lamppulse 3.2s ease-in-out infinite;
+}
+
+/* boards with hundreds of bricks, replays and huge photo boards keep the look but stop moving */
+.plate.calm[data-ps]::before,.plate.calm[data-ps]::after{animation:none}
+.plate.calm[data-ps="glitter"]::before,.plate.calm[data-ps="glitter"]::after{opacity:.6}
+.plate.tiny[data-ps]{background-image:none}
+.plate.tiny[data-ps]::before,.plate.tiny[data-ps]::after{content:none}
+
+/* the picker: a little board in each style, on the same buttons as the brick styles */
+.pprev{
+  --cell:13px;display:block;flex:none;width:39px;height:26px;margin:1px auto 2px;
+  border-radius:5px;touch-action:auto;
+  box-shadow:0 0 0 2px var(--ink),0 3px 0 2px var(--ink);
+}
+.pprev[data-ps="round"]{border-radius:11px}
+.pprev[data-ps="glow"]{box-shadow:inset 0 0 8px rgba(255,255,255,.4),0 0 0 2px var(--ink),0 3px 0 2px var(--ink),0 0 7px 2px var(--neon)}
+.pprev[data-ps="neon"]{box-shadow:inset 0 0 0 2px var(--neon),inset 0 0 8px var(--neon),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="light"]{box-shadow:inset 0 0 12px rgba(255,255,255,.8),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="glow"]::before{display:none}
+.pprev[data-ps="neon"]::before{border-width:1px;inset:2px}

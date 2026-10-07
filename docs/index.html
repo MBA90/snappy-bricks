@@ -1369,6 +1369,144 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
   .gp-actions{flex:1 1 auto;min-width:0;padding-bottom:0}
 }
 
+/* ===================== board styles: the brick styles worn by the board =====================
+   Classic is the plain board (.plate in styles.css). The board's own picture is painted once; what moves
+   (glitter twinkles, the glow breathing, the neon flicker, the lamps pulsing) is one or two layers over the
+   board that only fade in and out, which the phone does without repainting anything. The layers sit under
+   the bricks (bricks are z-index 1 and up). */
+.plate{
+  /* baseplate studs (the same as the Classic board), shared by Round, Glitter and Glow */
+  --pstuds:
+    radial-gradient(circle at 41% 37%, rgba(255,255,255,.55) 0 calc(var(--cell)*.025), rgba(255,255,255,0) calc(var(--cell)*.09)),
+    radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.08), var(--c) calc(var(--cell)*.215), transparent calc(var(--cell)*.225)),
+    radial-gradient(circle at 48% 47.5%, rgba(255,255,255,.5) 0 calc(var(--cell)*.215), transparent calc(var(--cell)*.23)),
+    radial-gradient(circle at 52% 54%, var(--dk) 0 calc(var(--cell)*.225), transparent calc(var(--cell)*.24)),
+    radial-gradient(circle at 55% 59%, rgba(30,10,50,.24) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.29));
+}
+.plate[data-ps]::before,.plate[data-ps]::after{
+  content:none;position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+}
+
+/* round: a soft pillow of a board, like the domed round bricks: big round corners, lit on the top left, darker rim */
+.plate[data-ps="round"]{
+  border-radius:calc(var(--cell)*.9);
+  background-image:var(--pstuds),
+    radial-gradient(ellipse 75% 75% at 30% 22%, rgba(255,255,255,.3) 0, rgba(255,255,255,0) 100%),
+    radial-gradient(closest-side, rgba(30,10,60,0) 80%, rgba(30,10,60,.14) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat,no-repeat;
+}
+
+/* glitter: the same fine flecks as glitter bricks under the studs, and little stars that twinkle in turn */
+.plate[data-ps="glitter"]{
+  background-image:var(--pstuds),
+    radial-gradient(circle, var(--spark) 0 calc(var(--cell)*.03), transparent calc(var(--cell)*.055)),
+    radial-gradient(circle, var(--spark2) 0 calc(var(--cell)*.02), transparent calc(var(--cell)*.045)),
+    radial-gradient(circle, rgba(255,255,255,.75) 0 calc(var(--cell)*.012), transparent calc(var(--cell)*.03)),
+    linear-gradient(160deg, rgba(255,255,255,.16) 0, rgba(255,255,255,0) 40%, rgba(30,10,60,0) 65%, rgba(30,10,60,.1) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),
+    calc(var(--cell)*.37) calc(var(--cell)*.43),calc(var(--cell)*.53) calc(var(--cell)*.29),calc(var(--cell)*.23) calc(var(--cell)*.31),100% 100%;
+  background-position:0 0,0 0,0 0,0 0,0 0,0 calc(var(--cell)*.1),calc(var(--cell)*.2) 0,calc(var(--cell)*.07) calc(var(--cell)*.17),0 0;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,repeat,repeat,repeat,no-repeat;
+}
+.plate[data-ps="glitter"]::before,.plate[data-ps="glitter"]::after{content:"";opacity:0;animation:boardtwinkle 2.6s ease-in-out infinite}
+/* two sets of twinkles on uneven patterns (so they never line up with the studs), the second half a beat later */
+.plate[data-ps="glitter"]::before{
+  background-image:radial-gradient(circle, #fff 0 calc(var(--cell)*.035), rgba(255,255,255,.7) calc(var(--cell)*.06), rgba(255,255,255,0) calc(var(--cell)*.18));
+  background-size:calc(var(--cell)*3.7) calc(var(--cell)*2.9);background-repeat:repeat;
+  background-position:calc(var(--cell)*-1.6) calc(var(--cell)*-1.2);
+}
+.plate[data-ps="glitter"]::after{
+  background-image:radial-gradient(circle, #fff 0 calc(var(--cell)*.03), rgba(255,255,255,.6) calc(var(--cell)*.05), rgba(255,255,255,0) calc(var(--cell)*.16));
+  background-size:calc(var(--cell)*2.9) calc(var(--cell)*3.3);background-repeat:repeat;
+  background-position:calc(var(--cell)*-.4) calc(var(--cell)*-.75);
+  animation-delay:-1.3s;
+}
+@keyframes boardtwinkle{0%,100%{opacity:0}50%{opacity:1}}
+
+/* glow: the board lit from inside like a glow brick, white-hot in the middle, with a halo of its own colour.
+   The middle breathes (a still layer fading in and out). */
+.plate[data-ps="glow"]{
+  background-image:var(--pstuds),
+    radial-gradient(ellipse 62% 62% at 50% 45%, rgba(255,255,255,.7) 0, var(--lt) 45%, var(--c) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat;
+  box-shadow:
+    inset 0 0 calc(var(--cell)*1.2) rgba(255,255,255,.4),
+    inset 0 -3px 0 rgba(30,10,60,.14),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink),
+    0 0 calc(var(--cell)*.9) calc(3px + var(--cell)*.12) var(--neon);
+}
+.plate[data-ps="glow"]::before{
+  content:"";
+  background:radial-gradient(ellipse 55% 55% at 50% 45%, rgba(255,255,255,.45) 0, rgba(255,255,255,0) 100%);
+  animation:brickglow 2.4s ease-in-out infinite;
+}
+
+/* neon: dark glass with a glowing tube round the edge and ring studs, like neon bricks; the glow flickers now and then */
+.plate[data-ps="neon"]{
+  background-color:var(--glass);
+  background-image:
+    radial-gradient(circle at 50% 50%, transparent 0 calc(var(--cell)*.12), rgba(255,255,255,.55) calc(var(--cell)*.13) calc(var(--cell)*.145), var(--neon) calc(var(--cell)*.16) calc(var(--cell)*.19), transparent calc(var(--cell)*.22)),
+    linear-gradient(155deg, rgba(255,255,255,.14) 0, rgba(255,255,255,0) 40%),
+    linear-gradient(120deg, rgba(255,255,255,0) 58%, rgba(255,255,255,.07) 58% 66%, rgba(255,255,255,0) 66%);
+  background-size:var(--cell) var(--cell),100% 100%,100% 100%;
+  background-repeat:repeat,no-repeat,no-repeat;
+  box-shadow:
+    inset 0 0 0 calc(var(--cell)*.12) var(--neon),
+    inset 0 0 calc(var(--cell)*.8) var(--neon),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="neon"]::before{
+  content:"";inset:calc(var(--cell)*.04);
+  border:max(1px, calc(var(--cell)*.03)) solid rgba(255,255,255,.8);
+}
+.plate[data-ps="neon"]::after{
+  content:"";
+  box-shadow:0 0 calc(var(--cell)*.7) calc(var(--cell)*.1) var(--neon),inset 0 0 calc(var(--cell)*.5) var(--neon);
+  animation:neonflicker 5s linear infinite;
+}
+
+/* light: a frosted pastel lamp of a board, every stud a little bulb, and a soft halo that slowly pulses */
+.plate[data-ps="light"]{
+  background-color:var(--pl);
+  background-image:
+    radial-gradient(circle at 50% 50%, #fff 0 calc(var(--cell)*.06), rgba(255,255,255,.85) calc(var(--cell)*.1), var(--glo) calc(var(--cell)*.18), transparent calc(var(--cell)*.32)),
+    radial-gradient(circle at 50% 50%, transparent calc(var(--cell)*.2), rgba(255,255,255,.7) calc(var(--cell)*.215) calc(var(--cell)*.23), transparent calc(var(--cell)*.25)),
+    linear-gradient(170deg, rgba(255,255,255,.55) 0, rgba(255,255,255,0) 50%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),100% 100%;
+  background-repeat:repeat,repeat,no-repeat;
+  box-shadow:
+    inset 0 0 calc(var(--cell)*1.4) rgba(255,255,255,.8),
+    inset 0 0 0 max(2px, calc(var(--cell)*.06)) rgba(255,255,255,.75),
+    inset 0 -3px 0 var(--pdk),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="light"]::before{
+  content:"";
+  box-shadow:0 0 calc(var(--cell)*.9) calc(3px + var(--cell)*.12) var(--glo),inset 0 0 calc(var(--cell)*.9) rgba(255,255,255,.9);
+  animation:lamppulse 3.2s ease-in-out infinite;
+}
+
+/* boards with hundreds of bricks, replays and huge photo boards keep the look but stop moving */
+.plate.calm[data-ps]::before,.plate.calm[data-ps]::after{animation:none}
+.plate.calm[data-ps="glitter"]::before,.plate.calm[data-ps="glitter"]::after{opacity:.6}
+.plate.tiny[data-ps]{background-image:none}
+.plate.tiny[data-ps]::before,.plate.tiny[data-ps]::after{content:none}
+
+/* the picker: a little board in each style, on the same buttons as the brick styles */
+.pprev{
+  --cell:13px;display:block;flex:none;width:39px;height:26px;margin:1px auto 2px;
+  border-radius:5px;touch-action:auto;
+  box-shadow:0 0 0 2px var(--ink),0 3px 0 2px var(--ink);
+}
+.pprev[data-ps="round"]{border-radius:11px}
+.pprev[data-ps="glow"]{box-shadow:inset 0 0 8px rgba(255,255,255,.4),0 0 0 2px var(--ink),0 3px 0 2px var(--ink),0 0 7px 2px var(--neon)}
+.pprev[data-ps="neon"]{box-shadow:inset 0 0 0 2px var(--neon),inset 0 0 8px var(--neon),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="light"]{box-shadow:inset 0 0 12px rgba(255,255,255,.8),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="glow"]::before{display:none}
+.pprev[data-ps="neon"]::before{border-width:1px;inset:2px}
+
 </style>
 <div class="app">
 
@@ -1537,6 +1675,8 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
           <div class="stamps" id="myStamps"></div>
         </div>
         <div class="tray-sec sec-plates">
+          <h3 data-i18n="boardStyle">Board style</h3>
+          <div class="styles plate-styles" id="plateStyles"></div>
           <h3 data-i18n="boardColor">Board color</h3>
           <div class="plates" id="plates"></div>
         </div>
@@ -1911,6 +2051,13 @@ addStrings({
   rainbow: ["Rainbow", "قوس قزح"], candy: ["Candy", "حلوى"], myColor: ["My color", "لوني"],
   buildName: ["Build my name!", "ابنِ اسمي!"],
   board: ["Board", "اللوحة"], size: ["Size", "الحجم"], boardColor: ["Board color", "لون اللوحة"],
+  boardStyle: ["Board style", "نوع اللوحة"],
+  plateStyleSay_std: ["A classic board with bumps on top.", "لوحة كلاسيكية بنتوءات صغيرة."],
+  plateStyleSay_round: ["A round board, soft like a pillow!", "لوحة دائرية ناعمة مثل الوسادة!"],
+  plateStyleSay_glitter: ["A sparkly glitter board!", "لوحة لامعة بالبريق!"],
+  plateStyleSay_glow: ["A glow board that shines like a magic light!", "لوحة مضيئة تلمع مثل ضوء سحري!"],
+  plateStyleSay_neon: ["A neon board that lights up like a sign at night!", "لوحة نيون تضيء مثل لافتة في الليل!"],
+  plateStyleSay_light: ["A light board full of little lamps!", "لوحة فاتحة مليئة بالمصابيح الصغيرة!"],
   undone: ["Undone! It's back the way it was.", "تم التراجع! عاد كما كان."],
   oneBrick: ["1 brick", "المكعبات: 1"], nBricks: ["{n} bricks", "المكعبات: {n}"],
   builtWith: ["Built with Snappy Bricks", "صُنعت بمكعبات سنابي"],
@@ -2181,7 +2328,11 @@ function artToPix(art, recolor){
 }
 
 /* ===================== boards ===================== */
-function newBoard(cols, rows, plate){ return {cols, rows, plate, bricks: [], hist: []}; }
+// board styles are the brick styles (Classic, Round, Glitter, Glow, Neon, Light) worn by the board itself
+const plateStyle = v => STYLES.some(s => s.id === v) ? v : "std";
+// the colour a board shows to the eye: neon boards are dark glass whatever their colour
+function plateTone(board){ return plateStyle(board.ps) === "neon" ? neonGlass(board.plate) : board.plate; }
+function newBoard(cols, rows, plate, ps = "std"){ return {cols, rows, plate, ps, bricks: [], hist: []}; }
 let FREE = newBoard(24, 18, "#FF2E8A");
 let B = FREE;            // the board on screen
 let nextId = 1;
@@ -2226,7 +2377,7 @@ function canPlace(bricks, gx, gy, ignore = 0){
 }
 
 /* ---- history ---- */
-function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, bricks: B.bricks}); }
+function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, ps: B.ps, bricks: B.bricks}); }
 function pushHistory(){
   B.hist.push(snapshot()); if (B.hist.length > 60) B.hist.shift();
   updateUndo();
@@ -2235,7 +2386,7 @@ function updateUndo(){ const u = $("#undoBtn"); if (u) u.disabled = !B.hist.leng
 function undo(){
   if (!B.hist.length) return;
   const d = JSON.parse(B.hist.pop());
-  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.bricks = d.bricks;
+  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.ps = plateStyle(d.ps); B.bricks = d.bricks;
   applyBoard(); commit(); sfx.turn(); updateUndo();
   say(t("undone"));
 }
@@ -2308,6 +2459,7 @@ function switchBoard(board){
 }
 function applyBoard(){
   paintVars(plate, B.plate);
+  plate.dataset.ps = plateStyle(B.ps);
   plate.style.width  = `calc(var(--cell) * ${B.cols})`;
   plate.style.height = `calc(var(--cell) * ${B.rows})`;
   fitCell();
@@ -2496,15 +2648,98 @@ function sheen(ctx, x, y, w, h, a, b){
   g.addColorStop(.62, "rgba(30,10,60,0)"); g.addColorStop(1, `rgba(30,10,60,${b})`);
   return g;
 }
+// the board under the bricks in each board style (matches styles7.css; Classic is the plain board)
+function drawPlate(ctx, board, ox, oy, c){
+  const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = board.plate;
+  const rad = ps === "round" ? c * .9 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
+  const each = fn => { for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) fn(ox + (x + .5) * c, oy + (y + .5) * c, x, y); };
+  // glow, neon and light boards shine out past their edge in their own colour
+  if (ps === "glow" || ps === "neon" || ps === "light"){
+    ctx.save(); ctx.shadowColor = ps === "light" ? lampColor(col, .75) : neonColor(col); ctx.shadowBlur = c * (ps === "neon" ? .8 : 1.1);
+    ctx.fillStyle = ps === "neon" ? neonGlass(col) : col; path(); ctx.fill(); ctx.restore();
+  }
+  ctx.save(); path(); ctx.clip();
+  ctx.fillStyle = ps === "neon" ? neonGlass(col) : ps === "light" ? pastel(col) : col; ctx.fillRect(ox, oy, bw, bh);
+  if (ps === "glow"){
+    const g = ctx.createRadialGradient(ox + bw / 2, oy + bh * .45, 0, ox + bw / 2, oy + bh * .45, Math.max(bw, bh) * .62);
+    g.addColorStop(0, "rgba(255,255,255,.8)"); g.addColorStop(.45, shade(col, .3)); g.addColorStop(1, col);
+    ctx.fillStyle = g; ctx.fillRect(ox, oy, bw, bh);
+  } else if (ps === "neon"){
+    ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, 0); ctx.fillRect(ox, oy, bw, bh);
+  } else if (ps === "light"){
+    const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
+    wg.addColorStop(0, "rgba(255,255,255,.55)"); wg.addColorStop(.5, "rgba(255,255,255,0)");
+    ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
+  } else {
+    ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); ctx.fillRect(ox, oy, bw, bh);
+  }
+  if (ps === "round"){
+    // a pillow: lit on the top left, a darker rim
+    const dg = ctx.createRadialGradient(ox + bw * .3, oy + bh * .22, 0, ox + bw * .3, oy + bh * .22, Math.max(bw, bh) * .75);
+    dg.addColorStop(0, "rgba(255,255,255,.3)"); dg.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = dg; ctx.fillRect(ox, oy, bw, bh);
+    ctx.save(); ctx.translate(ox + bw / 2, oy + bh / 2); ctx.scale(bw / 2, bh / 2);
+    const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); rg.addColorStop(.8, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.14)");
+    ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
+  }
+  if (ps === "glitter"){
+    // flecks under the studs, seeded so the same board always gets the same glitter
+    let sd = board.cols * 7919 + board.rows * 104729;
+    const rnd = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280), n = board.cols * board.rows;
+    for (const [m, r, f] of [[7, .03, sparkColor(col)], [4, .02, spark2Color(col)], [6, .014, "rgba(255,255,255,.75)"]]){
+      ctx.fillStyle = f;
+      for (let i = 0; i < n * m; i++){ ctx.beginPath(); ctx.arc(ox + rnd() * bw, oy + rnd() * bh, c * r * (.7 + rnd() * .6), 0, 7); ctx.fill(); }
+    }
+  }
+  // a little depth at the board's edges (a lit rim on the light board, a glowing tube on neon)
+  if (ps === "light"){
+    ctx.shadowColor = "rgba(255,255,255,.9)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(255,255,255,.5)";
+  } else if (ps === "neon"){
+    ctx.shadowColor = neonColor(col); ctx.shadowBlur = c * .8; ctx.lineWidth = c * .24; ctx.strokeStyle = neonColor(col);
+  } else {
+    ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
+  }
+  if (ps === "neon"){ path(); ctx.stroke(); ctx.stroke(); }
+  else { rrect(ctx, ox - c / 2, oy - c / 2, bw + c, bh + c, rad + c * .5); ctx.stroke(); }
+  ctx.restore();
+  if (ps === "neon"){
+    // the tube's white-hot core, then ring studs (dimmer than a neon brick's, so bricks stay the brightest)
+    const nc = neonColor(col);
+    ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = Math.max(1, c * .03);
+    rrect(ctx, ox + c * .04, oy + c * .04, bw - c * .08, bh - c * .08, rad - c * .04); ctx.stroke();
+    ctx.strokeStyle = nc; ctx.lineWidth = c * .03; ctx.beginPath(); each((sx, sy) => { ctx.moveTo(sx + c * .175, sy); ctx.arc(sx, sy, c * .175, 0, 7); }); ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = c * .015; ctx.beginPath(); each((sx, sy) => { ctx.moveTo(sx + c * .138, sy); ctx.arc(sx, sy, c * .138, 0, 7); }); ctx.stroke();
+  } else if (ps === "light"){
+    // every stud a little bulb, drawn once and stamped
+    const key = "bulb|" + c + "|" + col;
+    let tile = studTiles.get(key);
+    if (!tile){
+      const s = Math.ceil(c); tile = document.createElement("canvas"); tile.width = s; tile.height = s;
+      const tc = tile.getContext("2d"), m = c / 2;
+      const bg = tc.createRadialGradient(m, m, 0, m, m, c * .32);
+      bg.addColorStop(0, "#fff"); bg.addColorStop(.19, "#fff"); bg.addColorStop(.31, "rgba(255,255,255,.85)");
+      bg.addColorStop(.56, lampColor(col, .75)); bg.addColorStop(1, "rgba(255,255,255,0)");
+      tc.fillStyle = bg; tc.beginPath(); tc.arc(m, m, c * .32, 0, 7); tc.fill();
+      tc.strokeStyle = "rgba(255,255,255,.7)"; tc.lineWidth = c * .015; tc.beginPath(); tc.arc(m, m, c * .222, 0, 7); tc.stroke();
+      studTiles.set(key, tile);
+    }
+    each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
+  } else each((sx, sy) => stud(ctx, sx - c / 2, sy - c / 2, c, col, true));
+  if (ps === "glitter"){
+    // a few twinkles caught mid-sparkle
+    let sd = board.cols * 31 + board.rows * 17;
+    const rnd = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
+    ctx.save(); ctx.fillStyle = "#fff"; ctx.shadowColor = "#fff"; ctx.shadowBlur = c * .2;
+    for (let i = 0; i < Math.round(board.cols * board.rows / 9); i++){
+      const kx = ox + rnd() * bw, ky = oy + rnd() * bh, kr = c * (.12 + rnd() * .1);
+      ctx.beginPath(); ctx.moveTo(kx, ky - kr); ctx.quadraticCurveTo(kx, ky, kx + kr, ky); ctx.quadraticCurveTo(kx, ky, kx, ky + kr);
+      ctx.quadraticCurveTo(kx, ky, kx - kr, ky); ctx.quadraticCurveTo(kx, ky, kx, ky - kr); ctx.fill();
+    }
+    ctx.restore();
+  }
+}
 function drawBoard(ctx, board, ox, oy, c){
-  const bw = board.cols * c, bh = board.rows * c;
-  ctx.fillStyle = board.plate; rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
-  ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
-  // a little depth at the board's edges
-  ctx.save(); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.clip();
-  ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
-  rrect(ctx, ox - c / 2, oy - c / 2, bw + c, bh + c, c * .8); ctx.stroke(); ctx.restore();
-  for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) stud(ctx, ox + x * c, oy + y * c, c, board.plate, true);
+  drawPlate(ctx, board, ox, oy, c);
   const list = [...board.bricks].sort((a, b) => (a.z || 0) - (b.z || 0));
   for (const b of list){
     const z = b.z || 0, t = b.t || "std";
@@ -3351,11 +3586,26 @@ function buildBoardControls(){
     });
     pl.appendChild(b);
   }
+  // board styles: the same buttons as the brick styles, each with a little board wearing that style
+  const ps = $("#plateStyles"); ps.innerHTML = "";
+  for (const s of STYLES){
+    const b = document.createElement("button"); b.type = "button"; b.className = "stylebtn"; b.dataset.ps = s.id; b.title = s[LANG];
+    const prev = document.createElement("span"); prev.className = "plate pprev"; prev.dataset.ps = s.id; b.appendChild(prev);
+    const lab = document.createElement("span"); lab.textContent = s[LANG]; b.appendChild(lab);
+    b.addEventListener("click", () => {
+      if (plateStyle(B.ps) === s.id) return;
+      pushHistory(); B.ps = s.id; applyBoard(); emit("change"); sfx.click();
+      say(t("plateStyleSay_" + s.id));
+    });
+    ps.appendChild(b);
+  }
   syncBoardControls();
 }
 function syncBoardControls(){
   $$("#sizes .btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === sizeOf().id));
   $$("#plates .swatch").forEach(b => b.setAttribute("aria-pressed", b.dataset.hex === B.plate));
+  $$("#plateStyles .stylebtn").forEach(b => b.setAttribute("aria-pressed", b.dataset.ps === plateStyle(B.ps)));
+  $$("#plateStyles .pprev").forEach(e => paintVars(e, B.plate));
 }
 // boards can also stand upright (tall photos), so a size matches either way round
 const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);
@@ -3418,7 +3668,7 @@ function readable(c, plateHex){
 function textColors(mode, explicit){
   if (explicit) return explicit;
   if (mode === "one") return [color];
-  const ok = c => readable(c, B.plate);
+  const tone = plateTone(B), ok = c => readable(c, tone);
   let list = (mode === "pastel" ? CANDY : RAINBOW).filter(ok);
   if (!list.length) list = RAINBOW.filter(ok);
   return list.length ? list : ["#2E2A3A"];
@@ -4168,7 +4418,7 @@ $("#replayBtn").addEventListener("click", replay);
 
 /* ---------- my creations (gallery) ---------- */
 let gallery = store("snappy-gallery") || [];
-function compactBoard(bd){ return {cols: bd.cols, rows: bd.rows, plate: bd.plate, b: bd.bricks.map(b => [b.x, b.y, b.w, b.h, b.c, b.t || "std", b.z || 0])}; }
+function compactBoard(bd){ return {cols: bd.cols, rows: bd.rows, plate: bd.plate, ps: plateStyle(bd.ps), b: bd.bricks.map(b => [b.x, b.y, b.w, b.h, b.c, b.t || "std", b.z || 0])}; }
 function expandBricks(cb){ return fitBricks(cb.b.map(a => ({id: nextId++, x: a[0], y: a[1], w: a[2], h: a[3], c: a[4], t: a[5] || "std", z: a[6] || 0}))); }
 function saveToGallery(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
@@ -4180,7 +4430,7 @@ function saveToGallery(){
 function loadIntoFree(cb){
   if (currentMode !== "free") setMode("free", true);
   pushHistory();
-  FREE.cols = cb.cols; FREE.rows = cb.rows; FREE.plate = cb.plate; FREE.bricks = expandBricks(cb);
+  FREE.cols = cb.cols; FREE.rows = cb.rows; FREE.plate = cb.plate; FREE.ps = plateStyle(cb.ps); FREE.bricks = expandBricks(cb);
   clearEls(); applyBoard(); commit();
 }
 function openGallery(){
@@ -5540,7 +5790,7 @@ on("boot", () => refreshMapBtn());
 
 /* ===================== start-up + wiring ===================== */
 const SAVE_KEY = "snappy-bricks-v2";
-const saveFree = later(() => store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, bricks: FREE.bricks}), 300);
+const saveFree = later(() => store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, ps: FREE.ps, bricks: FREE.bricks}), 300);
 on("change", () => { if (B === FREE) saveFree(); });
 // never lose the last few moves when the tab is closed or put away
 window.addEventListener("pagehide", saveFree.flush);
@@ -5548,7 +5798,7 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) saveF
 function loadFree(){
   const d = store(SAVE_KEY) || store("snappy-bricks-v1");
   if (!d || !Array.isArray(d.bricks) || !isBoardSize(d.cols, d.rows)) return false;
-  FREE.cols = d.cols; FREE.rows = d.rows; FREE.plate = typeof d.plate === "string" ? d.plate : "#FF2E8A";
+  FREE.cols = d.cols; FREE.rows = d.rows; FREE.plate = typeof d.plate === "string" ? d.plate : "#FF2E8A"; FREE.ps = plateStyle(d.ps);
   FREE.bricks = fitBricks(d.bricks.filter(b => b && [b.x, b.y, b.w, b.h].every(Number.isFinite) && typeof b.c === "string")
     .map(b => ({id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: b.z || 0})));
   return true;
