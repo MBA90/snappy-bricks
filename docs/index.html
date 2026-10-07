@@ -115,14 +115,24 @@ button{font:inherit;color:inherit}
     0 1px 1px rgba(30,10,60,.25),
     calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.34);
 }
-.brick.t-round{border-radius:999px}
+/* round: a domed button, lit on the top left with a soft darker rim */
+.brick.t-round{
+  border-radius:999px;
+  background-image:
+    var(--studs),
+    radial-gradient(ellipse 70% 70% at 34% 28%, rgba(255,255,255,.34) 0, rgba(255,255,255,0) 100%),
+    radial-gradient(closest-side, rgba(30,10,60,0) 72%, rgba(30,10,60,.16) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat,no-repeat;
+}
 /* glitter: fine flecks sized to the stud grid, drawn under the studs;
-   --spark is dark on light colors so the flecks always show */
+   --spark is dark on light colors so the flecks always show, --spark2 adds a gold or violet twinkle */
 .brick.t-glitter{
   background-image:
     var(--studs),
     radial-gradient(circle, var(--spark) 0 calc(var(--cell)*.03), transparent calc(var(--cell)*.055)),
-    radial-gradient(circle, var(--spark) 0 calc(var(--cell)*.02), transparent calc(var(--cell)*.045)),
+    radial-gradient(circle, var(--spark2) 0 calc(var(--cell)*.02), transparent calc(var(--cell)*.045)),
     radial-gradient(circle, rgba(255,255,255,.75) 0 calc(var(--cell)*.012), transparent calc(var(--cell)*.03)),
     var(--sheen);
   /* --studs is five layers, so it takes five sizes and positions */
@@ -140,25 +150,26 @@ button{font:inherit;color:inherit}
   animation:shine 2.6s linear infinite;
 }
 @keyframes shine{from{transform:translateX(-80%)}to{transform:translateX(80%)}}
-/* glow: a lit-up brick, bright in the middle with a soft halo of its own color that breathes */
+/* glow: a lit-up brick, white-hot in the middle with a soft halo of its own color that breathes
+   (--neon is the colour lifted for black and brown, so dark bricks still glow) */
 .brick.t-glow{
-  background-color:var(--lt);
+  background-color:var(--c);
   background-image:
     var(--studs),
-    radial-gradient(ellipse at 50% 45%, rgba(255,255,255,.7) 0, var(--lt) 45%, var(--c) 100%);
+    radial-gradient(ellipse 60% 60% at 50% 45%, rgba(255,255,255,.92) 0, var(--lt) 42%, var(--c) 100%);
   background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%;
   background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0;
   background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat;
   box-shadow:
-    inset 0 0 calc(var(--cell)*.22) rgba(255,255,255,.85),
-    inset 0 calc(var(--cell)*-.07) 0 var(--c),
+    inset 0 0 calc(var(--cell)*.14) rgba(255,255,255,.35),
+    inset 0 calc(var(--cell)*-.07) 0 var(--dk),
     0 0 0 1px rgba(30,10,60,.16),
-    0 0 calc(var(--cell)*.3) var(--c),
+    0 0 calc(var(--cell)*.3) var(--neon),
     calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.25);
 }
 .brick.t-glow::before{
   content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  box-shadow:0 0 calc(var(--cell)*.6) calc(var(--cell)*.12) var(--c);
+  box-shadow:0 0 calc(var(--cell)*.6) calc(var(--cell)*.12) var(--neon);
   animation:brickglow 2.4s ease-in-out infinite;
 }
 @keyframes brickglow{0%,100%{opacity:.35}50%{opacity:1}}
@@ -167,10 +178,11 @@ button{font:inherit;color:inherit}
   background-color:var(--glass);
   background-image:
     radial-gradient(circle at 50% 50%, transparent 0 calc(var(--cell)*.115), rgba(255,255,255,.9) calc(var(--cell)*.13) calc(var(--cell)*.15), var(--neon) calc(var(--cell)*.17) calc(var(--cell)*.2), transparent calc(var(--cell)*.24)),
-    linear-gradient(155deg, rgba(255,255,255,.16) 0, rgba(255,255,255,0) 40%);
-  background-size:var(--cell) var(--cell),100% 100%;
-  background-position:var(--at) var(--at),0 0;
-  background-repeat:repeat,no-repeat;
+    linear-gradient(155deg, rgba(255,255,255,.16) 0, rgba(255,255,255,0) 40%),
+    linear-gradient(120deg, rgba(255,255,255,0) 58%, rgba(255,255,255,.09) 58% 66%, rgba(255,255,255,0) 66%);
+  background-size:var(--cell) var(--cell),100% 100%,100% 100%;
+  background-position:var(--at) var(--at),0 0,0 0;
+  background-repeat:repeat,no-repeat,no-repeat;
   box-shadow:
     inset 0 0 0 calc(var(--cell)*.07) var(--neon),
     inset 0 0 calc(var(--cell)*.3) var(--neon),
@@ -190,6 +202,23 @@ button{font:inherit;color:inherit}
   animation:neonflicker 5s linear infinite;
 }
 @keyframes neonflicker{0%,90%,94%,98%,100%{opacity:1}91%{opacity:.35}92%{opacity:.9}93%{opacity:.4}96%{opacity:.7}}
+/* light: soft pastel bricks, chalky and airy, with puffy corners, pastel studs and a light floating shadow */
+.brick.t-light{
+  --studs:
+    radial-gradient(circle at 41% 37%, rgba(255,255,255,.95) 0 calc(var(--cell)*.035), rgba(255,255,255,0) calc(var(--cell)*.11)),
+    radial-gradient(circle at 50% 50%, var(--plt) 0 calc(var(--cell)*.13), var(--pl) calc(var(--cell)*.235), transparent calc(var(--cell)*.245)),
+    radial-gradient(circle at 48% 47.5%, rgba(255,255,255,.9) 0 calc(var(--cell)*.235), transparent calc(var(--cell)*.25)),
+    radial-gradient(circle at 52% 54%, var(--pdk) 0 calc(var(--cell)*.245), transparent calc(var(--cell)*.26)),
+    radial-gradient(circle at 56% 61%, rgba(30,10,50,.16) 0 calc(var(--cell)*.22), transparent calc(var(--cell)*.32));
+  background-color:var(--pl);
+  background-image:var(--studs),linear-gradient(170deg, rgba(255,255,255,.55) 0, rgba(255,255,255,0) 45%);
+  border-radius:calc(var(--cell)*.24);
+  box-shadow:
+    inset 0 calc(var(--cell)*-.08) 0 var(--pdk),
+    inset 0 0 0 max(1px, calc(var(--cell)*.04)) rgba(255,255,255,.7),
+    0 0 0 1px rgba(30,10,60,.14),
+    calc(1px + var(--z) * 1px) calc(4px + var(--z) * 3px) calc(8px + var(--z) * 3px) rgba(30,10,60,.2);
+}
 /* boards with hundreds of bricks keep their look but stop the endless shimmer, glow and flicker */
 .plate.calm .brick::before,.plate.calm .brick::after{animation:none}
 .plate.calm .brick.t-glow::before{opacity:.7}
@@ -712,7 +741,7 @@ body[data-age="little"] .sec-mine{display:none!important}
   .name-open > span:first-child{font-size:1.8rem}
   .swatches{grid-template-columns:repeat(5,40px);gap:6px}
   .swatch{min-width:40px;min-height:40px}
-  .styles{grid-template-columns:repeat(5,56px)}
+  .styles{grid-template-columns:repeat(6,56px)}
   .sec-bricks{display:grid;grid-template-columns:auto auto;align-items:center;justify-content:start;column-gap:10px;row-gap:6px}
   .sec-bricks .shapes{grid-column:1 / -1}
   .sec-bricks .row{margin:0}
@@ -1073,8 +1102,9 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .tray .swatches{grid-template-columns:repeat(8,38px);gap:8px 6px;padding:4px 2px}
   .swatch{min-width:38px;min-height:38px}
 
-  .styles{grid-template-columns:repeat(5,minmax(0,64px));gap:6px}
-  .stylebtn{min-height:76px;font-size:.8rem;justify-content:center}
+  /* six styles in two rows of three, so all of them fit without scrolling */
+  .styles{grid-template-columns:repeat(3,minmax(0,104px));gap:6px}
+  .stylebtn{min-height:50px;font-size:.8rem;flex-direction:row;justify-content:center;gap:6px;padding:4px}
   .stamps{grid-template-rows:none;grid-auto-flow:column;grid-auto-columns:74px;gap:6px}
   .stamps .card{min-height:104px}
   .plates{grid-template-columns:repeat(4,48px);gap:8px}
@@ -1106,7 +1136,8 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .tray-body{height:96px}
   .shapes .card{min-height:90px}
   .stamps .card{min-height:88px}
-  .stylebtn{min-height:64px}
+  .styles{gap:4px}
+  .stylebtn{min-height:44px}
   .plates{grid-template-columns:repeat(4,42px);gap:6px}
   .plates > *{min-width:42px;min-height:42px}
   .tray .swatches{gap:6px}
@@ -1619,6 +1650,7 @@ const STYLES = [
   {id: "glitter", en: "Glitter", ar: "بريق"},
   {id: "glow",    en: "Glow",    ar: "مضيء"},
   {id: "neon",    en: "Neon",    ar: "نيون"},
+  {id: "light",   en: "Light",   ar: "فاتح"},
 ];
 // long side first (lying down)
 const SHAPES = [[1,1],[2,2],[3,2],[4,2]];
@@ -1723,6 +1755,7 @@ addStrings({
   styleSay_round: ["Round bricks, like buttons!", "مكعبات دائرية مثل الأزرار!"],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
   styleSay_glow: ["Glow bricks shine like magic lights!", "مكعبات مضيئة تلمع مثل الأضواء السحرية!"],
+  styleSay_light: ["Light bricks in soft pastel colors!", "مكعبات فاتحة بألوان ناعمة!"],
   styleSay_neon: ["Neon bricks light up like signs at night!", "مكعبات النيون تضيء مثل اللافتات في الليل!"],
   brickAria: ["{s} brick", "مكعب {s}"],
   myStamp: ["Stamp", "ختم"], deleteStamp: ["Delete this stamp", "احذف هذا الختم"],
@@ -1876,7 +1909,14 @@ function isLight(hex){
   return (n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114 > 200;
 }
 function sparkColor(c){ return isLight(c) ? shade(c, -.3) : "rgba(255,255,255,.9)"; }
-// neon: a tube of light on dark glass; dark colors (black, brown) light up brighter so the tube still shows
+// a second, rainbow-ish fleck so glitter catches the light like the real thing: pink-violet on light bricks, warm gold on the rest
+function spark2Color(c){ return isLight(c) ? "rgba(176,92,255,.7)" : "rgba(255,226,140,.95)"; }
+// light: the brick's colour mixed with lots of white, a soft pastel (kept as #hex so studs can shade it)
+function pastel(c){
+  const n = parseInt(c.slice(1), 16), m = v => Math.round(v + (255 - v) * .55).toString(16).padStart(2, "0");
+  return "#" + m(n >> 16) + m((n >> 8) & 255) + m(n & 255);
+}
+// neon and glow: dark colors (black, brown) light up brighter so the light still shows
 function neonColor(c){
   const n = parseInt(c.slice(1), 16);
   const l = (n >> 16) * .299 + ((n >> 8) & 255) * .587 + (n & 255) * .114;
@@ -1887,7 +1927,8 @@ function neonGlass(c){ return shade(c, -.8); }
 const varsCache = new Map();
 function colorVars(c){
   let v = varsCache.get(c);
-  if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)]]; varsCache.set(c, v); }
+  if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)], ["--spark2", spark2Color(c)],
+    ["--pl", pastel(c)], ["--plt", shade(pastel(c), .45)], ["--pdk", shade(pastel(c), -.16)]]; varsCache.set(c, v); }
   return v;
 }
 function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
@@ -2218,16 +2259,22 @@ function drawBoard(ctx, board, ox, oy, c){
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
     const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
-    const rad = t === "round" ? Math.min(w, h) / 2 : c * .14;
+    const rad = t === "round" ? Math.min(w, h) / 2 : t === "light" ? c * .24 : c * .14;
+    const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
     ctx.save();
-    ctx.save(); ctx.shadowColor = "rgba(30,10,60,.34)"; ctx.shadowBlur = 4 + z * 3;
-    ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = 3 + z * 3;
+    ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
+    ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = (t === "light" ? 4 : 3) + z * 3;
     ctx.fillStyle = "rgba(30,10,60,.2)"; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.restore();
     if (t === "neon"){
       // dark glass, a glowing tube of light round the edge with a white-hot core, and ring studs
       const nc = neonColor(b.c), lw = Math.max(2, c * .07);
       ctx.fillStyle = neonGlass(b.c); rrect(ctx, x, y, w, h, rad); ctx.fill();
       ctx.fillStyle = sheen(ctx, x, y, w, h, .16, 0); rrect(ctx, x, y, w, h, rad); ctx.fill();
+      // a thin streak of reflection across the glass
+      const rf = ctx.createLinearGradient(x, y, x + w, y + h * .58);
+      rf.addColorStop(.58, "rgba(255,255,255,0)"); rf.addColorStop(.58, "rgba(255,255,255,.09)");
+      rf.addColorStop(.66, "rgba(255,255,255,.09)"); rf.addColorStop(.66, "rgba(255,255,255,0)");
+      ctx.fillStyle = rf; rrect(ctx, x, y, w, h, rad); ctx.fill();
       ctx.save(); ctx.shadowColor = nc; ctx.shadowBlur = c * .45; ctx.strokeStyle = nc; ctx.lineWidth = lw;
       rrect(ctx, x + lw / 2, y + lw / 2, w - lw, h - lw, Math.max(0, rad - lw / 2)); ctx.stroke(); ctx.stroke();
       ctx.lineWidth = Math.max(1, c * .025); ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.shadowBlur = 0;
@@ -2244,22 +2291,45 @@ function drawBoard(ctx, board, ox, oy, c){
       continue;
     }
     if (t === "glow"){
-      // soft halo in the brick's own color, then a body that is brightest in the middle
-      ctx.save(); ctx.shadowColor = b.c; ctx.shadowBlur = c * .55;
+      // soft halo in the brick's own color (lifted for dark bricks), then a body that is white-hot in the middle
+      ctx.save(); ctx.shadowColor = neonColor(b.c); ctx.shadowBlur = c * .55;
       ctx.fillStyle = b.c; rrect(ctx, x, y, w, h, rad); ctx.fill();
       ctx.restore();
-      const g = ctx.createRadialGradient(x + w / 2, y + h * .45, 0, x + w / 2, y + h * .45, Math.max(w, h) * .6);
-      g.addColorStop(0, "rgba(255,255,255,.95)"); g.addColorStop(.45, shade(b.c, .3)); g.addColorStop(1, b.c);
-      ctx.fillStyle = g; rrect(ctx, x, y, w, h, rad); ctx.fill();
-    } else {
       ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
-      ctx.fillStyle = b.c; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
-      ctx.fillStyle = sheen(ctx, x, y, w, h, .26, .12); rrect(ctx, x, y, w, h, rad); ctx.fill();
-      // lit top and left edges
-      ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
-      ctx.strokeStyle = "rgba(255,255,255,.5)"; ctx.lineWidth = 2;
-      rrect(ctx, x + 1, y + 1, w, h, rad); ctx.stroke();
-      ctx.restore();
+      const g = ctx.createRadialGradient(x + w / 2, y + h * .45, 0, x + w / 2, y + h * .45, Math.max(w, h) * .6);
+      g.addColorStop(0, "rgba(255,255,255,.92)"); g.addColorStop(.42, shade(b.c, .3)); g.addColorStop(1, b.c);
+      ctx.fillStyle = g; rrect(ctx, x, y, w, h - c * .07, rad); ctx.fill();
+    } else {
+      const light = t === "light";
+      ctx.fillStyle = shade(col, light ? -.16 : -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
+      ctx.fillStyle = col; rrect(ctx, x, y, w, h - c * (light ? .08 : .09), rad); ctx.fill();
+      if (light){
+        // chalky white wash from the top and a soft white inner rim
+        const wg = ctx.createLinearGradient(x, y, x + w * .17, y + h);
+        wg.addColorStop(0, "rgba(255,255,255,.55)"); wg.addColorStop(.45, "rgba(255,255,255,0)");
+        ctx.fillStyle = wg; rrect(ctx, x, y, w, h, rad); ctx.fill();
+        const lw = Math.max(1, c * .04);
+        ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.lineWidth = lw;
+        rrect(ctx, x + lw / 2, y + lw / 2, w - lw, h - lw, Math.max(0, rad - lw / 2)); ctx.stroke();
+      } else {
+        ctx.fillStyle = sheen(ctx, x, y, w, h, .26, .12); rrect(ctx, x, y, w, h, rad); ctx.fill();
+        if (t === "round"){
+          // domed button: a highlight on the top left and a darker rim
+          const cx = x + w / 2, cy = y + h / 2;
+          const dg = ctx.createRadialGradient(x + w * .34, y + h * .28, 0, x + w * .34, y + h * .28, Math.max(w, h) * .7);
+          dg.addColorStop(0, "rgba(255,255,255,.34)"); dg.addColorStop(1, "rgba(255,255,255,0)");
+          ctx.fillStyle = dg; rrect(ctx, x, y, w, h, rad); ctx.fill();
+          ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip(); ctx.translate(cx, cy); ctx.scale(w / 2, h / 2);
+          const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+          rg.addColorStop(.72, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.16)");
+          ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
+        }
+        // lit top and left edges
+        ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
+        ctx.strokeStyle = "rgba(255,255,255,.5)"; ctx.lineWidth = 2;
+        rrect(ctx, x + 1, y + 1, w, h, rad); ctx.stroke();
+        ctx.restore();
+      }
     }
     if (t === "glitter"){
       // fine flecks under the studs, sized to the stud grid (like the board)
@@ -2268,11 +2338,13 @@ function drawBoard(ctx, board, ox, oy, c){
       ctx.save(); rrect(ctx, x, y, w, h - c * .09, rad); ctx.clip();
       ctx.fillStyle = sparkColor(b.c);
       for (let i = 0; i < b.w * b.h * 12; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * (.018 + rnd() * .022), 0, 7); ctx.fill(); }
+      ctx.fillStyle = spark2Color(b.c);
+      for (let i = 0; i < b.w * b.h * 8; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * (.014 + rnd() * .012), 0, 7); ctx.fill(); }
       ctx.fillStyle = "rgba(255,255,255,.75)";
       for (let i = 0; i < b.w * b.h * 10; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * .014, 0, 7); ctx.fill(); }
       ctx.restore();
     }
-    for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - gap + xx * c, y - gap + yy * c, c, b.c);
+    for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - gap + xx * c, y - gap + yy * c, c, col);
     // faint outline so light bricks read on light boards
     ctx.strokeStyle = "rgba(30,10,60,.2)"; ctx.lineWidth = 1;
     rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();
