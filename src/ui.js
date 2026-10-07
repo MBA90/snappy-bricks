@@ -246,6 +246,10 @@ function computeTarget(e){
   const res = canPlace(p.bricks, gx, gy, ptr.source === "board" ? ptr.brick.id : 0);
   ptr.target = {gx, gy, ...res};
   if (!ghostEl){ ghostEl = document.createElement("div"); ghostEl.className = "ghost"; plate.appendChild(ghostEl); }
+  // most finger moves land on the same spot: only touch the ghost when it really changes
+  const look = [gx, gy, p.w, p.h, res.ok, res.ok && res.z > 0 ? "▲" + (res.z + 1) : ""].join();
+  if (ghostEl._look === look) return;
+  ghostEl._look = look;
   placeEl(ghostEl, {x: gx, y: gy, w: p.w, h: p.h});
   ghostEl.classList.toggle("bad", !res.ok);
   ghostEl.textContent = res.ok && res.z > 0 ? "▲" + (res.z + 1) : "";
@@ -274,9 +278,14 @@ function endDrag(e, cancelled){
     removeBrick(b.id); say(t("byeBrick"));
   } else { sfx.nope(); const el = els.get(b.id); if (el) wiggle(el); if (!settings.stack) say(t("spotTaken")); }
 }
-function wiggle(el){ el.classList.remove("wiggle"); void el.offsetWidth; el.classList.add("wiggle"); }
+function wiggle(el){ const again = el.classList.contains("wiggle"); el.classList.remove("wiggle", "wiggle2"); el.classList.add(again ? "wiggle2" : "wiggle"); }
 // big boards skip the flash: repainting it under a fast paint swipe made the swipe lag
-function flash(el){ if (!el || reduceMotion || plate.classList.contains("calm")) return; el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+// two copies of the same flash take turns, so it restarts without making the page work out its whole layout again
+function flash(el){
+  if (!el || reduceMotion || plate.classList.contains("calm")) return;
+  const again = el.classList.contains("flash");
+  el.classList.remove("flash", "flash2"); el.classList.add(again ? "flash2" : "flash");
+}
 
 function removeBrick(id, noHistory){
   const i = B.bricks.findIndex(b => b.id === id); if (i < 0) return;
@@ -321,10 +330,9 @@ function brushOp(b){
   }
 }
 function brushAt(e){
-  const hit = document.elementFromPoint(e.clientX, e.clientY);
-  const el = hit && hit.closest && hit.closest(".brick");
-  if (!el || el.parentElement !== plate) return;
-  const b = byId.get(+el.dataset.id); if (!b || ptr.done.has(b.id)) return;
+  // the board grid knows which brick is on top under the finger: no hit test of the whole page on every move
+  const c = cellFromEvent(e);
+  const b = topAt(c.x, c.y); if (!b || ptr.done.has(b.id)) return;
   const mirrors = mirrorFns().map(fn => fn(b));
   brushOp(b);
   for (const r of mirrors){
@@ -431,6 +439,30 @@ function deleteSelection(){
 }
 
 /* ---- board pointer events ---- */
+// while a finger is on the board or the toy box, the endless glow, twinkle and shimmer of the bricks wait where they are:
+// every frame drawn while they run restyles each glowing brick, which made drags and paint swipes stutter on phones.
+// They are paused one by one (a class on the board would make the page restyle every brick twice per touch).
+(function holdShimmer(){
+  const down = new Set(); let held = [];
+  const canAnimate = !!plate.getAnimations;
+  window.addEventListener("pointerdown", e => {
+    if (!canAnimate || !e.target.closest || !e.target.closest("#plateWrap, #tray")) return;
+    down.add(e.pointerId);
+    if (held.length || plate.classList.contains("calm")) return;
+    held = plate.getAnimations({subtree: true}).filter(a => a.effect && a.effect.pseudoElement && a.playState === "running")
+      .map(a => { a.pause(); const el = a.effect.target; return [a, el, el._t]; });
+  }, true);
+  const up = e => {
+    if (!down.delete(e.pointerId) || down.size) return;
+    // only bricks still on the board with the same style get their shimmer back; asking each
+    // animation for its state here would make the page restyle once per brick
+    const calm = plate.classList.contains("calm");
+    for (const [a, el, t] of held) if (!calm && el.isConnected && el._t === t) a.play(); else a.cancel();
+    held = [];
+  };
+  window.addEventListener("pointerup", up, true);
+  window.addEventListener("pointercancel", up, true);
+})();
 plate.addEventListener("pointerdown", e => {
   if (e.button > 0 || ptr) return;
   e.preventDefault();

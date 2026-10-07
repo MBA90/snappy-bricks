@@ -48,6 +48,7 @@ function updateZoomBtns(){
   const place = () => {
     if (!upright.matches) $("#tools").insertBefore(zb, $("#undoBtn"));
     else home.insertBefore(zb, after);
+    fitStale = true;                                   // the phone turned: every brick gets a new size, style them once
     fitCell();
   };
   upright.addEventListener ? upright.addEventListener("change", place) : upright.addListener(place);
@@ -63,16 +64,31 @@ plateWrap.addEventListener("wheel", e => {
   e.preventDefault(); zoomTo(boardZoom * Math.exp(-e.deltaY / 200), e.clientX, e.clientY);
 }, {passive: false});
 
-/* two fingers on the board: pinch to zoom, slide to move around. One finger still builds. */
+/* two fingers on the board: pinch to zoom, slide to move around. One finger still builds.
+   While the fingers move, the board is only stretched (a cheap picture scale); the bricks are
+   redrawn at their new size once, when the fingers lift. Redrawing every brick on every frame
+   made pinching a big board stutter on phones. */
 (function pinch(){
   const pts = new Map(); let g = null, want = null, raf = 0;
-  // fingers report many moves per frame; the board is resized at most once per frame
+  // fingers report many moves per frame; the preview moves at most once per frame
   const apply = () => {
     raf = 0; if (!g || !want) return;
     const {z, m} = want; want = null;
-    zoomTo(z, m.x, m.y);
-    plateWrap.scrollLeft -= m.x - g.m.x; plateWrap.scrollTop -= m.y - g.m.y;
-    g.m = m;
+    g.zEnd = clamp(z, 1, zoomMax); g.mEnd = m;
+    const s = g.zEnd / g.z;
+    plate.style.transform = `translate(${m.x - g.r.left - s * g.ax * g.c}px, ${m.y - g.r.top - s * g.ay * g.c}px) scale(${s})`;
+  };
+  // fingers lifted: drop the stretch and draw the board at the new zoom, the same spot under the fingers
+  const finish = () => {
+    if (raf){ cancelAnimationFrame(raf); raf = 0; apply(); }
+    const {zEnd, mEnd, ax, ay} = g; g = null; want = null;
+    plate.style.transform = ""; plate.style.transformOrigin = ""; plate.style.willChange = "";
+    if (zEnd == null) return;
+    boardZoom = zEnd; fitCell();
+    const r1 = plate.getBoundingClientRect();
+    plateWrap.scrollLeft += r1.left + ax * cell - mEnd.x;
+    plateWrap.scrollTop += r1.top + ay * cell - mEnd.y;
+    updateZoomBtns();
   };
   const two = () => [...pts.values()].slice(0, 2);
   const mid = ([a, b]) => ({x: (a.x + b.x) / 2, y: (a.y + b.y) / 2});
@@ -89,7 +105,9 @@ plateWrap.addEventListener("wheel", e => {
       ptr = null;
     }
     e.preventDefault(); e.stopPropagation();
-    const p = two(); g = {d: dist(p), z: boardZoom, m: mid(p)};
+    const p = two(), m = mid(p), r = plate.getBoundingClientRect();
+    g = {d: dist(p), z: boardZoom, r, c: cell, ax: (m.x - r.left) / cell, ay: (m.y - r.top) / cell};
+    plate.style.transformOrigin = "0 0"; plate.style.willChange = "transform";
   }, true);
   window.addEventListener("pointermove", e => {
     if (!pts.has(e.pointerId)) return;
@@ -100,7 +118,7 @@ plateWrap.addEventListener("wheel", e => {
     want = {z: g.z * dist(p) / g.d, m: mid(p)};
     if (!raf) raf = requestAnimationFrame(apply);
   }, {passive: false});
-  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) g = null; };
+  const up = e => { pts.delete(e.pointerId); if (pts.size < 2 && g) finish(); };
   window.addEventListener("pointerup", up);
   window.addEventListener("pointercancel", up);
 })();

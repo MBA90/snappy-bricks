@@ -208,7 +208,7 @@ function render(anim){
         el.addEventListener("animationend", () => { el.classList.remove("drop"); el.style.animationDelay = ""; }, {once: true});
       }
     } else {
-      const keep = el._t !== (b.t || "std") ? ["drop", "flash", "wiggle", "selected"].filter(c => el.classList.contains(c)) : null;
+      const keep = el._t !== (b.t || "std") ? ["drop", "flash", "flash2", "wiggle", "wiggle2", "selected"].filter(c => el.classList.contains(c)) : null;
       styleBrickEl(el, b); if (keep) keep.forEach(c => el.classList.add(c));
     }
     seen.add(b.id);
@@ -233,9 +233,19 @@ function applyBoard(){
   emit("board");
 }
 let refitting = false;
+// the studio was hidden, so its bricks have no styles yet: measure with them tucked away and
+// style them once at the right size (measuring first used to style hundreds of bricks twice)
+let fitStale = true;
 function fitCell(){
   const wrap = $("#plateWrap");
-  if (!wrap || !wrap.offsetParent) return;          // the studio is not on screen
+  if (!wrap || $("#studioScreen").hidden){ fitStale = true; return; }
+  const tuck = fitStale && !refitting;
+  fitStale = false;
+  if (tuck) plate.style.display = "none";
+  try { if (fitBox(wrap) === false) fitStale = true; } finally { if (tuck) plate.style.display = ""; }
+}
+function fitBox(wrap){
+  if (!wrap.offsetParent) return false;              // the studio is not on screen
   wrap.style.setProperty("--cols", B.cols); wrap.style.setProperty("--rows", B.rows);
   // phones lock the studio to the screen and give the board a box of its own: fill that box
   const cs = getComputedStyle(wrap);
@@ -287,7 +297,9 @@ if (window.ResizeObserver){
 /* ---- helper speech bubble ---- */
 function say(text, opts = {}){
   $("#bubble").textContent = text;
-  const b = $("#bricky"); b.classList.remove("hop"); void b.getBoundingClientRect(); b.classList.add("hop");
+  // two copies of the hop take turns, so it restarts without making the page work out its layout in the middle of a tap
+  const b = $("#bricky"), again = b.classList.contains("hop");
+  b.classList.remove("hop", "hop2"); b.classList.add(again ? "hop2" : "hop");
   if (opts.speak) speakHelper(text);
 }
 
