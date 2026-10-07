@@ -275,7 +275,8 @@ function endDrag(e, cancelled){
   } else { sfx.nope(); const el = els.get(b.id); if (el) wiggle(el); if (!settings.stack) say(t("spotTaken")); }
 }
 function wiggle(el){ el.classList.remove("wiggle"); void el.offsetWidth; el.classList.add("wiggle"); }
-function flash(el){ if (!el || reduceMotion) return; el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+// big boards skip the flash: repainting it under a fast paint swipe made the swipe lag
+function flash(el){ if (!el || reduceMotion || plate.classList.contains("calm")) return; el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
 
 function removeBrick(id, noHistory){
   const i = B.bricks.findIndex(b => b.id === id); if (i < 0) return;
@@ -538,7 +539,8 @@ function clearBoard(){
 
 /* ---- saving files ---- */
 const capDownloads = IN_ARTIFACT ? Promise.resolve(window.claude.use("downloads")).catch(() => null) : Promise.resolve(null);
-async function saveFile(blob, filename, previewUrl){
+// preview() makes the picture for the "hold to save" fallback, only when it is needed
+async function saveFile(blob, filename, preview){
   if (!IN_ARTIFACT && coarse && navigator.canShare && navigator.share){
     try {
       const file = new File([blob], filename, {type: blob.type || "image/png"});
@@ -559,7 +561,7 @@ async function saveFile(blob, filename, previewUrl){
       catch(err){ if (err && err.code === "declined") return "declined"; }
     }
   }
-  openModal(`<p>${esc(t("holdToSave"))}</p><img alt="" src="${previewUrl}"><div class="modal-actions"><button class="btn" data-close>${esc(t("close"))}</button></div>`, t("yourPicture"));
+  openModal(`<p>${esc(t("holdToSave"))}</p><img alt="" src="${preview()}"><div class="modal-actions"><button class="btn" data-close>${esc(t("close"))}</button></div>`, t("yourPicture"));
   return "preview";
 }
 async function savePicture(){
@@ -567,7 +569,7 @@ async function savePicture(){
   sfx.click();
   const cv = boardCanvas(B, Math.min(40, Math.floor(2600 / Math.max(B.cols, B.rows))));
   const blob = await new Promise(res => cv.toBlob(res, "image/png"));
-  const r = await saveFile(blob, "my-brick-picture.png", cv.toDataURL("image/png"));
+  const r = await saveFile(blob, "my-brick-picture.png", () => cv.toDataURL("image/png"));
   if (r === "saved"){ say(t("savedPic")); sfx.cheer(); emit("saved"); }
   else if (r === "declined") say(t("noPic"));
   else { say(t("picReady")); emit("saved"); }

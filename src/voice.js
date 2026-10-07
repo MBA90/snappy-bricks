@@ -75,6 +75,7 @@ speak = function(text, lang = LANG, opts = {}){
   setTimeout(() => { if (!done && my === VOICE.token){ done = true; deviceSpeak(text, lang, opts); } }, 1500);
   return true;
 };
-function warmVoice(){ if (settings.talk){ loadVoice(LANG); setTimeout(() => loadVoice(LANG === "ar" ? "en" : "ar"), 4000); } }
+// only the language in use is fetched up front; the other pack (a few MB) comes when a game or keyboard switches to it
+function warmVoice(lang = LANG){ if (settings.talk) loadVoice(lang); }
 on("boot", () => setTimeout(warmVoice, 800));
 on("lang", () => loadVoice(LANG));

@@ -60,7 +60,6 @@ button{font:inherit;color:inherit}
 /* ---------- header ---------- */
 .logo{position:relative;flex:none}
 .logo .brick{box-shadow:inset 0 calc(var(--cell)*-.12) 0 var(--dk),0 2px 0 var(--ink);border-radius:2px}
-.chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{
   border:3px solid var(--ink);background:var(--paper);border-radius:999px;
   padding:5px 12px 3px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 var(--ink);
@@ -134,12 +133,13 @@ button{font:inherit;color:inherit}
   background-repeat:repeat,repeat,repeat,repeat,repeat,repeat,repeat,repeat,no-repeat;
   overflow:hidden;
 }
+/* the sweep slides (transform) instead of repainting the brick every frame */
 .brick.t-glitter::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  content:"";position:absolute;inset:0 auto 0 0;width:260%;pointer-events:none;
   background:linear-gradient(110deg, transparent 38%, rgba(255,255,255,.55) 50%, transparent 62%);
-  background-size:260% 100%;animation:shine 2.6s linear infinite;
+  animation:shine 2.6s linear infinite;
 }
-@keyframes shine{from{background-position:130% 0}to{background-position:-130% 0}}
+@keyframes shine{from{transform:translateX(-80%)}to{transform:translateX(80%)}}
 /* glow: a lit-up brick, bright in the middle with a soft halo of its own color that breathes */
 .brick.t-glow{
   background-color:var(--lt);
@@ -190,6 +190,9 @@ button{font:inherit;color:inherit}
   animation:neonflicker 5s linear infinite;
 }
 @keyframes neonflicker{0%,90%,94%,98%,100%{opacity:1}91%{opacity:.35}92%{opacity:.9}93%{opacity:.4}96%{opacity:.7}}
+/* boards with hundreds of bricks keep their look but stop the endless shimmer, glow and flicker */
+.plate.calm .brick::before,.plate.calm .brick::after{animation:none}
+.plate.calm .brick.t-glow::before{opacity:.7}
 .brick.lifted{opacity:.25}
 .brick.selected{outline:3px dashed #fff;outline-offset:1px;filter:brightness(1.12)}
 .brick.drop{animation:drop .42s cubic-bezier(.3,1.6,.5,1) both}
@@ -448,7 +451,6 @@ body[data-kit="eid"]{
   --bg-img:radial-gradient(circle at 30% 30%, #FFE08A 0 2px, transparent 2.6px),radial-gradient(circle at 65% 70%, rgba(255,224,138,.7) 0 1.4px, transparent 2px),radial-gradient(circle at 50% 50%, rgba(255,224,138,.1) 0 16px, transparent 17px);
   --bg-size:80px 80px, 53px 53px, 160px 160px;
 }
-body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(255,255,255,.85)}
 
 .theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .theme-card{
@@ -473,7 +475,6 @@ body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(25
 .badge.got .bi{filter:none;opacity:1}
 
 /* ---------- save & share ---------- */
-.share-box{display:flex;flex-direction:column;gap:10px}
 .share-grid{display:grid;gap:8px}
 .share-grid .btn{justify-content:flex-start}
 .modal-card.wide{width:min(900px,100%)}
@@ -488,7 +489,6 @@ body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(25
 .card-preview{border-radius:14px;overflow:hidden;border:3px solid var(--ink)}
 .card-canvas{display:block;width:100%;height:auto}
 
-.board-settings{display:flex;flex-direction:column;gap:10px}
 /* ---------- class wall ---------- */
 .wall-post{display:flex;flex-direction:column;gap:8px;background:var(--tint);border-radius:16px;padding:12px}
 .wall-item{display:flex;flex-direction:column;gap:6px;border:3px solid var(--ink);border-radius:16px;padding:8px;background:#fff;cursor:pointer;font:inherit;font-weight:800;color:var(--ink)}
@@ -498,7 +498,7 @@ body[data-kit="space"] .modebar,body[data-kit="eid"] .modebar{background:rgba(25
 .teacher textarea{font:inherit;font-weight:700;border:3px solid var(--ink);border-radius:12px;padding:8px;min-height:90px;resize:vertical;color:var(--ink)}
 
 /* ===================== tablets & touch ===================== */
-.tray-sec,.name-box{display:flex;flex-direction:column;gap:12px}
+.tray-sec{display:flex;flex-direction:column;gap:12px}
 .tray-sec[hidden]{display:none!important}
 
 /* finger-friendly everywhere touch is the main input */
@@ -1684,7 +1684,6 @@ const STR = {en: {}, ar: {}};
 function addStrings(pairs){ for (const k in pairs){ STR.en[k] = pairs[k][0]; STR.ar[k] = pairs[k][1]; } }
 addStrings({
   appName: ["Snappy Bricks", "مكعبات سنابي"],
-  tagline: ["Snap bricks onto the board, make pictures, and build your name!", "ركّب المكعبات على اللوحة، وارسم صورًا، واكتب اسمك!"],
   talkOn: ["Talking on", "الكلام مفعّل"], talkOff: ["Talking off", "الكلام متوقف"],
   soundOn: ["Sound on", "الصوت مفعّل"], soundOff: ["Sound off", "الصوت متوقف"],
   pickColor: ["Pick a color", "اختر لونًا"],
@@ -1709,7 +1708,6 @@ addStrings({
   makeStamp: ["Make a stamp", "اصنع ختمًا"], deleteThese: ["Delete them", "احذفها"], cancel: ["Cancel", "إلغاء"],
   dropTrash: ["Drop here to throw away", "أفلت هنا للرمي"],
   writeName: ["Write my name", "اكتب اسمي"],
-  typeLetters: ["Type in English or Arabic", "اكتب بالعربية أو الإنجليزية"],
   namePh: ["Your name here", "اسمك هنا"],
   addHeart: ["Add a heart", "أضف قلبًا"], addStar: ["Add a star", "أضف نجمة"],
   letterColors: ["Letter colors", "ألوان الحروف"],
@@ -1811,9 +1809,8 @@ const AR_LETTERS = "ابتثجحخدذرزسشصضطظعغفقكلمنهوي";
 
 addStrings({
   praise1: ["Great job!", "أحسنت!"], praise2: ["Amazing!", "رائع!"], praise3: ["You did it!", "لقد نجحت!"], praise4: ["Super builder!", "بنّاء رائع!"],
-  modeFree: ["Free build", "بناء حر"], modeCopy: ["Copy it", "انسخ الصورة"], modeTrace: ["Trace letters", "تتبّع الحروف"],
+  modeCopy: ["Copy it", "انسخ الصورة"], modeTrace: ["Trace letters", "تتبّع الحروف"],
   modeSpell: ["Spell it", "تهجئة"], modeMath: ["Brick math", "حساب المكعبات"],
-  playModes: ["Play modes", "طرق اللعب"],
   copyTitle: ["Copy the {n}", "انسخ: {n}"],
   copyText_easy: ["Cover the faint colors with bricks of the same color.", "غطِّ الألوان الباهتة بمكعبات من نفس اللون."],
   copyText_medium: ["Fill the dashed spots. Look at the picture to pick the colors!", "املأ الأماكن المنقّطة. انظر إلى الصورة لتختار الألوان!"],
@@ -1886,14 +1883,14 @@ function neonColor(c){
   return l < 90 ? shade(c, .45) : c;
 }
 function neonGlass(c){ return shade(c, -.8); }
-function paintVars(el, c){
-  el.style.setProperty("--c", c);
-  el.style.setProperty("--neon", neonColor(c));
-  el.style.setProperty("--glass", neonGlass(c));
-  el.style.setProperty("--lt", shade(c, .3));
-  el.style.setProperty("--dk", shade(c, -.24));
-  el.style.setProperty("--spark", sparkColor(c));
+// the colour variables every brick, swatch and board needs, worked out once per colour
+const varsCache = new Map();
+function colorVars(c){
+  let v = varsCache.get(c);
+  if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)]]; varsCache.set(c, v); }
+  return v;
 }
+function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
 function colorDist(a, b){
   const x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16);
   return Math.abs((x >> 16) - (y >> 16)) + Math.abs(((x >> 8) & 255) - ((y >> 8) & 255)) + Math.abs((x & 255) - (y & 255));
@@ -1904,11 +1901,24 @@ function placeEl(el, b){
   el.style.width  = `calc(var(--cell) * ${b.w} - 2 * var(--gap, 1px))`;
   el.style.height = `calc(var(--cell) * ${b.h} - 2 * var(--gap, 1px))`;
 }
+// only touches what changed, so redrawing a board of thousands of bricks after one move stays quick
 function styleBrickEl(el, b){
-  el.className = "brick t-" + (b.t || "std");
-  placeEl(el, b); paintVars(el, b.c);
-  el.style.setProperty("--z", b.z || 0);
-  el.style.zIndex = 1 + (b.z || 0) * 10;
+  const t = b.t || "std", z = b.z || 0;
+  if (el._t !== t){ el._t = t; el.className = "brick t-" + t; }
+  const pos = b.x + "," + b.y + "," + b.w + "," + b.h;
+  if (el._pos !== pos){ el._pos = pos; placeEl(el, b); }
+  if (el._c !== b.c){ el._c = b.c; paintVars(el, b.c); }
+  if (el._z !== z){ el._z = z; el.style.setProperty("--z", z); el.style.zIndex = 1 + z * 10; }
+}
+
+// run fn once things have been quiet for ms: a paint swipe over a big board saves once, not once per brick
+function later(fn, ms){
+  let tm = 0;
+  const run = () => { clearTimeout(tm); tm = 0; fn(); };
+  const f = () => { clearTimeout(tm); tm = setTimeout(run, ms); };
+  f.flush = () => { if (tm) run(); };
+  f.cancel = () => { clearTimeout(tm); tm = 0; };
+  return f;
 }
 
 /* ---- tiny event bus ---- */
@@ -1917,7 +1927,7 @@ function on(ev, fn){ (bus[ev] = bus[ev] || []).push(fn); }
 function emit(ev, data){ (bus[ev] || []).forEach(fn => { try { fn(data); } catch(e){ console.error(e); } }); }
 
 /* ---- pixel pictures -> bricks ---- */
-// pix: 2D array of color strings or null. maxRun: longest horizontal brick to use.
+// pix: 2D array of color strings or null.
 // fill a picture with the toy-box brick sizes, biggest first, lying down before standing up
 function decompose(pix){
   const H = pix.length, W = H ? pix[0].length : 0;
@@ -1964,6 +1974,7 @@ const byId = new Map();
 let cell = 30;
 let boardZoom = 1, zoomMax = 1, zoomDims = "";
 const ZOOM_CELL = 40;                               // zooming stops once a stud is this many pixels wide
+const CALM_AT = 400;                                // more bricks than this: no endless shimmer, glow or flicker
 const plate = $("#plate");
 const els = new Map();
 
@@ -2029,13 +2040,14 @@ function render(anim){
         el.addEventListener("animationend", () => { el.classList.remove("drop"); el.style.animationDelay = ""; }, {once: true});
       }
     } else {
-      const keep = ["drop", "flash", "wiggle", "selected"].filter(c => el.classList.contains(c));
-      styleBrickEl(el, b); keep.forEach(c => el.classList.add(c));
+      const keep = el._t !== (b.t || "std") ? ["drop", "flash", "wiggle", "selected"].filter(c => el.classList.contains(c)) : null;
+      styleBrickEl(el, b); if (keep) keep.forEach(c => el.classList.add(c));
     }
     seen.add(b.id);
   }
   for (const [id, el] of els) if (!seen.has(id)){ el.remove(); els.delete(id); }
   const n = B.bricks.length;
+  plate.classList.toggle("calm", n > CALM_AT);
   const cnt = $("#count"); if (cnt) cnt.textContent = t(n === 1 ? "oneBrick" : "nBricks", {n});
 }
 function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); }
@@ -2153,12 +2165,27 @@ function confetti(){
 
 /* ===================== picture drawing (canvas) ===================== */
 function rrect(ctx, x, y, w, h, r){
-  r = Math.min(r, w / 2, h / 2);
+  w = Math.max(0, w); h = Math.max(0, h);
+  r = Math.max(0, Math.min(r, w / 2, h / 2));          // a negative radius throws
   ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
   ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
 }
-// matches the CSS studs: cast shadow, side wall, lit rim, top face, gloss (light from the top left)
+// matches the CSS studs: cast shadow, side wall, lit rim, top face, gloss (light from the top left).
+// Each kind of stud is drawn once into a little tile and then stamped, which keeps big pictures quick.
+const studTiles = new Map();
 function stud(ctx, x, y, c, col, flat){
+  const key = c + "|" + col + "|" + (flat ? 1 : 0);
+  let tile = studTiles.get(key);
+  if (!tile){
+    if (studTiles.size > 300) studTiles.clear();
+    const s = Math.ceil(c);
+    tile = document.createElement("canvas"); tile.width = s; tile.height = s;
+    drawStud(tile.getContext("2d"), 0, 0, c, col, flat);
+    studTiles.set(key, tile);
+  }
+  ctx.drawImage(tile, x, y);
+}
+function drawStud(ctx, x, y, c, col, flat){
   const cx = x + c * .5, cy = y + c * .5, r = c * (flat ? .22 : .24);
   const sh = ctx.createRadialGradient(x + c * (flat ? .55 : .56), y + c * (flat ? .59 : .61), 0, x + c * (flat ? .55 : .56), y + c * (flat ? .59 : .61), c * (flat ? .29 : .32));
   sh.addColorStop(0, `rgba(30,10,50,${flat ? .24 : .34})`); sh.addColorStop(.7, `rgba(30,10,50,${flat ? .24 : .34})`); sh.addColorStop(1, "rgba(30,10,50,0)");
@@ -2188,7 +2215,9 @@ function drawBoard(ctx, board, ox, oy, c){
   const list = [...board.bricks].sort((a, b) => (a.z || 0) - (b.z || 0));
   for (const b of list){
     const z = b.z || 0, t = b.t || "std";
-    const x = ox + b.x * c + 1.5 - z * 2, y = oy + b.y * c + 1.5 - z * 3, w = b.w * c - 3, h = b.h * c - 3;
+    // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
+    const gap = Math.min(1.5, c * .2);
+    const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
     const rad = t === "round" ? Math.min(w, h) / 2 : c * .14;
     ctx.save();
     ctx.save(); ctx.shadowColor = "rgba(30,10,60,.34)"; ctx.shadowBlur = 4 + z * 3;
@@ -2204,7 +2233,7 @@ function drawBoard(ctx, board, ox, oy, c){
       ctx.lineWidth = Math.max(1, c * .025); ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.shadowBlur = 0;
       rrect(ctx, x + c * .025, y + c * .025, w - c * .05, h - c * .05, Math.max(0, rad - c * .025)); ctx.stroke();
       for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++){
-        const sx = x - 1.5 + (xx + .5) * c, sy = y - 1.5 + (yy + .5) * c;
+        const sx = x - gap + (xx + .5) * c, sy = y - gap + (yy + .5) * c;
         ctx.shadowColor = nc; ctx.shadowBlur = c * .2;
         ctx.strokeStyle = nc; ctx.lineWidth = c * .065; ctx.beginPath(); ctx.arc(sx, sy, c * .185, 0, 7); ctx.stroke();
         ctx.shadowBlur = 0; ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = c * .028;
@@ -2243,7 +2272,7 @@ function drawBoard(ctx, board, ox, oy, c){
       for (let i = 0; i < b.w * b.h * 10; i++){ ctx.beginPath(); ctx.arc(x + rnd() * w, y + rnd() * h, c * .014, 0, 7); ctx.fill(); }
       ctx.restore();
     }
-    for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - 1.5 + xx * c, y - 1.5 + yy * c, c, b.c);
+    for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) stud(ctx, x - gap + xx * c, y - gap + yy * c, c, b.c);
     // faint outline so light bricks read on light boards
     ctx.strokeStyle = "rgba(30,10,60,.2)"; ctx.lineWidth = 1;
     rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();
@@ -2606,7 +2635,8 @@ function endDrag(e, cancelled){
   } else { sfx.nope(); const el = els.get(b.id); if (el) wiggle(el); if (!settings.stack) say(t("spotTaken")); }
 }
 function wiggle(el){ el.classList.remove("wiggle"); void el.offsetWidth; el.classList.add("wiggle"); }
-function flash(el){ if (!el || reduceMotion) return; el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+// big boards skip the flash: repainting it under a fast paint swipe made the swipe lag
+function flash(el){ if (!el || reduceMotion || plate.classList.contains("calm")) return; el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
 
 function removeBrick(id, noHistory){
   const i = B.bricks.findIndex(b => b.id === id); if (i < 0) return;
@@ -2869,7 +2899,8 @@ function clearBoard(){
 
 /* ---- saving files ---- */
 const capDownloads = IN_ARTIFACT ? Promise.resolve(window.claude.use("downloads")).catch(() => null) : Promise.resolve(null);
-async function saveFile(blob, filename, previewUrl){
+// preview() makes the picture for the "hold to save" fallback, only when it is needed
+async function saveFile(blob, filename, preview){
   if (!IN_ARTIFACT && coarse && navigator.canShare && navigator.share){
     try {
       const file = new File([blob], filename, {type: blob.type || "image/png"});
@@ -2890,7 +2921,7 @@ async function saveFile(blob, filename, previewUrl){
       catch(err){ if (err && err.code === "declined") return "declined"; }
     }
   }
-  openModal(`<p>${esc(t("holdToSave"))}</p><img alt="" src="${previewUrl}"><div class="modal-actions"><button class="btn" data-close>${esc(t("close"))}</button></div>`, t("yourPicture"));
+  openModal(`<p>${esc(t("holdToSave"))}</p><img alt="" src="${preview()}"><div class="modal-actions"><button class="btn" data-close>${esc(t("close"))}</button></div>`, t("yourPicture"));
   return "preview";
 }
 async function savePicture(){
@@ -2898,7 +2929,7 @@ async function savePicture(){
   sfx.click();
   const cv = boardCanvas(B, Math.min(40, Math.floor(2600 / Math.max(B.cols, B.rows))));
   const blob = await new Promise(res => cv.toBlob(res, "image/png"));
-  const r = await saveFile(blob, "my-brick-picture.png", cv.toDataURL("image/png"));
+  const r = await saveFile(blob, "my-brick-picture.png", () => cv.toDataURL("image/png"));
   if (r === "saved"){ say(t("savedPic")); sfx.cheer(); emit("saved"); }
   else if (r === "declined") say(t("noPic"));
   else { say(t("picReady")); emit("saved"); }
@@ -3533,7 +3564,7 @@ $("#gHint").addEventListener("click", () => {
   say(t("hintSay"), {speak: true});
 });
 $("#gAlpha").addEventListener("click", () => {
-  gAlpha = gAlpha === "ar" ? "en" : "ar"; sfx.click(); startGame(G.kind);
+  gAlpha = gAlpha === "ar" ? "en" : "ar"; warmVoice(gAlpha); sfx.click(); startGame(G.kind);
 });
 $("#gLevels").addEventListener("click", openLevels);
 
@@ -3661,14 +3692,14 @@ function award(id){
   setTimeout(() => speak(`${t("badgeNew")} ${bd[LANG][0]}`, LANG), 2400);
 }
 on("placed", () => { award("first"); if (settings.mirror !== "off") award("mirror"); });
-on("change", () => {
-  if (B !== FREE) return;
+const buildBadges = later(() => {
   const n = FREE.bricks.length;
   if (n >= 80) award("b50");
   if (n >= 200) award("b150");
   if (new Set(FREE.bricks.map(b => b.c)).size >= 10) award("colors");
   if (FREE.bricks.some(b => (b.z || 0) >= 2)) award("tower");
-});
+}, 400);
+on("change", () => { if (B === FREE) buildBadges(); });
 on("nameBuilt", r => { award("name"); if (r && r.rtl) award("arabic"); });
 on("stampMade", () => award("stamp"));
 on("gameWin", ({kind}) => {
@@ -3733,21 +3764,25 @@ function replay(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
   replaying = true; cancelSelection();
   const list = [...B.bricks];
-  const step = clamp(Math.round(4200 / list.length), 18, 260);
+  // at most about 240 steps: a photo with thousands of bricks lands a handful at a time
+  const per = Math.ceil(list.length / 240), steps = Math.ceil(list.length / per);
+  const step = clamp(Math.round(4200 / steps), 18, 260);
   list.forEach(b => { const el = els.get(b.id); if (el) el.classList.add("hidden-replay"); });
   plate.style.pointerEvents = "none";
   say(t("replaySay"));
-  list.forEach((b, i) => setTimeout(() => {
-    const el = els.get(b.id); if (!el) return;
-    el.classList.remove("hidden-replay");
-    if (!reduceMotion){ el.classList.remove("drop"); void el.offsetWidth; el.classList.add("drop"); el.addEventListener("animationend", () => el.classList.remove("drop"), {once: true}); }
+  for (let i = 0; i < steps; i++) setTimeout(() => {
+    for (const b of list.slice(i * per, (i + 1) * per)){
+      const el = els.get(b.id); if (!el) continue;
+      el.classList.remove("hidden-replay");
+      if (!reduceMotion && per <= 4){ if (el.classList.contains("drop")){ el.classList.remove("drop"); void el.offsetWidth; } el.classList.add("drop"); el.addEventListener("animationend", () => el.classList.remove("drop"), {once: true}); }
+    }
     if (i % Math.max(1, Math.round(60 / step)) === 0) sfx.soft();
-  }, i * step));
+  }, i * step);
   setTimeout(() => {
     replaying = false; plate.style.pointerEvents = "";
     $$(".brick.hidden-replay").forEach(e => e.classList.remove("hidden-replay"));
     sfx.cheer(); say(t("replayDone")); emit("replay");
-  }, list.length * step + 500);
+  }, steps * step + 500);
 }
 $("#replayBtn").addEventListener("click", replay);
 
@@ -3814,7 +3849,8 @@ function textLine(ctx, text, x, y, max, size, color){
   ctx.direction = hasArabic(text) ? "rtl" : "ltr";
   fitFont(ctx, text, max, size); ctx.fillText(text, x, y); ctx.restore();
 }
-function drawCard(f){
+// pic: the board picture, drawn once per card maker (big boards take a moment to draw)
+function drawCard(f, pic){
   const tp = CARDS[f.tpl], W = 1200, H = 900, c = 30;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const ctx = cv.getContext("2d");
@@ -3833,13 +3869,16 @@ function drawCard(f){
   textLine(ctx, f.to ? t("toLine", {n: f.to}) : "", cx, 88, 1000, 38, tp.ink);
   textLine(ctx, f.title, cx, 160, 1040, 84, tp.ink);
   // the board picture
-  const bw = 980, bh = 470;
-  const cs = Math.max(4, Math.floor(Math.min((bw - 24) / B.cols, (bh - 24) / B.rows)));
-  const pic = boardCanvas(B, cs, {pad: 12, foot: 0, bg: tp.bg});
+  const bh = 470;
+  pic = pic || cardPic();
   ctx.drawImage(pic, cx - pic.width / 2, 215 + (bh - pic.height) / 2);
   textLine(ctx, f.msg, cx, 735, 1040, 46, tp.ink);
   textLine(ctx, f.from ? t("fromLine", {n: f.from}) : "", cx, 805, 1000, 36, tp.ink);
   return cv;
+}
+function cardPic(){
+  const cs = Math.max(4, Math.floor(Math.min((980 - 24) / B.cols, (470 - 24) / B.rows)));
+  return boardCanvas(B, cs, {pad: 12, foot: 0, transparent: true});
 }
 function openCardMaker(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
@@ -3864,11 +3903,11 @@ function openCardMaker(){
   };
   const fields = () => ({tpl: cardTpl, to: card.querySelector("#cTo").value.trim(), title: card.querySelector("#cTitle").value.trim(),
     msg: card.querySelector("#cMsg").value.trim(), from: card.querySelector("#cFrom").value.trim()});
-  let cv = null, tm;
+  let cv = null, tm, pic = null;
   const draw = async () => {
     const f = fields();
     if (hasArabic(f.to + f.title + f.msg + f.from)) await ensureFont(f.to + f.title + f.msg + f.from);
-    cv = drawCard(f); const prev = card.querySelector("#cPrev"); if (!prev) return;
+    cv = drawCard(f, pic = pic || cardPic()); const prev = card.querySelector("#cPrev"); if (!prev) return;
     prev.innerHTML = ""; cv.className = "card-canvas"; prev.appendChild(cv);
   };
   card.querySelectorAll("[data-tpl]").forEach(b => b.addEventListener("click", () => { sfx.click(); setTpl(b.dataset.tpl); }));
@@ -3876,7 +3915,7 @@ function openCardMaker(){
   card.querySelector("#cSave").addEventListener("click", async () => {
     await draw();
     const blob = await new Promise(r => cv.toBlob(r, "image/png"));
-    const res = await saveFile(blob, "my-brick-card.png", cv.toDataURL("image/png"));
+    const res = await saveFile(blob, "my-brick-card.png", () => cv.toDataURL("image/png"));
     if (res !== "declined"){ emit("cardMade"); emit("saved"); if (res === "saved"){ closeModal(); sfx.cheer(); say(t("cardSaved")); } }
   });
   setTpl(cardTpl);
@@ -3964,7 +4003,8 @@ speak = function(text, lang = LANG, opts = {}){
   setTimeout(() => { if (!done && my === VOICE.token){ done = true; deviceSpeak(text, lang, opts); } }, 1500);
   return true;
 };
-function warmVoice(){ if (settings.talk){ loadVoice(LANG); setTimeout(() => loadVoice(LANG === "ar" ? "en" : "ar"), 4000); } }
+// only the language in use is fetched up front; the other pack (a few MB) comes when a game or keyboard switches to it
+function warmVoice(lang = LANG){ if (settings.talk) loadVoice(lang); }
 on("boot", () => setTimeout(warmVoice, 800));
 on("lang", () => loadVoice(LANG));
 
@@ -3973,7 +4013,7 @@ addStrings({
   lockAria: ["Grown-ups settings: press and hold for 3 seconds", "إعدادات الكبار: اضغط مطولًا 3 ثوانٍ"],
   grownUps: ["Grown-ups", "للكبار"],
   doorBuild: ["Build", "ابنِ"], doorBuildSub: ["Snap bricks and make anything", "ركّب المكعبات واصنع ما تحب"],
-  doorGames: ["Play games", "العب"], doorGamesSub: ["Pictures, letters, words and numbers", "صور وحروف وكلمات وأرقام"],
+  doorGames: ["Play games", "العب"],
   doorCard: ["Make a card", "اصنع بطاقة"], doorCardSub: ["Send your picture to someone you love", "أرسل صورتك لمن تحب"],
   goHome: ["Go home", "الصفحة الرئيسية"], pickGame: ["Pick a game", "اختر لعبة"], games: ["Games", "الألعاب"],
   modeCopySub: ["Build the same picture", "ابنِ الصورة نفسها"], modeTraceSub: ["Fill a big letter with bricks", "املأ حرفًا كبيرًا بالمكعبات"],
@@ -3996,7 +4036,7 @@ addStrings({
   cardNeedBuild: ["Build a picture first. Then tap Save to make a card!", "ابنِ صورة أولًا، ثم اضغط حفظ لتصنع بطاقة!"],
   buildHi: ["Let's build! Drag a brick from the toy box.", "هيا نبني! اسحب مكعبًا من صندوق الألعاب."],
   idleHint: ["Pick a brick from the toy box and drag it onto the board!", "اختر مكعبًا من صندوق الألعاب واسحبه إلى اللوحة!"],
-  tourLang: ["Pick your language", "اختر لغتك"], tourAge: ["How old are you?", "كم عمرك؟"],
+  tourAge: ["How old are you?", "كم عمرك؟"],
   tourName: ["Tap the letters of your name, then tap Build!", "اضغط على حروف اسمك، ثم اضغط ابنِ اسمي!"],
   tourDrag: ["Now drag a brick onto your board!", "الآن اسحب مكعبًا إلى لوحتك!"],
   tourHome: ["Great job! Tap the house to go home and find games.", "أحسنت! اضغط على البيت لتعود وتجد الألعاب."],
@@ -4113,6 +4153,7 @@ function buildTiles(){
 }
 function openNameSheet(){
   kbLang = kbLang || LANG;
+  warmVoice(LANG === "ar" ? "en" : "ar");          // names may be in either language
   buildTiles();
   const inp = $("#nameInput");
   if (coarse) inp.setAttribute("inputmode", "none"); else inp.removeAttribute("inputmode");
@@ -4120,7 +4161,7 @@ function openNameSheet(){
   speak(t("writeName"), LANG);
 }
 $("#nameOpenBtn").addEventListener("click", () => { sfx.click(); openNameSheet(); });
-$("#kbSwitch").addEventListener("click", () => { kbLang = kbLang === "ar" ? "en" : "ar"; sfx.click(); buildTiles(); });
+$("#kbSwitch").addEventListener("click", () => { kbLang = kbLang === "ar" ? "en" : "ar"; warmVoice(kbLang); sfx.click(); buildTiles(); });
 $("#kbSpace").addEventListener("click", () => { const inp = $("#nameInput"); if ([...inp.value].length < 18){ inp.value += " "; sfx.soft(); } });
 $("#kbBack").addEventListener("click", () => { const inp = $("#nameInput"); inp.value = [...inp.value].slice(0, -1).join(""); sfx.click(); });
 $("#kbType").addEventListener("click", () => { const inp = $("#nameInput"); inp.setAttribute("inputmode", "text"); inp.focus(); });
@@ -4187,7 +4228,7 @@ $("#tourBtn").addEventListener("click", () => { closeSheets(); showScreen("home"
   const b = $("#resetBtn"); let armed = null;
   b.addEventListener("click", () => {
     if (!armed){ b.textContent = t("guResetSure"); armed = setTimeout(() => { armed = null; b.textContent = t("guResetBtn"); }, 3000); return; }
-    clearTimeout(armed);
+    clearTimeout(armed); saveFree.cancel();
     try { Object.keys(localStorage).filter(k => k.startsWith("snappy-")).forEach(k => localStorage.removeItem(k)); } catch(e){}
     location.reload();
   });
@@ -4419,7 +4460,15 @@ plateWrap.addEventListener("wheel", e => {
 
 /* two fingers on the board: pinch to zoom, slide to move around. One finger still builds. */
 (function pinch(){
-  const pts = new Map(); let g = null;
+  const pts = new Map(); let g = null, want = null, raf = 0;
+  // fingers report many moves per frame; the board is resized at most once per frame
+  const apply = () => {
+    raf = 0; if (!g || !want) return;
+    const {z, m} = want; want = null;
+    zoomTo(z, m.x, m.y);
+    plateWrap.scrollLeft -= m.x - g.m.x; plateWrap.scrollTop -= m.y - g.m.y;
+    g.m = m;
+  };
   const two = () => [...pts.values()].slice(0, 2);
   const mid = ([a, b]) => ({x: (a.x + b.x) / 2, y: (a.y + b.y) / 2});
   const dist = ([a, b]) => Math.hypot(a.x - b.x, a.y - b.y) || 1;
@@ -4442,10 +4491,9 @@ plateWrap.addEventListener("wheel", e => {
     pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
     if (!g || pts.size < 2) return;
     e.preventDefault();
-    const p = two(), m = mid(p);
-    zoomTo(g.z * dist(p) / g.d, m.x, m.y);
-    plateWrap.scrollLeft -= m.x - g.m.x; plateWrap.scrollTop -= m.y - g.m.y;
-    g.m = m;
+    const p = two();
+    want = {z: g.z * dist(p) / g.d, m: mid(p)};
+    if (!raf) raf = requestAnimationFrame(apply);
   }, {passive: false});
   const up = e => { pts.delete(e.pointerId); if (pts.size < 2) g = null; };
   window.addEventListener("pointerup", up);
@@ -4511,7 +4559,9 @@ function de2000(a, b){
   const RT = -2 * Math.sqrt(Cpm ** 7 / (Cpm ** 7 + 25 ** 7)) * Math.sin(60 * Math.exp(-(((hm - 275) / 25) ** 2)) * rad);
   return Math.sqrt((dL / SL) ** 2 + (dC / SC) ** 2 + (dH / SH) ** 2 + RT * (dC / SC) * (dH / SH));
 }
-const PAL_LAB = () => COLORS.map(c => ({hex: c.hex, name: c, lab: toLab(hexRgb(c.hex))}));
+let palLab = null;
+// nearest brick colour for each rounded Lab colour, kept between rebuilds so dragging and zooming stay smooth
+const nearMemo = new Map();
 
 // 0. a smaller working copy of the photo, made once, so moving and zooming stay quick
 function halveTo(src, sx, sy, sw, sh, tw, th){
@@ -4596,33 +4646,33 @@ function tune(px){
 // 3. match to brick colours
 function quantize(px){
   const H = px.length, W = px[0].length;
-  const labs = px.flat().map(toLab);
-  const pal = PAL_LAB();
+  const L = px.flat().map(toLab);
+  const pal = palLab = palLab || COLORS.map(c => ({hex: c.hex, lab: toLab(hexRgb(c.hex))}));
   // remembered by rounded colour: big boards repeat the same colours a lot
-  const memo = new Map();
   const nearest = l => {
     const key = Math.round(l[0]) * 1e6 + Math.round(l[1] + 128) * 1e3 + Math.round(l[2] + 128);
-    let bi = memo.get(key); if (bi !== undefined) return bi;
+    let bi = nearMemo.get(key); if (bi !== undefined) return bi;
     let bd = Infinity; bi = 0;
     pal.forEach((p, i) => { const d = de2000(l, p.lab); if (d < bd){ bd = d; bi = i; } });
-    memo.set(key, bi); return bi;
+    if (nearMemo.size > 200000) nearMemo.clear();
+    nearMemo.set(key, bi); return bi;
   };
   const grid = Array.from({length: H}, () => new Array(W));
-    // Floyd–Steinberg in Lab, back and forth, with softened error so flat areas stay calm
-    const L = labs.map(l => l.slice()), str = .6, lim = [18, 24, 24];
-    for (let y = 0; y < H; y++){
-      const rtl = y % 2 === 1;
-      for (let s = 0; s < W; s++){
-        const x = rtl ? W - 1 - s : s, i = y * W + x, cur = L[i];
-        const bi = nearest(cur); grid[y][x] = pal[bi].hex;
-        const e = cur.map((v, c) => clamp((v - pal[bi].lab[c]) * str, -lim[c], lim[c]));
-        const dx = rtl ? -1 : 1;
-        [[dx, 0, 7], [-dx, 1, 3], [0, 1, 5], [dx, 1, 1]].forEach(([ox, oy, w]) => {
-          const X = x + ox, Y = y + oy; if (X < 0 || X >= W || Y >= H) return;
-          const q = L[Y * W + X]; for (let c = 0; c < 3; c++) q[c] += e[c] * w / 16;
-        });
-      }
+  // Floyd–Steinberg in Lab, back and forth, with softened error so flat areas stay calm
+  const str = .6, lim = [18, 24, 24];
+  for (let y = 0; y < H; y++){
+    const rtl = y % 2 === 1;
+    for (let s = 0; s < W; s++){
+      const x = rtl ? W - 1 - s : s, i = y * W + x, cur = L[i];
+      const bi = nearest(cur); grid[y][x] = pal[bi].hex;
+      const e = cur.map((v, c) => clamp((v - pal[bi].lab[c]) * str, -lim[c], lim[c]));
+      const dx = rtl ? -1 : 1;
+      [[dx, 0, 7], [-dx, 1, 3], [0, 1, 5], [dx, 1, 1]].forEach(([ox, oy, w]) => {
+        const X = x + ox, Y = y + oy; if (X < 0 || X >= W || Y >= H) return;
+        const q = L[Y * W + X]; for (let c = 0; c < 3; c++) q[c] += e[c] * w / 16;
+      });
     }
+  }
   return grid;
 }
 // 4. real brick sizes: try a few ways of filling and keep the one with the fewest bricks
@@ -5080,9 +5130,11 @@ on("boot", () => refreshMapBtn());
 
 /* ===================== start-up + wiring ===================== */
 const SAVE_KEY = "snappy-bricks-v2";
-on("change", () => {
-  if (B === FREE) store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, bricks: FREE.bricks});
-});
+const saveFree = later(() => store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, bricks: FREE.bricks}), 300);
+on("change", () => { if (B === FREE) saveFree(); });
+// never lose the last few moves when the tab is closed or put away
+window.addEventListener("pagehide", saveFree.flush);
+document.addEventListener("visibilitychange", () => { if (document.hidden) saveFree.flush(); });
 function loadFree(){
   const d = store(SAVE_KEY) || store("snappy-bricks-v1");
   if (!d || !Array.isArray(d.bricks) || !isBoardSize(d.cols, d.rows)) return false;

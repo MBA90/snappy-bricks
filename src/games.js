@@ -302,7 +302,7 @@ $("#gHint").addEventListener("click", () => {
   say(t("hintSay"), {speak: true});
 });
 $("#gAlpha").addEventListener("click", () => {
-  gAlpha = gAlpha === "ar" ? "en" : "ar"; sfx.click(); startGame(G.kind);
+  gAlpha = gAlpha === "ar" ? "en" : "ar"; warmVoice(gAlpha); sfx.click(); startGame(G.kind);
 });
 $("#gLevels").addEventListener("click", openLevels);
 

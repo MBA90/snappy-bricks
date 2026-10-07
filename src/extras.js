@@ -81,14 +81,14 @@ function award(id){
   setTimeout(() => speak(`${t("badgeNew")} ${bd[LANG][0]}`, LANG), 2400);
 }
 on("placed", () => { award("first"); if (settings.mirror !== "off") award("mirror"); });
-on("change", () => {
-  if (B !== FREE) return;
+const buildBadges = later(() => {
   const n = FREE.bricks.length;
   if (n >= 80) award("b50");
   if (n >= 200) award("b150");
   if (new Set(FREE.bricks.map(b => b.c)).size >= 10) award("colors");
   if (FREE.bricks.some(b => (b.z || 0) >= 2)) award("tower");
-});
+}, 400);
+on("change", () => { if (B === FREE) buildBadges(); });
 on("nameBuilt", r => { award("name"); if (r && r.rtl) award("arabic"); });
 on("stampMade", () => award("stamp"));
 on("gameWin", ({kind}) => {
@@ -153,21 +153,25 @@ function replay(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
   replaying = true; cancelSelection();
   const list = [...B.bricks];
-  const step = clamp(Math.round(4200 / list.length), 18, 260);
+  // at most about 240 steps: a photo with thousands of bricks lands a handful at a time
+  const per = Math.ceil(list.length / 240), steps = Math.ceil(list.length / per);
+  const step = clamp(Math.round(4200 / steps), 18, 260);
   list.forEach(b => { const el = els.get(b.id); if (el) el.classList.add("hidden-replay"); });
   plate.style.pointerEvents = "none";
   say(t("replaySay"));
-  list.forEach((b, i) => setTimeout(() => {
-    const el = els.get(b.id); if (!el) return;
-    el.classList.remove("hidden-replay");
-    if (!reduceMotion){ el.classList.remove("drop"); void el.offsetWidth; el.classList.add("drop"); el.addEventListener("animationend", () => el.classList.remove("drop"), {once: true}); }
+  for (let i = 0; i < steps; i++) setTimeout(() => {
+    for (const b of list.slice(i * per, (i + 1) * per)){
+      const el = els.get(b.id); if (!el) continue;
+      el.classList.remove("hidden-replay");
+      if (!reduceMotion && per <= 4){ if (el.classList.contains("drop")){ el.classList.remove("drop"); void el.offsetWidth; } el.classList.add("drop"); el.addEventListener("animationend", () => el.classList.remove("drop"), {once: true}); }
+    }
     if (i % Math.max(1, Math.round(60 / step)) === 0) sfx.soft();
-  }, i * step));
+  }, i * step);
   setTimeout(() => {
     replaying = false; plate.style.pointerEvents = "";
     $$(".brick.hidden-replay").forEach(e => e.classList.remove("hidden-replay"));
     sfx.cheer(); say(t("replayDone")); emit("replay");
-  }, list.length * step + 500);
+  }, steps * step + 500);
 }
 $("#replayBtn").addEventListener("click", replay);
 
@@ -234,7 +238,8 @@ function textLine(ctx, text, x, y, max, size, color){
   ctx.direction = hasArabic(text) ? "rtl" : "ltr";
   fitFont(ctx, text, max, size); ctx.fillText(text, x, y); ctx.restore();
 }
-function drawCard(f){
+// pic: the board picture, drawn once per card maker (big boards take a moment to draw)
+function drawCard(f, pic){
   const tp = CARDS[f.tpl], W = 1200, H = 900, c = 30;
   const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const ctx = cv.getContext("2d");
@@ -253,13 +258,16 @@ function drawCard(f){
   textLine(ctx, f.to ? t("toLine", {n: f.to}) : "", cx, 88, 1000, 38, tp.ink);
   textLine(ctx, f.title, cx, 160, 1040, 84, tp.ink);
   // the board picture
-  const bw = 980, bh = 470;
-  const cs = Math.max(4, Math.floor(Math.min((bw - 24) / B.cols, (bh - 24) / B.rows)));
-  const pic = boardCanvas(B, cs, {pad: 12, foot: 0, bg: tp.bg});
+  const bh = 470;
+  pic = pic || cardPic();
   ctx.drawImage(pic, cx - pic.width / 2, 215 + (bh - pic.height) / 2);
   textLine(ctx, f.msg, cx, 735, 1040, 46, tp.ink);
   textLine(ctx, f.from ? t("fromLine", {n: f.from}) : "", cx, 805, 1000, 36, tp.ink);
   return cv;
+}
+function cardPic(){
+  const cs = Math.max(4, Math.floor(Math.min((980 - 24) / B.cols, (470 - 24) / B.rows)));
+  return boardCanvas(B, cs, {pad: 12, foot: 0, transparent: true});
 }
 function openCardMaker(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
@@ -284,11 +292,11 @@ function openCardMaker(){
   };
   const fields = () => ({tpl: cardTpl, to: card.querySelector("#cTo").value.trim(), title: card.querySelector("#cTitle").value.trim(),
     msg: card.querySelector("#cMsg").value.trim(), from: card.querySelector("#cFrom").value.trim()});
-  let cv = null, tm;
+  let cv = null, tm, pic = null;
   const draw = async () => {
     const f = fields();
     if (hasArabic(f.to + f.title + f.msg + f.from)) await ensureFont(f.to + f.title + f.msg + f.from);
-    cv = drawCard(f); const prev = card.querySelector("#cPrev"); if (!prev) return;
+    cv = drawCard(f, pic = pic || cardPic()); const prev = card.querySelector("#cPrev"); if (!prev) return;
     prev.innerHTML = ""; cv.className = "card-canvas"; prev.appendChild(cv);
   };
   card.querySelectorAll("[data-tpl]").forEach(b => b.addEventListener("click", () => { sfx.click(); setTpl(b.dataset.tpl); }));
@@ -296,7 +304,7 @@ function openCardMaker(){
   card.querySelector("#cSave").addEventListener("click", async () => {
     await draw();
     const blob = await new Promise(r => cv.toBlob(r, "image/png"));
-    const res = await saveFile(blob, "my-brick-card.png", cv.toDataURL("image/png"));
+    const res = await saveFile(blob, "my-brick-card.png", () => cv.toDataURL("image/png"));
     if (res !== "declined"){ emit("cardMade"); emit("saved"); if (res === "saved"){ closeModal(); sfx.cheer(); say(t("cardSaved")); } }
   });
   setTpl(cardTpl);

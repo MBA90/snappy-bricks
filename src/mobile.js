@@ -53,7 +53,15 @@ plateWrap.addEventListener("wheel", e => {
 
 /* two fingers on the board: pinch to zoom, slide to move around. One finger still builds. */
 (function pinch(){
-  const pts = new Map(); let g = null;
+  const pts = new Map(); let g = null, want = null, raf = 0;
+  // fingers report many moves per frame; the board is resized at most once per frame
+  const apply = () => {
+    raf = 0; if (!g || !want) return;
+    const {z, m} = want; want = null;
+    zoomTo(z, m.x, m.y);
+    plateWrap.scrollLeft -= m.x - g.m.x; plateWrap.scrollTop -= m.y - g.m.y;
+    g.m = m;
+  };
   const two = () => [...pts.values()].slice(0, 2);
   const mid = ([a, b]) => ({x: (a.x + b.x) / 2, y: (a.y + b.y) / 2});
   const dist = ([a, b]) => Math.hypot(a.x - b.x, a.y - b.y) || 1;
@@ -76,10 +84,9 @@ plateWrap.addEventListener("wheel", e => {
     pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
     if (!g || pts.size < 2) return;
     e.preventDefault();
-    const p = two(), m = mid(p);
-    zoomTo(g.z * dist(p) / g.d, m.x, m.y);
-    plateWrap.scrollLeft -= m.x - g.m.x; plateWrap.scrollTop -= m.y - g.m.y;
-    g.m = m;
+    const p = two();
+    want = {z: g.z * dist(p) / g.d, m: mid(p)};
+    if (!raf) raf = requestAnimationFrame(apply);
   }, {passive: false});
   const up = e => { pts.delete(e.pointerId); if (pts.size < 2) g = null; };
   window.addEventListener("pointerup", up);

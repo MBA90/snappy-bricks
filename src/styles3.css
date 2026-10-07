@@ -1,5 +1,5 @@
 /* ===================== tablets & touch ===================== */
-.tray-sec,.name-box{display:flex;flex-direction:column;gap:12px}
+.tray-sec{display:flex;flex-direction:column;gap:12px}
 .tray-sec[hidden]{display:none!important}
 
 /* finger-friendly everywhere touch is the main input */

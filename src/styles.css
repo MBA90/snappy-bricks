@@ -39,7 +39,6 @@ button{font:inherit;color:inherit}
 /* ---------- header ---------- */
 .logo{position:relative;flex:none}
 .logo .brick{box-shadow:inset 0 calc(var(--cell)*-.12) 0 var(--dk),0 2px 0 var(--ink);border-radius:2px}
-.chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{
   border:3px solid var(--ink);background:var(--paper);border-radius:999px;
   padding:5px 12px 3px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 var(--ink);
@@ -113,12 +112,13 @@ button{font:inherit;color:inherit}
   background-repeat:repeat,repeat,repeat,repeat,repeat,repeat,repeat,repeat,no-repeat;
   overflow:hidden;
 }
+/* the sweep slides (transform) instead of repainting the brick every frame */
 .brick.t-glitter::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  content:"";position:absolute;inset:0 auto 0 0;width:260%;pointer-events:none;
   background:linear-gradient(110deg, transparent 38%, rgba(255,255,255,.55) 50%, transparent 62%);
-  background-size:260% 100%;animation:shine 2.6s linear infinite;
+  animation:shine 2.6s linear infinite;
 }
-@keyframes shine{from{background-position:130% 0}to{background-position:-130% 0}}
+@keyframes shine{from{transform:translateX(-80%)}to{transform:translateX(80%)}}
 /* glow: a lit-up brick, bright in the middle with a soft halo of its own color that breathes */
 .brick.t-glow{
   background-color:var(--lt);
@@ -169,6 +169,9 @@ button{font:inherit;color:inherit}
   animation:neonflicker 5s linear infinite;
 }
 @keyframes neonflicker{0%,90%,94%,98%,100%{opacity:1}91%{opacity:.35}92%{opacity:.9}93%{opacity:.4}96%{opacity:.7}}
+/* boards with hundreds of bricks keep their look but stop the endless shimmer, glow and flicker */
+.plate.calm .brick::before,.plate.calm .brick::after{animation:none}
+.plate.calm .brick.t-glow::before{opacity:.7}
 .brick.lifted{opacity:.25}
 .brick.selected{outline:3px dashed #fff;outline-offset:1px;filter:brightness(1.12)}
 .brick.drop{animation:drop .42s cubic-bezier(.3,1.6,.5,1) both}
