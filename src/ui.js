@@ -622,7 +622,7 @@ function leavePhotoBoard(){
   if (!isPhotoBoard()) return;
   const s = SIZES.find(z => z.id === "l"); B.cols = s.cols; B.rows = s.rows; applyBoard();
 }
-function sizeOf(){ return ALL_SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES[1]; }
+function sizeOf(){ return ALL_SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES.find(z => z.id === "m"); }
 function setSize(s, fromUser){
   if (s.cols === B.cols && s.rows === B.rows) return;
   if (fromUser && sizeFits(s, B.cols, B.rows)) return;

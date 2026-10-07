@@ -1,9 +1,14 @@
 /* ===================== data ===================== */
+// smallest first: names grow through this list in order until they fit
 const SIZES = [
+  {id: "t", en: "Tiny",   ar: "صغيرة جدًا", cols: 12, rows: 9},
   {id: "s", en: "Small",  ar: "صغيرة", cols: 16, rows: 12},
   {id: "m", en: "Medium", ar: "وسط",   cols: 24, rows: 18},
+  {id: "q", en: "Square", ar: "مربعة", cols: 24, rows: 24},
   {id: "l", en: "Large",  ar: "كبيرة", cols: 32, rows: 24},
+  {id: "w", en: "Wide",   ar: "عريضة", cols: 48, rows: 24},
   {id: "x", en: "Huge",   ar: "ضخمة",  cols: 40, rows: 30},
+  {id: "g", en: "Mega",   ar: "عملاقة", cols: 56, rows: 42},
 ];
 // the Poster board belongs to Brick my photo only: it never shows in the board size picker,
 // and clearing it or starting a new board goes back to a normal size
@@ -43,6 +48,7 @@ const STYLES = [
   {id: "std",     en: "Classic", ar: "كلاسيك"},
   {id: "round",   en: "Round",   ar: "دائري"},
   {id: "glitter", en: "Glitter", ar: "بريق"},
+  {id: "glow",    en: "Glow",    ar: "مضيء"},
 ];
 // long side first (lying down)
 const SHAPES = [[1,1],[2,2],[3,2],[4,2]];
@@ -148,6 +154,7 @@ addStrings({
   styleSay_std: ["Classic bricks with bumps on top.", "مكعبات كلاسيكية بنتوءات صغيرة."],
   styleSay_round: ["Round bricks, like buttons!", "مكعبات دائرية مثل الأزرار!"],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
+  styleSay_glow: ["Glow bricks shine like magic lights!", "مكعبات مضيئة تلمع مثل الأضواء السحرية!"],
   brickAria: ["{s} brick", "مكعب {s}"],
   myStamp: ["Stamp", "ختم"], deleteStamp: ["Delete this stamp", "احذف هذا الختم"],
   tapToPlace: ["Now tap the board to put it there. Tap it again to stop.", "الآن اضغط على اللوحة لتضعه. اضغط عليه مرة أخرى للتوقف."],

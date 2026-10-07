@@ -301,8 +301,18 @@ function drawBoard(ctx, board, ox, oy, c){
     const rad = t === "round" ? Math.min(w, h) / 2 : c * .14;
     ctx.save();
     ctx.fillStyle = "rgba(30,10,60,.3)"; rrect(ctx, x + z, y + 3 + z * 2, w, h, rad); ctx.fill();
-    ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
-    ctx.fillStyle = b.c; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
+    if (t === "glow"){
+      // soft halo in the brick's own color, then a body that is brightest in the middle
+      ctx.save(); ctx.shadowColor = b.c; ctx.shadowBlur = c * .7;
+      ctx.fillStyle = b.c; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.fill();
+      ctx.restore();
+      const g = ctx.createRadialGradient(x + w / 2, y + h * .45, 0, x + w / 2, y + h * .45, Math.max(w, h) * .6);
+      g.addColorStop(0, "rgba(255,255,255,.95)"); g.addColorStop(.45, shade(b.c, .3)); g.addColorStop(1, b.c);
+      ctx.fillStyle = g; rrect(ctx, x, y, w, h, rad); ctx.fill();
+    } else {
+      ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
+      ctx.fillStyle = b.c; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
+    }
     if (t === "glitter"){
       // fine flecks under the studs, sized to the stud grid (like the board)
       let s = b.id * 9301 + 49297;
