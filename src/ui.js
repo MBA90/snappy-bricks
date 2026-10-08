@@ -45,7 +45,7 @@ function placePiece(piece, gx, gy, opts = {}){
   });
   const n = piece.bricks.length;
   commit(anim);
-  if (!opts.silent){ sfx.snap(); landPop({x: gx, y: gy, w: piece.w, h: piece.h}, n > 1 ? Math.min(n * 16, 400) : 0); }
+  if (!opts.silent) sfx.snap();
   emit("placed", {n});
   return n;
 }
@@ -61,36 +61,14 @@ function buildSwatches(){
     b.setAttribute("aria-label", c[LANG]); b.title = c[LANG];
     b.setAttribute("aria-pressed", c.hex === color);
     const f = document.createElement("span"); f.className = "swatch-face"; paintVars(f, c.hex); b.appendChild(f);
-    b.addEventListener("click", () => { setCopying(false); chooseColor(c); });
+    b.addEventListener("click", () => {
+      color = c.hex; sfx.click();
+      box.querySelectorAll(".swatch").forEach(s => s.setAttribute("aria-pressed", s.dataset.hex === color));
+      buildShapes(); emit("color", color);
+      say(tool === "paint" || tool === "fill" ? t("paintReady", {c: c[LANG]}) : t("colorPicked", {c: c[LANG]}));
+    });
     box.appendChild(b);
   }
-  // the dropper: tap it, then tap a brick on the board to use that brick's colour
-  const d = document.createElement("button");
-  d.className = "swatch dropper"; d.type = "button"; d.id = "dropperBtn";
-  d.setAttribute("aria-label", t("copyColor")); d.title = t("copyColor"); d.setAttribute("aria-pressed", copying);
-  d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4.5l5 5"/><path d="M17.2 2.8a2.3 2.3 0 0 1 3.3 3.3l-2.4 2.4-3.3-3.3z"/><path d="M15.6 7.6L6 17.2 4 20l2.8-2 9.6-9.6"/></svg>';
-  d.addEventListener("click", () => { sfx.click(); setCopying(!copying); if (copying) say(t("copyTapBrick")); });
-  box.appendChild(d);
-}
-function chooseColor(c){
-  color = c.hex; sfx.click();
-  $$("#swatches .swatch").forEach(s => { if (s.dataset.hex) s.setAttribute("aria-pressed", s.dataset.hex === color); });
-  buildShapes(); emit("color", color);
-  say(tool === "paint" || tool === "fill" ? t("paintReady", {c: c[LANG]}) : t("colorPicked", {c: c[LANG]}));
-}
-let copying = false;
-function setCopying(on){
-  copying = on;
-  const d = $("#dropperBtn"); if (d) d.setAttribute("aria-pressed", on);
-  plate.classList.toggle("copying", on);
-}
-// the toy-box colour closest to a brick's colour (photo bricks can be any shade)
-function nearestColor(hex){
-  const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
-  const [r, g, b] = rgb(hex);
-  let best = COLORS[0], bd = Infinity;
-  for (const c of COLORS){ const [r2, g2, b2] = rgb(c.hex); const d = (r - r2) ** 2 * 2 + (g - g2) ** 2 * 4 + (b - b2) ** 2 * 3; if (d < bd){ bd = d; best = c; } }
-  return best;
 }
 function buildStyles(){
   const box = $("#styles"); box.innerHTML = "";
@@ -155,7 +133,6 @@ function setTool(tl, quiet){
   plate.className = plate.className.replace(/tool-\w+/g, "").trim() + " tool-" + tl;
   if (tl !== "move" && selected){ selected = null; buildShapes(); buildStamps(); }
   emit("tool", tl);
-  if (copying) setCopying(false);
   if (quiet) return;
   sfx.click(); say(t(tl === "move" ? "dragAnytime" : "tool_" + tl));
 }
@@ -272,18 +249,9 @@ function endDrag(e, cancelled){
   const b = p.brick;
   if (p.target && p.target.ok){
     pushHistory(); b.x = p.target.gx; b.y = p.target.gy; b.z = p.target.z; commit(); sfx.snap();
-    landPop(b); const el = els.get(b.id); if (el && !reduceMotion){ el.classList.remove("land"); void el.offsetWidth; el.classList.add("land"); el.addEventListener("animationend", () => el.classList.remove("land"), {once: true}); }
   } else if (p.inTrash || !p.target){
     removeBrick(b.id); say(t("byeBrick"));
   } else { sfx.nope(); const el = els.get(b.id); if (el) wiggle(el); if (!settings.stack) say(t("spotTaken")); }
-}
-// snap pop: a ring bursts out round a brick as it lands, and phones give a tiny buzz
-function landPop(r, delay = 0){
-  if (navigator.vibrate) try { navigator.vibrate(8); } catch(err){}
-  if (reduceMotion || plate.classList.contains("calm")) return;
-  const el = document.createElement("div"); el.className = "pop";
-  placeEl(el, r); el.style.animationDelay = (delay + 220) + "ms";
-  plate.appendChild(el); el.addEventListener("animationend", () => el.remove(), {once: true});
 }
 function wiggle(el){ const again = el.classList.contains("wiggle"); el.classList.remove("wiggle", "wiggle2"); el.classList.add(again ? "wiggle2" : "wiggle"); }
 // big boards skip the flash: repainting it under a fast paint swipe made the swipe lag
@@ -426,12 +394,6 @@ function doFill(e){
 plate.addEventListener("pointerdown", e => {
   if (e.button > 0 || ptr) return;
   e.preventDefault();
-  if (copying){
-    const c = cellFromEvent(e), b = topAt(c.x, c.y);
-    if (!b){ sfx.nope(); say(t("copyTapBrick")); return; }
-    setCopying(false); chooseColor(nearestColor(b.c)); flash(els.get(b.id));
-    return;
-  }
   if (tool === "paint" || tool === "erase"){ ptr = {kind: "brush", id: e.pointerId, done: new Set(), changed: false}; brushAt(e); return; }
   if (tool === "fill"){ doFill(e); return; }
   const el = e.target.closest(".brick");

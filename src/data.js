@@ -157,8 +157,6 @@ addStrings({
   builtWith: ["Built with Snappy Bricks", "صُنعت بمكعبات سنابي"],
   paintReady: ["{c} paint is ready. Tap or swipe over bricks!", "اللون {c} جاهز. اضغط أو مرّر على المكعبات!"],
   colorPicked: ["{c} it is! Now drag a brick.", "اخترت {c}! الآن اسحب مكعبًا."],
-  copyColor: ["Copy a color from the board", "انسخ لونًا من اللوحة"],
-  copyTapBrick: ["Tap a brick on the board to copy its color.", "اضغط على مكعب في اللوحة لتنسخ لونه."],
   styleSay_std: ["Classic bricks with bumps on top.", "مكعبات كلاسيكية بنتوءات صغيرة."],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
   styleSay_glow: ["Glow bricks shine like magic lights!", "مكعبات مضيئة تلمع مثل الأضواء السحرية!"],

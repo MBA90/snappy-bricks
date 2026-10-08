@@ -263,16 +263,6 @@ button{font:inherit;color:inherit}
 .brick.flash{animation:flash .3s ease}
 .brick.flash2{animation:flash2 .3s ease}
 .brick.hidden-replay{visibility:hidden}
-/* snap pop: a white ring bursts out round a brick as it lands; a moved brick squashes as it lands */
-.pop{position:absolute;pointer-events:none;z-index:290;border:3px solid #fff;border-radius:calc(var(--cell)*.25);opacity:0;animation:pop .4s ease-out both}
-@keyframes pop{0%{opacity:.95;transform:scale(.92)}100%{opacity:0;transform:scale(1.3)}}
-.brick.land{animation:land .3s cubic-bezier(.3,1.6,.5,1)}
-@keyframes land{0%{transform:scale(1.08)}45%{transform:scale(1.04,.92)}75%{transform:scale(.98,1.03)}100%{transform:none}}
-/* the colour dropper sits after the colours; while it's on, the board shows a cross cursor */
-.swatch.dropper{display:grid;place-items:center;background:#fff;color:var(--ink);border:3px dashed var(--ink)}
-.swatch.dropper svg{width:60%;height:60%}
-.swatch.dropper[aria-pressed="true"]{background:var(--lav);color:#fff;border-style:solid}
-.plate.copying,.plate.copying .brick{cursor:crosshair}
 @keyframes drop{0%{transform:translateY(-120%) scale(1.15);opacity:0}55%{opacity:1;transform:translateY(0) scale(1.02)}72%{transform:scale(1.04,.93);filter:brightness(1.3)}88%{transform:scale(.99,1.02)}100%{transform:none;opacity:1;filter:none}}
 @media (hover:hover){ .plate.tool-move .brick:hover{filter:brightness(1.07) saturate(1.05)} }
 @keyframes poof{to{transform:scale(1.5) rotate(12deg);opacity:0}}
@@ -2320,8 +2310,6 @@ addStrings({
   builtWith: ["Built with Snappy Bricks", "صُنعت بمكعبات سنابي"],
   paintReady: ["{c} paint is ready. Tap or swipe over bricks!", "اللون {c} جاهز. اضغط أو مرّر على المكعبات!"],
   colorPicked: ["{c} it is! Now drag a brick.", "اخترت {c}! الآن اسحب مكعبًا."],
-  copyColor: ["Copy a color from the board", "انسخ لونًا من اللوحة"],
-  copyTapBrick: ["Tap a brick on the board to copy its color.", "اضغط على مكعب في اللوحة لتنسخ لونه."],
   styleSay_std: ["Classic bricks with bumps on top.", "مكعبات كلاسيكية بنتوءات صغيرة."],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
   styleSay_glow: ["Glow bricks shine like magic lights!", "مكعبات مضيئة تلمع مثل الأضواء السحرية!"],
@@ -3375,7 +3363,7 @@ function placePiece(piece, gx, gy, opts = {}){
   });
   const n = piece.bricks.length;
   commit(anim);
-  if (!opts.silent){ sfx.snap(); landPop({x: gx, y: gy, w: piece.w, h: piece.h}, n > 1 ? Math.min(n * 16, 400) : 0); }
+  if (!opts.silent) sfx.snap();
   emit("placed", {n});
   return n;
 }
@@ -3391,36 +3379,14 @@ function buildSwatches(){
     b.setAttribute("aria-label", c[LANG]); b.title = c[LANG];
     b.setAttribute("aria-pressed", c.hex === color);
     const f = document.createElement("span"); f.className = "swatch-face"; paintVars(f, c.hex); b.appendChild(f);
-    b.addEventListener("click", () => { setCopying(false); chooseColor(c); });
+    b.addEventListener("click", () => {
+      color = c.hex; sfx.click();
+      box.querySelectorAll(".swatch").forEach(s => s.setAttribute("aria-pressed", s.dataset.hex === color));
+      buildShapes(); emit("color", color);
+      say(tool === "paint" || tool === "fill" ? t("paintReady", {c: c[LANG]}) : t("colorPicked", {c: c[LANG]}));
+    });
     box.appendChild(b);
   }
-  // the dropper: tap it, then tap a brick on the board to use that brick's colour
-  const d = document.createElement("button");
-  d.className = "swatch dropper"; d.type = "button"; d.id = "dropperBtn";
-  d.setAttribute("aria-label", t("copyColor")); d.title = t("copyColor"); d.setAttribute("aria-pressed", copying);
-  d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4.5l5 5"/><path d="M17.2 2.8a2.3 2.3 0 0 1 3.3 3.3l-2.4 2.4-3.3-3.3z"/><path d="M15.6 7.6L6 17.2 4 20l2.8-2 9.6-9.6"/></svg>';
-  d.addEventListener("click", () => { sfx.click(); setCopying(!copying); if (copying) say(t("copyTapBrick")); });
-  box.appendChild(d);
-}
-function chooseColor(c){
-  color = c.hex; sfx.click();
-  $$("#swatches .swatch").forEach(s => { if (s.dataset.hex) s.setAttribute("aria-pressed", s.dataset.hex === color); });
-  buildShapes(); emit("color", color);
-  say(tool === "paint" || tool === "fill" ? t("paintReady", {c: c[LANG]}) : t("colorPicked", {c: c[LANG]}));
-}
-let copying = false;
-function setCopying(on){
-  copying = on;
-  const d = $("#dropperBtn"); if (d) d.setAttribute("aria-pressed", on);
-  plate.classList.toggle("copying", on);
-}
-// the toy-box colour closest to a brick's colour (photo bricks can be any shade)
-function nearestColor(hex){
-  const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
-  const [r, g, b] = rgb(hex);
-  let best = COLORS[0], bd = Infinity;
-  for (const c of COLORS){ const [r2, g2, b2] = rgb(c.hex); const d = (r - r2) ** 2 * 2 + (g - g2) ** 2 * 4 + (b - b2) ** 2 * 3; if (d < bd){ bd = d; best = c; } }
-  return best;
 }
 function buildStyles(){
   const box = $("#styles"); box.innerHTML = "";
@@ -3485,7 +3451,6 @@ function setTool(tl, quiet){
   plate.className = plate.className.replace(/tool-\w+/g, "").trim() + " tool-" + tl;
   if (tl !== "move" && selected){ selected = null; buildShapes(); buildStamps(); }
   emit("tool", tl);
-  if (copying) setCopying(false);
   if (quiet) return;
   sfx.click(); say(t(tl === "move" ? "dragAnytime" : "tool_" + tl));
 }
@@ -3602,18 +3567,9 @@ function endDrag(e, cancelled){
   const b = p.brick;
   if (p.target && p.target.ok){
     pushHistory(); b.x = p.target.gx; b.y = p.target.gy; b.z = p.target.z; commit(); sfx.snap();
-    landPop(b); const el = els.get(b.id); if (el && !reduceMotion){ el.classList.remove("land"); void el.offsetWidth; el.classList.add("land"); el.addEventListener("animationend", () => el.classList.remove("land"), {once: true}); }
   } else if (p.inTrash || !p.target){
     removeBrick(b.id); say(t("byeBrick"));
   } else { sfx.nope(); const el = els.get(b.id); if (el) wiggle(el); if (!settings.stack) say(t("spotTaken")); }
-}
-// snap pop: a ring bursts out round a brick as it lands, and phones give a tiny buzz
-function landPop(r, delay = 0){
-  if (navigator.vibrate) try { navigator.vibrate(8); } catch(err){}
-  if (reduceMotion || plate.classList.contains("calm")) return;
-  const el = document.createElement("div"); el.className = "pop";
-  placeEl(el, r); el.style.animationDelay = (delay + 220) + "ms";
-  plate.appendChild(el); el.addEventListener("animationend", () => el.remove(), {once: true});
 }
 function wiggle(el){ const again = el.classList.contains("wiggle"); el.classList.remove("wiggle", "wiggle2"); el.classList.add(again ? "wiggle2" : "wiggle"); }
 // big boards skip the flash: repainting it under a fast paint swipe made the swipe lag
@@ -3756,12 +3712,6 @@ function doFill(e){
 plate.addEventListener("pointerdown", e => {
   if (e.button > 0 || ptr) return;
   e.preventDefault();
-  if (copying){
-    const c = cellFromEvent(e), b = topAt(c.x, c.y);
-    if (!b){ sfx.nope(); say(t("copyTapBrick")); return; }
-    setCopying(false); chooseColor(nearestColor(b.c)); flash(els.get(b.id));
-    return;
-  }
   if (tool === "paint" || tool === "erase"){ ptr = {kind: "brush", id: e.pointerId, done: new Set(), changed: false}; brushAt(e); return; }
   if (tool === "fill"){ doFill(e); return; }
   const el = e.target.closest(".brick");
