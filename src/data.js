@@ -51,6 +51,8 @@ const STYLES = [
   {id: "glow",    en: "Glow",    ar: "مضيء"},
   {id: "neon",    en: "Neon",    ar: "نيون"},
   {id: "light",   en: "Light",   ar: "فاتح"},
+  {id: "jelly",   en: "Jelly",   ar: "جيلي"},
+  {id: "electric", en: "Electric", ar: "كهربائي"},
 ];
 // long side first (lying down)
 const SHAPES = [[1,1],[2,2],[3,2],[4,2]];
@@ -153,6 +155,8 @@ addStrings({
   plateStyleSay_glow: ["A glow board that shines like a magic light!", "لوحة مضيئة تلمع مثل ضوء سحري!"],
   plateStyleSay_neon: ["A neon board that lights up like a sign at night!", "لوحة نيون تضيء مثل لافتة في الليل!"],
   plateStyleSay_light: ["A light board full of little lamps!", "لوحة فاتحة مليئة بالمصابيح الصغيرة!"],
+  plateStyleSay_jelly: ["A wobbly jelly board, like a big gummy sweet!", "لوحة جيلي تهتز مثل حلوى جيلي كبيرة!"],
+  plateStyleSay_electric: ["An electric board that crackles with lightning!", "لوحة كهربائية تطقطق بالبرق!"],
   undone: ["Undone! It's back the way it was.", "تم التراجع! عاد كما كان."],
   oneBrick: ["1 brick", "المكعبات: 1"], nBricks: ["{n} bricks", "المكعبات: {n}"],
   builtWith: ["Built with Snappy Bricks", "صُنعت بمكعبات سنابي"],
@@ -164,6 +168,8 @@ addStrings({
   styleSay_glow: ["Glow bricks shine like magic lights!", "مكعبات مضيئة تلمع مثل الأضواء السحرية!"],
   styleSay_light: ["Light bricks shine like little lamps!", "مكعبات فاتحة تضيء مثل المصابيح الصغيرة!"],
   styleSay_neon: ["Neon bricks light up like signs at night!", "مكعبات النيون تضيء مثل اللافتات في الليل!"],
+  styleSay_jelly: ["Jelly bricks wobble like gummy sweets!", "مكعبات الجيلي تهتز مثل حلوى الجيلي!"],
+  styleSay_electric: ["Electric bricks crackle with lightning!", "مكعبات كهربائية تطقطق بالبرق!"],
   brickAria: ["{s} brick", "مكعب {s}"],
   myStamp: ["Stamp", "ختم"], deleteStamp: ["Delete this stamp", "احذف هذا الختم"],
   tapToPlace: ["Now tap the board to put it there. Tap it again to stop.", "الآن اضغط على اللوحة لتضعه. اضغط عليه مرة أخرى للتوقف."],

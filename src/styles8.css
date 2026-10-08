@@ -1,0 +1,146 @@
+/* ===================== Jelly and Electric: bricks and boards =====================
+   Jelly is a see-through gummy sweet: it keeps still on the board and only wobbles when it lands.
+   Electric crackles: a lightning crack across each brick (little bolts between the board's studs) and
+   now and then a zap, one layer that only fades in and out, like the neon flicker. */
+.brick,.plate,.swatch-face{
+  /* a lightning crack across a brick (stretched to fit), and its bright zap: small pictures, which the phone
+     draws faster than the same lines as SVG (the zigzag is CRACK in engine.js) */
+  --crack:url(data:image/png;base64,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);
+  --zap:url(data:image/png;base64,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);
+  /* little lightning bolts that sit between the studs of an electric board, two per 4×3 studs */
+  --bolts:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Cg fill='%23FFF39A' stroke='rgba(70,30,0,.45)' stroke-width='3' stroke-linejoin='round'%3E%3Cpath d='M110 62 82 106h18l-12 34 32-48h-18l12-30z'/%3E%3Cpath d='M308 162 280 206h18l-12 34 32-48h-18l12-30z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* jelly: a see-through gummy, glossy on top with a darker edge where the light bends, and squishy studs */
+.brick.t-jelly{
+  background-color:var(--jel);
+  background-image:
+    radial-gradient(circle at 40% 36%, rgba(255,255,255,.95) 0 calc(var(--cell)*.035), rgba(255,255,255,0) calc(var(--cell)*.085)),
+    radial-gradient(circle at 50% 50%, var(--jlt) 0 calc(var(--cell)*.11), var(--jel) calc(var(--cell)*.19), var(--jdk) calc(var(--cell)*.215), transparent calc(var(--cell)*.235)),
+    radial-gradient(circle at 55% 59%, rgba(30,10,50,.2) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.29)),
+    radial-gradient(ellipse 40% 26% at 27% 19%, rgba(255,255,255,.75) 0, rgba(255,255,255,0) 100%),
+    linear-gradient(180deg, rgba(255,255,255,.28) 0, rgba(255,255,255,0) 38%, rgba(255,255,255,0) 72%, rgba(255,255,255,.2) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
+  background-repeat:repeat,repeat,repeat,no-repeat,no-repeat;
+  border-radius:calc(var(--cell)*.32);
+  box-shadow:
+    inset 0 0 calc(var(--cell)*.24) var(--jdk),
+    inset 0 calc(var(--cell)*-.08) calc(var(--cell)*.05) var(--jdk),
+    inset 0 calc(var(--cell)*.05) calc(var(--cell)*.04) rgba(255,255,255,.45),
+    0 0 0 1px rgba(30,10,60,.14),
+    calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(5px + var(--z) * 3px) var(--jsh);
+}
+/* landing: a squish and a wobble instead of the usual bounce */
+.brick.t-jelly.drop{animation-name:jellydrop;animation-timing-function:ease-out;animation-duration:.6s}
+@keyframes jellydrop{
+  0%{transform:translateY(-120%) scale(1.1);opacity:0}
+  40%{opacity:1;transform:translateY(0) scale(1)}
+  52%{transform:scale(1.16,.8)}
+  66%{transform:scale(.9,1.1)}
+  80%{transform:scale(1.05,.96)}
+  92%{transform:scale(.99,1.01)}
+  100%{transform:none;opacity:1}
+}
+
+/* electric: the brick charged up, bright in the middle with a white-hot edge, a lightning crack across it,
+   studs like little plasma balls, and a zap that flashes now and then */
+.brick.t-electric{
+  background-color:var(--c);
+  background-image:
+    radial-gradient(circle at 50% 50%, transparent calc(var(--cell)*.2), rgba(255,255,255,.8) calc(var(--cell)*.212) calc(var(--cell)*.228), transparent calc(var(--cell)*.245)),
+    radial-gradient(circle at 50% 50%, #fff 0 calc(var(--cell)*.055), var(--lt) calc(var(--cell)*.09), var(--neon) calc(var(--cell)*.16), var(--dk) calc(var(--cell)*.2) calc(var(--cell)*.24), transparent calc(var(--cell)*.26)),
+    var(--crack),
+    radial-gradient(ellipse 70% 70% at 50% 45%, var(--lt) 0, var(--c) 60%, var(--dk) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
+  background-position:var(--at) var(--at),var(--at) var(--at),0 0,0 0;
+  background-repeat:repeat,repeat,no-repeat,no-repeat;
+  box-shadow:
+    inset 0 0 0 max(1px, calc(var(--cell)*.035)) rgba(255,255,255,.85),
+    inset 0 0 calc(var(--cell)*.3) rgba(255,255,255,.35),
+    0 0 0 1px rgba(30,10,60,.3),
+    0 0 calc(var(--cell)*.25) var(--neon),
+    calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.3);
+}
+/* the zap: a bright bolt and a burst of light, hidden most of the time. On the board only one brick in five
+   zaps (.zp): a zap on every brick gave the phone hundreds of layers to juggle */
+.brick.t-electric::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  background:var(--zap) 0 0 / 100% 100% no-repeat;
+  box-shadow:0 0 calc(var(--cell)*.55) calc(var(--cell)*.08) var(--neon),0 0 calc(var(--cell)*.15) #fff,inset 0 0 calc(var(--cell)*.3) #fff;
+  animation:zap 3.6s linear infinite;
+}
+/* the bricks take turns, so a board of them crackles instead of flashing all at once */
+.plate .brick.t-electric:not(.zp)::after,.stamps .brick.t-electric::after,.floating .brick.t-electric::after{content:none}
+.brick.t-electric:nth-child(3n+1)::after{animation-delay:-1.3s}
+.brick.t-electric:nth-child(3n+2)::after{animation-delay:-2.5s}
+@keyframes zap{0%,70%,100%{opacity:0}71%{opacity:1}72%{opacity:.25}73%{opacity:.95}75%{opacity:0}86%{opacity:0}87%{opacity:.7}88%{opacity:0}}
+.plate.tiny .brick.t-jelly{background-color:var(--c)}
+
+/* ---------- boards ---------- */
+/* jelly: a big gummy sweet of a board, glossy on top, darker round the edge, with a shine that comes and goes */
+.plate[data-ps="jelly"]{
+  border-radius:calc(var(--cell)*.6);
+  background-image:
+    radial-gradient(circle at 40% 36%, rgba(255,255,255,.7) 0 calc(var(--cell)*.03), rgba(255,255,255,0) calc(var(--cell)*.08)),
+    radial-gradient(circle at 50% 50%, var(--jlt) 0 calc(var(--cell)*.1), var(--c) calc(var(--cell)*.19), var(--jdk) calc(var(--cell)*.21), transparent calc(var(--cell)*.23)),
+    radial-gradient(circle at 55% 59%, rgba(30,10,50,.16) 0 calc(var(--cell)*.19), transparent calc(var(--cell)*.27)),
+    radial-gradient(ellipse 55% 20% at 30% 9%, rgba(255,255,255,.5) 0, rgba(255,255,255,0) 100%),
+    linear-gradient(180deg, rgba(255,255,255,.22) 0, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 78%, rgba(255,255,255,.16) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
+  background-repeat:repeat,repeat,repeat,no-repeat,no-repeat;
+  box-shadow:
+    inset 0 0 calc(var(--cell)*1.1) var(--jdk),
+    inset 0 calc(var(--cell)*-.12) calc(var(--cell)*.2) var(--jdk),
+    inset 0 calc(var(--cell)*.08) calc(var(--cell)*.1) rgba(255,255,255,.4),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="jelly"]::before{
+  content:"";
+  background:radial-gradient(ellipse 42% 16% at 28% 8%, rgba(255,255,255,.55) 0, rgba(255,255,255,0) 100%);
+  animation:brickglow 3s ease-in-out infinite;
+}
+
+/* electric: a charged-up board, little lightning bolts between the plasma studs, a white-hot rim,
+   and now and then the whole board zaps */
+.plate[data-ps="electric"]{
+  background-color:var(--c);
+  background-image:
+    radial-gradient(circle at 50% 50%, #fff 0 calc(var(--cell)*.04), var(--lt) calc(var(--cell)*.08), var(--neon) calc(var(--cell)*.14), transparent calc(var(--cell)*.19)),
+    radial-gradient(circle at 50% 50%, transparent calc(var(--cell)*.185), rgba(255,255,255,.55) calc(var(--cell)*.195) calc(var(--cell)*.21), transparent calc(var(--cell)*.225)),
+    radial-gradient(circle at 50% 50%, var(--dk) 0 calc(var(--cell)*.22), transparent calc(var(--cell)*.24)),
+    var(--bolts),
+    radial-gradient(ellipse 70% 70% at 50% 45%, var(--lt) 0, var(--c) 65%, var(--dk) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),calc(var(--cell)*4) calc(var(--cell)*3),100% 100%;
+  background-repeat:repeat,repeat,repeat,repeat,no-repeat;
+  box-shadow:
+    inset 0 0 0 max(2px, calc(var(--cell)*.06)) rgba(255,255,255,.8),
+    inset 0 0 calc(var(--cell)*.9) rgba(255,255,255,.35),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="electric"]::after{
+  content:"";
+  box-shadow:0 0 calc(var(--cell)*.8) calc(var(--cell)*.12) var(--neon),inset 0 0 calc(var(--cell)*.8) #fff;
+  animation:zap 4.4s linear infinite;
+}
+
+/* the picker */
+.pprev[data-ps="jelly"]{border-radius:9px;box-shadow:inset 0 0 6px var(--jdk),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="electric"]{box-shadow:inset 0 0 0 2px rgba(255,255,255,.8),0 0 0 2px var(--ink),0 3px 0 2px var(--ink),0 0 7px 2px var(--neon)}
+
+/* upright tablets: eight styles in two rows of four instead of a row of six and two left over */
+@media (orientation:portrait), (max-width:899px) and (min-height:541px){
+  .styles{grid-template-columns:repeat(4,56px)}
+}
+/* eight styles on an upright phone: two rows of four (the picture over the name), so they still fit without scrolling */
+@media (orientation:portrait) and (max-width:699px){
+  .styles{grid-template-columns:repeat(4,minmax(0,84px))}
+  .stylebtn{flex-direction:column;gap:2px;font-size:.74rem;padding:4px 2px}
+}
+/* short phones: smaller pictures so both rows fit the shorter toy box */
+@media (orientation:portrait) and (max-width:699px) and (max-height:720px){
+  .styles{gap:4px}
+  .stylebtn{min-height:0;gap:0;padding:2px;font-size:.68rem}
+  .stylebtn > :first-child{zoom:.72}
+  .plate-styles .stylebtn{gap:3px}
+}
