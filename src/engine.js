@@ -327,7 +327,7 @@ function fitBox(wrap){
   const zb = $("#zoomBar");
   const zbH = !boxed && zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
   const maxH = boxed ? wrap.clientHeight - padY : Math.max(H * .3, H - top - dock - 22 - zbH);
-  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 64 : 48));
+  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 120 : 48));
   // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted
   const dims = B.cols + "x" + B.rows;
   if (dims !== zoomDims){ zoomDims = dims; boardZoom = 1; }
