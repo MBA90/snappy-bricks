@@ -1778,6 +1778,33 @@ body[data-screen="studio"] .app{max-width:none}
 .isl-path{padding-top:52px}
 @media (max-width:899px){ .isl-path{padding-top:44px} }
 
+/* ===================== brick pencil and Bricky plays ===================== */
+.tbtn.sun{background:#FFF3B0}
+.tbtn.sun[aria-pressed="true"]{background:var(--sun)}
+.plate.tool-draw{cursor:crosshair}
+/* the line being drawn, in the colour it will become */
+.pencil-line{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:300;opacity:.75;overflow:visible}
+/* Bricky and his stars: absolutely placed in the board and moved with one transform each */
+.player,.pstar{position:absolute;left:0;top:0;pointer-events:none;will-change:transform}
+.player{z-index:420;transform-origin:50% 50%;filter:drop-shadow(0 3px 2px rgba(30,10,60,.35))}
+.player svg{width:100%;height:100%;display:block}
+.pstar{z-index:410;display:grid;place-items:center;line-height:1;animation:starBob 1.2s ease-in-out infinite alternate}
+.pstar.got{animation:starGot .45s ease-out forwards}
+@keyframes starBob{to{translate:0 -12%}}
+@keyframes starGot{to{scale:2;opacity:0}}
+@media (prefers-reduced-motion: reduce){.pstar{animation:none}}
+/* upright phones: ten tools in two rows of five; Little builders' eight in two rows of four */
+@media (orientation:portrait) and (max-width:699px){
+  .tools,body[data-hand="left"] .tools{grid-template-columns:repeat(5,minmax(0,1fr))}
+  body[data-age="little"] .tools{grid-template-columns:repeat(4,minmax(0,1fr))}
+  body[data-age="little"][data-hand="left"] .tbtn.undo{grid-row:2}
+}
+/* upright tablets: all the tools share one row instead of wrapping onto a second */
+@media (orientation:portrait), (max-width:899px) and (min-height:541px){
+  .tools-main,body[data-hand="left"] .tools-main{flex-wrap:nowrap}
+  .tools-main .tbtn{flex:1 1 0;min-width:0}
+}
+
 </style>
 <div class="app">
 
@@ -2003,6 +2030,10 @@ body[data-screen="studio"] .app{max-width:none}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l5 5-10 10H6l-3-3z"/><path d="M9 21h12"/><path d="M11 8l5 5"/></svg>
             <span class="txt" data-i18n="eraser">Eraser</span>
           </button>
+          <button class="tbtn" data-tool="draw" aria-pressed="false" data-i18n-title="tt_draw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4l5 5L9 20H4v-5z"/><path d="M13 6l5 5"/></svg>
+            <span class="txt" data-i18n="draw">Draw</span>
+          </button>
           <button class="tbtn big-only" data-tool="fill" aria-pressed="false" data-i18n-title="tt_fill">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 11l7-7 8 8-7 7z"/><path d="M5 11h15"/><path d="M20 16s2 2.4 2 3.6a2 2 0 0 1-4 0c0-1.2 2-3.6 2-3.6z" fill="currentColor"/></svg>
             <span class="txt" data-i18n="fill">Fill</span>
@@ -2010,6 +2041,10 @@ body[data-screen="studio"] .app{max-width:none}
           <button class="tbtn toggle big-only" id="stackBtn" type="button" aria-pressed="false" data-i18n-title="tt_stack">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="14" width="18" height="6" rx="1.5"/><rect x="6" y="8" width="12" height="6" rx="1.5"/><rect x="9" y="3" width="6" height="5" rx="1.5"/></svg>
             <span class="txt" data-i18n="stack">Stack</span>
+          </button>
+          <button class="tbtn sun" id="playBtn" type="button" aria-pressed="false" data-i18n-title="tt_play">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19h6v-4h6v-4h6"/><circle cx="8" cy="8" r="2.6" fill="currentColor"/><path d="M17 3l.9 1.9 2.1.3-1.5 1.5.4 2.1-1.9-1-1.9 1 .4-2.1-1.5-1.5 2.1-.3z" fill="currentColor"/></svg>
+            <span class="txt" data-i18n="play">Play</span>
           </button>
           <button class="tbtn lav" id="replayBtn" type="button" data-i18n-title="replay">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>
@@ -2282,6 +2317,9 @@ addStrings({
   paint: ["Paint", "تلوين"], fill: ["Fill", "تعبئة"], eraser: ["Eraser", "ممحاة"],
   tt_paint: ["Tap or swipe over bricks to color them", "اضغط أو مرّر على المكعبات لتلوينها"],
   tt_fill: ["Fill an empty space, or recolor a whole shape", "املأ مكانًا فارغًا، أو غيّر لون شكل كامل"],
+  tt_draw: ["Draw with your finger to make bricks", "ارسم بإصبعك لتصنع مكعبات"],
+  tt_play: ["Watch Bricky play on your build", "شاهد بريكي يلعب على بنائك"],
+  draw: ["Draw", "ارسم"], play: ["Play", "العب"],
   tt_erase: ["Tap or swipe over bricks to take them off", "اضغط أو مرّر على المكعبات لإزالتها"],
   tt_stack: ["Stack bricks on top of each other", "ضع المكعبات فوق بعضها"],
   tt_clear: ["Clear the board", "امسح اللوحة"],
@@ -2309,6 +2347,7 @@ addStrings({
   oneBrick: ["1 brick", "المكعبات: 1"], nBricks: ["{n} bricks", "المكعبات: {n}"],
   builtWith: ["Built with Snappy Bricks", "صُنعت بمكعبات سنابي"],
   paintReady: ["{c} paint is ready. Tap or swipe over bricks!", "اللون {c} جاهز. اضغط أو مرّر على المكعبات!"],
+  drawReady: ["{c} pencil is ready. Draw on the board!", "قلم {c} جاهز. ارسم على اللوحة!"],
   colorPicked: ["{c} it is! Now drag a brick.", "اخترت {c}! الآن اسحب مكعبًا."],
   styleSay_std: ["Classic bricks with bumps on top.", "مكعبات كلاسيكية بنتوءات صغيرة."],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
@@ -2323,6 +2362,11 @@ addStrings({
   dragAnytime: ["Okay! Drag a brick onto the board whenever you like.", "حسنًا! اسحب مكعبًا إلى اللوحة متى شئت."],
   tool_paint: ["Paint: tap or swipe over bricks to color them.", "تلوين: اضغط أو مرّر على المكعبات لتلوينها."],
   tool_fill: ["Fill: tap an empty space to fill it, or tap a shape to recolor it.", "تعبئة: اضغط على مكان فارغ لتملأه، أو على شكل لتغيّر لونه."],
+  tool_draw: ["Draw: draw with your finger and it turns into bricks! Draw a circle to fill it in.", "ارسم: ارسم بإصبعك وسيتحوّل الرسم إلى مكعبات! ارسم دائرة لتمتلئ."],
+  playStart: ["Watch me play on your build! Can I reach all the stars?", "شاهدني ألعب على بنائك! هل أصل إلى كل النجوم؟"],
+  playEmpty: ["Build me something to climb on first!", "ابنِ لي شيئًا أتسلّق عليه أولًا!"],
+  playWin: ["I got all the stars! Thank you for building me a playground!", "جمعت كل النجوم! شكرًا لأنك بنيت لي ملعبًا!"],
+  playBye: ["That was fun! Build me higher steps and press Play again.", "كان ذلك ممتعًا! ابنِ لي درجات أعلى واضغط العب مرة أخرى."],
   tool_erase: ["Eraser: tap or swipe over bricks to take them off.", "ممحاة: اضغط أو مرّر على المكعبات لإزالتها."],
   stackOn: ["Stacking is on. Drop bricks on top of other bricks!", "التكديس مفعّل. ضع المكعبات فوق بعضها!"],
   stackOff: ["Stacking is off. Bricks go on the board only.", "التكديس متوقف. المكعبات توضع على اللوحة فقط."],
@@ -3383,7 +3427,7 @@ function buildSwatches(){
       color = c.hex; sfx.click();
       box.querySelectorAll(".swatch").forEach(s => s.setAttribute("aria-pressed", s.dataset.hex === color));
       buildShapes(); emit("color", color);
-      say(tool === "paint" || tool === "fill" ? t("paintReady", {c: c[LANG]}) : t("colorPicked", {c: c[LANG]}));
+      say(t(tool === "draw" ? "drawReady" : tool === "paint" || tool === "fill" ? "paintReady" : "colorPicked", {c: c[LANG]}));
     });
     box.appendChild(b);
   }
@@ -3675,6 +3719,78 @@ function fillAt(x, y, opts = {}){
   renderAuras(); emit("change");
   return hit.size;
 }
+/* ---- brick pencil: draw with a finger, and the line turns into bricks; a closed loop fills in ---- */
+let pencilSvg = null;
+function startPencil(e){
+  if (B.locked){ sfx.nope(); return; }
+  const thick = settings.age === "little" ? 2 : 1;
+  ptr = {kind: "pencil", id: e.pointerId, pts: [], cells: new Set(), thick};
+  pencilSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  pencilSvg.setAttribute("class", "pencil-line"); pencilSvg.setAttribute("viewBox", `0 0 ${B.cols} ${B.rows}`);
+  pencilSvg.setAttribute("preserveAspectRatio", "none");
+  pencilSvg.innerHTML = `<path fill="none" stroke="${color}" stroke-width="${thick}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  plate.appendChild(pencilSvg);
+  pencilAt(e);
+}
+function pencilAt(e){
+  const r = plate.getBoundingClientRect(), p = ptr;
+  const fx = clamp((e.clientX - r.left) / cell, 0, B.cols - .01), fy = clamp((e.clientY - r.top) / cell, 0, B.rows - .01);
+  const last = p.pts[p.pts.length - 1];
+  if (last && Math.hypot(fx - last[0], fy - last[1]) < .25) return;
+  // walk from the last point in small steps so a fast swipe leaves no gaps
+  const steps = last ? Math.ceil(Math.hypot(fx - last[0], fy - last[1]) / .3) : 1;
+  for (let i = 1; i <= steps; i++){
+    const x = last ? last[0] + (fx - last[0]) * i / steps : fx, y = last ? last[1] + (fy - last[1]) * i / steps : fy;
+    // a thick pencil covers the 2×2 studs nearest the finger
+    const x0 = p.thick === 2 ? Math.round(x) - 1 : Math.floor(x), y0 = p.thick === 2 ? Math.round(y) - 1 : Math.floor(y);
+    for (let dy = 0; dy < p.thick; dy++) for (let dx = 0; dx < p.thick; dx++){
+      const cx = clamp(x0 + dx, 0, B.cols - 1), cy = clamp(y0 + dy, 0, B.rows - 1);
+      p.cells.add(cy * B.cols + cx);
+    }
+  }
+  p.pts.push([fx, fy]);
+  pencilSvg.firstChild.setAttribute("d", "M" + p.pts.map(q => q[0].toFixed(2) + " " + q[1].toFixed(2)).join("L") + (p.pts.length === 1 ? "l.01 0" : ""));
+}
+function endPencil(cancelled){
+  const p = ptr; ptr = null;
+  if (pencilSvg){ pencilSvg.remove(); pencilSvg = null; }
+  if (cancelled || !p.cells.size) return;
+  const W = B.cols, H = B.rows, cells = p.cells;
+  // a line that ends near where it started is a loop: fill its inside too
+  const a = p.pts[0], z = p.pts[p.pts.length - 1];
+  const xs = p.pts.map(q => q[0]), ys = p.pts.map(q => q[1]);
+  if (p.pts.length > 6 && Math.hypot(a[0] - z[0], a[1] - z[1]) <= 2.5 * p.thick
+      && Math.max(...xs) - Math.min(...xs) >= 3 && Math.max(...ys) - Math.min(...ys) >= 3){
+    const out = new Uint8Array(W * H), stack = [];
+    for (let x = 0; x < W; x++){ stack.push(x, (H - 1) * W + x); }
+    for (let y = 0; y < H; y++){ stack.push(y * W, y * W + W - 1); }
+    while (stack.length){
+      const i = stack.pop(); if (out[i] || cells.has(i)) continue; out[i] = 1;
+      const x = i % W, y = (i - x) / W;
+      if (x > 0) stack.push(i - 1); if (x < W - 1) stack.push(i + 1); if (y > 0) stack.push(i - W); if (y < H - 1) stack.push(i + W);
+    }
+    for (let i = 0; i < W * H; i++) if (!out[i]) cells.add(i);
+  }
+  // only empty studs get bricks; cover them with the biggest bricks that fit, then 1×1s at the edges
+  const free = new Uint8Array(W * H);
+  for (const i of cells){ const x = i % W, y = (i - x) / W; if (!grid[y][x].length) free[i] = 1; }
+  const sizes = [[4, 2], [2, 4], [3, 2], [2, 3], [2, 2], [1, 1]];
+  const fits = (x, y, w, h) => { if (x + w > W || y + h > H) return false; for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (!free[(y + j) * W + x + i]) return false; return true; };
+  const made = [];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
+    if (!free[y * W + x]) continue;
+    const [w, h] = sizes.find(([w, h]) => fits(x, y, w, h));
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) free[(y + j) * W + x + i] = 0;
+    made.push({x, y, w, h});
+  }
+  if (!made.length){ sfx.nope(); say(t("spotTaken")); return; }
+  pushHistory();
+  const anim = new Map(), gap = Math.max(4, Math.min(24, Math.round(600 / made.length)));
+  made.forEach((m, i) => { const nb = {id: nextId++, ...m, c: color, t: brickStyle, z: 0}; B.bricks.push(nb); anim.set(nb.id, i * gap); });
+  commit(anim); sfx.snap(); if (made.length > 3) sfx.fill();
+  emit("placed", {n: made.length});
+}
+
 function doFill(e){
   const {x, y} = cellFromEvent(e);
   pushHistory();
@@ -3714,6 +3830,7 @@ plate.addEventListener("pointerdown", e => {
   e.preventDefault();
   if (tool === "paint" || tool === "erase"){ ptr = {kind: "brush", id: e.pointerId, done: new Set(), changed: false}; brushAt(e); return; }
   if (tool === "fill"){ doFill(e); return; }
+  if (tool === "draw"){ startPencil(e); return; }
   const el = e.target.closest(".brick");
   if (el && el.parentElement === plate){ const b = byId.get(+el.dataset.id); if (b && !B.locked) startBoardDrag(e, b); return; }
   const c = cellFromEvent(e);
@@ -3722,6 +3839,7 @@ plate.addEventListener("pointerdown", e => {
 window.addEventListener("pointermove", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "brush"){ brushAt(e); return; }
+  if (ptr.kind === "pencil"){ e.preventDefault(); pencilAt(e); return; }
   if (ptr.kind === "tap") return;
   if (!ptr.moved){
     const far = Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy);
@@ -3740,6 +3858,7 @@ window.addEventListener("pointermove", e => {
 window.addEventListener("pointerup", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "brush"){ ptr = null; emit("change"); return; }
+  if (ptr.kind === "pencil"){ endPencil(false); return; }
   if (ptr.kind === "tap"){
     const tp = ptr; ptr = null;
     if (Math.hypot(e.clientX - tp.sx, e.clientY - tp.sy) > 12) return;
@@ -3757,6 +3876,7 @@ $("#tray").addEventListener("touchmove", e => { if (ptr && ptr.kind === "drag" &
 window.addEventListener("pointercancel", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "drag") endDrag(e, true);
+  else if (ptr.kind === "pencil") endPencil(true);
   else ptr = null;
 });
 
@@ -4870,6 +4990,110 @@ $("#cardBtn").addEventListener("click", openCardMaker);
 
 on("boot", () => { updateBadgeCount(); applyTheme(settings.theme, false); });
 
+/* ===================== Bricky plays on your build ===================== */
+// Press Play and Bricky drops onto the board, walks along the bricks, hops up steps and turns at walls,
+// collecting the stars on top of the build. Only Bricky and the stars move (one transform each a frame),
+// and nothing runs until Play is pressed. Kids can keep building while he plays: he reads the board every frame.
+let play = null;
+function solidAt(x, y){
+  if (x < 0 || x >= B.cols || y >= B.rows) return true;     // the board's sides and bottom are walls and floor
+  if (y < 0) return false;
+  return grid[y][x].length > 0;
+}
+function hits(px, py, s){
+  const e = .001;
+  const x0 = Math.floor(px + e), x1 = Math.floor(px + s - e), y0 = Math.floor(py + e), y1 = Math.floor(py + s - e);
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (solidAt(x, y)) return true;
+  return false;
+}
+// the top of the build in a column (or the floor), where a star can sit
+function surfaceAt(x, s){
+  for (let y = 0; y < B.rows; y++) for (let i = 0; i < s && x + i < B.cols; i++) if (grid[y][x + i].length) return y;
+  return B.rows;
+}
+function startPlay(){
+  if (play){ stopPlay(); return; }
+  if (!B.bricks.length){ sfx.nope(); say(t("playEmpty")); return; }
+  const s = clamp(Math.round(B.cols / 12), 2, 4);           // Bricky's size in studs: bigger on bigger boards
+  const el = document.createElement("div"); el.className = "player";
+  const art = $("#bricky").cloneNode(true); art.removeAttribute("id"); el.appendChild(art);
+  plate.appendChild(el);
+  // three stars on top of the build, spread across the board
+  const cols = [];
+  for (let x = 0; x + s <= B.cols; x++) if (surfaceAt(x, s) < B.rows) cols.push(x);
+  const picks = [];
+  for (const x of cols.sort(() => Math.random() - .5)) if (picks.every(p => Math.abs(p - x) >= s * 2) && picks.length < 3) picks.push(x);
+  while (picks.length < 3){ const x = Math.floor(Math.random() * (B.cols - s)); if (picks.every(p => Math.abs(p - x) >= s)) picks.push(x); else if (Math.random() < .1) picks.push(x); }
+  const stars = picks.map(x => {
+    const y = Math.max(0, surfaceAt(x, s) - s), st = document.createElement("div");
+    st.className = "pstar"; st.textContent = "⭐"; plate.appendChild(st);
+    return {x, y, el: st, got: false};
+  });
+  play = {el, s, x: 1, y: -s, vx: 0, vy: 0, dir: 1, ground: false, stars, got: 0, t0: performance.now(), last: performance.now(),
+          cols: B.cols, rows: B.rows, done: 0, raf: 0};
+  $("#playBtn").setAttribute("aria-pressed", "true");
+  sfx.whoosh(); say(t("playStart"));
+  play.raf = requestAnimationFrame(stepPlay);
+}
+function stopPlay(quiet){
+  if (!play) return;
+  cancelAnimationFrame(play.raf);
+  play.el.remove(); play.stars.forEach(st => st.el.remove());
+  play = null;
+  $("#playBtn").setAttribute("aria-pressed", "false");
+  if (!quiet) sfx.click();
+}
+function stepPlay(now){
+  const p = play; if (!p) return;
+  // leaving the studio or changing the board size ends the game
+  if ($("#studioScreen").hidden || B.cols !== p.cols || B.rows !== p.rows){ stopPlay(true); return; }
+  const dt = Math.min(.05, (now - p.last) / 1000); p.last = now;
+  const s = p.s, G = 38, speed = 2.2 + s * .6, jumpH = s + 1.2, jumpV = Math.sqrt(2 * G * jumpH);
+  // a brick dropped on top of Bricky pushes him up out of the way
+  for (let k = 0; k < 8 && hits(p.x, p.y, s); k++) p.y -= 1;
+  if (p.done){
+    // all the stars found: little happy hops on the spot, then goodbye
+    if (p.ground){ p.vy = -jumpV * .6; p.ground = false; }
+    if (now - p.done > 2600){ stopPlay(true); return; }
+  } else {
+    // walk; at a step he can climb he hops, at a high wall he turns round
+    const nx = p.x + p.dir * speed * dt;
+    if (hits(nx, p.y, s)){
+      let climb = 0;
+      for (let h = 1; h <= Math.ceil(jumpH); h++) if (!hits(nx, p.y - h, s)){ climb = h; break; }
+      if (p.ground && climb) { p.vy = -Math.sqrt(2 * G * (climb + .4)); p.ground = false; }
+      else if (p.ground || !climb) p.dir = -p.dir;
+    } else p.x = nx;
+    if (p.ground && Math.random() < dt * .35){ p.vy = -jumpV * .8; p.ground = false; }   // now and then a happy hop
+  }
+  // fall, and land on whatever is below
+  p.vy = Math.min(p.vy + G * dt, 30);
+  const ny = p.y + p.vy * dt;
+  if (hits(p.x, ny, s)){
+    if (p.vy > 0){ p.y = Math.floor(ny + s) - s; let k = 0; while (hits(p.x, p.y, s) && k++ < 4) p.y -= 1; p.ground = true; }
+    else p.y = Math.ceil(ny);
+    p.vy = 0;
+  } else { p.y = ny; p.ground = false; }
+  // stars
+  for (const st of p.stars){
+    if (st.got) continue;
+    if (Math.abs(st.x - p.x) < s * .8 && Math.abs(st.y - p.y) < s * .8){
+      st.got = true; p.got++; st.el.classList.add("got"); sfx.paint();
+      if (p.got === p.stars.length){ p.done = now; sfx.cheer(); confetti(); say(t("playWin")); }
+    }
+  }
+  if (!p.done && now - p.t0 > 40000){ say(t("playBye")); stopPlay(true); return; }
+  // draw: one transform for Bricky, and the stars follow the board's stud size
+  const c = cell, tilt = p.ground ? Math.sin(now / 90) * 6 : -8 * p.dir;
+  p.el.style.width = p.el.style.height = s * c + "px";
+  p.el.style.transform = `translate(${p.x * c}px, ${p.y * c}px) scaleX(${p.dir}) rotate(${tilt}deg)`;
+  for (const st of p.stars){
+    if (st._c !== c){ st._c = c; st.el.style.cssText = `width:${s * c}px;height:${s * c}px;font-size:${s * c * .8}px;transform:translate(${st.x * c}px, ${st.y * c}px)`; }
+  }
+  p.raf = requestAnimationFrame(stepPlay);
+}
+$("#playBtn").addEventListener("click", () => startPlay());
+
 /* ===================== Bricky's recorded voice =====================
    Clips live in voice/en.json and voice/ar.json: {"clips": {"<key>": "<base64 mp3>"}}.
    A clip is found by a normalised key made from the text, so any text we recorded
@@ -5377,7 +5601,7 @@ addStrings({
   // and goes back to the tab it was on when the tool is put away
   let before = null;
   on("tool", tl => {
-    if (tl === "paint" || tl === "fill"){
+    if (tl === "paint" || tl === "fill" || tl === "draw"){
       if (tray.dataset.tab !== "colors"){ before = tray.dataset.tab; setTab("colors"); }
       showSwatches();
     } else if (before && tray.dataset.tab === "colors"){ setTab(before); before = null; }

@@ -7,7 +7,7 @@
 import os, sys, re
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(ROOT, "src")
-JS_ORDER = ["data.js", "data2.js", "engine.js", "lang.js", "ui.js", "name.js", "games.js", "extras.js", "classwall.js", "voice.js", "ux.js", "mobile.js", "photo.js", "map.js", "boot.js"]
+JS_ORDER = ["data.js", "data2.js", "engine.js", "lang.js", "ui.js", "name.js", "games.js", "extras.js", "play.js", "classwall.js", "voice.js", "ux.js", "mobile.js", "photo.js", "map.js", "boot.js"]
 FONTS = "https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Baloo+Bhaijaan+2:wght@500;600;700;800&display=swap"
 
 def read(name):
