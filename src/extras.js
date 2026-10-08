@@ -177,7 +177,7 @@ $("#replayBtn").addEventListener("click", replay);
 
 /* ---------- my creations (gallery) ---------- */
 let gallery = store("snappy-gallery") || [];
-function compactBoard(bd){ return {cols: bd.cols, rows: bd.rows, plate: bd.plate, b: bd.bricks.map(b => [b.x, b.y, b.w, b.h, b.c, b.t || "std", b.z || 0])}; }
+function compactBoard(bd){ return {cols: bd.cols, rows: bd.rows, plate: bd.plate, ps: plateStyle(bd.ps), b: bd.bricks.map(b => [b.x, b.y, b.w, b.h, b.c, b.t || "std", b.z || 0])}; }
 function expandBricks(cb){ return fitBricks(cb.b.map(a => ({id: nextId++, x: a[0], y: a[1], w: a[2], h: a[3], c: a[4], t: a[5] || "std", z: a[6] || 0}))); }
 function saveToGallery(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
@@ -189,7 +189,7 @@ function saveToGallery(){
 function loadIntoFree(cb){
   if (currentMode !== "free") setMode("free", true);
   pushHistory();
-  FREE.cols = cb.cols; FREE.rows = cb.rows; FREE.plate = cb.plate; FREE.bricks = expandBricks(cb);
+  FREE.cols = cb.cols; FREE.rows = cb.rows; FREE.plate = cb.plate; FREE.ps = plateStyle(cb.ps); FREE.bricks = expandBricks(cb);
   clearEls(); applyBoard(); commit();
 }
 function openGallery(){

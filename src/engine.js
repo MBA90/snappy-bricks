@@ -134,7 +134,11 @@ function artToPix(art, recolor){
 }
 
 /* ===================== boards ===================== */
-function newBoard(cols, rows, plate){ return {cols, rows, plate, bricks: [], hist: []}; }
+// board styles are the brick styles (Classic, Round, Glitter, Glow, Neon, Light) worn by the board itself
+const plateStyle = v => STYLES.some(s => s.id === v) ? v : "std";
+// the colour a board shows to the eye: neon boards are dark glass whatever their colour
+function plateTone(board){ return plateStyle(board.ps) === "neon" ? neonGlass(board.plate) : board.plate; }
+function newBoard(cols, rows, plate, ps = "std"){ return {cols, rows, plate, ps, bricks: [], hist: []}; }
 let FREE = newBoard(24, 18, "#FF2E8A");
 let B = FREE;            // the board on screen
 let nextId = 1;
@@ -179,7 +183,7 @@ function canPlace(bricks, gx, gy, ignore = 0){
 }
 
 /* ---- history ---- */
-function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, bricks: B.bricks}); }
+function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, ps: B.ps, bricks: B.bricks}); }
 function pushHistory(){
   B.hist.push(snapshot()); if (B.hist.length > 60) B.hist.shift();
   updateUndo();
@@ -188,7 +192,7 @@ function updateUndo(){ const u = $("#undoBtn"); if (u) u.disabled = !B.hist.leng
 function undo(){
   if (!B.hist.length) return;
   const d = JSON.parse(B.hist.pop());
-  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.bricks = d.bricks;
+  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.ps = plateStyle(d.ps); B.bricks = d.bricks;
   applyBoard(); commit(); sfx.turn(); updateUndo();
   say(t("undone"));
 }
@@ -261,6 +265,7 @@ function switchBoard(board){
 }
 function applyBoard(){
   paintVars(plate, B.plate);
+  plate.dataset.ps = plateStyle(B.ps);
   plate.style.width  = `calc(var(--cell) * ${B.cols})`;
   plate.style.height = `calc(var(--cell) * ${B.rows})`;
   fitCell();
@@ -449,15 +454,98 @@ function sheen(ctx, x, y, w, h, a, b){
   g.addColorStop(.62, "rgba(30,10,60,0)"); g.addColorStop(1, `rgba(30,10,60,${b})`);
   return g;
 }
+// the board under the bricks in each board style (matches styles7.css; Classic is the plain board)
+function drawPlate(ctx, board, ox, oy, c){
+  const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = board.plate;
+  const rad = ps === "round" ? c * .9 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
+  const each = fn => { for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) fn(ox + (x + .5) * c, oy + (y + .5) * c, x, y); };
+  // glow, neon and light boards shine out past their edge in their own colour
+  if (ps === "glow" || ps === "neon" || ps === "light"){
+    ctx.save(); ctx.shadowColor = ps === "light" ? lampColor(col, .75) : neonColor(col); ctx.shadowBlur = c * (ps === "neon" ? .8 : 1.1);
+    ctx.fillStyle = ps === "neon" ? neonGlass(col) : col; path(); ctx.fill(); ctx.restore();
+  }
+  ctx.save(); path(); ctx.clip();
+  ctx.fillStyle = ps === "neon" ? neonGlass(col) : ps === "light" ? pastel(col) : col; ctx.fillRect(ox, oy, bw, bh);
+  if (ps === "glow"){
+    const g = ctx.createRadialGradient(ox + bw / 2, oy + bh * .45, 0, ox + bw / 2, oy + bh * .45, Math.max(bw, bh) * .62);
+    g.addColorStop(0, "rgba(255,255,255,.8)"); g.addColorStop(.45, shade(col, .3)); g.addColorStop(1, col);
+    ctx.fillStyle = g; ctx.fillRect(ox, oy, bw, bh);
+  } else if (ps === "neon"){
+    ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, 0); ctx.fillRect(ox, oy, bw, bh);
+  } else if (ps === "light"){
+    const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
+    wg.addColorStop(0, "rgba(255,255,255,.55)"); wg.addColorStop(.5, "rgba(255,255,255,0)");
+    ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
+  } else {
+    ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); ctx.fillRect(ox, oy, bw, bh);
+  }
+  if (ps === "round"){
+    // a pillow: lit on the top left, a darker rim
+    const dg = ctx.createRadialGradient(ox + bw * .3, oy + bh * .22, 0, ox + bw * .3, oy + bh * .22, Math.max(bw, bh) * .75);
+    dg.addColorStop(0, "rgba(255,255,255,.3)"); dg.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = dg; ctx.fillRect(ox, oy, bw, bh);
+    ctx.save(); ctx.translate(ox + bw / 2, oy + bh / 2); ctx.scale(bw / 2, bh / 2);
+    const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); rg.addColorStop(.8, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.14)");
+    ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
+  }
+  if (ps === "glitter"){
+    // flecks under the studs, seeded so the same board always gets the same glitter
+    let sd = board.cols * 7919 + board.rows * 104729;
+    const rnd = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280), n = board.cols * board.rows;
+    for (const [m, r, f] of [[7, .03, sparkColor(col)], [4, .02, spark2Color(col)], [6, .014, "rgba(255,255,255,.75)"]]){
+      ctx.fillStyle = f;
+      for (let i = 0; i < n * m; i++){ ctx.beginPath(); ctx.arc(ox + rnd() * bw, oy + rnd() * bh, c * r * (.7 + rnd() * .6), 0, 7); ctx.fill(); }
+    }
+  }
+  // a little depth at the board's edges (a lit rim on the light board, a glowing tube on neon)
+  if (ps === "light"){
+    ctx.shadowColor = "rgba(255,255,255,.9)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(255,255,255,.5)";
+  } else if (ps === "neon"){
+    ctx.shadowColor = neonColor(col); ctx.shadowBlur = c * .8; ctx.lineWidth = c * .24; ctx.strokeStyle = neonColor(col);
+  } else {
+    ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
+  }
+  if (ps === "neon"){ path(); ctx.stroke(); ctx.stroke(); }
+  else { rrect(ctx, ox - c / 2, oy - c / 2, bw + c, bh + c, rad + c * .5); ctx.stroke(); }
+  ctx.restore();
+  if (ps === "neon"){
+    // the tube's white-hot core, then ring studs (dimmer than a neon brick's, so bricks stay the brightest)
+    const nc = neonColor(col);
+    ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = Math.max(1, c * .03);
+    rrect(ctx, ox + c * .04, oy + c * .04, bw - c * .08, bh - c * .08, rad - c * .04); ctx.stroke();
+    ctx.strokeStyle = nc; ctx.lineWidth = c * .03; ctx.beginPath(); each((sx, sy) => { ctx.moveTo(sx + c * .175, sy); ctx.arc(sx, sy, c * .175, 0, 7); }); ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = c * .015; ctx.beginPath(); each((sx, sy) => { ctx.moveTo(sx + c * .138, sy); ctx.arc(sx, sy, c * .138, 0, 7); }); ctx.stroke();
+  } else if (ps === "light"){
+    // every stud a little bulb, drawn once and stamped
+    const key = "bulb|" + c + "|" + col;
+    let tile = studTiles.get(key);
+    if (!tile){
+      const s = Math.ceil(c); tile = document.createElement("canvas"); tile.width = s; tile.height = s;
+      const tc = tile.getContext("2d"), m = c / 2;
+      const bg = tc.createRadialGradient(m, m, 0, m, m, c * .32);
+      bg.addColorStop(0, "#fff"); bg.addColorStop(.19, "#fff"); bg.addColorStop(.31, "rgba(255,255,255,.85)");
+      bg.addColorStop(.56, lampColor(col, .75)); bg.addColorStop(1, "rgba(255,255,255,0)");
+      tc.fillStyle = bg; tc.beginPath(); tc.arc(m, m, c * .32, 0, 7); tc.fill();
+      tc.strokeStyle = "rgba(255,255,255,.7)"; tc.lineWidth = c * .015; tc.beginPath(); tc.arc(m, m, c * .222, 0, 7); tc.stroke();
+      studTiles.set(key, tile);
+    }
+    each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
+  } else each((sx, sy) => stud(ctx, sx - c / 2, sy - c / 2, c, col, true));
+  if (ps === "glitter"){
+    // a few twinkles caught mid-sparkle
+    let sd = board.cols * 31 + board.rows * 17;
+    const rnd = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
+    ctx.save(); ctx.fillStyle = "#fff"; ctx.shadowColor = "#fff"; ctx.shadowBlur = c * .2;
+    for (let i = 0; i < Math.round(board.cols * board.rows / 9); i++){
+      const kx = ox + rnd() * bw, ky = oy + rnd() * bh, kr = c * (.12 + rnd() * .1);
+      ctx.beginPath(); ctx.moveTo(kx, ky - kr); ctx.quadraticCurveTo(kx, ky, kx + kr, ky); ctx.quadraticCurveTo(kx, ky, kx, ky + kr);
+      ctx.quadraticCurveTo(kx, ky, kx - kr, ky); ctx.quadraticCurveTo(kx, ky, kx, ky - kr); ctx.fill();
+    }
+    ctx.restore();
+  }
+}
 function drawBoard(ctx, board, ox, oy, c){
-  const bw = board.cols * c, bh = board.rows * c;
-  ctx.fillStyle = board.plate; rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
-  ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.fill();
-  // a little depth at the board's edges
-  ctx.save(); rrect(ctx, ox, oy, bw, bh, c * .3); ctx.clip();
-  ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
-  rrect(ctx, ox - c / 2, oy - c / 2, bw + c, bh + c, c * .8); ctx.stroke(); ctx.restore();
-  for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) stud(ctx, ox + x * c, oy + y * c, c, board.plate, true);
+  drawPlate(ctx, board, ox, oy, c);
   const list = [...board.bricks].sort((a, b) => (a.z || 0) - (b.z || 0));
   for (const b of list){
     const z = b.z || 0, t = b.t || "std";
