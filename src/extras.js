@@ -45,9 +45,7 @@ const BADGES = [
   {id: "name",    icon: "✍️", en: ["My name!", "Build your name"], ar: ["اسمي!", "ابنِ اسمك"]},
   {id: "arabic",  icon: "🌙", en: ["Arabic writer", "Build a word in Arabic"], ar: ["كاتب بالعربية", "ابنِ كلمة بالعربية"]},
   {id: "colors",  icon: "🎨", en: ["Color party", "Use 10 colors on one board"], ar: ["حفلة الألوان", "استخدم 10 ألوان في لوحة واحدة"]},
-  {id: "mirror",  icon: "🪞", en: ["Mirror magic", "Build with the mirror on"], ar: ["سحر المرآة", "ابنِ والمرآة مفعّلة"]},
   {id: "tower",   icon: "🗼", en: ["Tall tower", "Stack bricks 3 high"], ar: ["برج عالٍ", "كدّس 3 مكعبات فوق بعضها"]},
-  {id: "stamp",   icon: "🔖", en: ["Stamp maker", "Make your own stamp"], ar: ["صانع الأختام", "اصنع ختمك الخاص"]},
   {id: "puzzle1", icon: "🖼️", en: ["Copycat", "Finish a picture puzzle"], ar: ["الناسخ الماهر", "أكمل لغز صورة"]},
   {id: "puzzle5", icon: "⭐", en: ["Star copier", "Get 3 stars on 5 puzzles"], ar: ["نجم النسخ", "احصل على 3 نجوم في 5 ألغاز"]},
   {id: "trace5",  icon: "✏️", en: ["Letter tracer", "Trace 5 letters"], ar: ["متتبّع الحروف", "تتبّع 5 حروف"]},
@@ -71,7 +69,8 @@ function nextToast(){
   document.body.appendChild(el);
   setTimeout(() => { el.remove(); nextToast(); }, 3000);
 }
-let earned = new Set(store("snappy-badges") || []);
+// the Mirror and Stamp maker badges went away with their tools
+let earned = new Set((store("snappy-badges") || []).filter(id => id !== "mirror" && id !== "stamp"));
 function updateBadgeCount(){ $("#badgeCount").textContent = `${earned.size}/${BADGES.length}`; }
 function award(id){
   if (earned.has(id)) return;
@@ -80,7 +79,7 @@ function award(id){
   toast(bd.icon, t("badgeNew"), bd[LANG][0]); setTimeout(() => sfx.badge(), 200);
   setTimeout(() => speak(`${t("badgeNew")} ${bd[LANG][0]}`, LANG), 2400);
 }
-on("placed", () => { award("first"); if (settings.mirror !== "off") award("mirror"); });
+on("placed", () => award("first"));
 const buildBadges = later(() => {
   const n = FREE.bricks.length;
   if (n >= 80) award("b50");
@@ -90,7 +89,6 @@ const buildBadges = later(() => {
 }, 400);
 on("change", () => { if (B === FREE) buildBadges(); });
 on("nameBuilt", r => { award("name"); if (r && r.rtl) award("arabic"); });
-on("stampMade", () => award("stamp"));
 on("gameWin", ({kind}) => {
   if (kind === "copy"){ award("puzzle1"); if (Object.values(progress.puzzles).filter(v => v === 3).length >= 5) award("puzzle5"); }
   if (kind === "trace" && progress.traced.en.length + progress.traced.ar.length >= 5) award("trace5");
@@ -151,7 +149,7 @@ let replaying = false;
 function replay(){
   if (replaying) return;
   if (!B.bricks.length){ say(t("buildFirst")); return; }
-  replaying = true; cancelSelection();
+  replaying = true;
   const list = [...B.bricks];
   // at most about 240 steps: a photo with thousands of bricks lands a handful at a time
   const per = Math.ceil(list.length / 240), steps = Math.ceil(list.length / per);

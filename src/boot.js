@@ -45,15 +45,11 @@ $("#soundBtn").addEventListener("click", () => {
   if (settings.sound) sfx.click();
 });
 $$("[data-tool]").forEach(b => b.addEventListener("click", () => setTool(b.dataset.tool)));
-$("#mirrorBtn").addEventListener("click", () => setMirror({off: "lr", lr: "four", four: "off"}[settings.mirror] || "off"));
 $("#stackBtn").addEventListener("click", () => setStack(!settings.stack));
 $("#turnBtn").addEventListener("click", toggleTurn);
 $("#undoBtn").addEventListener("click", undo);
 $("#clearBtn").addEventListener("click", clearBoard);
 $("#saveBtn").addEventListener("click", savePicture);
-$("#selStamp").addEventListener("click", makeStampFromSelection);
-$("#selDelete").addEventListener("click", deleteSelection);
-$("#selCancel").addEventListener("click", () => { cancelSelection(); sfx.click(); });
 $("#nameInput").setAttribute("dir", "auto");
 $("#nameForm").addEventListener("submit", async e => {
   e.preventDefault();
