@@ -56,13 +56,29 @@ function jellyColor(c, amt, a){
   if (v[0] === "#"){ const n = parseInt(v.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
   return v.replace("rgb(", "rgba(").replace(")", `,${a})`);
 }
+// candy: white stripes, or pink ones on white and pale grey bricks so they still show
+function candyStripe(c){
+  const n = parseInt(c.slice(1), 16), ch = [n >> 16, (n >> 8) & 255, n & 255];
+  return isLight(c) && Math.max(...ch) - Math.min(...ch) < 40 ? "#FF7AB0" : "rgba(255,255,255,.92)";
+}
+// rainbow: five colours round the colour wheel starting from the brick's own colour; black, white and grey
+// have no colour of their own, so they get the usual rainbow from red
+function rainbowOf(c){
+  const n = parseInt(c.slice(1), 16), r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let h = 0;
+  if (d > .16){ h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; }
+  const hsl = k => `hsl(${Math.round((h + k * 62 + 360) % 360)},88%,62%)`;
+  return [0, 1, 2, 3, 4].map(hsl);
+}
 // the colour variables every brick, swatch and board needs, worked out once per colour
 const varsCache = new Map();
 function colorVars(c){
   let v = varsCache.get(c);
   if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)], ["--spark2", spark2Color(c)],
     ["--pl", pastel(c)], ["--plt", shade(pastel(c), .45)], ["--pdk", shade(pastel(c), -.16)], ["--glo", lampColor(c, .75)],
-    ["--jel", jellyColor(c, 0, .8)], ["--jlt", jellyColor(c, .45, .9)], ["--jdk", jellyColor(c, -.35, .85)], ["--jsh", jellyColor(c, -.45, .4)]]; varsCache.set(c, v); }
+    ["--jel", jellyColor(c, 0, .8)], ["--jlt", jellyColor(c, .45, .9)], ["--jdk", jellyColor(c, -.35, .85)], ["--jsh", jellyColor(c, -.45, .4)],
+    ["--cs", candyStripe(c)], ...rainbowOf(c).map((r, i) => ["--r" + i, r])]; varsCache.set(c, v); }
   return v;
 }
 function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
@@ -79,9 +95,8 @@ function placeEl(el, b){
 // only touches what changed, so redrawing a board of thousands of bricks after one move stays quick
 function styleBrickEl(el, b){
   const t = b.t || "std", z = b.z || 0;
-  // on a board full of lamps only every fourth one twinkles (.tw), picked by its id so the sparkles stay put;
-  // only one electric brick in five zaps (.zp), so a board of them crackles here and there and stays smooth
-  if (el._t !== t){ el._t = t; el.className = "brick t-" + t + (t === "light" && b.id % 4 === 1 ? " tw" : "") + (t === "electric" && b.id % 5 === 1 ? " zp" : ""); }
+  // on a board full of lamps only every fourth one twinkles (.tw), picked by its id so the sparkles stay put
+  if (el._t !== t){ el._t = t; el.className = "brick t-" + t + (t === "light" && b.id % 4 === 1 ? " tw" : ""); }
   const pos = b.x + "," + b.y + "," + b.w + "," + b.h;
   if (el._pos !== pos){ el._pos = pos; placeEl(el, b); }
   if (el._c !== b.c){ el._c = b.c; paintVars(el, b.c); }
@@ -474,37 +489,41 @@ function jellyStud(ctx, sx, sy, c, col, r){
   gl.addColorStop(0, "rgba(255,255,255,.95)"); gl.addColorStop(.4, "rgba(255,255,255,.95)"); gl.addColorStop(1, "rgba(255,255,255,0)");
   ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(gx, gy, c * .085, 0, 7); ctx.fill();
 }
-// a stud like a little plasma ball: white-hot middle, glowing in the brick's colour, a thin white ring (k: brightness size)
-function plasmaStud(ctx, sx, sy, c, col, k){
-  ctx.fillStyle = shade(col, -.24); ctx.beginPath(); ctx.arc(sx, sy, c * .25 * k, 0, 7); ctx.fill();
-  const r = c * .215 * k, g = ctx.createRadialGradient(sx, sy, 0, sx, sy, r);
-  g.addColorStop(0, "#fff"); g.addColorStop(.26, "#fff"); g.addColorStop(.42, shade(col, .3)); g.addColorStop(.74, neonColor(col)); g.addColorStop(1, shade(col, -.24));
-  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, r, 0, 7); ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = c * .016; ctx.beginPath(); ctx.arc(sx, sy, c * .22 * k, 0, 7); ctx.stroke();
+// a stud of white sugar glass, so a rainbow shows through it
+function glassStud(ctx, sx, sy, c){
+  const sh = ctx.createRadialGradient(sx + c * .05, sy + c * .1, 0, sx + c * .05, sy + c * .1, c * .3);
+  sh.addColorStop(0, "rgba(30,10,50,.28)"); sh.addColorStop(.7, "rgba(30,10,50,.28)"); sh.addColorStop(1, "rgba(30,10,50,0)");
+  ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(sx + c * .05, sy + c * .1, c * .3, 0, 7); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,.3)"; ctx.beginPath(); ctx.arc(sx, sy, c * .2, 0, 7); ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = c * .03; ctx.beginPath(); ctx.arc(sx, sy, c * .22, 0, 7); ctx.stroke();
+  const gx = sx - c * .09, gy = sy - c * .13, gl = ctx.createRadialGradient(gx, gy, 0, gx, gy, c * .1);
+  gl.addColorStop(0, "rgba(255,255,255,.95)"); gl.addColorStop(.3, "rgba(255,255,255,.95)"); gl.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(gx, gy, c * .1, 0, 7); ctx.fill();
 }
-// the lightning crack across an electric brick (the same zigzag as --crack in styles8.css)
-const CRACK = [[-.02, .24], [.3, .56], [.42, .3], [.72, .7], [1.02, .38]];
-function crack(ctx, x, y, w, h, c){
-  ctx.beginPath(); CRACK.forEach(([px, py], i) => ctx[i ? "lineTo" : "moveTo"](x + px * w, y + py * h));
-  ctx.lineJoin = "round";
-  ctx.strokeStyle = "rgba(255,214,40,.55)"; ctx.lineWidth = Math.max(2, c * .13); ctx.stroke();
-  ctx.strokeStyle = "#fff"; ctx.lineWidth = Math.max(1, c * .045); ctx.stroke();
+// the rainbow running across a brick or board (angle as in styles8.css)
+function rainbowFill(ctx, col, x, y, w, h, deg){
+  const a = deg * Math.PI / 180, dx = Math.sin(a), dy = -Math.cos(a), len = Math.abs(w * dx) + Math.abs(h * dy);
+  const cx = x + w / 2, cy = y + h / 2, g = ctx.createLinearGradient(cx - dx * len / 2, cy - dy * len / 2, cx + dx * len / 2, cy + dy * len / 2);
+  rainbowOf(col).forEach((r, i) => g.addColorStop(i / 4, r));
+  return g;
 }
-// a little lightning bolt between the studs of an electric board (the same as --bolts in styles8.css), c = one stud
-const BOLT = [[110, 62], [82, 106], [100, 106], [88, 140], [120, 92], [102, 92], [114, 62]];
-function bolt(ctx, x, y, c){
-  ctx.beginPath(); BOLT.forEach(([px, py], i) => ctx[i ? "lineTo" : "moveTo"](x + px * c / 100, y + py * c / 100)); ctx.closePath();
-  ctx.fillStyle = "#FFF39A"; ctx.fill();
-  ctx.lineJoin = "round"; ctx.strokeStyle = "rgba(70,30,0,.45)"; ctx.lineWidth = c * .03; ctx.stroke();
+// candy stripes across a brick, clipped to it by the caller
+function candyStripes(ctx, col, x, y, w, h, c){
+  ctx.fillStyle = col; ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = candyStripe(col);
+  const p = c * .42 * Math.SQRT2, sw = c * .14 * Math.SQRT2;
+  for (let s = -h; s < w + h; s += p){ ctx.beginPath(); ctx.moveTo(x + s, y); ctx.lineTo(x + s + sw, y); ctx.lineTo(x + s + sw - h, y + h); ctx.lineTo(x + s - h, y + h); ctx.fill(); }
 }
+// the sprinkles between a candy board's studs (the same as --sprinkles in styles8.css), per 3×3 studs
+const SPRINKLES = [["#FF4F9A", 90, 94, 110, 106], ["#3D9BFF", 192, 108, 208, 92], ["#36C46A", 89, 200, 111, 200], ["#FFB800", 200, 189, 200, 211]];
 // the board under the bricks in each board style (matches styles7.css; Classic is the plain board)
 function drawPlate(ctx, board, ox, oy, c){
   const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = board.plate;
   const rad = ps === "round" ? c * .9 : ps === "jelly" ? c * .6 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
   const each = fn => { for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) fn(ox + (x + .5) * c, oy + (y + .5) * c, x, y); };
-  // glow, neon, light and electric boards shine out past their edge in their own colour
-  if (ps === "glow" || ps === "neon" || ps === "light" || ps === "electric"){
-    ctx.save(); ctx.shadowColor = ps === "light" ? lampColor(col, .75) : neonColor(col); ctx.shadowBlur = c * (ps === "neon" || ps === "electric" ? .8 : 1.1);
+  // glow, neon and light boards shine out past their edge in their own colour
+  if (ps === "glow" || ps === "neon" || ps === "light"){
+    ctx.save(); ctx.shadowColor = ps === "light" ? lampColor(col, .75) : neonColor(col); ctx.shadowBlur = c * (ps === "neon" ? .8 : 1.1);
     ctx.fillStyle = ps === "neon" ? neonGlass(col) : col; path(); ctx.fill(); ctx.restore();
   }
   ctx.save(); path(); ctx.clip();
@@ -522,11 +541,19 @@ function drawPlate(ctx, board, ox, oy, c){
     ctx.save(); ctx.translate(ox + bw * .3, oy + bh * .09); ctx.scale(bw * .55, bh * .2);
     const gl = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); gl.addColorStop(0, "rgba(255,255,255,.7)"); gl.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = gl; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
-  } else if (ps === "electric"){
-    const g = ctx.createRadialGradient(ox + bw / 2, oy + bh * .45, 0, ox + bw / 2, oy + bh * .45, Math.max(bw, bh) * .7);
-    g.addColorStop(0, shade(col, .3)); g.addColorStop(.65, col); g.addColorStop(1, shade(col, -.24));
-    ctx.fillStyle = g; ctx.fillRect(ox, oy, bw, bh);
-    for (let ty = 0; ty < board.rows; ty += 3) for (let tx = 0; tx < board.cols; tx += 4){ bolt(ctx, ox + tx * c, oy + ty * c, c); bolt(ctx, ox + (tx + 2) * c, oy + (ty + 1) * c, c); }
+  } else if (ps === "candy"){
+    ctx.fillStyle = pastel(col); ctx.fillRect(ox, oy, bw, bh);
+    const sg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
+    sg.addColorStop(0, "rgba(255,255,255,.4)"); sg.addColorStop(.4, "rgba(255,255,255,0)");
+    ctx.fillStyle = sg; ctx.fillRect(ox, oy, bw, bh);
+    ctx.lineCap = "round"; ctx.lineWidth = c * .09;
+    for (let ty = 0; ty < board.rows; ty += 3) for (let tx = 0; tx < board.cols; tx += 3)
+      for (const [f, x1, y1, x2, y2] of SPRINKLES){ ctx.strokeStyle = f; ctx.beginPath(); ctx.moveTo(ox + tx * c + x1 * c / 100, oy + ty * c + y1 * c / 100); ctx.lineTo(ox + tx * c + x2 * c / 100, oy + ty * c + y2 * c / 100); ctx.stroke(); }
+  } else if (ps === "rainbow"){
+    ctx.fillStyle = rainbowFill(ctx, col, ox, oy, bw, bh, 120); ctx.fillRect(ox, oy, bw, bh);
+    const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
+    wg.addColorStop(0, "rgba(255,255,255,.4)"); wg.addColorStop(1, "rgba(255,255,255,.18)");
+    ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
   } else if (ps === "light"){
     const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
     wg.addColorStop(0, "rgba(255,255,255,.55)"); wg.addColorStop(.5, "rgba(255,255,255,0)");
@@ -559,12 +586,12 @@ function drawPlate(ctx, board, ox, oy, c){
     ctx.shadowColor = neonColor(col); ctx.shadowBlur = c * .8; ctx.lineWidth = c * .24; ctx.strokeStyle = neonColor(col);
   } else if (ps === "jelly"){
     ctx.shadowColor = jellyColor(col, -.35, .85); ctx.shadowBlur = c * 1.6; ctx.lineWidth = c; ctx.strokeStyle = jellyColor(col, -.35, .35);
-  } else if (ps === "electric"){
-    ctx.shadowColor = "rgba(255,255,255,.9)"; ctx.shadowBlur = c * .9; ctx.lineWidth = c * .12; ctx.strokeStyle = "rgba(255,255,255,.85)";
+  } else if (ps === "candy"){
+    ctx.shadowColor = "rgba(255,255,255,.9)"; ctx.shadowBlur = c * .8; ctx.lineWidth = c * .5; ctx.strokeStyle = "rgba(255,255,255,.6)";
   } else {
     ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
   }
-  if (ps === "neon" || ps === "electric"){ path(); ctx.stroke(); ctx.stroke(); }
+  if (ps === "neon"){ path(); ctx.stroke(); ctx.stroke(); }
   else { rrect(ctx, ox - c / 2, oy - c / 2, bw + c, bh + c, rad + c * .5); ctx.stroke(); }
   ctx.restore();
   if (ps === "neon"){
@@ -589,18 +616,20 @@ function drawPlate(ctx, board, ox, oy, c){
       studTiles.set(key, tile);
     }
     each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
-  } else if (ps === "jelly" || ps === "electric"){
-    // gummy or plasma studs, drawn once and stamped
+  } else if (ps === "rainbow"){
+    each((sx, sy) => glassStud(ctx, sx, sy, c));
+  } else if (ps === "jelly"){
+    // gummy studs, drawn once and stamped
     const key = ps + "|" + c + "|" + col;
     let tile = studTiles.get(key);
     if (!tile){
       const s = Math.ceil(c); tile = document.createElement("canvas"); tile.width = s; tile.height = s;
       const tc = tile.getContext("2d");
-      if (ps === "jelly") jellyStud(tc, c / 2, c / 2, c, col, .21); else plasmaStud(tc, c / 2, c / 2, c, col, .88);
+      jellyStud(tc, c / 2, c / 2, c, col, .21);
       studTiles.set(key, tile);
     }
     each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
-  } else each((sx, sy) => stud(ctx, sx - c / 2, sy - c / 2, c, col, true));
+  } else each((sx, sy) => stud(ctx, sx - c / 2, sy - c / 2, c, ps === "candy" ? pastel(col) : col, true));
   if (ps === "glitter"){
     // a few twinkles caught mid-sparkle
     let sd = board.cols * 31 + board.rows * 17;
@@ -622,7 +651,7 @@ function drawBoard(ctx, board, ox, oy, c){
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
     const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
-    const rad = t === "round" ? Math.min(w, h) / 2 : t === "jelly" ? c * .32 : t === "light" ? c * .24 : c * .14;
+    const rad = t === "round" ? Math.min(w, h) / 2 : t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
     const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
     ctx.save();
     ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
@@ -673,21 +702,23 @@ function drawBoard(ctx, board, ox, oy, c){
       ctx.restore();
       continue;
     }
-    if (t === "electric"){
-      // charged up: a halo, bright in the middle, a lightning crack across, plasma-ball studs and a white-hot edge
-      ctx.save(); ctx.shadowColor = neonColor(b.c); ctx.shadowBlur = c * .3;
-      ctx.fillStyle = b.c; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.restore();
-      const g = ctx.createRadialGradient(x + w / 2, y + h * .45, 0, x + w / 2, y + h * .45, Math.max(w, h) * .7);
-      g.addColorStop(0, shade(b.c, .3)); g.addColorStop(.6, b.c); g.addColorStop(1, shade(b.c, -.24));
-      ctx.fillStyle = g; rrect(ctx, x, y, w, h, rad); ctx.fill();
+    if (t === "candy" || t === "rainbow"){
+      // a striped sweet, or the colours of the rainbow, under a sugary shine with lit edges
       ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
-      crack(ctx, x, y, w, h, c);
+      if (t === "candy") candyStripes(ctx, b.c, x, y, w, h, c);
+      else { ctx.fillStyle = rainbowFill(ctx, b.c, x, y, w, h, 110); ctx.fillRect(x, y, w, h); }
+      ctx.fillStyle = "rgba(30,10,60,.22)"; ctx.fillRect(x, y + h - c * .09, w, c * .09);
+      const sg = ctx.createLinearGradient(x, y, x + w * .26, y + h);
+      sg.addColorStop(0, `rgba(255,255,255,${t === "candy" ? .5 : .4})`); sg.addColorStop(.38, "rgba(255,255,255,0)"); sg.addColorStop(.65, "rgba(30,10,60,0)"); sg.addColorStop(1, "rgba(30,10,60,.13)");
+      ctx.fillStyle = sg; ctx.fillRect(x, y, w, h);
+      const bt = Math.max(1.5, c * .05), bl = Math.max(1.5, c * .04);
+      ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.fillRect(x, y, w, bt);
+      ctx.fillStyle = "rgba(255,255,255,.22)"; ctx.fillRect(x, y + bt, bl, h - bt);
       ctx.restore();
-      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) plasmaStud(ctx, x - gap + (xx + .5) * c, y - gap + (yy + .5) * c, c, b.c, 1);
-      const lw = Math.max(1, c * .035);
-      ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.lineWidth = lw;
-      rrect(ctx, x + lw / 2, y + lw / 2, w - lw, h - lw, Math.max(0, rad - lw / 2)); ctx.stroke();
-      ctx.strokeStyle = "rgba(30,10,60,.3)"; ctx.lineWidth = 1;
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++){
+        if (t === "candy") stud(ctx, x - gap + xx * c, y - gap + yy * c, c, b.c); else glassStud(ctx, x - gap + (xx + .5) * c, y - gap + (yy + .5) * c, c);
+      }
+      ctx.strokeStyle = "rgba(30,10,60,.2)"; ctx.lineWidth = 1;
       rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();
       ctx.restore();
       continue;
