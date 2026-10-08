@@ -311,6 +311,9 @@ function fitBox(wrap){
   if (!wrap.offsetParent) return false;              // the studio is not on screen
   wrap.style.setProperty("--cols", B.cols); wrap.style.setProperty("--rows", B.rows);
   // phones lock the studio to the screen and give the board a box of its own: fill that box
+  // beside the board on computers the board's column hugs the board (--bw); measure the full space first
+  const studio = wrap.closest(".studio");
+  if (studio) studio.style.removeProperty("--bw");
   const cs = getComputedStyle(wrap);
   const boxed = cs.getPropertyValue("--fit").trim() === "box";
   const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
@@ -340,6 +343,7 @@ function fitBox(wrap){
   wrap.style.height = zoomed && !boxed ? (fit * B.rows + 28) + "px" : "";
   plate.style.setProperty("--cell", cell + "px");
   plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
+  if (studio && boxed && !zoomed) studio.style.setProperty("--bw", Math.ceil(plate.offsetWidth + padX) + "px");
   if (zb){
     const hide = zoomMax < 1.6;                       // only when the studs are small enough to be fiddly
     // showing or hiding the zoom buttons changes the board's box: fit once more

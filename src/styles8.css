@@ -226,3 +226,14 @@ body[data-screen="studio"] .app{max-width:none}
   .tbtn.warn{flex-basis:64px}
   .tbtn.undo{flex-basis:76px}
 }
+
+/* ===================== computers: the toy box and the tools sit right beside the board ===================== */
+/* fitBox() sets --bw to the board's width, so the middle column hugs the board and the three stay together in the middle */
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+  .studio{grid-template-columns:240px minmax(0,var(--bw,1fr)) 94px;justify-content:center}
+  body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,var(--bw,1fr)) 240px}
+}
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2){
+  .studio{grid-template-columns:240px minmax(0,var(--bw,1fr))}
+  body[data-hand="left"] .studio{grid-template-columns:minmax(0,var(--bw,1fr)) 240px}
+}
