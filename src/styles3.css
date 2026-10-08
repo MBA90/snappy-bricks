@@ -22,7 +22,6 @@ html{touch-action:manipulation}
   .card{min-height:70px}
   .gletter{min-width:58px;height:58px;font-size:1.7rem}
   .extras .btn{min-width:54px}
-  .card-x{width:34px;height:34px;top:-10px;inset-inline-end:-10px}
   .lv-item{min-height:64px}
   .name-input{min-height:56px}
   .card-form input{min-height:48px}

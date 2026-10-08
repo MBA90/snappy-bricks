@@ -1,13 +1,12 @@
 /* ===================== UI: tray, tools, dragging ===================== */
-const settings = Object.assign({sound: true, talk: false, stack: false, mirror: "off", lang: "en", theme: "classic"}, store("snappy-settings") || {});
+const settings = Object.assign({sound: true, talk: false, stack: false, lang: "en", theme: "classic"}, store("snappy-settings") || {});
 function saveSettings(){ store("snappy-settings", settings); }
 
 let tool = "move";
 let color = "#7FE3C0";
 let brickStyle = "std";
 let turned = false;
-let selected = null;     // {kind:"brick",i} | {kind:"art",name} | {kind:"my",id}
-let myStamps = (store("snappy-stamps") || []).map(s => ({...s, bricks: fitBricks(s.bricks || [])}));
+let selected = null;     // {kind:"brick",i} | {kind:"art",name}
 
 /* ---- pieces ---- */
 function brickPiece(i){
@@ -19,15 +18,10 @@ function artPiece(name){
   return {w: pix[0].length, h: pix.length, single: false,
           bricks: decompose(pix).map(b => ({...b, t: brickStyle}))};
 }
-function myPiece(id){
-  const s = myStamps.find(m => m.id === id); if (!s) return null;
-  return {w: s.w, h: s.h, single: false, bricks: s.bricks.map(b => ({...b}))};
-}
 function pieceFor(sel){
   if (!sel) return null;
   if (sel.kind === "brick") return brickPiece(sel.i);
   if (sel.kind === "art") return artPiece(sel.name);
-  if (sel.kind === "my") return myPiece(sel.id);
   return null;
 }
 function pieceEl(piece, px){
@@ -38,43 +32,18 @@ function pieceEl(piece, px){
   return d;
 }
 
-/* ---- mirror ---- */
-function mirrorFns(){
-  const lr = r => ({...r, x: B.cols - r.x - r.w});
-  const ud = r => ({...r, y: B.rows - r.y - r.h});
-  if (settings.mirror === "lr") return [lr];
-  if (settings.mirror === "four") return [lr, ud, r => lr(ud(r))];
-  return [];
-}
-function drawMirrorLines(){
-  plate.querySelectorAll(".mline").forEach(e => e.remove());
-  if (settings.mirror === "off") return;
-  const v = document.createElement("div"); v.className = "mline v"; plate.appendChild(v);
-  if (settings.mirror === "four"){ const h = document.createElement("div"); h.className = "mline h"; plate.appendChild(h); }
-}
 
 /* ---- placing ---- */
 function placePiece(piece, gx, gy, opts = {}){
   const res = canPlace(piece.bricks, gx, gy, 0);
   if (!res.ok) return 0;
   if (!opts.noHistory) pushHistory();
-  const anim = new Map(); let n = 0;
-  const add = (list, z0, delay0) => list.forEach((b, i) => {
-    const nb = {id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: z0 + (b.z || 0)};
-    B.bricks.push(nb); anim.set(nb.id, piece.single ? delay0 : delay0 + i * 16); n++;
+  const anim = new Map();
+  piece.bricks.forEach((b, i) => {
+    const nb = {id: nextId++, x: gx + b.x, y: gy + b.y, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: res.z + (b.z || 0)};
+    B.bricks.push(nb); anim.set(nb.id, piece.single ? 0 : i * 16);
   });
-  const abs = piece.bricks.map(b => ({...b, x: gx + b.x, y: gy + b.y}));
-  add(abs, res.z, 0);
-  if (!opts.noMirror){
-    const orig = JSON.stringify(abs.map(b => [b.x, b.y, b.w, b.h]).sort());
-    mirrorFns().forEach((fn, k) => {
-      rebuildGrid();
-      const m = abs.map(fn);
-      if (JSON.stringify(m.map(b => [b.x, b.y, b.w, b.h]).sort()) === orig) return;
-      const r2 = canPlace(m.map(b => ({...b, z: (b.z || 0)})), 0, 0, 0);
-      if (r2.ok) add(m, r2.z, 90 * (k + 1));
-    });
-  }
+  const n = piece.bricks.length;
   commit(anim);
   if (!opts.silent) sfx.snap();
   emit("placed", {n});
@@ -146,25 +115,8 @@ function buildStamps(){
     const px = Math.max(4, Math.min(8, Math.floor(56 / Math.max(p.w, p.h))));
     box.appendChild(makeCard(p, px, ART[name][LANG], {kind: "art", name}));
   }
-  const mine = $("#myStamps"); mine.innerHTML = "";
-  $("#myStampsWrap").hidden = !myStamps.length;
-  for (const s of myStamps){
-    const p = myPiece(s.id);
-    const px = Math.max(3, Math.min(8, Math.floor(56 / Math.max(p.w, p.h))));
-    const card = makeCard(p, px, t("myStamp"), {kind: "my", id: s.id});
-    const x = document.createElement("button"); x.type = "button"; x.className = "card-x"; x.setAttribute("aria-label", t("deleteStamp")); x.textContent = "×";
-    x.addEventListener("pointerdown", e => e.stopPropagation());
-    x.addEventListener("click", e => {
-      e.stopPropagation();
-      myStamps = myStamps.filter(m => m.id !== s.id); store("snappy-stamps", myStamps);
-      if (selected && selected.kind === "my" && selected.id === s.id) selected = null;
-      buildStamps(); sfx.remove();
-    });
-    card.appendChild(x);
-    mine.appendChild(card);
-  }
 }
-function sameSel(a, b){ return !!(a && b && a.kind === b.kind && a.i === b.i && a.name === b.name && a.id === b.id); }
+function sameSel(a, b){ return !!(a && b && a.kind === b.kind && a.i === b.i && a.name === b.name); }
 function toggleSelect(sel){
   selected = sameSel(selected, sel) ? null : sel;
   if (selected && tool !== "move") setTool("move", true);
@@ -173,23 +125,16 @@ function toggleSelect(sel){
 }
 
 /* ===================== tools ===================== */
+// no tool on ("move") is plain building: drag bricks around, tap one to turn it
 function setTool(tl, quiet){
+  if (!quiet && tl === tool) tl = "move";            // tap the tool that is on to put it away
   tool = tl;
   $$("[data-tool]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tool === tl));
   plate.className = plate.className.replace(/tool-\w+/g, "").trim() + " tool-" + tl;
-  if (tl !== "select") cancelSelection();
   if (tl !== "move" && selected){ selected = null; buildShapes(); buildStamps(); }
+  emit("tool", tl);
   if (quiet) return;
-  sfx.click(); say(t("tool_" + tl));
-}
-function setMirror(m, quiet){
-  settings.mirror = m; saveSettings();
-  const btn = $("#mirrorBtn");
-  btn.setAttribute("aria-pressed", m !== "off");
-  btn.dataset.mode = m;
-  $("#mirrorTxt").textContent = t("mirror_" + m);
-  drawMirrorLines();
-  if (!quiet){ sfx.turn(); say(t("mirrorSay_" + m)); if (m !== "off") emit("mirrorOn"); }
+  sfx.click(); say(t(tl === "move" ? "dragAnytime" : "tool_" + tl));
 }
 function setStack(on, quiet){
   settings.stack = on; saveSettings();
@@ -266,6 +211,7 @@ function endDrag(e, cancelled){
   }
   if (p.source === "tray"){
     if (p.target && p.target.ok){
+      if (tool !== "move") setTool("move", true);      // a new brick from the toy box: back to building
       placePiece(p.piece, p.target.gx, p.target.gy);
       if (Math.random() < .25) say(pick(t("cheers").split("|")));
     } else if (p.target){ sfx.nope(); say(t(p.target.full ? "tooHigh" : "spotTaken")); }
@@ -316,7 +262,7 @@ function tapBrick(b){
   sfx.nope(); if (el) wiggle(el); say(t("noRoomTurn"));
 }
 
-/* ---- paint / erase brush (with mirror) ---- */
+/* ---- paint / erase brush ---- */
 function brushOp(b){
   if (!b || ptr.done.has(b.id)) return;
   ptr.done.add(b.id);
@@ -333,12 +279,7 @@ function brushAt(e){
   // the board grid knows which brick is on top under the finger: no hit test of the whole page on every move
   const c = cellFromEvent(e);
   const b = topAt(c.x, c.y); if (!b || ptr.done.has(b.id)) return;
-  const mirrors = mirrorFns().map(fn => fn(b));
   brushOp(b);
-  for (const r of mirrors){
-    const b2 = topAt(r.x + ((r.w - 1) >> 1), r.y + ((r.h - 1) >> 1));
-    brushOp(b2);
-  }
 }
 
 /* ---- fill bucket ---- */
@@ -390,53 +331,11 @@ function fillAt(x, y, opts = {}){
 function doFill(e){
   const {x, y} = cellFromEvent(e);
   pushHistory();
-  let n = fillAt(x, y, {noHistory: true});
-  for (const fn of mirrorFns()){ rebuildGrid(); const r = fn({x, y, w: 1, h: 1}); n += fillAt(r.x, r.y, {noHistory: true}); }
+  const n = fillAt(x, y, {noHistory: true});
   rebuildGrid(); render();
   if (n){ sfx.fill(); emit("placed", {n: 0}); } else { B.hist.pop(); updateUndo(); sfx.nope(); }
 }
 
-/* ---- select -> stamp ---- */
-let selBox = null, selBricks = [];
-function cancelSelection(){
-  selBricks.forEach(b => { const el = els.get(b.id); if (el) el.classList.remove("selected"); });
-  selBricks = []; if (selBox){ selBox.remove(); selBox = null; }
-  const bar = $("#selbar"); if (bar) bar.hidden = true;
-}
-function drawSelBox(x0, y0, x1, y1){
-  if (!selBox){ selBox = document.createElement("div"); selBox.className = "selbox"; plate.appendChild(selBox); }
-  const x = Math.min(x0, x1), y = Math.min(y0, y1);
-  placeEl(selBox, {x, y, w: Math.abs(x1 - x0) + 1, h: Math.abs(y1 - y0) + 1});
-}
-function finishSelection(x0, y0, x1, y1){
-  const xa = Math.min(x0, x1), xb = Math.max(x0, x1), ya = Math.min(y0, y1), yb = Math.max(y0, y1);
-  selBricks = B.bricks.filter(b => b.x >= xa && b.y >= ya && b.x + b.w - 1 <= xb && b.y + b.h - 1 <= yb);
-  if (!selBricks.length){ cancelSelection(); say(t("selectNone")); return; }
-  selBricks.forEach(b => { const el = els.get(b.id); if (el) el.classList.add("selected"); });
-  $("#selbar").hidden = false;
-  $("#selCount").textContent = t(selBricks.length === 1 ? "oneBrick" : "nBricks", {n: selBricks.length});
-  say(t("selectDone"));
-}
-function makeStampFromSelection(){
-  if (!selBricks.length) return;
-  const mx = Math.min(...selBricks.map(b => b.x)), my = Math.min(...selBricks.map(b => b.y));
-  const mz = Math.min(...selBricks.map(b => b.z || 0));
-  const bricks = selBricks.map(b => ({x: b.x - mx, y: b.y - my, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: (b.z || 0) - mz}));
-  const w = Math.max(...bricks.map(b => b.x + b.w)), h = Math.max(...bricks.map(b => b.y + b.h));
-  const s = {id: "s" + Date.now().toString(36), w, h, bricks};
-  myStamps.unshift(s); myStamps = myStamps.slice(0, 12); store("snappy-stamps", myStamps);
-  cancelSelection(); setTool("move", true);
-  selected = {kind: "my", id: s.id}; buildShapes(); buildStamps();
-  sfx.cheer(); say(t("stampMade")); emit("stampMade");
-}
-function deleteSelection(){
-  if (!selBricks.length) return;
-  pushHistory();
-  const ids = new Set(selBricks.map(b => b.id));
-  B.bricks = B.bricks.filter(b => !ids.has(b.id));
-  selBricks.forEach(b => { const el = els.get(b.id); if (el){ els.delete(b.id); el.classList.add("poof"); setTimeout(() => el.remove(), 300); } });
-  selBricks = []; cancelSelection(); commit(); sfx.remove();
-}
 
 /* ---- board pointer events ---- */
 // while a finger is on the board or the toy box, the endless glow, twinkle and shimmer of the bricks wait where they are:
@@ -468,13 +367,6 @@ plate.addEventListener("pointerdown", e => {
   e.preventDefault();
   if (tool === "paint" || tool === "erase"){ ptr = {kind: "brush", id: e.pointerId, done: new Set(), changed: false}; brushAt(e); return; }
   if (tool === "fill"){ doFill(e); return; }
-  if (tool === "select"){
-    cancelSelection();
-    const c = cellFromEvent(e);
-    ptr = {kind: "select", id: e.pointerId, x0: clamp(c.x, 0, B.cols - 1), y0: clamp(c.y, 0, B.rows - 1)};
-    ptr.x1 = ptr.x0; ptr.y1 = ptr.y0; drawSelBox(ptr.x0, ptr.y0, ptr.x1, ptr.y1);
-    return;
-  }
   const el = e.target.closest(".brick");
   if (el && el.parentElement === plate){ const b = byId.get(+el.dataset.id); if (b && !B.locked) startBoardDrag(e, b); return; }
   const c = cellFromEvent(e);
@@ -483,11 +375,6 @@ plate.addEventListener("pointerdown", e => {
 window.addEventListener("pointermove", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "brush"){ brushAt(e); return; }
-  if (ptr.kind === "select"){
-    const c = cellFromEvent(e);
-    ptr.x1 = clamp(c.x, 0, B.cols - 1); ptr.y1 = clamp(c.y, 0, B.rows - 1);
-    drawSelBox(ptr.x0, ptr.y0, ptr.x1, ptr.y1); return;
-  }
   if (ptr.kind === "tap") return;
   if (!ptr.moved){
     if (Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) < 7) return;
@@ -500,7 +387,6 @@ window.addEventListener("pointermove", e => {
 window.addEventListener("pointerup", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "brush"){ ptr = null; emit("change"); return; }
-  if (ptr.kind === "select"){ const p = ptr; ptr = null; finishSelection(p.x0, p.y0, p.x1, p.y1); return; }
   if (ptr.kind === "tap"){
     const tp = ptr; ptr = null;
     if (Math.hypot(e.clientX - tp.sx, e.clientY - tp.sy) > 12) return;
@@ -516,14 +402,13 @@ window.addEventListener("pointerup", e => {
 window.addEventListener("pointercancel", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "drag") endDrag(e, true);
-  else if (ptr.kind === "select"){ ptr = null; cancelSelection(); }
   else ptr = null;
 });
 
 window.addEventListener("keydown", e => {
   const typing = e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA");
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && !typing){ e.preventDefault(); undo(); return; }
-  if (e.key === "Escape"){ closeModal(); cancelSelection(); }
+  if (e.key === "Escape"){ closeModal(); }
   if (typing) return;
   if (e.key.toLowerCase() === "r"){
     if (ptr && ptr.kind === "drag" && ptr.moved && ptr.piece.single) turnDragged();
@@ -556,7 +441,7 @@ function clearBoard(){
     return;
   }
   clearTimeout(clearArmed); clearArmed = null; $("#clearTxt").textContent = t("clear");
-  pushHistory(); sfx.whoosh(); cancelSelection();
+  pushHistory(); sfx.whoosh();
   const old = B.bricks; B.bricks = [];
   if (!reduceMotion){
     for (const b of old){

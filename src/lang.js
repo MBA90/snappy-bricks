@@ -23,7 +23,6 @@ function setLang(l, quiet){
   $("#talkTxt").textContent = t(settings.talk ? "talkOn" : "talkOff");
   $("#soundTxt").textContent = t(settings.sound ? "soundOn" : "soundOff");
   buildSwatches(); buildStyles(); buildShapes(); buildStamps(); buildBoardControls(); buildLogo();
-  setMirror(settings.mirror, true);
   render();
   emit("lang");
   if (!quiet) say(t("langSay"), {speak: true});

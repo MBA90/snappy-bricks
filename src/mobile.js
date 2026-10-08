@@ -21,6 +21,36 @@ addStrings({
   const showColor = c => paintVars(dot, c);
   on("color", showColor); showColor(color);
   setTab("bricks");
+
+  // Paint and Fill need a colour: the toy box shows the colours the moment either is pressed,
+  // and goes back to the tab it was on when the tool is put away
+  let before = null;
+  on("tool", tl => {
+    if (tl === "paint" || tl === "fill"){
+      if (tray.dataset.tab !== "colors"){ before = tray.dataset.tab; setTab("colors"); }
+      showSwatches();
+    } else if (before && tray.dataset.tab === "colors"){ setTab(before); before = null; }
+    else before = null;
+  });
+  tabs.forEach(b => b.addEventListener("click", () => { before = null; }));
+  function showSwatches(){
+    const sec = $("#tray .sec-colors");
+    // scroll only the toy box (never the page) so the whole colour list is in view
+    for (let box = sec.parentElement; box && box !== document.body; box = box.parentElement){
+      const st = getComputedStyle(box), r = box.getBoundingClientRect(), s = sec.getBoundingClientRect();
+      const behavior = reduceMotion ? "auto" : "smooth";
+      if (/auto|scroll/.test(st.overflowY) && (s.top < r.top || s.bottom > r.bottom))
+        box.scrollBy({top: s.top < r.top || s.height > r.height ? s.top - r.top - 8 : s.bottom - r.bottom + 8, behavior});
+      if (/auto|scroll/.test(st.overflowX) && (s.left < r.left || s.right > r.right))
+        box.scrollBy({left: s.left < r.left || s.width > r.width ? s.left - r.left - 8 : s.right - r.right + 8, behavior});
+      if (box === tray) break;
+    }
+    if (reduceMotion || !Element.prototype.animate) return;
+    // a quick pop, one colour after another; only size and see-through change, so nothing else on the page moves
+    $$("#swatches .swatch").forEach((w, i) => w.animate(
+      [{transform: "scale(.55)", opacity: 0}, {transform: "scale(1.08)", opacity: 1, offset: .7}, {transform: "none", opacity: 1}],
+      {duration: 260, delay: i * 12, easing: "ease-out", fill: "backwards"}));
+  }
 })();
 
 /* ---- board zoom ---- */
@@ -101,7 +131,6 @@ plateWrap.addEventListener("wheel", e => {
     if (ptr){
       // the first finger's action becomes part of the pinch: undo what it started
       if (ptr.kind === "brush" && ptr.changed){ ptr = null; undo(); }
-      else if (ptr.kind === "select"){ ptr = null; cancelSelection(); }
       ptr = null;
     }
     e.preventDefault(); e.stopPropagation();

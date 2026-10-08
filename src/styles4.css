@@ -148,8 +148,7 @@ body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,1fr) 240px;gr
 
 /* ---------- Little builders: fewer, bigger choices ---------- */
 body[data-age="little"] .big-only,
-body[data-age="little"] .sec-styles,
-body[data-age="little"] .sec-mine{display:none!important}
+body[data-age="little"] .sec-styles{display:none!important}
 
 /* ---------- upright screens: toy box becomes a dock along the bottom ---------- */
 @media (orientation:portrait), (max-width:899px) and (min-height:541px){

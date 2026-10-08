@@ -283,7 +283,6 @@ function renderAuras(anim){
 }
 function switchBoard(board){
   if (B === board) return;
-  cancelSelection();
   B = board; clearEls(); applyBoard(); commit(); updateUndo();
 }
 function applyBoard(){
@@ -292,7 +291,6 @@ function applyBoard(){
   plate.style.width  = `calc(var(--cell) * ${B.cols})`;
   plate.style.height = `calc(var(--cell) * ${B.rows})`;
   fitCell();
-  drawMirrorLines();
   emit("board");
 }
 let refitting = false;

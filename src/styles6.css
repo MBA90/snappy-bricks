@@ -29,10 +29,10 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   body{padding-inline:10px}
   .app{padding-block:6px 10px;gap:8px}
 
-  /* all the tools in two short rows: Clear first, Undo last */
-  .tools,body[data-hand="left"] .tools{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;flex-direction:initial}
+  /* all the tools in two short rows of four (one row of six for Little builders): Clear first, Undo last */
+  .tools,body[data-hand="left"] .tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;flex-direction:initial}
   .tools-main,body[data-hand="left"] .tools-main{display:contents}
-  body[data-age="little"] .tools{grid-template-columns:repeat(4,minmax(0,1fr))}
+  body[data-age="little"] .tools{grid-template-columns:repeat(6,minmax(0,1fr))}
   .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{
     width:auto;min-width:0;min-height:50px;flex:none;padding:3px 2px 2px;border-radius:14px;border-width:3px;
     font-size:.64rem;box-shadow:0 3px 0 var(--ink);gap:1px;
@@ -40,6 +40,7 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .tools .tbtn svg,.tbtn.undo svg{width:22px;height:22px}
   .tbtn.undo{grid-column:-2 / -1;font-size:.72rem}
   body[data-hand="left"] .tbtn.undo{grid-column:1 / 2;grid-row:2}
+  body[data-age="little"][data-hand="left"] .tbtn.undo{grid-row:1}
   body[data-hand="left"] .tbtn.warn{grid-column:-2 / -1;grid-row:1}
   body[data-hand="left"] .tools{grid-auto-flow:row dense}
 
@@ -78,7 +79,7 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks),
   .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
   .tray[data-tab="styles"] .tray-body > :not(.sec-styles),
-  .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps):not(.sec-mine),
+  .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps),
   .tray[data-tab="plates"] .tray-body > :not(.sec-plates){display:none!important}
 
   /* bricks: one row of big bricks to drag, with Turn at the end */
@@ -163,7 +164,6 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .sec-colors{order:2}
   .sec-styles{order:3}
   .sec-stamps{order:4}
-  .sec-mine{order:5}
   .sec-plates{order:6}
   .zoombar{flex-direction:column;bottom:16px;inset-inline-end:0}
   .gp-text,.gp-bar{display:none}

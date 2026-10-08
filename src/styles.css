@@ -234,7 +234,6 @@ button{font:inherit;color:inherit}
 .stamps .brick.t-glow::before,.floating .brick.t-glow::before{opacity:.7}
 .stamps .brick.t-light::after,.floating .brick.t-light::after{display:none}
 .brick.lifted{opacity:.25}
-.brick.selected{outline:3px dashed #fff;outline-offset:1px;filter:brightness(1.12)}
 .brick.drop{animation:drop .42s cubic-bezier(.3,1.6,.5,1) both}
 .brick.poof{animation:poof .28s ease-in forwards;pointer-events:none}
 .brick.wiggle{animation:wiggle .35s ease}
@@ -280,10 +279,6 @@ button{font:inherit;color:inherit}
 .card:hover{border-color:var(--lav)}
 .card[aria-pressed="true"]{border-color:var(--ink);background:#FFF5B5}
 .card .size{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.76rem;font-weight:800;color:var(--ink-soft);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-inline:4px}
-.card-x{
-  position:absolute;top:-8px;inset-inline-end:-8px;width:26px;height:26px;border-radius:50%;border:3px solid var(--ink);
-  background:#fff;font-weight:800;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0;font-size:1rem;
-}
 .piece{position:relative;flex:none;pointer-events:none}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 
@@ -327,11 +322,6 @@ button{font:inherit;color:inherit}
   border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:12px solid var(--ink);
 }
 [dir="rtl"] .bubble::before{border-right:0;border-left:12px solid var(--ink)}
-.selbar{
-  display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#fff;border:3px solid var(--ink);
-  border-radius:18px;padding:8px 10px;box-shadow:0 4px 0 var(--ink);
-}
-.selbar strong{margin-inline-end:auto}
 .plate-wrap{display:flex;justify-content:center;padding:10px 6px 18px;position:relative}
 .plate{
   position:relative;border-radius:calc(var(--cell)*.3);
@@ -354,7 +344,6 @@ button{font:inherit;color:inherit}
 }
 .plate.tool-paint,.plate.tool-fill{cursor:crosshair}
 .plate.tool-erase{cursor:not-allowed}
-.plate.tool-select{cursor:cell}
 .plate.tool-move .brick{cursor:grab}
 .ghost{
   position:absolute;border-radius:calc(var(--cell)*.14);pointer-events:none;z-index:300;
@@ -362,10 +351,6 @@ button{font:inherit;color:inherit}
   display:grid;place-items:center;color:var(--ink);font-weight:800;font-size:calc(var(--cell)*.5);
 }
 .ghost.bad{border-color:var(--ink);background:rgba(43,30,92,.35)}
-.selbox{position:absolute;pointer-events:none;z-index:300;border:3px dashed var(--ink);background:rgba(255,255,255,.28);border-radius:6px}
-.mline{position:absolute;pointer-events:none;z-index:250;opacity:.8}
-.mline.v{left:calc(50% - 1.5px);top:-6px;bottom:-6px;width:3px;background:repeating-linear-gradient(#fff 0 8px, transparent 8px 14px)}
-.mline.h{top:calc(50% - 1.5px);left:-6px;right:-6px;height:3px;background:repeating-linear-gradient(90deg,#fff 0 8px, transparent 8px 14px)}
 .hintcell{position:absolute;pointer-events:none;z-index:0;border-radius:calc(var(--cell)*.2)}
 .hintcell.ghost-color{background:radial-gradient(circle, var(--hc) 0 36%, rgba(255,255,255,.95) 38% 47%, transparent 49%)!important}
 .hintcell.ghost-line{border:2px dashed rgba(255,255,255,.95);background:rgba(255,255,255,.18)}
