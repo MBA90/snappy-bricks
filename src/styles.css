@@ -238,6 +238,12 @@ button{font:inherit;color:inherit}
 .plate.calm .brick.t-glow::before,.plate.calm .brick.t-light::before{opacity:.7}
 .plate.calm .brick.t-light::after{display:none}
 .plate.calm .auras{display:none}
+/* Fun shapes in the toy box, and any piece under a finger, keep their look but hold still: a heart of lamps is
+   dozens of pulsing halos and twinkles, and the phone redrew them all on every frame (and the whole piece while dragging) */
+.stamps .brick::before,.stamps .brick::after,.floating .brick::before,.floating .brick::after{animation:none}
+.stamps .brick.t-light::before,.floating .brick.t-light::before{opacity:.55}
+.stamps .brick.t-glow::before,.floating .brick.t-glow::before{opacity:.7}
+.stamps .brick.t-light::after,.floating .brick.t-light::after{display:none}
 .brick.lifted{opacity:.25}
 .brick.selected{outline:3px dashed #fff;outline-offset:1px;filter:brightness(1.12)}
 .brick.drop{animation:drop .42s cubic-bezier(.3,1.6,.5,1) both}
