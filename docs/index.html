@@ -1659,6 +1659,40 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
   .plate-styles .stylebtn{gap:3px}
 }
 
+/* ===================== the style pickers (bricks and board) fit every screen ===================== */
+/* beside the board on computers and tablets on their side: two even columns of four big buttons,
+   instead of three cramped columns with two left over */
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+  .styles{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .stylebtn{min-height:62px;padding:7px 4px 4px;gap:4px;font-size:.8rem}
+  .pprev{width:52px;height:34px;--cell:17px}
+}
+/* the dock along the bottom of tablets: a little wider, so long names like Rainbow aren't squeezed */
+@media (orientation:portrait) and (min-width:700px), (orientation:landscape) and (max-width:899px) and (min-height:541px){
+  .styles{grid-template-columns:repeat(4,64px)}
+}
+/* upright phones: four columns that share the width, so the last one never falls off a narrow phone */
+@media (orientation:portrait) and (max-width:699px){
+  .styles{grid-template-columns:repeat(4,minmax(0,1fr));width:min(100cqw, 360px)}
+  .tray[data-tab="plates"] .tray-body{align-content:safe center}
+  .tray[data-tab="plates"] .sec-plates{width:min(100cqw, 360px)}
+  .plates{justify-content:start}
+}
+/* a short toy box can't stack the board styles over the board colors, so they sit side by side
+   (scroll sideways for the colors), with the two rows of styles always fully in view */
+@container traybody (max-height:235px){
+  .tray[data-tab="plates"] .sec-plates{width:auto;flex-direction:row;align-items:center;gap:12px}
+  .tray[data-tab="plates"] .plate-styles{width:min(calc(100cqw - 8px), 340px);flex:none}
+  .tray[data-tab="plates"] .plates{flex:none}
+}
+@container traybody (max-height:120px){
+  .styles{gap:4px}
+  .stylebtn{min-height:0;height:41px;gap:0;padding:3px 2px 1px;font-size:.66rem;justify-content:center}
+  .plate-styles .stylebtn{gap:2px}
+  .tray[data-tab="plates"] .plates{grid-template-columns:repeat(4,38px);gap:4px}
+  .tray[data-tab="plates"] .plates > *{min-width:38px;min-height:38px}
+}
+
 </style>
 <div class="app">
 
