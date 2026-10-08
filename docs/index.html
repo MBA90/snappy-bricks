@@ -115,17 +115,6 @@ button{font:inherit;color:inherit}
     0 1px 1px rgba(30,10,60,.25),
     calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.34);
 }
-/* round: a domed button, lit on the top left with a soft darker rim */
-.brick.t-round{
-  border-radius:999px;
-  background-image:
-    var(--studs),
-    radial-gradient(ellipse 70% 70% at 34% 28%, rgba(255,255,255,.34) 0, rgba(255,255,255,0) 100%),
-    radial-gradient(closest-side, rgba(30,10,60,0) 72%, rgba(30,10,60,.16) 100%);
-  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
-  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
-  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat,no-repeat;
-}
 /* glitter: fine flecks sized to the stud grid, drawn under the studs;
    --spark is dark on light colors so the flecks always show, --spark2 adds a gold or violet twinkle */
 .brick.t-glitter{
@@ -1381,7 +1370,7 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
    board that only fade in and out, which the phone does without repainting anything. The layers sit under
    the bricks (bricks are z-index 1 and up). */
 .plate{
-  /* baseplate studs (the same as the Classic board), shared by Round, Glitter and Glow */
+  /* baseplate studs (the same as the Classic board), shared by Glitter and Glow */
   --pstuds:
     radial-gradient(circle at 41% 37%, rgba(255,255,255,.55) 0 calc(var(--cell)*.025), rgba(255,255,255,0) calc(var(--cell)*.09)),
     radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.08), var(--c) calc(var(--cell)*.215), transparent calc(var(--cell)*.225)),
@@ -1391,16 +1380,6 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 }
 .plate[data-ps]::before,.plate[data-ps]::after{
   content:none;position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
-}
-
-/* round: a soft pillow of a board, like the domed round bricks: big round corners, lit on the top left, darker rim */
-.plate[data-ps="round"]{
-  border-radius:calc(var(--cell)*.9);
-  background-image:var(--pstuds),
-    radial-gradient(ellipse 75% 75% at 30% 22%, rgba(255,255,255,.3) 0, rgba(255,255,255,0) 100%),
-    radial-gradient(closest-side, rgba(30,10,60,0) 80%, rgba(30,10,60,.14) 100%);
-  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
-  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat,no-repeat;
 }
 
 /* glitter: the same fine flecks as glitter bricks under the studs, and little stars that twinkle in turn */
@@ -1506,24 +1485,25 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
   border-radius:5px;touch-action:auto;
   box-shadow:0 0 0 2px var(--ink),0 3px 0 2px var(--ink);
 }
-.pprev[data-ps="round"]{border-radius:11px}
 .pprev[data-ps="glow"]{box-shadow:inset 0 0 8px rgba(255,255,255,.4),0 0 0 2px var(--ink),0 3px 0 2px var(--ink),0 0 7px 2px var(--neon)}
 .pprev[data-ps="neon"]{box-shadow:inset 0 0 0 2px var(--neon),inset 0 0 8px var(--neon),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 .pprev[data-ps="light"]{box-shadow:inset 0 0 12px rgba(255,255,255,.8),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 .pprev[data-ps="glow"]::before{display:none}
 .pprev[data-ps="neon"]::before{border-width:1px;inset:2px}
 
-/* ===================== Jelly and Electric: bricks and boards =====================
+/* ===================== Jelly, Candy and Rainbow: bricks and boards =====================
    Jelly is a see-through gummy sweet: it keeps still on the board and only wobbles when it lands.
-   Electric crackles: a lightning crack across each brick (little bolts between the board's studs) and
-   now and then a zap, one layer that only fades in and out, like the neon flicker. */
+   Candy is a striped sweet on a board of cake frosting with sprinkles. Rainbow runs through the colours,
+   starting from the brick's own colour (--r0 to --r4, worked out in colorVars). On the board only the
+   Jelly and Rainbow boards move, each with one layer that fades in and out. */
 .brick,.plate,.swatch-face{
-  /* a lightning crack across a brick (stretched to fit), and its bright zap: small pictures, which the phone
-     draws faster than the same lines as SVG (the zigzag is CRACK in engine.js) */
-  --crack:url(data:image/png;base64,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);
-  --zap:url(data:image/png;base64,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);
-  /* little lightning bolts that sit between the studs of an electric board, two per 4×3 studs */
-  --bolts:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Cg fill='%23FFF39A' stroke='rgba(70,30,0,.45)' stroke-width='3' stroke-linejoin='round'%3E%3Cpath d='M110 62 82 106h18l-12 34 32-48h-18l12-30z'/%3E%3Cpath d='M308 162 280 206h18l-12 34 32-48h-18l12-30z'/%3E%3C/g%3E%3C/svg%3E");
+  /* studs of white sugar glass, so the rainbow shows through them */
+  --wstuds:
+    radial-gradient(circle at 41% 37%, rgba(255,255,255,.95) 0 calc(var(--cell)*.03), rgba(255,255,255,0) calc(var(--cell)*.1)),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.3) 0 calc(var(--cell)*.19), rgba(255,255,255,.75) calc(var(--cell)*.205) calc(var(--cell)*.235), transparent calc(var(--cell)*.25)),
+    radial-gradient(circle at 55% 60%, rgba(30,10,50,.28) 0 calc(var(--cell)*.21), transparent calc(var(--cell)*.3));
+  /* rainbow sprinkles that sit between the studs of a candy board, four per 3×3 studs (SPRINKLES in engine.js) */
+  --sprinkles:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cg stroke-width='9' stroke-linecap='round'%3E%3Cpath d='M90 94l20 12' stroke='%23FF4F9A'/%3E%3Cpath d='M192 108l16-16' stroke='%233D9BFF'/%3E%3Cpath d='M89 200h22' stroke='%2336C46A'/%3E%3Cpath d='M200 189v22' stroke='%23FFB800'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* jelly: a see-through gummy, glossy on top with a darker edge where the light bends, and squishy studs */
@@ -1558,39 +1538,40 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
   100%{transform:none;opacity:1}
 }
 
-/* electric: the brick charged up, bright in the middle with a white-hot edge, a lightning crack across it,
-   studs like little plasma balls, and a zap that flashes now and then */
-.brick.t-electric{
-  background-color:var(--c);
+
+/* candy: a striped sweet. White stripes (pink on white bricks) across the brick's colour, a sugary shine
+   and studs like little round sweets */
+.brick.t-candy{
   background-image:
-    radial-gradient(circle at 50% 50%, transparent calc(var(--cell)*.2), rgba(255,255,255,.8) calc(var(--cell)*.212) calc(var(--cell)*.228), transparent calc(var(--cell)*.245)),
-    radial-gradient(circle at 50% 50%, #fff 0 calc(var(--cell)*.055), var(--lt) calc(var(--cell)*.09), var(--neon) calc(var(--cell)*.16), var(--dk) calc(var(--cell)*.2) calc(var(--cell)*.24), transparent calc(var(--cell)*.26)),
-    var(--crack),
-    radial-gradient(ellipse 70% 70% at 50% 45%, var(--lt) 0, var(--c) 60%, var(--dk) 100%);
-  background-size:var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
-  background-position:var(--at) var(--at),var(--at) var(--at),0 0,0 0;
-  background-repeat:repeat,repeat,no-repeat,no-repeat;
+    var(--studs),
+    linear-gradient(165deg, rgba(255,255,255,.5) 0, rgba(255,255,255,.12) 22%, rgba(255,255,255,0) 40%, rgba(30,10,60,0) 65%, rgba(30,10,60,.14) 100%),
+    repeating-linear-gradient(135deg, var(--c) 0 calc(var(--cell)*.2), var(--cs) calc(var(--cell)*.21) calc(var(--cell)*.35), var(--c) calc(var(--cell)*.36) calc(var(--cell)*.42));
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,auto;
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat,repeat;
+  border-radius:calc(var(--cell)*.24);
+}
+
+/* rainbow: the colours run across the brick, starting from its own colour, with white sugar-glass studs */
+.brick.t-rainbow{
+  background-color:var(--r2);
+  background-image:
+    var(--wstuds),
+    linear-gradient(165deg, rgba(255,255,255,.4) 0, rgba(255,255,255,0) 35%, rgba(30,10,60,0) 65%, rgba(30,10,60,.12) 100%),
+    linear-gradient(110deg, var(--r0) 0, var(--r1) 25%, var(--r2) 50%, var(--r3) 75%, var(--r4) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
+  background-repeat:repeat,repeat,repeat,no-repeat,no-repeat;
   box-shadow:
-    inset 0 0 0 max(1px, calc(var(--cell)*.035)) rgba(255,255,255,.85),
-    inset 0 0 calc(var(--cell)*.3) rgba(255,255,255,.35),
-    0 0 0 1px rgba(30,10,60,.3),
-    0 0 calc(var(--cell)*.25) var(--neon),
-    calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.3);
+    inset 0 calc(var(--cell)*-.09) 0 rgba(30,10,60,.22),
+    inset 0 max(1.5px, calc(var(--cell)*.05)) 0 rgba(255,255,255,.55),
+    inset max(1.5px, calc(var(--cell)*.04)) 0 0 rgba(255,255,255,.22),
+    0 0 0 1px rgba(30,10,60,.2),
+    0 1px 1px rgba(30,10,60,.25),
+    calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.34);
 }
-/* the zap: a bright bolt and a burst of light, hidden most of the time. On the board only one brick in five
-   zaps (.zp): a zap on every brick gave the phone hundreds of layers to juggle */
-.brick.t-electric::after{
-  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
-  background:var(--zap) 0 0 / 100% 100% no-repeat;
-  box-shadow:0 0 calc(var(--cell)*.55) calc(var(--cell)*.08) var(--neon),0 0 calc(var(--cell)*.15) #fff,inset 0 0 calc(var(--cell)*.3) #fff;
-  animation:zap 3.6s linear infinite;
-}
-/* the bricks take turns, so a board of them crackles instead of flashing all at once */
-.plate .brick.t-electric:not(.zp)::after,.stamps .brick.t-electric::after,.floating .brick.t-electric::after{content:none}
-.brick.t-electric:nth-child(3n+1)::after{animation-delay:-1.3s}
-.brick.t-electric:nth-child(3n+2)::after{animation-delay:-2.5s}
-@keyframes zap{0%,70%,100%{opacity:0}71%{opacity:1}72%{opacity:.25}73%{opacity:.95}75%{opacity:0}86%{opacity:0}87%{opacity:.7}88%{opacity:0}}
 .plate.tiny .brick.t-jelly{background-color:var(--c)}
+.plate.tiny .brick.t-rainbow{background-color:var(--r2)}
 
 /* ---------- boards ---------- */
 /* jelly: a big gummy sweet of a board, glossy on top, darker round the edge, with a shine that comes and goes */
@@ -1616,32 +1597,50 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
   animation:brickglow 3s ease-in-out infinite;
 }
 
-/* electric: a charged-up board, little lightning bolts between the plasma studs, a white-hot rim,
-   and now and then the whole board zaps */
-.plate[data-ps="electric"]{
-  background-color:var(--c);
+
+/* candy: a board of cake frosting in the board's colour made soft and creamy, rainbow sprinkles between
+   sugar studs, and a thick creamy rim */
+.plate[data-ps="candy"]{
+  background-color:var(--pl);
   background-image:
-    radial-gradient(circle at 50% 50%, #fff 0 calc(var(--cell)*.04), var(--lt) calc(var(--cell)*.08), var(--neon) calc(var(--cell)*.14), transparent calc(var(--cell)*.19)),
-    radial-gradient(circle at 50% 50%, transparent calc(var(--cell)*.185), rgba(255,255,255,.55) calc(var(--cell)*.195) calc(var(--cell)*.21), transparent calc(var(--cell)*.225)),
-    radial-gradient(circle at 50% 50%, var(--dk) 0 calc(var(--cell)*.22), transparent calc(var(--cell)*.24)),
-    var(--bolts),
-    radial-gradient(ellipse 70% 70% at 50% 45%, var(--lt) 0, var(--c) 65%, var(--dk) 100%);
-  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),calc(var(--cell)*4) calc(var(--cell)*3),100% 100%;
-  background-repeat:repeat,repeat,repeat,repeat,no-repeat;
+    radial-gradient(circle at 41% 37%, rgba(255,255,255,.8) 0 calc(var(--cell)*.03), rgba(255,255,255,0) calc(var(--cell)*.09)),
+    radial-gradient(circle at 50% 50%, var(--plt) 0 calc(var(--cell)*.1), var(--pl) calc(var(--cell)*.2), transparent calc(var(--cell)*.215)),
+    radial-gradient(circle at 54% 57%, var(--pdk) 0 calc(var(--cell)*.215), transparent calc(var(--cell)*.235)),
+    radial-gradient(circle at 56% 61%, rgba(30,10,50,.14) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.28)),
+    var(--sprinkles),
+    linear-gradient(170deg, rgba(255,255,255,.4) 0, rgba(255,255,255,0) 40%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),calc(var(--cell)*3) calc(var(--cell)*3),100% 100%;
+  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat;
   box-shadow:
-    inset 0 0 0 max(2px, calc(var(--cell)*.06)) rgba(255,255,255,.8),
-    inset 0 0 calc(var(--cell)*.9) rgba(255,255,255,.35),
+    inset 0 0 0 calc(var(--cell)*.14) rgba(255,255,255,.55),
+    inset 0 0 calc(var(--cell)*.6) rgba(255,255,255,.7),
+    inset 0 -3px 0 var(--pdk),
     0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
 }
-.plate[data-ps="electric"]::after{
-  content:"";
-  box-shadow:0 0 calc(var(--cell)*.8) calc(var(--cell)*.12) var(--neon),inset 0 0 calc(var(--cell)*.8) #fff;
-  animation:zap 4.4s linear infinite;
+
+/* rainbow: soft rainbow bands across the board from its own colour, white studs, and the colours slowly
+   shift (one layer with the bands moved along, fading in and out) */
+.plate[data-ps="rainbow"]{
+  background-color:var(--r2);
+  background-image:
+    var(--wstuds),
+    linear-gradient(170deg, rgba(255,255,255,.4) 0, rgba(255,255,255,.18) 100%),
+    linear-gradient(120deg, var(--r0) 0, var(--r1) 25%, var(--r2) 50%, var(--r3) 75%, var(--r4) 100%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
+  background-repeat:repeat,repeat,repeat,no-repeat,no-repeat;
 }
+.plate[data-ps="rainbow"]::before{
+  content:"";opacity:0;
+  background:linear-gradient(120deg, var(--r2) 0, var(--r3) 25%, var(--r4) 50%, var(--r0) 75%, var(--r1) 100%);
+  -webkit-mask:radial-gradient(circle at 50% 50%, transparent calc(var(--cell)*.25), #000 calc(var(--cell)*.27)) 0 0 / var(--cell) var(--cell);
+  mask:radial-gradient(circle at 50% 50%, transparent calc(var(--cell)*.25), #000 calc(var(--cell)*.27)) 0 0 / var(--cell) var(--cell);
+  animation:rainbowshift 6s ease-in-out infinite;
+}
+@keyframes rainbowshift{50%{opacity:.45}}
 
 /* the picker */
+.pprev[data-ps="candy"]{box-shadow:inset 0 0 0 3px rgba(255,255,255,.6),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 .pprev[data-ps="jelly"]{border-radius:9px;box-shadow:inset 0 0 6px var(--jdk),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
-.pprev[data-ps="electric"]{box-shadow:inset 0 0 0 2px rgba(255,255,255,.8),0 0 0 2px var(--ink),0 3px 0 2px var(--ink),0 0 7px 2px var(--neon)}
 
 /* upright tablets: eight styles in two rows of four instead of a row of six and two left over */
 @media (orientation:portrait), (max-width:899px) and (min-height:541px){
@@ -2104,13 +2103,13 @@ const COLORS = [
 ];
 const STYLES = [
   {id: "std",     en: "Classic", ar: "كلاسيك"},
-  {id: "round",   en: "Round",   ar: "دائري"},
   {id: "glitter", en: "Glitter", ar: "بريق"},
   {id: "glow",    en: "Glow",    ar: "مضيء"},
   {id: "neon",    en: "Neon",    ar: "نيون"},
   {id: "light",   en: "Light",   ar: "فاتح"},
   {id: "jelly",   en: "Jelly",   ar: "جيلي"},
-  {id: "electric", en: "Electric", ar: "كهربائي"},
+  {id: "candy",   en: "Candy",   ar: "حلوى"},
+  {id: "rainbow", en: "Rainbow", ar: "قوس قزح"},
 ];
 // long side first (lying down)
 const SHAPES = [[1,1],[2,2],[3,2],[4,2]];
@@ -2208,26 +2207,26 @@ addStrings({
   board: ["Board", "اللوحة"], size: ["Size", "الحجم"], boardColor: ["Board color", "لون اللوحة"],
   boardStyle: ["Board style", "نوع اللوحة"],
   plateStyleSay_std: ["A classic board with bumps on top.", "لوحة كلاسيكية بنتوءات صغيرة."],
-  plateStyleSay_round: ["A round board, soft like a pillow!", "لوحة دائرية ناعمة مثل الوسادة!"],
   plateStyleSay_glitter: ["A sparkly glitter board!", "لوحة لامعة بالبريق!"],
   plateStyleSay_glow: ["A glow board that shines like a magic light!", "لوحة مضيئة تلمع مثل ضوء سحري!"],
   plateStyleSay_neon: ["A neon board that lights up like a sign at night!", "لوحة نيون تضيء مثل لافتة في الليل!"],
   plateStyleSay_light: ["A light board full of little lamps!", "لوحة فاتحة مليئة بالمصابيح الصغيرة!"],
   plateStyleSay_jelly: ["A wobbly jelly board, like a big gummy sweet!", "لوحة جيلي تهتز مثل حلوى جيلي كبيرة!"],
-  plateStyleSay_electric: ["An electric board that crackles with lightning!", "لوحة كهربائية تطقطق بالبرق!"],
+  plateStyleSay_candy: ["A candy board, like a cake with sprinkles!", "لوحة حلوى مثل كعكة عليها حبيبات ملونة!"],
+  plateStyleSay_rainbow: ["A rainbow board full of colors!", "لوحة قوس قزح مليئة بالألوان!"],
   undone: ["Undone! It's back the way it was.", "تم التراجع! عاد كما كان."],
   oneBrick: ["1 brick", "المكعبات: 1"], nBricks: ["{n} bricks", "المكعبات: {n}"],
   builtWith: ["Built with Snappy Bricks", "صُنعت بمكعبات سنابي"],
   paintReady: ["{c} paint is ready. Tap or swipe over bricks!", "اللون {c} جاهز. اضغط أو مرّر على المكعبات!"],
   colorPicked: ["{c} it is! Now drag a brick.", "اخترت {c}! الآن اسحب مكعبًا."],
   styleSay_std: ["Classic bricks with bumps on top.", "مكعبات كلاسيكية بنتوءات صغيرة."],
-  styleSay_round: ["Round bricks, like buttons!", "مكعبات دائرية مثل الأزرار!"],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
   styleSay_glow: ["Glow bricks shine like magic lights!", "مكعبات مضيئة تلمع مثل الأضواء السحرية!"],
   styleSay_light: ["Light bricks shine like little lamps!", "مكعبات فاتحة تضيء مثل المصابيح الصغيرة!"],
   styleSay_neon: ["Neon bricks light up like signs at night!", "مكعبات النيون تضيء مثل اللافتات في الليل!"],
   styleSay_jelly: ["Jelly bricks wobble like gummy sweets!", "مكعبات الجيلي تهتز مثل حلوى الجيلي!"],
-  styleSay_electric: ["Electric bricks crackle with lightning!", "مكعبات كهربائية تطقطق بالبرق!"],
+  styleSay_candy: ["Candy bricks with sweet stripes!", "مكعبات حلوى بخطوط لذيذة!"],
+  styleSay_rainbow: ["Rainbow bricks in every color!", "مكعبات قوس قزح بكل الألوان!"],
   brickAria: ["{s} brick", "مكعب {s}"],
   myStamp: ["Stamp", "ختم"], deleteStamp: ["Delete this stamp", "احذف هذا الختم"],
   tapToPlace: ["Now tap the board to put it there. Tap it again to stop.", "الآن اضغط على اللوحة لتضعه. اضغط عليه مرة أخرى للتوقف."],
@@ -2409,13 +2408,29 @@ function jellyColor(c, amt, a){
   if (v[0] === "#"){ const n = parseInt(v.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
   return v.replace("rgb(", "rgba(").replace(")", `,${a})`);
 }
+// candy: white stripes, or pink ones on white and pale grey bricks so they still show
+function candyStripe(c){
+  const n = parseInt(c.slice(1), 16), ch = [n >> 16, (n >> 8) & 255, n & 255];
+  return isLight(c) && Math.max(...ch) - Math.min(...ch) < 40 ? "#FF7AB0" : "rgba(255,255,255,.92)";
+}
+// rainbow: five colours round the colour wheel starting from the brick's own colour; black, white and grey
+// have no colour of their own, so they get the usual rainbow from red
+function rainbowOf(c){
+  const n = parseInt(c.slice(1), 16), r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let h = 0;
+  if (d > .16){ h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; }
+  const hsl = k => `hsl(${Math.round((h + k * 62 + 360) % 360)},88%,62%)`;
+  return [0, 1, 2, 3, 4].map(hsl);
+}
 // the colour variables every brick, swatch and board needs, worked out once per colour
 const varsCache = new Map();
 function colorVars(c){
   let v = varsCache.get(c);
   if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)], ["--spark2", spark2Color(c)],
     ["--pl", pastel(c)], ["--plt", shade(pastel(c), .45)], ["--pdk", shade(pastel(c), -.16)], ["--glo", lampColor(c, .75)],
-    ["--jel", jellyColor(c, 0, .8)], ["--jlt", jellyColor(c, .45, .9)], ["--jdk", jellyColor(c, -.35, .85)], ["--jsh", jellyColor(c, -.45, .4)]]; varsCache.set(c, v); }
+    ["--jel", jellyColor(c, 0, .8)], ["--jlt", jellyColor(c, .45, .9)], ["--jdk", jellyColor(c, -.35, .85)], ["--jsh", jellyColor(c, -.45, .4)],
+    ["--cs", candyStripe(c)], ...rainbowOf(c).map((r, i) => ["--r" + i, r])]; varsCache.set(c, v); }
   return v;
 }
 function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
@@ -2432,9 +2447,8 @@ function placeEl(el, b){
 // only touches what changed, so redrawing a board of thousands of bricks after one move stays quick
 function styleBrickEl(el, b){
   const t = b.t || "std", z = b.z || 0;
-  // on a board full of lamps only every fourth one twinkles (.tw), picked by its id so the sparkles stay put;
-  // only one electric brick in five zaps (.zp), so a board of them crackles here and there and stays smooth
-  if (el._t !== t){ el._t = t; el.className = "brick t-" + t + (t === "light" && b.id % 4 === 1 ? " tw" : "") + (t === "electric" && b.id % 5 === 1 ? " zp" : ""); }
+  // on a board full of lamps only every fourth one twinkles (.tw), picked by its id so the sparkles stay put
+  if (el._t !== t){ el._t = t; el.className = "brick t-" + t + (t === "light" && b.id % 4 === 1 ? " tw" : ""); }
   const pos = b.x + "," + b.y + "," + b.w + "," + b.h;
   if (el._pos !== pos){ el._pos = pos; placeEl(el, b); }
   if (el._c !== b.c){ el._c = b.c; paintVars(el, b.c); }
@@ -2495,7 +2509,7 @@ function artToPix(art, recolor){
 }
 
 /* ===================== boards ===================== */
-// board styles are the brick styles (Classic, Round, Glitter, Glow, Neon, Light) worn by the board itself
+// board styles are the brick styles (Classic, Glitter, Glow, Neon, Light, Jelly, Candy, Rainbow) worn by the board itself
 const plateStyle = v => STYLES.some(s => s.id === v) ? v : "std";
 // the colour a board shows to the eye: neon boards are dark glass whatever their colour
 function plateTone(board){ return plateStyle(board.ps) === "neon" ? neonGlass(board.plate) : board.plate; }
@@ -2827,37 +2841,41 @@ function jellyStud(ctx, sx, sy, c, col, r){
   gl.addColorStop(0, "rgba(255,255,255,.95)"); gl.addColorStop(.4, "rgba(255,255,255,.95)"); gl.addColorStop(1, "rgba(255,255,255,0)");
   ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(gx, gy, c * .085, 0, 7); ctx.fill();
 }
-// a stud like a little plasma ball: white-hot middle, glowing in the brick's colour, a thin white ring (k: brightness size)
-function plasmaStud(ctx, sx, sy, c, col, k){
-  ctx.fillStyle = shade(col, -.24); ctx.beginPath(); ctx.arc(sx, sy, c * .25 * k, 0, 7); ctx.fill();
-  const r = c * .215 * k, g = ctx.createRadialGradient(sx, sy, 0, sx, sy, r);
-  g.addColorStop(0, "#fff"); g.addColorStop(.26, "#fff"); g.addColorStop(.42, shade(col, .3)); g.addColorStop(.74, neonColor(col)); g.addColorStop(1, shade(col, -.24));
-  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, r, 0, 7); ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = c * .016; ctx.beginPath(); ctx.arc(sx, sy, c * .22 * k, 0, 7); ctx.stroke();
+// a stud of white sugar glass, so a rainbow shows through it
+function glassStud(ctx, sx, sy, c){
+  const sh = ctx.createRadialGradient(sx + c * .05, sy + c * .1, 0, sx + c * .05, sy + c * .1, c * .3);
+  sh.addColorStop(0, "rgba(30,10,50,.28)"); sh.addColorStop(.7, "rgba(30,10,50,.28)"); sh.addColorStop(1, "rgba(30,10,50,0)");
+  ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(sx + c * .05, sy + c * .1, c * .3, 0, 7); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,.3)"; ctx.beginPath(); ctx.arc(sx, sy, c * .2, 0, 7); ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = c * .03; ctx.beginPath(); ctx.arc(sx, sy, c * .22, 0, 7); ctx.stroke();
+  const gx = sx - c * .09, gy = sy - c * .13, gl = ctx.createRadialGradient(gx, gy, 0, gx, gy, c * .1);
+  gl.addColorStop(0, "rgba(255,255,255,.95)"); gl.addColorStop(.3, "rgba(255,255,255,.95)"); gl.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(gx, gy, c * .1, 0, 7); ctx.fill();
 }
-// the lightning crack across an electric brick (the same zigzag as --crack in styles8.css)
-const CRACK = [[-.02, .24], [.3, .56], [.42, .3], [.72, .7], [1.02, .38]];
-function crack(ctx, x, y, w, h, c){
-  ctx.beginPath(); CRACK.forEach(([px, py], i) => ctx[i ? "lineTo" : "moveTo"](x + px * w, y + py * h));
-  ctx.lineJoin = "round";
-  ctx.strokeStyle = "rgba(255,214,40,.55)"; ctx.lineWidth = Math.max(2, c * .13); ctx.stroke();
-  ctx.strokeStyle = "#fff"; ctx.lineWidth = Math.max(1, c * .045); ctx.stroke();
+// the rainbow running across a brick or board (angle as in styles8.css)
+function rainbowFill(ctx, col, x, y, w, h, deg){
+  const a = deg * Math.PI / 180, dx = Math.sin(a), dy = -Math.cos(a), len = Math.abs(w * dx) + Math.abs(h * dy);
+  const cx = x + w / 2, cy = y + h / 2, g = ctx.createLinearGradient(cx - dx * len / 2, cy - dy * len / 2, cx + dx * len / 2, cy + dy * len / 2);
+  rainbowOf(col).forEach((r, i) => g.addColorStop(i / 4, r));
+  return g;
 }
-// a little lightning bolt between the studs of an electric board (the same as --bolts in styles8.css), c = one stud
-const BOLT = [[110, 62], [82, 106], [100, 106], [88, 140], [120, 92], [102, 92], [114, 62]];
-function bolt(ctx, x, y, c){
-  ctx.beginPath(); BOLT.forEach(([px, py], i) => ctx[i ? "lineTo" : "moveTo"](x + px * c / 100, y + py * c / 100)); ctx.closePath();
-  ctx.fillStyle = "#FFF39A"; ctx.fill();
-  ctx.lineJoin = "round"; ctx.strokeStyle = "rgba(70,30,0,.45)"; ctx.lineWidth = c * .03; ctx.stroke();
+// candy stripes across a brick, clipped to it by the caller
+function candyStripes(ctx, col, x, y, w, h, c){
+  ctx.fillStyle = col; ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = candyStripe(col);
+  const p = c * .42 * Math.SQRT2, sw = c * .14 * Math.SQRT2;
+  for (let s = -h; s < w + h; s += p){ ctx.beginPath(); ctx.moveTo(x + s, y); ctx.lineTo(x + s + sw, y); ctx.lineTo(x + s + sw - h, y + h); ctx.lineTo(x + s - h, y + h); ctx.fill(); }
 }
+// the sprinkles between a candy board's studs (the same as --sprinkles in styles8.css), per 3×3 studs
+const SPRINKLES = [["#FF4F9A", 90, 94, 110, 106], ["#3D9BFF", 192, 108, 208, 92], ["#36C46A", 89, 200, 111, 200], ["#FFB800", 200, 189, 200, 211]];
 // the board under the bricks in each board style (matches styles7.css; Classic is the plain board)
 function drawPlate(ctx, board, ox, oy, c){
   const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = board.plate;
-  const rad = ps === "round" ? c * .9 : ps === "jelly" ? c * .6 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
+  const rad = ps === "jelly" ? c * .6 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
   const each = fn => { for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) fn(ox + (x + .5) * c, oy + (y + .5) * c, x, y); };
-  // glow, neon, light and electric boards shine out past their edge in their own colour
-  if (ps === "glow" || ps === "neon" || ps === "light" || ps === "electric"){
-    ctx.save(); ctx.shadowColor = ps === "light" ? lampColor(col, .75) : neonColor(col); ctx.shadowBlur = c * (ps === "neon" || ps === "electric" ? .8 : 1.1);
+  // glow, neon and light boards shine out past their edge in their own colour
+  if (ps === "glow" || ps === "neon" || ps === "light"){
+    ctx.save(); ctx.shadowColor = ps === "light" ? lampColor(col, .75) : neonColor(col); ctx.shadowBlur = c * (ps === "neon" ? .8 : 1.1);
     ctx.fillStyle = ps === "neon" ? neonGlass(col) : col; path(); ctx.fill(); ctx.restore();
   }
   ctx.save(); path(); ctx.clip();
@@ -2875,26 +2893,25 @@ function drawPlate(ctx, board, ox, oy, c){
     ctx.save(); ctx.translate(ox + bw * .3, oy + bh * .09); ctx.scale(bw * .55, bh * .2);
     const gl = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); gl.addColorStop(0, "rgba(255,255,255,.7)"); gl.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = gl; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
-  } else if (ps === "electric"){
-    const g = ctx.createRadialGradient(ox + bw / 2, oy + bh * .45, 0, ox + bw / 2, oy + bh * .45, Math.max(bw, bh) * .7);
-    g.addColorStop(0, shade(col, .3)); g.addColorStop(.65, col); g.addColorStop(1, shade(col, -.24));
-    ctx.fillStyle = g; ctx.fillRect(ox, oy, bw, bh);
-    for (let ty = 0; ty < board.rows; ty += 3) for (let tx = 0; tx < board.cols; tx += 4){ bolt(ctx, ox + tx * c, oy + ty * c, c); bolt(ctx, ox + (tx + 2) * c, oy + (ty + 1) * c, c); }
+  } else if (ps === "candy"){
+    ctx.fillStyle = pastel(col); ctx.fillRect(ox, oy, bw, bh);
+    const sg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
+    sg.addColorStop(0, "rgba(255,255,255,.4)"); sg.addColorStop(.4, "rgba(255,255,255,0)");
+    ctx.fillStyle = sg; ctx.fillRect(ox, oy, bw, bh);
+    ctx.lineCap = "round"; ctx.lineWidth = c * .09;
+    for (let ty = 0; ty < board.rows; ty += 3) for (let tx = 0; tx < board.cols; tx += 3)
+      for (const [f, x1, y1, x2, y2] of SPRINKLES){ ctx.strokeStyle = f; ctx.beginPath(); ctx.moveTo(ox + tx * c + x1 * c / 100, oy + ty * c + y1 * c / 100); ctx.lineTo(ox + tx * c + x2 * c / 100, oy + ty * c + y2 * c / 100); ctx.stroke(); }
+  } else if (ps === "rainbow"){
+    ctx.fillStyle = rainbowFill(ctx, col, ox, oy, bw, bh, 120); ctx.fillRect(ox, oy, bw, bh);
+    const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
+    wg.addColorStop(0, "rgba(255,255,255,.4)"); wg.addColorStop(1, "rgba(255,255,255,.18)");
+    ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
   } else if (ps === "light"){
     const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
     wg.addColorStop(0, "rgba(255,255,255,.55)"); wg.addColorStop(.5, "rgba(255,255,255,0)");
     ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
   } else {
     ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); ctx.fillRect(ox, oy, bw, bh);
-  }
-  if (ps === "round"){
-    // a pillow: lit on the top left, a darker rim
-    const dg = ctx.createRadialGradient(ox + bw * .3, oy + bh * .22, 0, ox + bw * .3, oy + bh * .22, Math.max(bw, bh) * .75);
-    dg.addColorStop(0, "rgba(255,255,255,.3)"); dg.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = dg; ctx.fillRect(ox, oy, bw, bh);
-    ctx.save(); ctx.translate(ox + bw / 2, oy + bh / 2); ctx.scale(bw / 2, bh / 2);
-    const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); rg.addColorStop(.8, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.14)");
-    ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
   }
   if (ps === "glitter"){
     // flecks under the studs, seeded so the same board always gets the same glitter
@@ -2912,12 +2929,12 @@ function drawPlate(ctx, board, ox, oy, c){
     ctx.shadowColor = neonColor(col); ctx.shadowBlur = c * .8; ctx.lineWidth = c * .24; ctx.strokeStyle = neonColor(col);
   } else if (ps === "jelly"){
     ctx.shadowColor = jellyColor(col, -.35, .85); ctx.shadowBlur = c * 1.6; ctx.lineWidth = c; ctx.strokeStyle = jellyColor(col, -.35, .35);
-  } else if (ps === "electric"){
-    ctx.shadowColor = "rgba(255,255,255,.9)"; ctx.shadowBlur = c * .9; ctx.lineWidth = c * .12; ctx.strokeStyle = "rgba(255,255,255,.85)";
+  } else if (ps === "candy"){
+    ctx.shadowColor = "rgba(255,255,255,.9)"; ctx.shadowBlur = c * .8; ctx.lineWidth = c * .5; ctx.strokeStyle = "rgba(255,255,255,.6)";
   } else {
     ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
   }
-  if (ps === "neon" || ps === "electric"){ path(); ctx.stroke(); ctx.stroke(); }
+  if (ps === "neon"){ path(); ctx.stroke(); ctx.stroke(); }
   else { rrect(ctx, ox - c / 2, oy - c / 2, bw + c, bh + c, rad + c * .5); ctx.stroke(); }
   ctx.restore();
   if (ps === "neon"){
@@ -2942,18 +2959,20 @@ function drawPlate(ctx, board, ox, oy, c){
       studTiles.set(key, tile);
     }
     each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
-  } else if (ps === "jelly" || ps === "electric"){
-    // gummy or plasma studs, drawn once and stamped
+  } else if (ps === "rainbow"){
+    each((sx, sy) => glassStud(ctx, sx, sy, c));
+  } else if (ps === "jelly"){
+    // gummy studs, drawn once and stamped
     const key = ps + "|" + c + "|" + col;
     let tile = studTiles.get(key);
     if (!tile){
       const s = Math.ceil(c); tile = document.createElement("canvas"); tile.width = s; tile.height = s;
       const tc = tile.getContext("2d");
-      if (ps === "jelly") jellyStud(tc, c / 2, c / 2, c, col, .21); else plasmaStud(tc, c / 2, c / 2, c, col, .88);
+      jellyStud(tc, c / 2, c / 2, c, col, .21);
       studTiles.set(key, tile);
     }
     each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
-  } else each((sx, sy) => stud(ctx, sx - c / 2, sy - c / 2, c, col, true));
+  } else each((sx, sy) => stud(ctx, sx - c / 2, sy - c / 2, c, ps === "candy" ? pastel(col) : col, true));
   if (ps === "glitter"){
     // a few twinkles caught mid-sparkle
     let sd = board.cols * 31 + board.rows * 17;
@@ -2975,7 +2994,7 @@ function drawBoard(ctx, board, ox, oy, c){
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
     const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
-    const rad = t === "round" ? Math.min(w, h) / 2 : t === "jelly" ? c * .32 : t === "light" ? c * .24 : c * .14;
+    const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
     const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
     ctx.save();
     ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
@@ -3026,21 +3045,23 @@ function drawBoard(ctx, board, ox, oy, c){
       ctx.restore();
       continue;
     }
-    if (t === "electric"){
-      // charged up: a halo, bright in the middle, a lightning crack across, plasma-ball studs and a white-hot edge
-      ctx.save(); ctx.shadowColor = neonColor(b.c); ctx.shadowBlur = c * .3;
-      ctx.fillStyle = b.c; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.restore();
-      const g = ctx.createRadialGradient(x + w / 2, y + h * .45, 0, x + w / 2, y + h * .45, Math.max(w, h) * .7);
-      g.addColorStop(0, shade(b.c, .3)); g.addColorStop(.6, b.c); g.addColorStop(1, shade(b.c, -.24));
-      ctx.fillStyle = g; rrect(ctx, x, y, w, h, rad); ctx.fill();
+    if (t === "candy" || t === "rainbow"){
+      // a striped sweet, or the colours of the rainbow, under a sugary shine with lit edges
       ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
-      crack(ctx, x, y, w, h, c);
+      if (t === "candy") candyStripes(ctx, b.c, x, y, w, h, c);
+      else { ctx.fillStyle = rainbowFill(ctx, b.c, x, y, w, h, 110); ctx.fillRect(x, y, w, h); }
+      ctx.fillStyle = "rgba(30,10,60,.22)"; ctx.fillRect(x, y + h - c * .09, w, c * .09);
+      const sg = ctx.createLinearGradient(x, y, x + w * .26, y + h);
+      sg.addColorStop(0, `rgba(255,255,255,${t === "candy" ? .5 : .4})`); sg.addColorStop(.38, "rgba(255,255,255,0)"); sg.addColorStop(.65, "rgba(30,10,60,0)"); sg.addColorStop(1, "rgba(30,10,60,.13)");
+      ctx.fillStyle = sg; ctx.fillRect(x, y, w, h);
+      const bt = Math.max(1.5, c * .05), bl = Math.max(1.5, c * .04);
+      ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.fillRect(x, y, w, bt);
+      ctx.fillStyle = "rgba(255,255,255,.22)"; ctx.fillRect(x, y + bt, bl, h - bt);
       ctx.restore();
-      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) plasmaStud(ctx, x - gap + (xx + .5) * c, y - gap + (yy + .5) * c, c, b.c, 1);
-      const lw = Math.max(1, c * .035);
-      ctx.strokeStyle = "rgba(255,255,255,.85)"; ctx.lineWidth = lw;
-      rrect(ctx, x + lw / 2, y + lw / 2, w - lw, h - lw, Math.max(0, rad - lw / 2)); ctx.stroke();
-      ctx.strokeStyle = "rgba(30,10,60,.3)"; ctx.lineWidth = 1;
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++){
+        if (t === "candy") stud(ctx, x - gap + xx * c, y - gap + yy * c, c, b.c); else glassStud(ctx, x - gap + (xx + .5) * c, y - gap + (yy + .5) * c, c);
+      }
+      ctx.strokeStyle = "rgba(30,10,60,.2)"; ctx.lineWidth = 1;
       rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();
       ctx.restore();
       continue;
@@ -3074,17 +3095,6 @@ function drawBoard(ctx, board, ox, oy, c){
         ctx.fillStyle = shade(col, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
         ctx.fillStyle = col; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
         ctx.fillStyle = sheen(ctx, x, y, w, h, .26, .12); rrect(ctx, x, y, w, h, rad); ctx.fill();
-        if (t === "round"){
-          // domed button: a highlight on the top left and a darker rim
-          const cx = x + w / 2, cy = y + h / 2;
-          const dg = ctx.createRadialGradient(x + w * .34, y + h * .28, 0, x + w * .34, y + h * .28, Math.max(w, h) * .7);
-          dg.addColorStop(0, "rgba(255,255,255,.34)"); dg.addColorStop(1, "rgba(255,255,255,0)");
-          ctx.fillStyle = dg; rrect(ctx, x, y, w, h, rad); ctx.fill();
-          ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip(); ctx.translate(cx, cy); ctx.scale(w / 2, h / 2);
-          const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
-          rg.addColorStop(.72, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.16)");
-          ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
-        }
         // bevels that grow with the brick: lit top and left edges, a shaded right edge
         const bt = Math.max(1.5, c * .05), bl = Math.max(1.5, c * .04);
         ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
@@ -3228,7 +3238,7 @@ function brickPiece(i){
 function artPiece(name){
   const pix = artToPix(ART[name].art);
   return {w: pix[0].length, h: pix.length, single: false,
-          bricks: decompose(pix).map(b => ({...b, t: brickStyle === "round" ? "std" : brickStyle}))};
+          bricks: decompose(pix).map(b => ({...b, t: brickStyle}))};
 }
 function myPiece(id){
   const s = myStamps.find(m => m.id === id); if (!s) return null;
@@ -4100,7 +4110,7 @@ function buildText(raw, opts = {}){
     return true;
   });
   const anim = new Map();
-  const st = opts.style || (brickStyle === "round" ? "std" : brickStyle);
+  const st = opts.style || brickStyle;
   rel.forEach(b => {
     const nb = {id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: st, z: 0};
     B.bricks.push(nb); anim.set(nb.id, opts.fast ? Math.min(b.delay, 300) : b.delay);
@@ -5749,7 +5759,7 @@ function setZoom(z, fx, fy){
 function buildPhoto(){
   if (!PHOTO.bricks) return;
   const [cols, rows] = photoDims();
-  const st = brickStyle === "round" ? "std" : brickStyle;
+  const st = brickStyle;
   closeSheets();
   if (currentMode !== "free") setMode("free", true);
   showScreen("studio");

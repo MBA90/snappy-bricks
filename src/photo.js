@@ -319,7 +319,7 @@ function setZoom(z, fx, fy){
 function buildPhoto(){
   if (!PHOTO.bricks) return;
   const [cols, rows] = photoDims();
-  const st = brickStyle === "round" ? "std" : brickStyle;
+  const st = brickStyle;
   closeSheets();
   if (currentMode !== "free") setMode("free", true);
   showScreen("studio");

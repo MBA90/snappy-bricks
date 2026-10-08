@@ -200,7 +200,7 @@ function buildText(raw, opts = {}){
     return true;
   });
   const anim = new Map();
-  const st = opts.style || (brickStyle === "round" ? "std" : brickStyle);
+  const st = opts.style || brickStyle;
   rel.forEach(b => {
     const nb = {id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: st, z: 0};
     B.bricks.push(nb); anim.set(nb.id, opts.fast ? Math.min(b.delay, 300) : b.delay);
