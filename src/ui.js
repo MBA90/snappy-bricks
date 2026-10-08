@@ -65,7 +65,7 @@ function buildSwatches(){
       color = c.hex; sfx.click();
       box.querySelectorAll(".swatch").forEach(s => s.setAttribute("aria-pressed", s.dataset.hex === color));
       buildShapes(); emit("color", color);
-      say(tool === "paint" || tool === "fill" ? t("paintReady", {c: c[LANG]}) : t("colorPicked", {c: c[LANG]}));
+      say(t(tool === "draw" ? "drawReady" : tool === "paint" || tool === "fill" ? "paintReady" : "colorPicked", {c: c[LANG]}));
     });
     box.appendChild(b);
   }
@@ -357,6 +357,78 @@ function fillAt(x, y, opts = {}){
   renderAuras(); emit("change");
   return hit.size;
 }
+/* ---- brick pencil: draw with a finger, and the line turns into bricks; a closed loop fills in ---- */
+let pencilSvg = null;
+function startPencil(e){
+  if (B.locked){ sfx.nope(); return; }
+  const thick = settings.age === "little" ? 2 : 1;
+  ptr = {kind: "pencil", id: e.pointerId, pts: [], cells: new Set(), thick};
+  pencilSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  pencilSvg.setAttribute("class", "pencil-line"); pencilSvg.setAttribute("viewBox", `0 0 ${B.cols} ${B.rows}`);
+  pencilSvg.setAttribute("preserveAspectRatio", "none");
+  pencilSvg.innerHTML = `<path fill="none" stroke="${color}" stroke-width="${thick}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  plate.appendChild(pencilSvg);
+  pencilAt(e);
+}
+function pencilAt(e){
+  const r = plate.getBoundingClientRect(), p = ptr;
+  const fx = clamp((e.clientX - r.left) / cell, 0, B.cols - .01), fy = clamp((e.clientY - r.top) / cell, 0, B.rows - .01);
+  const last = p.pts[p.pts.length - 1];
+  if (last && Math.hypot(fx - last[0], fy - last[1]) < .25) return;
+  // walk from the last point in small steps so a fast swipe leaves no gaps
+  const steps = last ? Math.ceil(Math.hypot(fx - last[0], fy - last[1]) / .3) : 1;
+  for (let i = 1; i <= steps; i++){
+    const x = last ? last[0] + (fx - last[0]) * i / steps : fx, y = last ? last[1] + (fy - last[1]) * i / steps : fy;
+    // a thick pencil covers the 2×2 studs nearest the finger
+    const x0 = p.thick === 2 ? Math.round(x) - 1 : Math.floor(x), y0 = p.thick === 2 ? Math.round(y) - 1 : Math.floor(y);
+    for (let dy = 0; dy < p.thick; dy++) for (let dx = 0; dx < p.thick; dx++){
+      const cx = clamp(x0 + dx, 0, B.cols - 1), cy = clamp(y0 + dy, 0, B.rows - 1);
+      p.cells.add(cy * B.cols + cx);
+    }
+  }
+  p.pts.push([fx, fy]);
+  pencilSvg.firstChild.setAttribute("d", "M" + p.pts.map(q => q[0].toFixed(2) + " " + q[1].toFixed(2)).join("L") + (p.pts.length === 1 ? "l.01 0" : ""));
+}
+function endPencil(cancelled){
+  const p = ptr; ptr = null;
+  if (pencilSvg){ pencilSvg.remove(); pencilSvg = null; }
+  if (cancelled || !p.cells.size) return;
+  const W = B.cols, H = B.rows, cells = p.cells;
+  // a line that ends near where it started is a loop: fill its inside too
+  const a = p.pts[0], z = p.pts[p.pts.length - 1];
+  const xs = p.pts.map(q => q[0]), ys = p.pts.map(q => q[1]);
+  if (p.pts.length > 6 && Math.hypot(a[0] - z[0], a[1] - z[1]) <= 2.5 * p.thick
+      && Math.max(...xs) - Math.min(...xs) >= 3 && Math.max(...ys) - Math.min(...ys) >= 3){
+    const out = new Uint8Array(W * H), stack = [];
+    for (let x = 0; x < W; x++){ stack.push(x, (H - 1) * W + x); }
+    for (let y = 0; y < H; y++){ stack.push(y * W, y * W + W - 1); }
+    while (stack.length){
+      const i = stack.pop(); if (out[i] || cells.has(i)) continue; out[i] = 1;
+      const x = i % W, y = (i - x) / W;
+      if (x > 0) stack.push(i - 1); if (x < W - 1) stack.push(i + 1); if (y > 0) stack.push(i - W); if (y < H - 1) stack.push(i + W);
+    }
+    for (let i = 0; i < W * H; i++) if (!out[i]) cells.add(i);
+  }
+  // only empty studs get bricks; cover them with the biggest bricks that fit, then 1×1s at the edges
+  const free = new Uint8Array(W * H);
+  for (const i of cells){ const x = i % W, y = (i - x) / W; if (!grid[y][x].length) free[i] = 1; }
+  const sizes = [[4, 2], [2, 4], [3, 2], [2, 3], [2, 2], [1, 1]];
+  const fits = (x, y, w, h) => { if (x + w > W || y + h > H) return false; for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (!free[(y + j) * W + x + i]) return false; return true; };
+  const made = [];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++){
+    if (!free[y * W + x]) continue;
+    const [w, h] = sizes.find(([w, h]) => fits(x, y, w, h));
+    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) free[(y + j) * W + x + i] = 0;
+    made.push({x, y, w, h});
+  }
+  if (!made.length){ sfx.nope(); say(t("spotTaken")); return; }
+  pushHistory();
+  const anim = new Map(), gap = Math.max(4, Math.min(24, Math.round(600 / made.length)));
+  made.forEach((m, i) => { const nb = {id: nextId++, ...m, c: color, t: brickStyle, z: 0}; B.bricks.push(nb); anim.set(nb.id, i * gap); });
+  commit(anim); sfx.snap(); if (made.length > 3) sfx.fill();
+  emit("placed", {n: made.length});
+}
+
 function doFill(e){
   const {x, y} = cellFromEvent(e);
   pushHistory();
@@ -396,6 +468,7 @@ plate.addEventListener("pointerdown", e => {
   e.preventDefault();
   if (tool === "paint" || tool === "erase"){ ptr = {kind: "brush", id: e.pointerId, done: new Set(), changed: false}; brushAt(e); return; }
   if (tool === "fill"){ doFill(e); return; }
+  if (tool === "draw"){ startPencil(e); return; }
   const el = e.target.closest(".brick");
   if (el && el.parentElement === plate){ const b = byId.get(+el.dataset.id); if (b && !B.locked) startBoardDrag(e, b); return; }
   const c = cellFromEvent(e);
@@ -404,6 +477,7 @@ plate.addEventListener("pointerdown", e => {
 window.addEventListener("pointermove", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "brush"){ brushAt(e); return; }
+  if (ptr.kind === "pencil"){ e.preventDefault(); pencilAt(e); return; }
   if (ptr.kind === "tap") return;
   if (!ptr.moved){
     const far = Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy);
@@ -422,6 +496,7 @@ window.addEventListener("pointermove", e => {
 window.addEventListener("pointerup", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "brush"){ ptr = null; emit("change"); return; }
+  if (ptr.kind === "pencil"){ endPencil(false); return; }
   if (ptr.kind === "tap"){
     const tp = ptr; ptr = null;
     if (Math.hypot(e.clientX - tp.sx, e.clientY - tp.sy) > 12) return;
@@ -439,6 +514,7 @@ $("#tray").addEventListener("touchmove", e => { if (ptr && ptr.kind === "drag" &
 window.addEventListener("pointercancel", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "drag") endDrag(e, true);
+  else if (ptr.kind === "pencil") endPencil(true);
   else ptr = null;
 });
 

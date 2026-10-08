@@ -283,3 +283,30 @@ body[data-screen="studio"] .app{max-width:none}
 /* ===================== Bricky's islands: room above the stops, so Bricky never covers the island's name ===================== */
 .isl-path{padding-top:52px}
 @media (max-width:899px){ .isl-path{padding-top:44px} }
+
+/* ===================== brick pencil and Bricky plays ===================== */
+.tbtn.sun{background:#FFF3B0}
+.tbtn.sun[aria-pressed="true"]{background:var(--sun)}
+.plate.tool-draw{cursor:crosshair}
+/* the line being drawn, in the colour it will become */
+.pencil-line{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:300;opacity:.75;overflow:visible}
+/* Bricky and his stars: absolutely placed in the board and moved with one transform each */
+.player,.pstar{position:absolute;left:0;top:0;pointer-events:none;will-change:transform}
+.player{z-index:420;transform-origin:50% 50%;filter:drop-shadow(0 3px 2px rgba(30,10,60,.35))}
+.player svg{width:100%;height:100%;display:block}
+.pstar{z-index:410;display:grid;place-items:center;line-height:1;animation:starBob 1.2s ease-in-out infinite alternate}
+.pstar.got{animation:starGot .45s ease-out forwards}
+@keyframes starBob{to{translate:0 -12%}}
+@keyframes starGot{to{scale:2;opacity:0}}
+@media (prefers-reduced-motion: reduce){.pstar{animation:none}}
+/* upright phones: ten tools in two rows of five; Little builders' eight in two rows of four */
+@media (orientation:portrait) and (max-width:699px){
+  .tools,body[data-hand="left"] .tools{grid-template-columns:repeat(5,minmax(0,1fr))}
+  body[data-age="little"] .tools{grid-template-columns:repeat(4,minmax(0,1fr))}
+  body[data-age="little"][data-hand="left"] .tbtn.undo{grid-row:2}
+}
+/* upright tablets: all the tools share one row instead of wrapping onto a second */
+@media (orientation:portrait), (max-width:899px) and (min-height:541px){
+  .tools-main,body[data-hand="left"] .tools-main{flex-wrap:nowrap}
+  .tools-main .tbtn{flex:1 1 0;min-width:0}
+}

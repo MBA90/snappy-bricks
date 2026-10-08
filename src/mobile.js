@@ -26,7 +26,7 @@ addStrings({
   // and goes back to the tab it was on when the tool is put away
   let before = null;
   on("tool", tl => {
-    if (tl === "paint" || tl === "fill"){
+    if (tl === "paint" || tl === "fill" || tl === "draw"){
       if (tray.dataset.tab !== "colors"){ before = tray.dataset.tab; setTab("colors"); }
       showSwatches();
     } else if (before && tray.dataset.tab === "colors"){ setTab(before); before = null; }
