@@ -210,4 +210,21 @@ body[data-screen="studio"] .app{max-width:none}
   .studio{grid-template-columns:240px minmax(0,var(--bw,1fr)) 94px;justify-content:center}
   #studioScreen > .topbar{width:var(--sw,auto);max-width:100%;margin-inline:auto;align-self:center}
   body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,var(--bw,1fr)) 240px}
+  /* the three share the board's top and bottom edges, and the top bar, board, toy box and tools sit together in the middle of the screen */
+  .studio{grid-template-rows:minmax(0,var(--bh,1fr));align-content:start}
+  #studioScreen > .topbar{margin-top:var(--free,0px)}
+  .tools{container:tools / size}
+}
+/* a short tools column (smaller tablets on their side, where the board sets a lower height):
+   the tools sit two to a row as picture buttons, so every one is still on screen without scrolling */
+@container tools (max-height:640px){
+  .tools-main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:5px;overflow:visible}
+  .tools-main .tbtn{min-height:42px;padding:3px 1px;border-radius:13px;box-shadow:0 3px 0 var(--ink)}
+  .tools-main .tbtn .txt{display:none}
+  .tools-main .tbtn svg{width:22px;height:22px}
+  .tbtn.warn{min-height:42px}
+  .tbtn.undo{min-height:58px}
+  .tools .zoombar{flex-direction:row;padding:2px;gap:2px;border-width:2px}
+  .tools .zbtn{width:26px;height:26px;border-width:2px;font-size:1.05rem}
+  .tools .zbtn svg{width:14px;height:14px}
 }
