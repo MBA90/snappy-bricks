@@ -206,6 +206,12 @@ body[data-screen="studio"] .app{max-width:none}
 
 /* ===================== computers: the toy box and the tools sit right beside the board ===================== */
 /* fitBox() sets --bw to the board's width, so the middle column hugs the board and the three stay together in the middle */
+/* fitBox() sets these on the one element that uses each. They don't pass down to the elements inside, so
+   setting them never makes the hundreds of bricks on the board work out their styles again */
+@property --bw{syntax:"*";inherits:false}
+@property --bh{syntax:"*";inherits:false}
+@property --sw{syntax:"*";inherits:false}
+@property --free{syntax:"*";inherits:false}
 @media (orientation:landscape) and (min-width:900px) and (min-height:541px){
   .studio{grid-template-columns:240px minmax(0,var(--bw,1fr)) 94px;justify-content:center}
   #studioScreen > .topbar{width:var(--sw,auto);max-width:100%;margin-inline:auto;align-self:center}
@@ -254,3 +260,26 @@ body[data-screen="studio"] .app{max-width:none}
   .tbtn.warn{flex-basis:64px}
   .tbtn.undo{flex-basis:76px}
 }
+
+/* ===================== phones on their side: the three doors fit on the home screen ===================== */
+/* a smaller logo sits beside Bricky's hello, so the doors are on screen without scrolling */
+@media (orientation:landscape) and (max-height:540px){
+  .home{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"logo hello" "doors doors" "extras extras";
+    align-items:center;justify-items:center;gap:10px 18px;padding-block:2px 10px;min-height:0}
+  .home-top{position:absolute;top:max(6px, env(safe-area-inset-top, 0px));inset-inline-end:10px;z-index:2}
+  .home .lock{min-height:38px;padding:4px 12px;font-size:.78rem}
+  .home .logo{grid-area:logo;justify-self:end}
+  .home-hello{grid-area:hello;justify-self:start;gap:10px;padding-inline-end:120px}
+  .home .bricky.big{width:54px;height:54px}
+  .home .bubble{font-size:.98rem}
+  .doors{grid-area:doors;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .door,.door{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 8px 12px;gap:4px;border-radius:22px;box-shadow:0 6px 0 var(--ink)}
+  .door-pic{height:62px;width:auto;align-items:flex-end}
+  .door-name{font-size:1.3rem}
+  .door-sub{font-size:.82rem}
+  .home-extras{grid-area:extras}
+}
+
+/* ===================== Bricky's islands: room above the stops, so Bricky never covers the island's name ===================== */
+.isl-path{padding-top:52px}
+@media (max-width:899px){ .isl-path{padding-top:44px} }

@@ -1378,8 +1378,10 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
     radial-gradient(circle at 52% 54%, var(--dk) 0 calc(var(--cell)*.225), transparent calc(var(--cell)*.24)),
     radial-gradient(circle at 55% 59%, rgba(30,10,50,.24) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.29));
 }
+/* the board's radius is written out, not inherited: an inherited value here makes every brick restyle
+   whenever the board's own style changes (a pinch, a class), which made pinching big boards stutter */
 .plate[data-ps]::before,.plate[data-ps]::after{
-  content:none;position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+  content:none;position:absolute;inset:0;border-radius:calc(var(--cell)*.3);pointer-events:none;z-index:0;
 }
 
 /* glitter: the same fine flecks as glitter bricks under the studs, and little stars that twinkle in turn */
@@ -1699,6 +1701,12 @@ body[data-screen="studio"] .app{max-width:none}
 
 /* ===================== computers: the toy box and the tools sit right beside the board ===================== */
 /* fitBox() sets --bw to the board's width, so the middle column hugs the board and the three stay together in the middle */
+/* fitBox() sets these on the one element that uses each. They don't pass down to the elements inside, so
+   setting them never makes the hundreds of bricks on the board work out their styles again */
+@property --bw{syntax:"*";inherits:false}
+@property --bh{syntax:"*";inherits:false}
+@property --sw{syntax:"*";inherits:false}
+@property --free{syntax:"*";inherits:false}
 @media (orientation:landscape) and (min-width:900px) and (min-height:541px){
   .studio{grid-template-columns:240px minmax(0,var(--bw,1fr)) 94px;justify-content:center}
   #studioScreen > .topbar{width:var(--sw,auto);max-width:100%;margin-inline:auto;align-self:center}
@@ -1747,6 +1755,29 @@ body[data-screen="studio"] .app{max-width:none}
   .tbtn.warn{flex-basis:64px}
   .tbtn.undo{flex-basis:76px}
 }
+
+/* ===================== phones on their side: the three doors fit on the home screen ===================== */
+/* a smaller logo sits beside Bricky's hello, so the doors are on screen without scrolling */
+@media (orientation:landscape) and (max-height:540px){
+  .home{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"logo hello" "doors doors" "extras extras";
+    align-items:center;justify-items:center;gap:10px 18px;padding-block:2px 10px;min-height:0}
+  .home-top{position:absolute;top:max(6px, env(safe-area-inset-top, 0px));inset-inline-end:10px;z-index:2}
+  .home .lock{min-height:38px;padding:4px 12px;font-size:.78rem}
+  .home .logo{grid-area:logo;justify-self:end}
+  .home-hello{grid-area:hello;justify-self:start;gap:10px;padding-inline-end:120px}
+  .home .bricky.big{width:54px;height:54px}
+  .home .bubble{font-size:.98rem}
+  .doors{grid-area:doors;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .door,.door{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 8px 12px;gap:4px;border-radius:22px;box-shadow:0 6px 0 var(--ink)}
+  .door-pic{height:62px;width:auto;align-items:flex-end}
+  .door-name{font-size:1.3rem}
+  .door-sub{font-size:.82rem}
+  .home-extras{grid-area:extras}
+}
+
+/* ===================== Bricky's islands: room above the stops, so Bricky never covers the island's name ===================== */
+.isl-path{padding-top:52px}
+@media (max-width:899px){ .isl-path{padding-top:44px} }
 
 </style>
 <div class="app">
@@ -2753,8 +2784,8 @@ function fitBox(wrap){
   wrap.style.setProperty("--cols", B.cols); wrap.style.setProperty("--rows", B.rows);
   // phones lock the studio to the screen and give the board a box of its own: fill that box
   // beside the board on computers the board's column hugs the board (--bw); measure the full space first
-  const studio = wrap.closest(".studio");
-  if (studio){ studio.style.removeProperty("--bw"); studio.style.removeProperty("--bh"); studio.parentNode.style.removeProperty("--sw"); studio.parentNode.style.removeProperty("--free"); }
+  const studio = wrap.closest(".studio"), bar = studio && studio.parentNode.querySelector(":scope > .topbar");
+  if (studio){ studio.style.removeProperty("--bw"); studio.style.removeProperty("--bh"); bar.style.removeProperty("--sw"); bar.style.removeProperty("--free"); }
   const cs = getComputedStyle(wrap);
   const boxed = cs.getPropertyValue("--fit").trim() === "box";
   const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
@@ -2792,13 +2823,13 @@ function fitBox(wrap){
     const gs = getComputedStyle(studio), rows = gs.gridTemplateRows.split(" ").map(parseFloat);
     if (rows[rows.length - 1] === bh){                // the layout uses --bh: centre the group on the screen
       const used = rows.reduce((a, b) => a + b, 0) + (parseFloat(gs.rowGap) || 0) * (rows.length - 1);
-      studio.parentNode.style.setProperty("--free", Math.max(0, Math.floor((studio.clientHeight - used) / 2)) + "px");
+      bar.style.setProperty("--free", Math.max(0, Math.floor((studio.clientHeight - used) / 2)) + "px");
     }
     studio.style.setProperty("--bw", Math.ceil(plate.offsetWidth + padX) + "px");
     // the top bar lines up with the toy box, board and tools below it (--sw: their total width)
     const g = getComputedStyle(studio), cols = g.gridTemplateColumns.split(" ").map(parseFloat).filter(n => n > 0);
     if (g.display === "grid" && cols.length > 1)
-      studio.parentNode.style.setProperty("--sw", Math.ceil(cols.reduce((a, b) => a + b, 0) + (parseFloat(g.columnGap) || 0) * (cols.length - 1)) + "px");
+      bar.style.setProperty("--sw", Math.ceil(cols.reduce((a, b) => a + b, 0) + (parseFloat(g.columnGap) || 0) * (cols.length - 1)) + "px");
   }
   if (zb){
     const hide = zoomMax < 1.6;                       // only when the studs are small enough to be fiddly
@@ -4253,7 +4284,8 @@ function buildName(raw){
 /* ---- logo made of bricks ---- */
 function buildLogo(){
   const logo = $("#logo");
-  const px = window.innerWidth < 520 ? 9 : window.innerWidth < 900 ? 12 : 14;
+  // phones on their side have little height: a smaller logo leaves room for the doors
+  const px = window.innerWidth > window.innerHeight && window.innerHeight <= 540 ? 7 : window.innerWidth < 520 ? 9 : window.innerWidth < 900 ? 12 : 14;
   const words = ["SNAPPY", "BRICKS"];
   const W = Math.max(...words.map(wordWidth)), H = 11;
   logo.style.setProperty("--cell", px + "px");
@@ -5402,7 +5434,7 @@ function doorPics(){
       box.appendChild(pieceEl({w: pix[0].length, h: pix.length, bricks: decompose(pix).map(b => ({...b, t: "std"}))}, px));
     });
   };
-  const px = window.innerWidth < 700 ? 6 : 11;
+  const px = window.innerWidth < 700 || window.innerHeight <= 540 ? 6 : 11;
   pic("picBuild", ["house", "tree"], px);
   pic("picGames", ["star", "smile"], px);
   pic("picCard", ["heart", "flower"], px);

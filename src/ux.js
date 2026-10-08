@@ -376,7 +376,7 @@ function doorPics(){
       box.appendChild(pieceEl({w: pix[0].length, h: pix.length, bricks: decompose(pix).map(b => ({...b, t: "std"}))}, px));
     });
   };
-  const px = window.innerWidth < 700 ? 6 : 11;
+  const px = window.innerWidth < 700 || window.innerHeight <= 540 ? 6 : 11;
   pic("picBuild", ["house", "tree"], px);
   pic("picGames", ["star", "smile"], px);
   pic("picCard", ["heart", "flower"], px);
