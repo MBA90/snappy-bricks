@@ -12,8 +12,10 @@
     radial-gradient(circle at 52% 54%, var(--dk) 0 calc(var(--cell)*.225), transparent calc(var(--cell)*.24)),
     radial-gradient(circle at 55% 59%, rgba(30,10,50,.24) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.29));
 }
+/* the board's radius is written out, not inherited: an inherited value here makes every brick restyle
+   whenever the board's own style changes (a pinch, a class), which made pinching big boards stutter */
 .plate[data-ps]::before,.plate[data-ps]::after{
-  content:none;position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+  content:none;position:absolute;inset:0;border-radius:calc(var(--cell)*.3);pointer-events:none;z-index:0;
 }
 
 /* glitter: the same fine flecks as glitter bricks under the studs, and little stars that twinkle in turn */
