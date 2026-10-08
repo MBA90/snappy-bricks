@@ -46,7 +46,6 @@ const COLORS = [
 ];
 const STYLES = [
   {id: "std",     en: "Classic", ar: "كلاسيك"},
-  {id: "round",   en: "Round",   ar: "دائري"},
   {id: "glitter", en: "Glitter", ar: "بريق"},
   {id: "glow",    en: "Glow",    ar: "مضيء"},
   {id: "neon",    en: "Neon",    ar: "نيون"},
@@ -151,7 +150,6 @@ addStrings({
   board: ["Board", "اللوحة"], size: ["Size", "الحجم"], boardColor: ["Board color", "لون اللوحة"],
   boardStyle: ["Board style", "نوع اللوحة"],
   plateStyleSay_std: ["A classic board with bumps on top.", "لوحة كلاسيكية بنتوءات صغيرة."],
-  plateStyleSay_round: ["A round board, soft like a pillow!", "لوحة دائرية ناعمة مثل الوسادة!"],
   plateStyleSay_glitter: ["A sparkly glitter board!", "لوحة لامعة بالبريق!"],
   plateStyleSay_glow: ["A glow board that shines like a magic light!", "لوحة مضيئة تلمع مثل ضوء سحري!"],
   plateStyleSay_neon: ["A neon board that lights up like a sign at night!", "لوحة نيون تضيء مثل لافتة في الليل!"],
@@ -165,7 +163,6 @@ addStrings({
   paintReady: ["{c} paint is ready. Tap or swipe over bricks!", "اللون {c} جاهز. اضغط أو مرّر على المكعبات!"],
   colorPicked: ["{c} it is! Now drag a brick.", "اخترت {c}! الآن اسحب مكعبًا."],
   styleSay_std: ["Classic bricks with bumps on top.", "مكعبات كلاسيكية بنتوءات صغيرة."],
-  styleSay_round: ["Round bricks, like buttons!", "مكعبات دائرية مثل الأزرار!"],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
   styleSay_glow: ["Glow bricks shine like magic lights!", "مكعبات مضيئة تلمع مثل الأضواء السحرية!"],
   styleSay_light: ["Light bricks shine like little lamps!", "مكعبات فاتحة تضيء مثل المصابيح الصغيرة!"],

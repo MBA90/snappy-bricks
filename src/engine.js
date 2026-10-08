@@ -157,7 +157,7 @@ function artToPix(art, recolor){
 }
 
 /* ===================== boards ===================== */
-// board styles are the brick styles (Classic, Round, Glitter, Glow, Neon, Light) worn by the board itself
+// board styles are the brick styles (Classic, Glitter, Glow, Neon, Light, Jelly, Candy, Rainbow) worn by the board itself
 const plateStyle = v => STYLES.some(s => s.id === v) ? v : "std";
 // the colour a board shows to the eye: neon boards are dark glass whatever their colour
 function plateTone(board){ return plateStyle(board.ps) === "neon" ? neonGlass(board.plate) : board.plate; }
@@ -519,7 +519,7 @@ const SPRINKLES = [["#FF4F9A", 90, 94, 110, 106], ["#3D9BFF", 192, 108, 208, 92]
 // the board under the bricks in each board style (matches styles7.css; Classic is the plain board)
 function drawPlate(ctx, board, ox, oy, c){
   const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = board.plate;
-  const rad = ps === "round" ? c * .9 : ps === "jelly" ? c * .6 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
+  const rad = ps === "jelly" ? c * .6 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
   const each = fn => { for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) fn(ox + (x + .5) * c, oy + (y + .5) * c, x, y); };
   // glow, neon and light boards shine out past their edge in their own colour
   if (ps === "glow" || ps === "neon" || ps === "light"){
@@ -560,15 +560,6 @@ function drawPlate(ctx, board, ox, oy, c){
     ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
   } else {
     ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); ctx.fillRect(ox, oy, bw, bh);
-  }
-  if (ps === "round"){
-    // a pillow: lit on the top left, a darker rim
-    const dg = ctx.createRadialGradient(ox + bw * .3, oy + bh * .22, 0, ox + bw * .3, oy + bh * .22, Math.max(bw, bh) * .75);
-    dg.addColorStop(0, "rgba(255,255,255,.3)"); dg.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = dg; ctx.fillRect(ox, oy, bw, bh);
-    ctx.save(); ctx.translate(ox + bw / 2, oy + bh / 2); ctx.scale(bw / 2, bh / 2);
-    const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); rg.addColorStop(.8, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.14)");
-    ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
   }
   if (ps === "glitter"){
     // flecks under the studs, seeded so the same board always gets the same glitter
@@ -651,7 +642,7 @@ function drawBoard(ctx, board, ox, oy, c){
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
     const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
-    const rad = t === "round" ? Math.min(w, h) / 2 : t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
+    const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
     const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
     ctx.save();
     ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
@@ -752,17 +743,6 @@ function drawBoard(ctx, board, ox, oy, c){
         ctx.fillStyle = shade(col, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
         ctx.fillStyle = col; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
         ctx.fillStyle = sheen(ctx, x, y, w, h, .26, .12); rrect(ctx, x, y, w, h, rad); ctx.fill();
-        if (t === "round"){
-          // domed button: a highlight on the top left and a darker rim
-          const cx = x + w / 2, cy = y + h / 2;
-          const dg = ctx.createRadialGradient(x + w * .34, y + h * .28, 0, x + w * .34, y + h * .28, Math.max(w, h) * .7);
-          dg.addColorStop(0, "rgba(255,255,255,.34)"); dg.addColorStop(1, "rgba(255,255,255,0)");
-          ctx.fillStyle = dg; rrect(ctx, x, y, w, h, rad); ctx.fill();
-          ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip(); ctx.translate(cx, cy); ctx.scale(w / 2, h / 2);
-          const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
-          rg.addColorStop(.72, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.16)");
-          ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
-        }
         // bevels that grow with the brick: lit top and left edges, a shaded right edge
         const bt = Math.max(1.5, c * .05), bl = Math.max(1.5, c * .04);
         ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();

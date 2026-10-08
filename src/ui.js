@@ -17,7 +17,7 @@ function brickPiece(i){
 function artPiece(name){
   const pix = artToPix(ART[name].art);
   return {w: pix[0].length, h: pix.length, single: false,
-          bricks: decompose(pix).map(b => ({...b, t: brickStyle === "round" ? "std" : brickStyle}))};
+          bricks: decompose(pix).map(b => ({...b, t: brickStyle}))};
 }
 function myPiece(id){
   const s = myStamps.find(m => m.id === id); if (!s) return null;

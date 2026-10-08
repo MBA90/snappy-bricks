@@ -94,17 +94,6 @@ button{font:inherit;color:inherit}
     0 1px 1px rgba(30,10,60,.25),
     calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.34);
 }
-/* round: a domed button, lit on the top left with a soft darker rim */
-.brick.t-round{
-  border-radius:999px;
-  background-image:
-    var(--studs),
-    radial-gradient(ellipse 70% 70% at 34% 28%, rgba(255,255,255,.34) 0, rgba(255,255,255,0) 100%),
-    radial-gradient(closest-side, rgba(30,10,60,0) 72%, rgba(30,10,60,.16) 100%);
-  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
-  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
-  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat,no-repeat;
-}
 /* glitter: fine flecks sized to the stud grid, drawn under the studs;
    --spark is dark on light colors so the flecks always show, --spark2 adds a gold or violet twinkle */
 .brick.t-glitter{

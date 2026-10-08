@@ -115,17 +115,6 @@ button{font:inherit;color:inherit}
     0 1px 1px rgba(30,10,60,.25),
     calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.34);
 }
-/* round: a domed button, lit on the top left with a soft darker rim */
-.brick.t-round{
-  border-radius:999px;
-  background-image:
-    var(--studs),
-    radial-gradient(ellipse 70% 70% at 34% 28%, rgba(255,255,255,.34) 0, rgba(255,255,255,0) 100%),
-    radial-gradient(closest-side, rgba(30,10,60,0) 72%, rgba(30,10,60,.16) 100%);
-  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
-  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
-  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat,no-repeat;
-}
 /* glitter: fine flecks sized to the stud grid, drawn under the studs;
    --spark is dark on light colors so the flecks always show, --spark2 adds a gold or violet twinkle */
 .brick.t-glitter{
@@ -1381,7 +1370,7 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
    board that only fade in and out, which the phone does without repainting anything. The layers sit under
    the bricks (bricks are z-index 1 and up). */
 .plate{
-  /* baseplate studs (the same as the Classic board), shared by Round, Glitter and Glow */
+  /* baseplate studs (the same as the Classic board), shared by Glitter and Glow */
   --pstuds:
     radial-gradient(circle at 41% 37%, rgba(255,255,255,.55) 0 calc(var(--cell)*.025), rgba(255,255,255,0) calc(var(--cell)*.09)),
     radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.08), var(--c) calc(var(--cell)*.215), transparent calc(var(--cell)*.225)),
@@ -1391,16 +1380,6 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 }
 .plate[data-ps]::before,.plate[data-ps]::after{
   content:none;position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
-}
-
-/* round: a soft pillow of a board, like the domed round bricks: big round corners, lit on the top left, darker rim */
-.plate[data-ps="round"]{
-  border-radius:calc(var(--cell)*.9);
-  background-image:var(--pstuds),
-    radial-gradient(ellipse 75% 75% at 30% 22%, rgba(255,255,255,.3) 0, rgba(255,255,255,0) 100%),
-    radial-gradient(closest-side, rgba(30,10,60,0) 80%, rgba(30,10,60,.14) 100%);
-  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
-  background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat,no-repeat;
 }
 
 /* glitter: the same fine flecks as glitter bricks under the studs, and little stars that twinkle in turn */
@@ -1506,7 +1485,6 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
   border-radius:5px;touch-action:auto;
   box-shadow:0 0 0 2px var(--ink),0 3px 0 2px var(--ink);
 }
-.pprev[data-ps="round"]{border-radius:11px}
 .pprev[data-ps="glow"]{box-shadow:inset 0 0 8px rgba(255,255,255,.4),0 0 0 2px var(--ink),0 3px 0 2px var(--ink),0 0 7px 2px var(--neon)}
 .pprev[data-ps="neon"]{box-shadow:inset 0 0 0 2px var(--neon),inset 0 0 8px var(--neon),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 .pprev[data-ps="light"]{box-shadow:inset 0 0 12px rgba(255,255,255,.8),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
@@ -1664,18 +1642,18 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 .pprev[data-ps="candy"]{box-shadow:inset 0 0 0 3px rgba(255,255,255,.6),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 .pprev[data-ps="jelly"]{border-radius:9px;box-shadow:inset 0 0 6px var(--jdk),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 
-/* upright tablets: nine styles in two rows of five instead of a row of six and three left over */
+/* upright tablets: eight styles in two rows of four instead of a row of six and two left over */
 @media (orientation:portrait), (max-width:899px) and (min-height:541px){
-  .styles{grid-template-columns:repeat(5,56px)}
+  .styles{grid-template-columns:repeat(4,56px)}
 }
-/* nine styles on an upright phone: two rows of five (the picture over the name), so they still fit without scrolling */
+/* eight styles on an upright phone: two rows of four (the picture over the name), so they still fit without scrolling */
 @media (orientation:portrait) and (max-width:699px){
-  .styles{grid-template-columns:repeat(5,minmax(0,68px))}
-  .stylebtn{flex-direction:column;gap:2px;font-size:.7rem;padding:4px 2px}
+  .styles{grid-template-columns:repeat(4,minmax(0,84px))}
+  .stylebtn{flex-direction:column;gap:2px;font-size:.74rem;padding:4px 2px}
 }
 /* short phones: smaller pictures so both rows fit the shorter toy box */
 @media (orientation:portrait) and (max-width:699px) and (max-height:720px){
-  .styles{gap:4px;grid-template-columns:repeat(5,minmax(0,62px))}
+  .styles{gap:4px}
   .stylebtn{min-height:0;gap:0;padding:2px;font-size:.68rem}
   .stylebtn > :first-child{zoom:.72}
   .plate-styles .stylebtn{gap:3px}
@@ -2125,7 +2103,6 @@ const COLORS = [
 ];
 const STYLES = [
   {id: "std",     en: "Classic", ar: "كلاسيك"},
-  {id: "round",   en: "Round",   ar: "دائري"},
   {id: "glitter", en: "Glitter", ar: "بريق"},
   {id: "glow",    en: "Glow",    ar: "مضيء"},
   {id: "neon",    en: "Neon",    ar: "نيون"},
@@ -2230,7 +2207,6 @@ addStrings({
   board: ["Board", "اللوحة"], size: ["Size", "الحجم"], boardColor: ["Board color", "لون اللوحة"],
   boardStyle: ["Board style", "نوع اللوحة"],
   plateStyleSay_std: ["A classic board with bumps on top.", "لوحة كلاسيكية بنتوءات صغيرة."],
-  plateStyleSay_round: ["A round board, soft like a pillow!", "لوحة دائرية ناعمة مثل الوسادة!"],
   plateStyleSay_glitter: ["A sparkly glitter board!", "لوحة لامعة بالبريق!"],
   plateStyleSay_glow: ["A glow board that shines like a magic light!", "لوحة مضيئة تلمع مثل ضوء سحري!"],
   plateStyleSay_neon: ["A neon board that lights up like a sign at night!", "لوحة نيون تضيء مثل لافتة في الليل!"],
@@ -2244,7 +2220,6 @@ addStrings({
   paintReady: ["{c} paint is ready. Tap or swipe over bricks!", "اللون {c} جاهز. اضغط أو مرّر على المكعبات!"],
   colorPicked: ["{c} it is! Now drag a brick.", "اخترت {c}! الآن اسحب مكعبًا."],
   styleSay_std: ["Classic bricks with bumps on top.", "مكعبات كلاسيكية بنتوءات صغيرة."],
-  styleSay_round: ["Round bricks, like buttons!", "مكعبات دائرية مثل الأزرار!"],
   styleSay_glitter: ["Sparkly glitter bricks!", "مكعبات لامعة بالبريق!"],
   styleSay_glow: ["Glow bricks shine like magic lights!", "مكعبات مضيئة تلمع مثل الأضواء السحرية!"],
   styleSay_light: ["Light bricks shine like little lamps!", "مكعبات فاتحة تضيء مثل المصابيح الصغيرة!"],
@@ -2534,7 +2509,7 @@ function artToPix(art, recolor){
 }
 
 /* ===================== boards ===================== */
-// board styles are the brick styles (Classic, Round, Glitter, Glow, Neon, Light) worn by the board itself
+// board styles are the brick styles (Classic, Glitter, Glow, Neon, Light, Jelly, Candy, Rainbow) worn by the board itself
 const plateStyle = v => STYLES.some(s => s.id === v) ? v : "std";
 // the colour a board shows to the eye: neon boards are dark glass whatever their colour
 function plateTone(board){ return plateStyle(board.ps) === "neon" ? neonGlass(board.plate) : board.plate; }
@@ -2896,7 +2871,7 @@ const SPRINKLES = [["#FF4F9A", 90, 94, 110, 106], ["#3D9BFF", 192, 108, 208, 92]
 // the board under the bricks in each board style (matches styles7.css; Classic is the plain board)
 function drawPlate(ctx, board, ox, oy, c){
   const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = board.plate;
-  const rad = ps === "round" ? c * .9 : ps === "jelly" ? c * .6 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
+  const rad = ps === "jelly" ? c * .6 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
   const each = fn => { for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) fn(ox + (x + .5) * c, oy + (y + .5) * c, x, y); };
   // glow, neon and light boards shine out past their edge in their own colour
   if (ps === "glow" || ps === "neon" || ps === "light"){
@@ -2937,15 +2912,6 @@ function drawPlate(ctx, board, ox, oy, c){
     ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
   } else {
     ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); ctx.fillRect(ox, oy, bw, bh);
-  }
-  if (ps === "round"){
-    // a pillow: lit on the top left, a darker rim
-    const dg = ctx.createRadialGradient(ox + bw * .3, oy + bh * .22, 0, ox + bw * .3, oy + bh * .22, Math.max(bw, bh) * .75);
-    dg.addColorStop(0, "rgba(255,255,255,.3)"); dg.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.fillStyle = dg; ctx.fillRect(ox, oy, bw, bh);
-    ctx.save(); ctx.translate(ox + bw / 2, oy + bh / 2); ctx.scale(bw / 2, bh / 2);
-    const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); rg.addColorStop(.8, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.14)");
-    ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
   }
   if (ps === "glitter"){
     // flecks under the studs, seeded so the same board always gets the same glitter
@@ -3028,7 +2994,7 @@ function drawBoard(ctx, board, ox, oy, c){
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
     const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
-    const rad = t === "round" ? Math.min(w, h) / 2 : t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
+    const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
     const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
     ctx.save();
     ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
@@ -3129,17 +3095,6 @@ function drawBoard(ctx, board, ox, oy, c){
         ctx.fillStyle = shade(col, -.24); rrect(ctx, x, y, w, h, rad); ctx.fill();
         ctx.fillStyle = col; rrect(ctx, x, y, w, h - c * .09, rad); ctx.fill();
         ctx.fillStyle = sheen(ctx, x, y, w, h, .26, .12); rrect(ctx, x, y, w, h, rad); ctx.fill();
-        if (t === "round"){
-          // domed button: a highlight on the top left and a darker rim
-          const cx = x + w / 2, cy = y + h / 2;
-          const dg = ctx.createRadialGradient(x + w * .34, y + h * .28, 0, x + w * .34, y + h * .28, Math.max(w, h) * .7);
-          dg.addColorStop(0, "rgba(255,255,255,.34)"); dg.addColorStop(1, "rgba(255,255,255,0)");
-          ctx.fillStyle = dg; rrect(ctx, x, y, w, h, rad); ctx.fill();
-          ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip(); ctx.translate(cx, cy); ctx.scale(w / 2, h / 2);
-          const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
-          rg.addColorStop(.72, "rgba(30,10,60,0)"); rg.addColorStop(1, "rgba(30,10,60,.16)");
-          ctx.fillStyle = rg; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
-        }
         // bevels that grow with the brick: lit top and left edges, a shaded right edge
         const bt = Math.max(1.5, c * .05), bl = Math.max(1.5, c * .04);
         ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
@@ -3283,7 +3238,7 @@ function brickPiece(i){
 function artPiece(name){
   const pix = artToPix(ART[name].art);
   return {w: pix[0].length, h: pix.length, single: false,
-          bricks: decompose(pix).map(b => ({...b, t: brickStyle === "round" ? "std" : brickStyle}))};
+          bricks: decompose(pix).map(b => ({...b, t: brickStyle}))};
 }
 function myPiece(id){
   const s = myStamps.find(m => m.id === id); if (!s) return null;
@@ -4155,7 +4110,7 @@ function buildText(raw, opts = {}){
     return true;
   });
   const anim = new Map();
-  const st = opts.style || (brickStyle === "round" ? "std" : brickStyle);
+  const st = opts.style || brickStyle;
   rel.forEach(b => {
     const nb = {id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: st, z: 0};
     B.bricks.push(nb); anim.set(nb.id, opts.fast ? Math.min(b.delay, 300) : b.delay);
@@ -5804,7 +5759,7 @@ function setZoom(z, fx, fy){
 function buildPhoto(){
   if (!PHOTO.bricks) return;
   const [cols, rows] = photoDims();
-  const st = brickStyle === "round" ? "std" : brickStyle;
+  const st = brickStyle;
   closeSheets();
   if (currentMode !== "free") setMode("free", true);
   showScreen("studio");
