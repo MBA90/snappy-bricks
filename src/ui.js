@@ -163,7 +163,7 @@ function startBoardDrag(e, b){
   const r = plate.getBoundingClientRect();
   ptr = {kind: "drag", id: e.pointerId, source: "board", brick: b, sx: e.clientX, sy: e.clientY, moved: false,
          piece: {w: b.w, h: b.h, single: true, bricks: [{x: 0, y: 0, w: b.w, h: b.h, c: b.c, t: b.t}]},
-         grabX: e.clientX - (r.left + b.x * cell), grabY: e.clientY - (r.top + b.y * cell), lift: 0, target: null};
+         grabX: e.clientX - (r.left + b.x * cell), grabY: e.clientY - (r.top + b.y * cell), lift: e.pointerType === "touch" ? cell * 1.4 : 0, target: null};
   waitForHold(e);
 }
 // On touch screens a brick or shape is picked up only after the finger rests on it for a moment:
@@ -179,7 +179,7 @@ function waitForHold(e){
   }, HOLD_MS);
 }
 function pickUp(e){
-  ptr.moved = true; showFloat();
+  ptr.moved = true; showFloat(); if (e.pointerType !== "mouse") showSpin();
   if (e.pointerType === "touch" && ptr.piece.single && ptr.piece.w !== ptr.piece.h && !store("snappy-tip-turn")){ store("snappy-tip-turn", 1); say(t("tipTwoFinger")); }
   moveFloat(e); computeTarget(e);
 }
@@ -188,7 +188,12 @@ function showFloat(){
   floatEl.appendChild(pieceEl(ptr.piece, cell)); document.body.appendChild(floatEl);
   if (ptr.source === "board"){ const el = els.get(ptr.brick.id); if (el) el.classList.add("lifted"); const a = auraFor(ptr.brick.id); if (a) a.classList.add("lifted"); }
 }
-function moveFloat(e){ floatEl.style.transform = `translate(${e.clientX - ptr.grabX}px, ${e.clientY - ptr.grabY - ptr.lift}px)`; }
+// the held piece floats a little up and to the side of where it will land, so its landing shadow peeks out underneath
+function moveFloat(e){
+  ptr.last = {clientX: e.clientX, clientY: e.clientY};
+  const up = Math.min(20, cell * .5);
+  floatEl.style.transform = `translate(${e.clientX - ptr.grabX - up * .6}px, ${e.clientY - ptr.grabY - ptr.lift - up}px)`;
+}
 function hideGhost(){ if (ghostEl){ ghostEl.remove(); ghostEl = null; } }
 function computeTarget(e){
   const r = plate.getBoundingClientRect();
@@ -209,18 +214,23 @@ function computeTarget(e){
   gx = clamp(gx, 0, Math.max(0, B.cols - p.w)); gy = clamp(gy, 0, Math.max(0, B.rows - p.h));
   const res = canPlace(p.bricks, gx, gy, ptr.source === "board" ? ptr.brick.id : 0);
   ptr.target = {gx, gy, ...res};
-  if (!ghostEl){ ghostEl = document.createElement("div"); ghostEl.className = "ghost"; plate.appendChild(ghostEl); }
+  // the landing shadow: a see-through copy of the piece, in its own colours and shape, where it will snap
+  if (!ghostEl){
+    ghostEl = document.createElement("div"); ghostEl.className = "ghost";
+    ghostEl.appendChild(pieceEl(p, cell)); ghostEl.appendChild(document.createElement("b"));
+    plate.appendChild(ghostEl);
+  }
   // most finger moves land on the same spot: only touch the ghost when it really changes
   const look = [gx, gy, p.w, p.h, res.ok, res.ok && res.z > 0 ? "▲" + (res.z + 1) : ""].join();
   if (ghostEl._look === look) return;
   ghostEl._look = look;
-  placeEl(ghostEl, {x: gx, y: gy, w: p.w, h: p.h});
+  ghostEl.style.left = `calc(var(--cell) * ${gx})`; ghostEl.style.top = `calc(var(--cell) * ${gy})`;
   ghostEl.classList.toggle("bad", !res.ok);
-  ghostEl.textContent = res.ok && res.z > 0 ? "▲" + (res.z + 1) : "";
+  ghostEl.lastChild.textContent = res.ok && res.z > 0 ? "▲" + (res.z + 1) : "";
 }
 function endDrag(e, cancelled){
   const p = ptr; ptr = null; clearTimeout(p.timer);
-  hideGhost(); trash.classList.remove("hot"); $("#tray").classList.remove("hot");
+  hideGhost(); hideSpin(); trash.classList.remove("hot"); $("#tray").classList.remove("hot");
   if (floatEl){ floatEl.remove(); floatEl = null; }
   if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); const a = auraFor(p.brick.id); if (a) a.classList.remove("lifted"); }
   if (cancelled) return;
@@ -446,7 +456,25 @@ function turnDragged(){
   const p = ptr.piece; [p.w, p.h] = [p.h, p.w]; p.bricks[0].w = p.w; p.bricks[0].h = p.h;
   [ptr.grabX, ptr.grabY] = [p.w * cell / 2, p.h * cell / 2];
   floatEl.innerHTML = ""; floatEl.appendChild(pieceEl(p, cell)); sfx.turn(); hideGhost();
+  if (ptr.last){ moveFloat(ptr.last); computeTarget(ptr.last); }
+  if (spinEl.classList.contains("on")){ spinEl.classList.remove("spun", "spun2"); spinEl.classList.add(spinEl._n = spinEl._n === "spun" ? "spun2" : "spun"); }
 }
+// on touch screens a big turn button shows while a long brick is held: tap it with the other hand to turn the brick
+// (the two-finger handler below does the turning). It sits in the board's bottom corner on the side of the free hand.
+const spinEl = document.createElement("button");
+spinEl.type = "button"; spinEl.className = "spin"; spinEl.tabIndex = -1;
+spinEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>';
+document.body.appendChild(spinEl);
+function showSpin(){
+  const p = ptr.piece; if (!p.single || p.w === p.h) return;
+  spinEl.setAttribute("aria-label", t("turnBricks"));
+  const r = $("#plateWrap").getBoundingClientRect(), size = 76, pad = 12;
+  const left = settings.hand === "left";
+  spinEl.style.left = (left ? r.right - size - pad : r.left + pad) + "px";
+  spinEl.style.top = Math.min(r.bottom, window.innerHeight) - size - pad + "px";
+  spinEl.classList.add("on");
+}
+function hideSpin(){ spinEl.classList.remove("on", "spun", "spun2"); }
 // on a tablet: while one finger drags a brick, tap anywhere with another finger to turn it
 window.addEventListener("pointerdown", e => {
   if (!ptr || ptr.kind !== "drag" || !ptr.moved || e.pointerId === ptr.id || e.pointerType === "mouse") return;
