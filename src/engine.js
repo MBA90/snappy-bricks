@@ -311,6 +311,9 @@ function fitBox(wrap){
   if (!wrap.offsetParent) return false;              // the studio is not on screen
   wrap.style.setProperty("--cols", B.cols); wrap.style.setProperty("--rows", B.rows);
   // phones lock the studio to the screen and give the board a box of its own: fill that box
+  // beside the board on computers the board's column hugs the board (--bw); measure the full space first
+  const studio = wrap.closest(".studio");
+  if (studio){ studio.style.removeProperty("--bw"); studio.style.removeProperty("--bh"); studio.parentNode.style.removeProperty("--sw"); studio.parentNode.style.removeProperty("--free"); }
   const cs = getComputedStyle(wrap);
   const boxed = cs.getPropertyValue("--fit").trim() === "box";
   const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
@@ -340,6 +343,22 @@ function fitBox(wrap){
   wrap.style.height = zoomed && !boxed ? (fit * B.rows + 28) + "px" : "";
   plate.style.setProperty("--cell", cell + "px");
   plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
+  if (studio && boxed && !zoomed){
+    // a board narrower than its box (iPads on their side): the toy box, board and tools all take the board's height (--bh)
+    const col = wrap.parentNode, spare = wrap.clientHeight - padY - plate.offsetHeight;
+    const bh = Math.ceil(col.offsetHeight - Math.max(0, spare));
+    studio.style.setProperty("--bh", bh + "px");
+    const gs = getComputedStyle(studio), rows = gs.gridTemplateRows.split(" ").map(parseFloat);
+    if (rows[rows.length - 1] === bh){                // the layout uses --bh: centre the group on the screen
+      const used = rows.reduce((a, b) => a + b, 0) + (parseFloat(gs.rowGap) || 0) * (rows.length - 1);
+      studio.parentNode.style.setProperty("--free", Math.max(0, Math.floor((studio.clientHeight - used) / 2)) + "px");
+    }
+    studio.style.setProperty("--bw", Math.ceil(plate.offsetWidth + padX) + "px");
+    // the top bar lines up with the toy box, board and tools below it (--sw: their total width)
+    const g = getComputedStyle(studio), cols = g.gridTemplateColumns.split(" ").map(parseFloat).filter(n => n > 0);
+    if (g.display === "grid" && cols.length > 1)
+      studio.parentNode.style.setProperty("--sw", Math.ceil(cols.reduce((a, b) => a + b, 0) + (parseFloat(g.columnGap) || 0) * (cols.length - 1)) + "px");
+  }
   if (zb){
     const hide = zoomMax < 1.6;                       // only when the studs are small enough to be fiddly
     // showing or hiding the zoom buttons changes the board's box: fit once more

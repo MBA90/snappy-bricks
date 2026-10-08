@@ -1696,17 +1696,44 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 /* ===================== the board fills the space around it ===================== */
 /* big screens: the studio uses the whole width, not a 1600px strip in the middle */
 body[data-screen="studio"] .app{max-width:none}
-/* squarer screens beside the board (iPads on their side, 4:3 and 5:4 monitors): a board column
-   taller than the board left empty bands above and below it, so the tools move to one row on top
-   and the board grows wider */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2){
-  .studio{grid-template-columns:240px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"tray tools" "tray board";row-gap:8px}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr) 240px;grid-template-areas:"tools tray" "board tray"}
-  .tray{grid-row:1 / -1}
-  .tools,body[data-hand="left"] .tools{position:static;height:auto;max-height:none;flex-direction:row;align-items:stretch;gap:6px}
+
+/* ===================== computers: the toy box and the tools sit right beside the board ===================== */
+/* fitBox() sets --bw to the board's width, so the middle column hugs the board and the three stay together in the middle */
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+  .studio{grid-template-columns:240px minmax(0,var(--bw,1fr)) 94px;justify-content:center}
+  #studioScreen > .topbar{width:var(--sw,auto);max-width:100%;margin-inline:auto;align-self:center}
+  body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,var(--bw,1fr)) 240px}
+  /* the three share the board's top and bottom edges, and the top bar, board, toy box and tools sit together in the middle of the screen */
+  .studio{grid-template-rows:minmax(0,var(--bh,1fr));align-content:start}
+  #studioScreen > .topbar{margin-top:var(--free,0px)}
+  .tools{container:tools / size}
+}
+/* a short tools column (smaller tablets on their side, where the board sets a lower height):
+   the tools sit two to a row as picture buttons, so every one is still on screen without scrolling */
+@container tools (max-height:640px){
+  .tools-main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:5px;overflow:visible}
+  .tools-main .tbtn{min-height:42px;padding:3px 1px;border-radius:13px;box-shadow:0 3px 0 var(--ink)}
+  .tools-main .tbtn .txt{display:none}
+  .tools-main .tbtn svg{width:22px;height:22px}
+  .tbtn.warn{min-height:42px}
+  .tbtn.undo{min-height:58px}
+  .tools .zoombar{flex-direction:row;padding:2px;gap:2px;border-width:2px}
+  .tools .zbtn{width:26px;height:26px;border-width:2px;font-size:1.05rem}
+  .tools .zbtn svg{width:14px;height:14px}
+}
+
+/* ===================== tablets on their side (and squarer screens): the tools in one row above the board ===================== */
+/* the toy box on the left, the tools along the top, and the board filling the rest */
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2),
+       (orientation:landscape) and (min-width:900px) and (min-height:541px) and (pointer:coarse){
+  .studio{grid-template-columns:240px minmax(0,var(--bw,1fr));grid-template-rows:auto minmax(0,var(--bh,1fr));grid-template-areas:"tray tools" "tray board";row-gap:8px}
+  body[data-hand="left"] .studio{grid-template-columns:minmax(0,var(--bw,1fr)) 240px;grid-template-areas:"tools tray" "board tray"}
+  .tray{grid-row:1 / -1;contain:size}          /* the toy box scrolls: its length never stretches the rows */
+  .tools,body[data-hand="left"] .tools{container-type:normal;position:static;height:auto;max-height:none;flex-direction:row;align-items:stretch;gap:6px}
   body[data-hand="left"] .tools{flex-direction:row-reverse}
-  .tools-main,body[data-hand="left"] .tools-main{flex-direction:row;flex:1 1 auto;overflow:visible;padding:0 0 4px;gap:6px}
-  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{flex:1 1 0;width:auto;min-width:0;min-height:58px;padding:4px 2px 3px;font-size:.7rem}
+  .tools-main,body[data-hand="left"] .tools-main{display:flex;flex-direction:row;flex:1 1 auto;overflow:visible;padding:0 0 4px;gap:6px}
+  .tools-main .tbtn .txt{display:inline}
+  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{flex:1 1 0;width:auto;min-width:0;min-height:58px;padding:4px 2px 3px;font-size:.7rem;border-radius:16px}
   .tools .tbtn svg{width:22px;height:22px}
   .tbtn.warn{flex:0 0 76px}
   .tbtn.undo{flex:0 0 92px;font-size:.85rem}
@@ -1715,7 +1742,8 @@ body[data-screen="studio"] .app{max-width:none}
   .tools .zbtn{width:34px;height:34px;font-size:1.25rem}
   .tools .zbtn svg{width:17px;height:17px}
 }
-@media (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (max-aspect-ratio:3/2){
+@media (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (max-aspect-ratio:3/2),
+       (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (pointer:coarse){
   .tbtn.warn{flex-basis:64px}
   .tbtn.undo{flex-basis:76px}
 }
@@ -2724,6 +2752,9 @@ function fitBox(wrap){
   if (!wrap.offsetParent) return false;              // the studio is not on screen
   wrap.style.setProperty("--cols", B.cols); wrap.style.setProperty("--rows", B.rows);
   // phones lock the studio to the screen and give the board a box of its own: fill that box
+  // beside the board on computers the board's column hugs the board (--bw); measure the full space first
+  const studio = wrap.closest(".studio");
+  if (studio){ studio.style.removeProperty("--bw"); studio.style.removeProperty("--bh"); studio.parentNode.style.removeProperty("--sw"); studio.parentNode.style.removeProperty("--free"); }
   const cs = getComputedStyle(wrap);
   const boxed = cs.getPropertyValue("--fit").trim() === "box";
   const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
@@ -2753,6 +2784,22 @@ function fitBox(wrap){
   wrap.style.height = zoomed && !boxed ? (fit * B.rows + 28) + "px" : "";
   plate.style.setProperty("--cell", cell + "px");
   plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
+  if (studio && boxed && !zoomed){
+    // a board narrower than its box (iPads on their side): the toy box, board and tools all take the board's height (--bh)
+    const col = wrap.parentNode, spare = wrap.clientHeight - padY - plate.offsetHeight;
+    const bh = Math.ceil(col.offsetHeight - Math.max(0, spare));
+    studio.style.setProperty("--bh", bh + "px");
+    const gs = getComputedStyle(studio), rows = gs.gridTemplateRows.split(" ").map(parseFloat);
+    if (rows[rows.length - 1] === bh){                // the layout uses --bh: centre the group on the screen
+      const used = rows.reduce((a, b) => a + b, 0) + (parseFloat(gs.rowGap) || 0) * (rows.length - 1);
+      studio.parentNode.style.setProperty("--free", Math.max(0, Math.floor((studio.clientHeight - used) / 2)) + "px");
+    }
+    studio.style.setProperty("--bw", Math.ceil(plate.offsetWidth + padX) + "px");
+    // the top bar lines up with the toy box, board and tools below it (--sw: their total width)
+    const g = getComputedStyle(studio), cols = g.gridTemplateColumns.split(" ").map(parseFloat).filter(n => n > 0);
+    if (g.display === "grid" && cols.length > 1)
+      studio.parentNode.style.setProperty("--sw", Math.ceil(cols.reduce((a, b) => a + b, 0) + (parseFloat(g.columnGap) || 0) * (cols.length - 1)) + "px");
+  }
   if (zb){
     const hide = zoomMax < 1.6;                       // only when the studs are small enough to be fiddly
     // showing or hiding the zoom buttons changes the board's box: fit once more
