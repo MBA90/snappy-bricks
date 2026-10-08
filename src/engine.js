@@ -348,7 +348,11 @@ function fitBox(wrap){
     const col = wrap.parentNode, spare = wrap.clientHeight - padY - plate.offsetHeight;
     const bh = Math.ceil(col.offsetHeight - Math.max(0, spare));
     studio.style.setProperty("--bh", bh + "px");
-    if (getComputedStyle(studio).gridTemplateRows === bh + "px") studio.parentNode.style.setProperty("--free", Math.max(0, Math.floor((studio.clientHeight - bh) / 2)) + "px");
+    const gs = getComputedStyle(studio), rows = gs.gridTemplateRows.split(" ").map(parseFloat);
+    if (rows[rows.length - 1] === bh){                // the layout uses --bh: centre the group on the screen
+      const used = rows.reduce((a, b) => a + b, 0) + (parseFloat(gs.rowGap) || 0) * (rows.length - 1);
+      studio.parentNode.style.setProperty("--free", Math.max(0, Math.floor((studio.clientHeight - used) / 2)) + "px");
+    }
     studio.style.setProperty("--bw", Math.ceil(plate.offsetWidth + padX) + "px");
     // the top bar lines up with the toy box, board and tools below it (--sw: their total width)
     const g = getComputedStyle(studio), cols = g.gridTemplateColumns.split(" ").map(parseFloat).filter(n => n > 0);
