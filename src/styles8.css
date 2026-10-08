@@ -203,29 +203,6 @@
 /* ===================== the board fills the space around it ===================== */
 /* big screens: the studio uses the whole width, not a 1600px strip in the middle */
 body[data-screen="studio"] .app{max-width:none}
-/* squarer screens beside the board (iPads on their side, 4:3 and 5:4 monitors): a board column
-   taller than the board left empty bands above and below it, so the tools move to one row on top
-   and the board grows wider */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2){
-  .studio{grid-template-columns:240px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"tray tools" "tray board";row-gap:8px}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr) 240px;grid-template-areas:"tools tray" "board tray"}
-  .tray{grid-row:1 / -1}
-  .tools,body[data-hand="left"] .tools{position:static;height:auto;max-height:none;flex-direction:row;align-items:stretch;gap:6px}
-  body[data-hand="left"] .tools{flex-direction:row-reverse}
-  .tools-main,body[data-hand="left"] .tools-main{flex-direction:row;flex:1 1 auto;overflow:visible;padding:0 0 4px;gap:6px}
-  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{flex:1 1 0;width:auto;min-width:0;min-height:58px;padding:4px 2px 3px;font-size:.7rem}
-  .tools .tbtn svg{width:22px;height:22px}
-  .tbtn.warn{flex:0 0 76px}
-  .tbtn.undo{flex:0 0 92px;font-size:.85rem}
-  .tbtn.undo svg{width:28px;height:28px}
-  .tools .zoombar{flex-direction:row;align-self:center;flex:none;padding:2px;gap:3px}
-  .tools .zbtn{width:34px;height:34px;font-size:1.25rem}
-  .tools .zbtn svg{width:17px;height:17px}
-}
-@media (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (max-aspect-ratio:3/2){
-  .tbtn.warn{flex-basis:64px}
-  .tbtn.undo{flex-basis:76px}
-}
 
 /* ===================== computers: the toy box and the tools sit right beside the board ===================== */
 /* fitBox() sets --bw to the board's width, so the middle column hugs the board and the three stay together in the middle */
@@ -233,8 +210,4 @@ body[data-screen="studio"] .app{max-width:none}
   .studio{grid-template-columns:240px minmax(0,var(--bw,1fr)) 94px;justify-content:center}
   #studioScreen > .topbar{width:var(--sw,auto);max-width:100%;margin-inline:auto;align-self:center}
   body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,var(--bw,1fr)) 240px}
-}
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2){
-  .studio{grid-template-columns:240px minmax(0,var(--bw,1fr))}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(0,var(--bw,1fr)) 240px}
 }
