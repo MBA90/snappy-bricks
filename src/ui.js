@@ -157,12 +157,31 @@ function startTrayDrag(e, sel){
   const piece = pieceFor(sel); if (!piece) return;
   ptr = {kind: "drag", id: e.pointerId, sel, piece, source: "tray", sx: e.clientX, sy: e.clientY, moved: false,
          grabX: piece.w * cell / 2, grabY: piece.h * cell / 2, lift: e.pointerType === "touch" ? cell * 1.4 : 0, target: null};
+  waitForHold(e);
 }
 function startBoardDrag(e, b){
   const r = plate.getBoundingClientRect();
   ptr = {kind: "drag", id: e.pointerId, source: "board", brick: b, sx: e.clientX, sy: e.clientY, moved: false,
          piece: {w: b.w, h: b.h, single: true, bricks: [{x: 0, y: 0, w: b.w, h: b.h, c: b.c, t: b.t}]},
          grabX: e.clientX - (r.left + b.x * cell), grabY: e.clientY - (r.top + b.y * cell), lift: 0, target: null};
+  waitForHold(e);
+}
+// On touch screens a brick or shape is picked up only after the finger rests on it for a moment:
+// a quick touch or swipe never grabs one by accident (a tap still selects or turns it). A mouse drags straight away.
+const HOLD_MS = 300;
+function waitForHold(e){
+  if (e.pointerType === "mouse") return;
+  const p = ptr; p.hold = true; p.lx = e.clientX; p.ly = e.clientY;
+  p.timer = setTimeout(() => {
+    if (ptr !== p) return;
+    pickUp({clientX: p.lx, clientY: p.ly, pointerType: e.pointerType});
+    if (navigator.vibrate) try { navigator.vibrate(12); } catch(err){}
+  }, HOLD_MS);
+}
+function pickUp(e){
+  ptr.moved = true; showFloat();
+  if (e.pointerType === "touch" && ptr.piece.single && ptr.piece.w !== ptr.piece.h && !store("snappy-tip-turn")){ store("snappy-tip-turn", 1); say(t("tipTwoFinger")); }
+  moveFloat(e); computeTarget(e);
 }
 function showFloat(){
   floatEl = document.createElement("div"); floatEl.className = "floating";
@@ -200,7 +219,7 @@ function computeTarget(e){
   ghostEl.textContent = res.ok && res.z > 0 ? "▲" + (res.z + 1) : "";
 }
 function endDrag(e, cancelled){
-  const p = ptr; ptr = null;
+  const p = ptr; ptr = null; clearTimeout(p.timer);
   hideGhost(); trash.classList.remove("hot"); $("#tray").classList.remove("hot");
   if (floatEl){ floatEl.remove(); floatEl = null; }
   if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); const a = auraFor(p.brick.id); if (a) a.classList.remove("lifted"); }
@@ -377,9 +396,15 @@ window.addEventListener("pointermove", e => {
   if (ptr.kind === "brush"){ brushAt(e); return; }
   if (ptr.kind === "tap") return;
   if (!ptr.moved){
-    if (Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) < 7) return;
-    ptr.moved = true; showFloat();
-    if (e.pointerType === "touch" && ptr.piece.single && ptr.piece.w !== ptr.piece.h && !store("snappy-tip-turn")){ store("snappy-tip-turn", 1); say(t("tipTwoFinger")); }
+    const far = Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy);
+    if (ptr.hold){
+      // still waiting for the hold: moving away first means it was a swipe, so leave the brick alone
+      ptr.lx = e.clientX; ptr.ly = e.clientY;
+      if (far > 10){ clearTimeout(ptr.timer); ptr = null; }
+      return;
+    }
+    if (far < 7) return;
+    pickUp(e); return;
   }
   e.preventDefault();
   moveFloat(e); computeTarget(e);
@@ -399,6 +424,8 @@ window.addEventListener("pointerup", e => {
   }
   endDrag(e, false);
 });
+// a brick picked up from the toy box follows the finger: the toy box doesn't scroll under it
+$("#tray").addEventListener("touchmove", e => { if (ptr && ptr.kind === "drag" && ptr.moved && e.cancelable) e.preventDefault(); }, {passive: false});
 window.addEventListener("pointercancel", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "drag") endDrag(e, true);

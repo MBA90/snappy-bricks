@@ -232,6 +232,7 @@ $("#tourBtn").addEventListener("click", () => { closeSheets(); showScreen("home"
     if (!n || n.id === "lockBtn" || n.closest("#plate")) return;
     el = n; xy = [e.clientX, e.clientY]; clearTimeout(timer);
     timer = setTimeout(() => {
+      if (ptr && ptr.kind === "drag" && ptr.moved) return;    // the hold picked up a brick: no talking over it
       const txt = labelOf(n); if (!txt) return;
       n.classList.remove("saying"); void n.offsetWidth; n.classList.add("saying");
       speak(txt.replace(/×/g, LANG === "ar" ? " في " : " by "), LANG);
