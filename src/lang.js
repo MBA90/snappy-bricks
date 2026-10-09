@@ -9,7 +9,7 @@ function applyStatic(root = document){
   root.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
   root.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
   root.querySelectorAll("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
-  root.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); if (!el.getAttribute("aria-label")) el.setAttribute("aria-label", t(el.dataset.i18nTitle)); });
+  root.querySelectorAll("[data-i18n-title]").forEach(el => { if (!el.closest("#tools")) el.title = t(el.dataset.i18nTitle); if (!el.getAttribute("aria-label")) el.setAttribute("aria-label", t(el.dataset.i18nTitle)); });
 }
 function setLang(l, quiet){
   LANG = l; settings.lang = l; saveSettings();

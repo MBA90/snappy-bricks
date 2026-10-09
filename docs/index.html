@@ -1833,6 +1833,8 @@ body[data-screen="studio"] .app{max-width:none}
 /* a short tools column (a phone with its browser bars showing): picture buttons, a long press says the name */
 @container sidetools (max-height:300px){ #tools .tbtn .txt{display:none} }
 @container tools (max-height:300px){ #tools .tbtn .txt{display:none} }
+/* the tools show no focus ring or tap highlight when pressed */
+#tools button,#tools button:focus,#tools button:focus-visible{outline:none;-webkit-tap-highlight-color:transparent}
 
 </style>
 <!-- Snappy Bricks plays sideways: held upright, the screen asks to be turned -->
@@ -3415,7 +3417,7 @@ function applyStatic(root = document){
   root.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
   root.querySelectorAll("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
   root.querySelectorAll("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
-  root.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); if (!el.getAttribute("aria-label")) el.setAttribute("aria-label", t(el.dataset.i18nTitle)); });
+  root.querySelectorAll("[data-i18n-title]").forEach(el => { if (!el.closest("#tools")) el.title = t(el.dataset.i18nTitle); if (!el.getAttribute("aria-label")) el.setAttribute("aria-label", t(el.dataset.i18nTitle)); });
 }
 function setLang(l, quiet){
   LANG = l; settings.lang = l; saveSettings();

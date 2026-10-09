@@ -486,3 +486,5 @@ body[data-screen="studio"] .app{max-width:none}
 /* a short tools column (a phone with its browser bars showing): picture buttons, a long press says the name */
 @container sidetools (max-height:300px){ #tools .tbtn .txt{display:none} }
 @container tools (max-height:300px){ #tools .tbtn .txt{display:none} }
+/* the tools show no focus ring or tap highlight when pressed */
+#tools button,#tools button:focus,#tools button:focus-visible{outline:none;-webkit-tap-highlight-color:transparent}
