@@ -132,6 +132,7 @@ plateWrap.addEventListener("wheel", e => {
     if (ptr){
       // the first finger's action becomes part of the pinch: undo what it started
       if (ptr.kind === "brush" && ptr.changed){ ptr = null; undo(); }
+      else if (ptr.kind === "pencil") endPencil(true);   // drop the half-drawn line, or it stays stuck on the board
       ptr = null;
     }
     e.preventDefault(); e.stopPropagation();
