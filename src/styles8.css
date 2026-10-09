@@ -287,12 +287,15 @@ body[data-screen="studio"] .app{max-width:none}
   .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
   .ttab-dot{width:22px;height:22px;margin:2px 0 1px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
   body[data-age="little"] .ttab[data-tab="styles"]{display:none}
-  /* one tab at a time */
-  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks),
+  /* one tab at a time; the Bricks tab also shows the colours, under the bricks */
+  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks):not(.sec-colors),
   .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
   .tray[data-tab="styles"] .tray-body > :not(.sec-styles),
   .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps),
   .tray[data-tab="plates"] .tray-body > :not(.sec-plates){display:none!important}
+  .tray[data-tab="bricks"] .sec-bricks{order:1}
+  .tray[data-tab="bricks"] .sec-colors{order:2}
+  .tray[data-tab="bricks"] .sec-colors h2{display:none}
 }
 /* toy box beside the board (computers, sideways tablets): Name and Photo side by side, then the tabs */
 @media (orientation:landscape) and (min-width:900px) and (min-height:541px){
@@ -360,12 +363,12 @@ body[data-screen="studio"] .app{max-width:none}
   .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
   .ttab-dot{width:20px;height:20px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
   body[data-age="little"] .ttab[data-tab="styles"]{display:none}
-  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks),
+  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks):not(.sec-colors),
   .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
   .tray[data-tab="styles"] .tray-body > :not(.sec-styles),
   .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps),
   .tray[data-tab="plates"] .tray-body > :not(.sec-plates){display:none!important}
-  .tray[data-tab="bricks"] .sec-bricks > h2{display:none}
+  .tray[data-tab="bricks"] .sec-colors h2,.tray[data-tab="bricks"] .sec-bricks > h2{display:none}
   .stamps{grid-template-columns:1fr 1fr}
 }
 /* computers and sideways tablets: tab names big enough to read */

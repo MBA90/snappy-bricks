@@ -30,19 +30,16 @@ addStrings({
     $("#trayBody").scrollLeft = 0;
   }
   tabs.forEach(b => b.addEventListener("click", () => { sfx.click(); setTab(b.dataset.tab); }));
-  const dot = $("#trayTabs .ttab-dot");
-  const showColor = c => paintVars(dot, c);
-  on("color", showColor); showColor(color);
   setTab("bricks");
 
-  // Paint and Fill need a colour: the toy box shows the colours the moment either is pressed,
+  // Paint and Fill need a colour: the toy box shows the colours (under the bricks) the moment either is pressed,
   // and goes back to the tab it was on when the tool is put away
   let before = null;
   on("tool", tl => {
     if (tl === "paint" || tl === "fill" || tl === "draw"){
-      if (tray.dataset.tab !== "colors"){ before = tray.dataset.tab; setTab("colors"); }
+      if (tray.dataset.tab !== "bricks"){ before = tray.dataset.tab; setTab("bricks"); }
       showSwatches();
-    } else if (before && tray.dataset.tab === "colors"){ setTab(before); before = null; }
+    } else if (before && tray.dataset.tab === "bricks"){ setTab(before); before = null; }
     else before = null;
   });
   tabs.forEach(b => b.addEventListener("click", () => { before = null; }));

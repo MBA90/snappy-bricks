@@ -1634,12 +1634,15 @@ body[data-screen="studio"] .app{max-width:none}
   .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
   .ttab-dot{width:22px;height:22px;margin:2px 0 1px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
   body[data-age="little"] .ttab[data-tab="styles"]{display:none}
-  /* one tab at a time */
-  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks),
+  /* one tab at a time; the Bricks tab also shows the colours, under the bricks */
+  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks):not(.sec-colors),
   .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
   .tray[data-tab="styles"] .tray-body > :not(.sec-styles),
   .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps),
   .tray[data-tab="plates"] .tray-body > :not(.sec-plates){display:none!important}
+  .tray[data-tab="bricks"] .sec-bricks{order:1}
+  .tray[data-tab="bricks"] .sec-colors{order:2}
+  .tray[data-tab="bricks"] .sec-colors h2{display:none}
 }
 /* toy box beside the board (computers, sideways tablets): Name and Photo side by side, then the tabs */
 @media (orientation:landscape) and (min-width:900px) and (min-height:541px){
@@ -1707,12 +1710,12 @@ body[data-screen="studio"] .app{max-width:none}
   .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
   .ttab-dot{width:20px;height:20px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
   body[data-age="little"] .ttab[data-tab="styles"]{display:none}
-  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks),
+  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks):not(.sec-colors),
   .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
   .tray[data-tab="styles"] .tray-body > :not(.sec-styles),
   .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps),
   .tray[data-tab="plates"] .tray-body > :not(.sec-plates){display:none!important}
-  .tray[data-tab="bricks"] .sec-bricks > h2{display:none}
+  .tray[data-tab="bricks"] .sec-colors h2,.tray[data-tab="bricks"] .sec-bricks > h2{display:none}
   .stamps{grid-template-columns:1fr 1fr}
 }
 /* computers and sideways tablets: tab names big enough to read */
@@ -2001,7 +2004,6 @@ body[data-screen="studio"] .app{max-width:none}
         </div>
         <div class="tray-tabs" id="trayTabs" role="tablist" data-i18n-aria="toyBox">
           <button class="ttab" type="button" role="tab" data-tab="bricks" aria-selected="true"><span class="ttab-ic" aria-hidden="true">🧱</span><span class="ttab-txt" data-i18n="tabBricks">Bricks</span></button>
-          <button class="ttab" type="button" role="tab" data-tab="colors" aria-selected="false"><span class="ttab-ic ttab-dot" aria-hidden="true"></span><span class="ttab-txt" data-i18n="tabColors">Colors</span></button>
           <button class="ttab" type="button" role="tab" data-tab="styles" aria-selected="false"><span class="ttab-ic" aria-hidden="true">✨</span><span class="ttab-txt" data-i18n="tabStyles">Style</span></button>
           <button class="ttab" type="button" role="tab" data-tab="stamps" aria-selected="false"><span class="ttab-ic" aria-hidden="true">⭐</span><span class="ttab-txt" data-i18n="tabShapes">Shapes</span></button>
           <button class="ttab" type="button" role="tab" data-tab="plates" aria-selected="false"><span class="ttab-ic" aria-hidden="true">🟩</span><span class="ttab-txt" data-i18n="tabBoard">Board</span></button>
@@ -5709,19 +5711,16 @@ addStrings({
     $("#trayBody").scrollLeft = 0;
   }
   tabs.forEach(b => b.addEventListener("click", () => { sfx.click(); setTab(b.dataset.tab); }));
-  const dot = $("#trayTabs .ttab-dot");
-  const showColor = c => paintVars(dot, c);
-  on("color", showColor); showColor(color);
   setTab("bricks");
 
-  // Paint and Fill need a colour: the toy box shows the colours the moment either is pressed,
+  // Paint and Fill need a colour: the toy box shows the colours (under the bricks) the moment either is pressed,
   // and goes back to the tab it was on when the tool is put away
   let before = null;
   on("tool", tl => {
     if (tl === "paint" || tl === "fill" || tl === "draw"){
-      if (tray.dataset.tab !== "colors"){ before = tray.dataset.tab; setTab("colors"); }
+      if (tray.dataset.tab !== "bricks"){ before = tray.dataset.tab; setTab("bricks"); }
       showSwatches();
-    } else if (before && tray.dataset.tab === "colors"){ setTab(before); before = null; }
+    } else if (before && tray.dataset.tab === "bricks"){ setTab(before); before = null; }
     else before = null;
   });
   tabs.forEach(b => b.addEventListener("click", () => { before = null; }));
