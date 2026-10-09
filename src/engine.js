@@ -337,14 +337,14 @@ function fitCell(){
 // the space the board was last given; the building board's studs across and down are worked out from it
 let fitRoom = null;
 function autoWidth(){ return B === FREE && fitRoom && fitRoom.w > 0 && fitRoom.h > 0 && boardZoom <= 1 && !isPhotoBoard(); }
-// studs about 1/18 of the board's height, between 22px and 32px: big enough for fingers on a phone,
-// more of them on a big screen. The columns then fill the width. The board never gets smaller than
-// the bricks on it; when bricks make it wider than the screen allows, extra rows fill the height instead.
+// about as many studs as the old Huge board (40 × 30 = 1200), shaped to the space: the rows come from the
+// space's shape and the columns then fill the width. The board never gets smaller than the bricks on it;
+// when bricks make it wider than the screen allows, extra rows fill the height instead.
+const BOARD_STUDS = 1200;
 function fitDims(){
   const needC = B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
   const needR = B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
-  const stud = clamp(fitRoom.h / 18, 22, 32);
-  let rows = clamp(Math.max(Math.round(fitRoom.h / stud), needR), 6, 120);
+  let rows = clamp(Math.max(Math.round(Math.sqrt(BOARD_STUDS * fitRoom.h / fitRoom.w)), needR), 6, 120);
   const cols = clamp(Math.max(Math.floor(fitRoom.w / (fitRoom.h / rows)), needC), 6, 120);
   rows = clamp(Math.max(rows, Math.floor(fitRoom.h / (fitRoom.w / cols))), 6, 120);
   return [cols, rows];
