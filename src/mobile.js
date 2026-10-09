@@ -160,7 +160,7 @@ plateWrap.addEventListener("wheel", e => {
   // where each button lives on bigger screens, so it can go back there (put back last-moved first)
   const homes = ["#clearBtn", "#replayBtn", "#saveMenuBtn", "#undoBtn"].map(s => { const el = $(s); return {el, home: el.parentNode, after: el.nextSibling}; });
   const openMore = () => { pop.hidden = false; more.setAttribute("aria-expanded", "true"); };
-  const closeMore = () => { pop.hidden = true; more.setAttribute("aria-expanded", "false"); };
+  const closeMore = () => { pop.hidden = true; more.setAttribute("aria-expanded", "false"); disarmClear(); };
   const place = () => {
     if (phone.matches){
       homes.slice(0, 3).forEach(h => pop.appendChild(h.el));
@@ -191,7 +191,12 @@ plateWrap.addEventListener("wheel", e => {
   const sign = document.createElement("button");
   sign.type = "button"; sign.className = "tool-sign"; sign.hidden = true;
   col.appendChild(sign);
-  const place = () => { if (!sign.hidden) sign.style.top = wrap.offsetTop + "px"; };
+  // on the board's top edge: the board can sit lower than the top of its box (tablets, computers)
+  const place = () => {
+    if (sign.hidden) return;
+    const c = col.getBoundingClientRect(), w = wrap.getBoundingClientRect(), p = $("#plate").getBoundingClientRect();
+    sign.style.top = Math.round(Math.max(w.top, p.top) - c.top - col.clientTop) + "px";
+  };
   const show = tl => {
     col.dataset.usingTool = tl;   // not data-tool: that marks the tool buttons
     const btn = $(`#tools [data-tool="${tl}"]`);
@@ -222,7 +227,8 @@ addStrings({
   });
   pop.addEventListener("click", close);
   document.addEventListener("pointerdown", e => { if (!sec.contains(e.target)) close(); }, true);
-  matchMedia("(orientation:portrait) and (max-width:699px)").addEventListener("change", close);
+  const phone = matchMedia("(orientation:portrait) and (max-width:699px)");
+  phone.addEventListener ? phone.addEventListener("change", close) : phone.addListener(close);
 })();
 
 /* ---- swipe the toy box left or right for the next or last tab ---- */
@@ -324,6 +330,6 @@ addStrings({
   on("lang", roomy); on("resize", roomy);
   on("pickup", shut);
   $("#plate").addEventListener("pointerdown", shut);
-  phone.addEventListener("change", () => set(0));
+  phone.addEventListener ? phone.addEventListener("change", () => set(0)) : phone.addListener(() => set(0));
   on("resize", () => { if (pull) set(Math.min(pull, most())); });
 })();
