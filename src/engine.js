@@ -370,6 +370,9 @@ function fitBox(wrap){
   wrap.style.height = zoomed && !boxed ? (fit * B.rows + 28) + "px" : "";
   plate.style.setProperty("--cell", cell + "px");
   plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
+  // sideways phones keep the board's column while zoomed in, so the toy box and tools don't jump about
+  if (studio && boxed && zoomed && getComputedStyle(studio).getPropertyValue("--hold-bw").trim() === "1")
+    studio.style.setProperty("--bw", Math.ceil(fit * B.cols + plate.offsetWidth - cell * B.cols + padX) + "px");
   if (studio && boxed && !zoomed){
     // a board narrower than its box (iPads on their side): the toy box, board and tools all take the board's height (--bh)
     const col = wrap.parentNode, spare = wrap.clientHeight - padY - plate.offsetHeight;

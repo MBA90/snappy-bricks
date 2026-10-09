@@ -603,3 +603,70 @@ body[data-screen="studio"] .app{max-width:none}
   .tray[data-tab="plates"] .plate-styles .stylebtn{height:44px;padding:2px}
   .tray[data-tab="plates"] .plate-styles .stylebtn > :not(:first-child){display:none}
 }
+
+/* ===================== phones on their side: every button on screen, the board as big as the height allows ===================== */
+/* The board's column hugs the board (fitBox() sets --bw) and the toy box and tools share the rest of the width,
+   so on a wide phone they get roomier instead of leaving empty strips beside the board. Before --bw is set
+   the board's column takes everything it can (the 100vw fallback), so fitBox() measures the biggest box.
+   The Name and Photo buttons and the tabs stay put; only the toy box's contents scroll. */
+@media (orientation:landscape) and (max-height:540px){
+  .studio{--hold-bw:1;grid-template-columns:minmax(176px,1fr) minmax(0,var(--bw,100vw)) minmax(152px,1fr);gap:6px}
+  body[data-hand="left"] .studio{grid-template-columns:minmax(152px,1fr) minmax(0,var(--bw,100vw)) minmax(176px,1fr)}
+  .tray,.tools{max-width:300px;width:100%}
+  .studio > .tray{justify-self:end}
+  .studio > .tools{justify-self:start}
+  body[data-hand="left"] .studio > .tray{justify-self:start}
+  body[data-hand="left"] .studio > .tools{justify-self:end}
+
+  .plate-wrap.zoomed{padding:2px 2px 12px}
+
+  /* the toy box: Name and Photo, the picture tabs, then a scrolling box of bricks */
+  .tray{display:flex;flex-direction:column;overflow:hidden;padding:6px;gap:6px;container:traybox / inline-size}
+  .sec-name{flex:none}
+  .name-open,.photo-open{flex-direction:row!important;gap:4px!important;min-height:38px!important;padding:3px 4px!important;font-size:.72rem!important;line-height:1.05}
+  .name-open > span:first-child,.photo-open > span:first-child{font-size:1rem!important;flex:none}
+  .tray-tabs{flex:none}
+  .ttab{min-height:36px;border-radius:11px}
+  .tray-body{display:flex;flex-direction:column;flex:1 1 0;min-height:0;overflow-y:auto;overscroll-behavior:contain;gap:8px;padding:2px 2px 6px;scrollbar-width:thin}
+  .tray-body > .tray-sec{flex:none}
+  .tray .shapes{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;grid-auto-flow:row;gap:6px}
+  .tray .shapes .card{min-height:50px}
+  .sec-bricks .row{margin:0}
+  .sec-bricks .row .btn{width:100%;min-height:36px;padding:2px 8px;font-size:.8rem;gap:6px}
+  .sec-bricks .row .btn svg{width:18px;height:18px}
+
+  /* the tools: Clear on top, the tools four to a row, the zoom buttons, and Undo at the bottom */
+  .tools{container:sidetools / size;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr) auto auto;padding:6px;gap:5px}
+  .tbtn.warn{grid-column:1 / -1;grid-row:1;min-height:36px}
+  .tools-main{grid-column:1 / -1;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(36px,58px);align-content:start;gap:5px;overflow:visible;padding:0}
+  /* the tool buttons share the height left over: taller when there is room, never pushed under the zoom buttons */
+  .tools-main .tbtn{min-height:0}
+  .tools .zoombar{grid-column:1 / -1;grid-row:3;justify-self:center}
+  .tbtn.undo{grid-column:1 / -1;grid-row:4;min-height:46px}
+}
+@container traybox (min-width:230px){
+  .tray .swatches{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media (orientation:landscape) and (max-height:540px){
+  @container sidetools (min-width:184px){
+    .tools-main{grid-template-columns:repeat(4,minmax(0,1fr))}
+    body[data-age="little"] .tools-main{grid-template-columns:repeat(3,minmax(0,1fr))}
+  }
+  @container sidetools (min-width:220px){
+    .tools .tbtn{font-size:.66rem}
+    .tools .tbtn svg{width:22px;height:22px}
+  }
+  /* a short column (Safari's bars showing): the zoom buttons move up beside Clear */
+  @container sidetools (max-height:270px){
+    .tbtn.warn{grid-column:1;grid-row:1}
+    .tools .zoombar{grid-column:2;grid-row:1;align-self:center}
+    .tools .zbtn{width:30px;height:30px}
+  }
+  /* shorter still: picture buttons (a long press says the name) */
+  @container sidetools (max-height:205px){
+    .tools-main .tbtn .txt{display:none}
+    .tools-main{grid-auto-rows:36px}
+    .tools-main .tbtn{min-height:36px}
+    .tbtn.undo{min-height:40px}
+  }
+}
