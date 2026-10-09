@@ -353,7 +353,7 @@ function fitBox(wrap){
   const below = docked || boxed && getComputedStyle(tray).getPropertyValue("--below").trim() === "1";
   document.body.style.setProperty("--dock-h", (below ? tray.offsetHeight : 0) + "px");
   const H = window.innerHeight;
-  const top = wrap.getBoundingClientRect().top + window.scrollY;
+  const top = wrap.getBoundingClientRect().top + pageScrollY();
   const zb = $("#zoomBar");
   const zbH = !boxed && zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
   const maxH = boxed ? wrap.clientHeight - padY : Math.max(H * .3, H - top - dock - 22 - zbH);

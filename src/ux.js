@@ -54,7 +54,7 @@ function showScreen(name){
   if (name === "games"){ document.body.dataset.area = "games"; refreshGamesPick(); }
   if (name === "map") document.body.dataset.area = "map";
   if (name === "studio"){ refreshArea(); requestAnimationFrame(() => { fitCell(); requestAnimationFrame(fitCell); }); }
-  window.scrollTo(0, 0);
+  pageScrollTo(0);
 }
 function refreshArea(){
   const m = currentMode;
