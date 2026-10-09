@@ -1824,6 +1824,142 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes turnBricky{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(90deg)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion: reduce){.turn-phone{animation:none;transform:rotate(-90deg)}.turn-phone .bricky{animation:none;transform:rotate(90deg)}}
 
+/* ===================== Build: the board fills the whole screen ===================== */
+/* The board's box is the whole screen, so fitBox() makes the studs as big as the screen allows.
+   The top bar, toy box and tools float over the board's edges as drawers; on wide screens they sit in the
+   space beside the board. A labelled tab beside each drawer slides it off the screen and back (drawers() in mobile.js).
+   Games keep the layout in styles4–8. */
+.drawer-tab{display:none}
+body[data-screen="studio"][data-mode="free"]{
+  --pad:10px;--bar-h:62px;--tray-w:240px;--tools-w:96px;
+  --pt:max(var(--pad), env(safe-area-inset-top, 0px));--pb:max(var(--pad), env(safe-area-inset-bottom, 0px));
+  --pl:max(var(--pad), env(safe-area-inset-left, 0px));--pr:max(var(--pad), env(safe-area-inset-right, 0px));
+}
+body[data-screen="studio"][data-mode="free"] #studioScreen{position:fixed;inset:0;z-index:2;display:block}
+body[data-screen="studio"][data-mode="free"] .studio{position:absolute;inset:0;display:block}
+
+/* the board: the whole screen */
+body[data-screen="studio"][data-mode="free"] .board-col{position:absolute;inset:0;z-index:1;display:flex;gap:0}
+/* the tool sign sits on the board's bottom edge, clear of the top bar */
+body[data-screen="studio"][data-mode="free"] .tool-sign{top:auto!important;bottom:calc(var(--pb) + 6px)}
+body[data-screen="studio"][data-mode="free"] .plate-wrap,
+body[data-screen="studio"][data-mode="free"] .plate-wrap.zoomed{flex:1 1 0;height:100%;padding:var(--pt) var(--pr) var(--pb) var(--pl);border-radius:0;background:none}
+
+/* the top bar: home, Bricky and badges in the corner above the toy box; Bricky's words spread over the board for a little while */
+body[data-screen="studio"][data-mode="free"] #studioScreen > .topbar{
+  position:absolute;z-index:8;top:var(--pt);inset-inline-start:var(--pl);margin:0;
+  width:auto;max-width:min(620px, calc(100% - var(--pl) - var(--pr) - var(--tools-w) - 24px));
+  height:var(--bar-h);min-height:0;box-shadow:0 4px 0 var(--ink);
+}
+body[data-screen="studio"][data-mode="free"] .topbar .area-chip{display:none}
+body[data-screen="studio"][data-mode="free"] .topbar .helper{flex:1 1 auto}
+body[data-screen="studio"][data-mode="free"] .topbar .bricky{cursor:pointer}
+body[data-screen="studio"][data-mode="free"] .topbar:not(.talking) .bubble{display:none}
+body[data-screen="studio"][data-mode="free"] .topbar:not(.talking){width:var(--tray-w)}
+body[data-screen="studio"][data-mode="free"] .topbar:not(.talking) .helper{justify-content:center}
+body[data-screen="studio"][data-mode="free"] .topbar.talking .bubble{animation:bubbleIn .2s ease-out}
+@keyframes bubbleIn{from{opacity:0;transform:scale(.9)}}
+
+/* the drawers */
+body[data-screen="studio"][data-mode="free"] .tray,
+body[data-screen="studio"][data-mode="free"] .tools{
+  position:absolute;z-index:6;margin:0;height:auto;max-height:none;contain:none;
+  transition:transform .25s ease, visibility .25s;
+}
+body[data-screen="studio"][data-mode="free"] .tray{
+  top:calc(var(--pt) + var(--bar-h) + 10px);bottom:var(--pb);inset-inline-start:var(--pl);inset-inline-end:auto;width:var(--tray-w);
+}
+body[data-screen="studio"][data-mode="free"] .tools{
+  top:var(--pt);bottom:var(--pb);inset-inline-end:var(--pr);inset-inline-start:auto;width:var(--tools-w);
+  padding:6px;border:3px solid var(--ink);border-radius:22px;background:#fff;box-shadow:0 5px 0 var(--ink);
+}
+/* left-handed: the toy box on the other side */
+body[data-screen="studio"][data-mode="free"][data-hand="left"] .tray{inset-inline-start:auto;inset-inline-end:var(--pr)}
+body[data-screen="studio"][data-mode="free"][data-hand="left"] .tools{inset-inline-end:auto;inset-inline-start:var(--pl)}
+body[data-screen="studio"][data-mode="free"][data-hand="left"] #studioScreen > .topbar{inset-inline-start:auto;inset-inline-end:var(--pr)}
+
+/* sliding away: off the screen's edge */
+body[data-screen="studio"][data-mode="free"] .tray-away .tray{transform:translateX(calc(-100% - var(--pl) - 20px));visibility:hidden}
+body[data-screen="studio"][data-mode="free"] .tools-away .tools{transform:translateX(calc(100% + var(--pr) + 20px));visibility:hidden}
+[dir="rtl"] body[data-screen="studio"][data-mode="free"] .tray-away .tray,
+body[data-screen="studio"][data-mode="free"][data-hand="left"] .tray-away .tray{transform:translateX(calc(100% + var(--pr) + 20px))}
+[dir="rtl"] body[data-screen="studio"][data-mode="free"] .tools-away .tools,
+body[data-screen="studio"][data-mode="free"][data-hand="left"] .tools-away .tools{transform:translateX(calc(-100% - var(--pl) - 20px))}
+[dir="rtl"] body[data-screen="studio"][data-mode="free"][data-hand="left"] .tray-away .tray{transform:translateX(calc(-100% - var(--pl) - 20px))}
+[dir="rtl"] body[data-screen="studio"][data-mode="free"][data-hand="left"] .tools-away .tools{transform:translateX(calc(100% + var(--pr) + 20px))}
+
+/* the tabs: beside each drawer's inner edge, or at the screen's edge when the drawer is away */
+body[data-screen="studio"][data-mode="free"] .drawer-tab{
+  position:absolute;z-index:7;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  width:52px;min-height:84px;padding:6px 2px;cursor:pointer;color:var(--ink);
+  border:3px solid var(--ink);border-radius:16px;background:var(--sun);box-shadow:0 3px 0 var(--ink);
+  font:inherit;font-weight:800;font-size:.7rem;line-height:1.05;text-align:center;
+  transition:inset-inline-start .25s ease, inset-inline-end .25s ease;
+}
+body[data-screen="studio"][data-mode="free"] .drawer-tab:active{transform:translateY(calc(-50% + 3px));box-shadow:0 0 0 var(--ink)}
+body[data-screen="studio"][data-mode="free"] .drawer-tab svg{width:22px;height:22px}
+body[data-screen="studio"][data-mode="free"] .drawer-tab .dt-ic{display:none;font-size:1.3rem;line-height:1}
+body[data-screen="studio"][data-mode="free"] #trayTab{inset-inline-start:calc(var(--pl) + var(--tray-w) + 6px)}
+body[data-screen="studio"][data-mode="free"] #toolsTab{inset-inline-end:calc(var(--pr) + var(--tools-w) + 6px)}
+body[data-screen="studio"][data-mode="free"][data-hand="left"] #trayTab{inset-inline-start:auto;inset-inline-end:calc(var(--pr) + var(--tray-w) + 6px)}
+body[data-screen="studio"][data-mode="free"][data-hand="left"] #toolsTab{inset-inline-end:auto;inset-inline-start:calc(var(--pl) + var(--tools-w) + 6px)}
+body[data-screen="studio"][data-mode="free"] .tray-away #trayTab{inset-inline-start:var(--pl)}
+body[data-screen="studio"][data-mode="free"] .tools-away #toolsTab{inset-inline-end:var(--pr)}
+body[data-screen="studio"][data-mode="free"][data-hand="left"] .tray-away #trayTab{inset-inline-start:auto;inset-inline-end:var(--pr)}
+body[data-screen="studio"][data-mode="free"][data-hand="left"] .tools-away #toolsTab{inset-inline-end:auto;inset-inline-start:var(--pl)}
+body[data-screen="studio"][data-mode="free"] .drawer-tab[aria-expanded="false"]{background:#fff;min-height:96px}
+body[data-screen="studio"][data-mode="free"] .drawer-tab[aria-expanded="false"] .dt-ic{display:block}
+body[data-screen="studio"][data-mode="free"] .drawer-tab[aria-expanded="false"] .dt-arrow{transform:scaleX(-1)}
+/* the arrows point to the screen edge the drawer slides to */
+[dir="rtl"] body[data-screen="studio"][data-mode="free"] .drawer-tab .dt-arrow,
+body[data-screen="studio"][data-mode="free"][data-hand="left"] .drawer-tab .dt-arrow{transform:scaleX(-1)}
+[dir="rtl"] body[data-screen="studio"][data-mode="free"] .drawer-tab[aria-expanded="false"] .dt-arrow,
+body[data-screen="studio"][data-mode="free"][data-hand="left"] .drawer-tab[aria-expanded="false"] .dt-arrow{transform:none}
+[dir="rtl"] body[data-screen="studio"][data-mode="free"][data-hand="left"] .drawer-tab .dt-arrow{transform:none}
+[dir="rtl"] body[data-screen="studio"][data-mode="free"][data-hand="left"] .drawer-tab[aria-expanded="false"] .dt-arrow{transform:scaleX(-1)}
+
+/* ---------- tablets and computers: the tools in one column, or two to a row on shorter screens ---------- */
+@media (min-height:541px){
+  body[data-screen="studio"][data-mode="free"] .tools{display:flex;flex-direction:column;gap:6px;container:fstools / size}
+  body[data-screen="studio"][data-mode="free"] .tools-main{display:flex;flex-direction:column;flex:1 1 auto;gap:6px;overflow-y:auto;overflow-x:visible;padding:2px 2px 6px}
+  body[data-screen="studio"][data-mode="free"] .tools .tbtn,
+  body[data-screen="studio"][data-mode="free"] .tools-main .tbtn{flex:none;width:100%;min-height:58px;padding:5px 3px 4px;font-size:.74rem;border-radius:16px}
+  body[data-screen="studio"][data-mode="free"] .tools-main .tbtn .txt{display:inline}
+  body[data-screen="studio"][data-mode="free"] .tools .tbtn svg{width:26px;height:26px}
+  body[data-screen="studio"][data-mode="free"] .tools .tbtn.warn{min-height:50px}
+  body[data-screen="studio"][data-mode="free"] .tools .tbtn.undo{min-height:76px;font-size:.92rem}
+  body[data-screen="studio"][data-mode="free"] .tools .tbtn.undo svg{width:34px;height:34px}
+  body[data-screen="studio"][data-mode="free"] .tools .zoombar{flex-direction:row;align-self:center;padding:2px;gap:3px}
+  body[data-screen="studio"][data-mode="free"] .tools .zbtn{width:26px;height:26px;border-width:2px;font-size:1.05rem}
+  body[data-screen="studio"][data-mode="free"] .tools .zbtn svg{width:14px;height:14px}
+}
+@media (min-height:541px) and (max-height:899px){
+  body[data-screen="studio"][data-mode="free"]{--tools-w:150px}
+  body[data-screen="studio"][data-mode="free"] .tools-main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start}
+}
+@container fstools (max-height:560px){
+  .tools-main .tbtn{min-height:48px!important}
+  .tools .tbtn svg{width:22px!important;height:22px!important}
+  .tools .tbtn.undo{min-height:56px!important}
+}
+
+/* ---------- phones on their side: smaller drawers; the toy box and tools inside keep the sideways-phone layout ---------- */
+@media (orientation:landscape) and (max-height:540px){
+  body[data-screen="studio"][data-mode="free"]{--pad:5px;--bar-h:40px;--tray-w:172px;--tools-w:136px}
+  body[data-screen="studio"][data-mode="free"] .tools{display:grid;border-width:2px;border-radius:16px;box-shadow:0 3px 0 var(--ink)}
+  body[data-screen="studio"][data-mode="free"] .tray{top:calc(var(--pt) + var(--bar-h) + 6px)}
+  body[data-screen="studio"][data-mode="free"] #studioScreen > .topbar{box-shadow:0 3px 0 var(--ink)}
+  body[data-screen="studio"][data-mode="free"] .drawer-tab{width:44px;min-height:66px;font-size:.62rem;border-width:2px;border-radius:12px;padding:4px 1px}
+  body[data-screen="studio"][data-mode="free"] .drawer-tab svg{width:18px;height:18px}
+  body[data-screen="studio"][data-mode="free"] .drawer-tab[aria-expanded="false"]{min-height:74px}
+  body[data-screen="studio"][data-mode="free"] .drawer-tab .dt-ic{font-size:1.05rem}
+}
+@media (prefers-reduced-motion: reduce){
+  body[data-screen="studio"][data-mode="free"] .tray,body[data-screen="studio"][data-mode="free"] .tools,
+  body[data-screen="studio"][data-mode="free"] .drawer-tab{transition:none}
+}
+
 </style>
 <!-- Snappy Bricks plays sideways: held upright, the screen asks to be turned -->
 <div class="turn-me" id="turnMe" aria-live="polite">
@@ -2053,6 +2189,16 @@ body[data-screen="studio"] .app{max-width:none}
           <div class="trash" id="trash"><span data-i18n="dropTrash">Drop here to throw away</span></div>
         </div>
       </section>
+
+      <!-- Build: tabs that slide the toy box and the tools off the board and back (styles9.css) -->
+      <button class="drawer-tab" id="trayTab" type="button" data-drawer="tray" aria-controls="tray" aria-expanded="true">
+        <svg class="dt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        <span class="dt-ic" aria-hidden="true">🧱</span><span class="dt-txt"></span>
+      </button>
+      <button class="drawer-tab" id="toolsTab" type="button" data-drawer="tools" aria-controls="tools" aria-expanded="true">
+        <svg class="dt-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        <span class="dt-ic" aria-hidden="true">🖌️</span><span class="dt-txt"></span>
+      </button>
 
       <!-- the tools: always on the same side, Undo always at the bottom -->
       <nav class="tools" id="tools" aria-label="Tools">
@@ -5668,6 +5814,9 @@ addStrings({
   zoomFit: ["Show the whole board", "اعرض اللوحة كلها"],
   turnSideways: ["Turn your screen sideways!", "أدر الشاشة على جنبها!"],
   turnWider: ["Make the window wider to play!", "وسّع النافذة لتلعب!"],
+  hide: ["Hide", "إخفاء"], toolsName: ["Tools", "الأدوات"],
+  hideToyBox: ["Hide the toy box", "أخفِ صندوق الألعاب"], showToyBox: ["Show the toy box", "أظهر صندوق الألعاب"],
+  hideTools: ["Hide the tools", "أخفِ الأدوات"], showTools: ["Show the tools", "أظهر الأدوات"],
 });
 
 /* ---- Snappy Bricks plays sideways: where the browser allows it (an installed app, full screen),
@@ -5854,6 +6003,34 @@ plateWrap.addEventListener("wheel", e => {
   on("tool", show); on("lang", () => show(tool));
   sign.addEventListener("click", () => setTool("move"));
   on("resize", place); on("board", place);
+})();
+
+/* ---- Build: the board fills the whole screen and the toy box and tools float over its edges (styles9.css).
+   Each has a tab that slides it away, so every stud can be reached, and back again ---- */
+(function drawers(){
+  const studio = $(".studio");
+  const label = {tray: ["hide", "toyBox", "hideToyBox", "showToyBox"], tools: ["hide", "toolsName", "hideTools", "showTools"]};
+  const paint = () => $$(".drawer-tab").forEach(b => {
+    const d = b.dataset.drawer, away = studio.classList.contains(d + "-away"), k = label[d];
+    b.setAttribute("aria-expanded", !away);
+    b.querySelector(".dt-txt").textContent = t(away ? k[1] : k[0]);
+    b.title = t(away ? k[3] : k[2]); b.setAttribute("aria-label", b.title);
+  });
+  $$(".drawer-tab").forEach(b => b.addEventListener("click", () => {
+    sfx.click(); studio.classList.toggle(b.dataset.drawer + "-away"); paint();
+  }));
+  paint(); on("lang", paint);
+})();
+
+/* ---- Build: Bricky's words show for a little while, then the top bar shrinks back to a small corner;
+   tapping Bricky shows them again ---- */
+(function quietBubble(){
+  const bar = $("#studioScreen > .topbar"), bubble = $("#bubble");
+  let timer = 0;
+  const talk = () => { bar.classList.add("talking"); clearTimeout(timer); timer = setTimeout(() => bar.classList.remove("talking"), 6000); };
+  new MutationObserver(talk).observe(bubble, {childList: true, characterData: true, subtree: true});
+  $("#bricky").addEventListener("click", talk);
+  talk();
 })();
 
 /* ---- swipe the toy box left or right for the next or last tab ---- */
