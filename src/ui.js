@@ -305,10 +305,20 @@ function brushOp(b){
   }
 }
 function brushAt(e){
-  // the board grid knows which brick is on top under the finger: no hit test of the whole page on every move
-  const c = cellFromEvent(e);
-  const b = topAt(c.x, c.y); if (!b || ptr.done.has(b.id)) return;
-  brushOp(b);
+  // the board grid knows which brick is on top under the finger: no hit test of the whole page on every move.
+  // A phone reports the finger about once a frame, so a quick swipe jumps over studs: walk from the last spot
+  // in small steps (as the pencil does) so the eraser and paint touch every brick the finger passed over.
+  // A swiping eraser is as wide as a fingertip (a third of a stud each way), so thin pencil lines don't slip past
+  // its corners; a tap still takes off just the brick under the finger.
+  const r = plate.getBoundingClientRect(), p = ptr, last = p.last, rad = tool === "erase" && last ? .35 : 0;
+  const fx = (e.clientX - r.left) / cell, fy = (e.clientY - r.top) / cell;
+  const steps = last ? Math.max(1, Math.ceil(Math.hypot(fx - last[0], fy - last[1]) / .3)) : 1;
+  for (let i = 1; i <= steps; i++){
+    const x = last ? last[0] + (fx - last[0]) * i / steps : fx, y = last ? last[1] + (fy - last[1]) * i / steps : fy;
+    for (let gy = Math.floor(y - rad); gy <= Math.floor(y + rad); gy++)
+      for (let gx = Math.floor(x - rad); gx <= Math.floor(x + rad); gx++) brushOp(topAt(gx, gy));
+  }
+  p.last = [fx, fy];
 }
 
 /* ---- fill bucket ---- */
@@ -370,15 +380,11 @@ function startPencil(e){
   plate.appendChild(pencilSvg);
   pencilAt(e);
 }
-function pencilAt(e){
-  const r = plate.getBoundingClientRect(), p = ptr;
-  const fx = clamp((e.clientX - r.left) / cell, 0, B.cols - .01), fy = clamp((e.clientY - r.top) / cell, 0, B.rows - .01);
-  const last = p.pts[p.pts.length - 1];
-  if (last && Math.hypot(fx - last[0], fy - last[1]) < .25) return;
-  // walk from the last point in small steps so a fast swipe leaves no gaps
-  const steps = last ? Math.ceil(Math.hypot(fx - last[0], fy - last[1]) / .3) : 1;
+// the studs a pencil stroke covers from point a to point b: walk in small steps so a fast swipe leaves no gaps
+function pencilLine(p, a, b){
+  const steps = a ? Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / .3) : 1;
   for (let i = 1; i <= steps; i++){
-    const x = last ? last[0] + (fx - last[0]) * i / steps : fx, y = last ? last[1] + (fy - last[1]) * i / steps : fy;
+    const x = a ? a[0] + (b[0] - a[0]) * i / steps : b[0], y = a ? a[1] + (b[1] - a[1]) * i / steps : b[1];
     // a thick pencil covers the 2×2 studs nearest the finger
     const x0 = p.thick === 2 ? Math.round(x) - 1 : Math.floor(x), y0 = p.thick === 2 ? Math.round(y) - 1 : Math.floor(y);
     for (let dy = 0; dy < p.thick; dy++) for (let dx = 0; dx < p.thick; dx++){
@@ -386,6 +392,13 @@ function pencilAt(e){
       p.cells.add(cy * B.cols + cx);
     }
   }
+}
+function pencilAt(e){
+  const r = plate.getBoundingClientRect(), p = ptr;
+  const fx = clamp((e.clientX - r.left) / cell, 0, B.cols - .01), fy = clamp((e.clientY - r.top) / cell, 0, B.rows - .01);
+  const last = p.pts[p.pts.length - 1];
+  if (last && Math.hypot(fx - last[0], fy - last[1]) < .25) return;
+  pencilLine(p, last, [fx, fy]);
   p.pts.push([fx, fy]);
   pencilSvg.firstChild.setAttribute("d", "M" + p.pts.map(q => q[0].toFixed(2) + " " + q[1].toFixed(2)).join("L") + (p.pts.length === 1 ? "l.01 0" : ""));
 }
@@ -399,6 +412,8 @@ function endPencil(cancelled){
   const xs = p.pts.map(q => q[0]), ys = p.pts.map(q => q[1]);
   if (p.pts.length > 6 && Math.hypot(a[0] - z[0], a[1] - z[1]) <= 2.5 * p.thick
       && Math.max(...xs) - Math.min(...xs) >= 3 && Math.max(...ys) - Math.min(...ys) >= 3){
+    // close the little gap between the end and the start, or the fill leaks out through it and nothing fills
+    pencilLine(p, z, a);
     const out = new Uint8Array(W * H), stack = [];
     for (let x = 0; x < W; x++){ stack.push(x, (H - 1) * W + x); }
     for (let y = 0; y < H; y++){ stack.push(y * W, y * W + W - 1); }
@@ -476,8 +491,8 @@ plate.addEventListener("pointerdown", e => {
 });
 window.addEventListener("pointermove", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
-  if (ptr.kind === "brush"){ brushAt(e); return; }
-  if (ptr.kind === "pencil"){ e.preventDefault(); pencilAt(e); return; }
+  if (ptr.kind === "brush"){ const ev = e.getCoalescedEvents ? e.getCoalescedEvents() : []; (ev.length ? ev : [e]).forEach(brushAt); return; }
+  if (ptr.kind === "pencil"){ e.preventDefault(); const ev = e.getCoalescedEvents ? e.getCoalescedEvents() : []; (ev.length ? ev : [e]).forEach(pencilAt); return; }
   if (ptr.kind === "tap") return;
   if (!ptr.moved){
     const far = Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy);
