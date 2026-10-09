@@ -419,7 +419,7 @@ button{font:inherit;color:inherit}
 .modal{position:fixed;inset:0;z-index:10000;background:rgba(43,30,92,.6);display:grid;place-items:center;padding:16px}
 .modal-card{
   background:#fff;border:3px solid var(--ink);border-radius:24px;box-shadow:0 7px 0 var(--ink);padding:18px;
-  width:min(720px,100%);max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:12px;
+  width:min(720px,100%);max-height:calc(90 * var(--u-vh));overflow:auto;display:flex;flex-direction:column;gap:12px;
 }
 .modal-card h2{margin:0;font-size:1.5rem;line-height:1.1}
 .modal-card img{width:100%;height:auto;border-radius:12px}
@@ -429,7 +429,7 @@ button{font:inherit;color:inherit}
 
 /* ---------- toast ---------- */
 .toast{
-  position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom, 0px));z-index:10001;
+  position:fixed;left:50%;bottom:calc(20px + var(--sa-bottom, 0px));z-index:10001;
   translate:-50% 0;background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);
   padding:10px 16px 8px;display:flex;align-items:center;gap:12px;font-weight:800;max-width:calc(100% - 32px);
   animation:toastIn .5s cubic-bezier(.3,1.6,.5,1);
@@ -613,7 +613,7 @@ body[data-area="math"]{--area:#8A4DE0;--area-soft:#ECE1FB}
 .screen[hidden]{display:none!important}
 
 /* ---------- home ---------- */
-.home{align-items:center;text-align:center;gap:18px;padding-block:4px 16px;min-height:calc(100vh - 40px);min-height:calc(100dvh - 40px)}
+.home{align-items:center;text-align:center;gap:18px;padding-block:4px 16px;min-height:calc(calc(100 * var(--u-vh)) - 40px);min-height:calc(calc(100 * var(--u-dvh)) - 40px)}
 .home-top{align-self:stretch;display:flex;justify-content:flex-end}
 .home .logo{filter:drop-shadow(0 4px 0 rgba(43,30,92,.35))}
 .home-hello{display:flex;align-items:center;justify-content:center;gap:14px;max-width:100%}
@@ -702,7 +702,7 @@ body[data-area="math"]{--area:#8A4DE0;--area-soft:#ECE1FB}
 body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,1fr) 240px;grid-template-areas:"tools board tray"}
 .tray{
   grid-area:tray;position:sticky;top:10px;
-  max-height:calc(100vh - 104px);max-height:calc(100dvh - 104px);overflow-y:auto;overscroll-behavior:contain;
+  max-height:calc(calc(100 * var(--u-vh)) - 104px);max-height:calc(calc(100 * var(--u-dvh)) - 104px);overflow-y:auto;overscroll-behavior:contain;
   padding:14px;gap:14px;
 }
 .tray .swatches{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -712,7 +712,7 @@ body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,1fr) 240px;gr
 .below{display:none!important}
 .tools{
   grid-area:tools;position:sticky;top:10px;display:flex;flex-direction:column;gap:8px;
-  height:calc(100vh - 104px);height:calc(100dvh - 104px);max-height:880px;
+  height:calc(calc(100 * var(--u-vh)) - 104px);height:calc(calc(100 * var(--u-dvh)) - 104px);max-height:880px;
 }
 .tools-main{display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1 1 auto;min-height:0;padding:2px 2px 6px;overscroll-behavior:contain}
 .tbtn{
@@ -734,7 +734,7 @@ body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,1fr) 240px;gr
 .tbtn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .plate-wrap{padding:6px 4px 16px}
 /* short landscape screens (iPad, laptops): every tool still fits without scrolling */
-@media (min-width:900px) and (orientation:landscape) and (max-height:960px){
+@media (min-width:900px) and (orientation:landscape) and (max-height:960px) and (orientation:landscape), (min-height:900px) and (orientation:portrait) and (max-width:960px) and (orientation:portrait) and (pointer:coarse){
   .tools,.tools-main{gap:6px}
   .tbtn{min-height:50px;padding:4px 3px 3px;font-size:.7rem}
   .tbtn svg{width:22px;height:22px}
@@ -752,7 +752,7 @@ body[data-age="little"] .big-only,
 body[data-age="little"] .sec-styles{display:none!important}
 
 /* ---------- upright screens: toy box becomes a dock along the bottom ---------- */
-@media (max-width:899px) and (min-height:541px){
+@media (max-width:899px) and (min-height:541px) and (orientation:landscape), (max-height:899px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   body[data-screen="studio"]{padding-bottom:calc(var(--dock-h, 200px) + 12px)}
   .studio,body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr);grid-template-areas:"tools" "board";gap:10px}
   .tools{position:static;flex-direction:row;height:auto;max-height:none;gap:8px}
@@ -768,7 +768,7 @@ body[data-age="little"] .sec-styles{display:none!important}
     position:fixed;left:0;right:0;bottom:0;top:auto;z-index:80;max-height:none;
     flex-direction:row;align-items:flex-start;gap:16px;overflow-x:auto;overflow-y:hidden;
     border-radius:26px 26px 0 0;border-bottom:0;box-shadow:0 -8px 22px rgba(43,30,92,.28);
-    padding:10px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    padding:10px 16px calc(12px + var(--sa-bottom, 0px));
     transition:transform .25s ease;scrollbar-width:thin;
     -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
   }
@@ -795,7 +795,7 @@ body[data-age="little"] .sec-styles{display:none!important}
 }
 
 /* ---------- phones: tools become a row above the board ---------- */
-@media (max-width:699px){
+@media (max-width:699px) and (orientation:landscape), (max-height:699px) and (orientation:portrait) and (pointer:coarse){
   .app{padding-block:8px 12px}
   .home{gap:12px}
   .doors{grid-template-columns:1fr;gap:14px}
@@ -844,7 +844,7 @@ body[data-age="little"] .sec-styles{display:none!important}
 .sheet[hidden]{display:none!important}
 .sheet-card{
   background:#fff;border:4px solid var(--ink);border-radius:26px;box-shadow:0 8px 0 var(--ink);padding:18px;
-  width:min(640px,100%);max-height:92vh;max-height:92dvh;overflow:auto;display:flex;flex-direction:column;gap:12px;
+  width:min(640px,100%);max-height:calc(92 * var(--u-vh));max-height:calc(92 * var(--u-dvh));overflow:auto;display:flex;flex-direction:column;gap:12px;
 }
 .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .sheet-head h2{margin:0;font-size:1.5rem;line-height:1.1}
@@ -878,7 +878,7 @@ body[data-age="little"] .sec-styles{display:none!important}
 .kb-row{display:flex;gap:6px;flex-wrap:wrap}
 .kb-row .btn{min-height:50px;font-size:1.1rem}
 .kb-space{flex:1;min-width:120px}
-@media (max-width:699px){
+@media (max-width:699px) and (orientation:landscape), (max-height:699px) and (orientation:portrait) and (pointer:coarse){
   .tiles{grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:5px}
   .tile{height:50px;font-size:1.35rem;border-radius:12px}
   .name-show .name-input{font-size:1.5rem}
@@ -943,7 +943,7 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
 .photo-zbtn:disabled{opacity:.4}
 .photo-build{align-self:stretch}
 .photo-build:disabled{opacity:.45}
-@media (max-width:899px) and (min-height:541px){
+@media (max-width:899px) and (min-height:541px) and (orientation:landscape), (max-height:899px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .sec-name{display:flex;flex-direction:column;gap:6px}
   .name-open{height:auto;min-height:0;flex:1 1 auto;font-size:.9rem}
   .name-open > span:first-child{font-size:1.5rem}
@@ -951,7 +951,7 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
   .photo-open > span:first-child{font-size:1.3rem}
   .tray .swatches{grid-template-columns:repeat(8,40px)}
 }
-@media (max-width:699px){
+@media (max-width:699px) and (orientation:landscape), (max-height:699px) and (orientation:portrait) and (pointer:coarse){
   .tray .swatches{grid-template-columns:repeat(8,34px)}
   .photo-pick .btn{flex-basis:120px;min-height:52px;font-size:.95rem}
 }
@@ -1016,7 +1016,7 @@ body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
 @keyframes stopPulse{50%{box-shadow:0 5px 0 var(--ink),0 0 0 10px rgba(255,232,56,.55)}}
 @keyframes hopHere{50%{transform:translateY(-8px)}}
 @keyframes arrive{from{transform:translate(-90px,-40px) scale(.6);opacity:0}to{transform:none;opacity:1}}
-.sticker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:10px;max-height:52vh;overflow:auto;padding:4px}
+.sticker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:10px;max-height:calc(52 * var(--u-vh));overflow:auto;padding:4px}
 .sticker{
   aspect-ratio:1;border-radius:18px;border:3px dashed rgba(43,30,92,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;
   font-size:2.3rem;color:rgba(43,30,92,.3);font-weight:800;background:#F7F5FC;
@@ -1026,7 +1026,7 @@ body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
 .sticker.got:nth-child(3n){transform:rotate(-5deg)}
 .sticker.got:nth-child(3n+1){transform:rotate(4deg)}
 .sticker.isl{background:#FFF6CF}
-@media (max-width:899px){
+@media (max-width:899px) and (orientation:landscape), (max-height:899px) and (orientation:portrait) and (pointer:coarse){
   .isl-path{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:46px}
   .isl-path::before{display:none}
   .stop:nth-child(n){transform:none}
@@ -1034,7 +1034,7 @@ body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
   .stop:nth-child(5){grid-column:2;grid-row:2}
   .stop:nth-child(6){grid-column:1;grid-row:2}
 }
-@media (max-width:699px){
+@media (max-width:699px) and (orientation:landscape), (max-height:699px) and (orientation:portrait) and (pointer:coarse){
   .isl-path{padding-top:44px;row-gap:56px}
   .stop{width:84px;height:84px}
   .stop-ic{font-size:1.6rem}
@@ -1050,7 +1050,7 @@ body[data-area="map"]{--area:#12A89B;--area-soft:#D3F4EF}
 .tray-tabs{display:none}
 .tray-body{display:contents}
 .lock{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
-body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(safe-area-inset-bottom, 0px))}
+body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + var(--sa-bottom, 0px))}
 
 /* ---------- board zoom ---------- */
 .board-col{position:relative}
@@ -1073,7 +1073,7 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
 .zbtn:disabled{opacity:.35;cursor:default}
 
 /* games on phones: a slim panel so the board stays in view */
-@media (orientation:landscape) and (max-height:540px){
+@media (orientation:landscape) and (max-height:540px) and (orientation:landscape), (orientation:portrait) and (max-width:540px) and (orientation:portrait) and (pointer:coarse){
   .gamepanel{padding:8px;gap:8px;border-radius:18px;border-width:3px;box-shadow:0 4px 0 var(--ink);align-items:flex-start}
   .gp-target{flex:0 0 72px;min-height:72px;padding:4px;border-radius:12px}
   .gp-emoji{font-size:1.9rem}
@@ -1091,8 +1091,8 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
 }
 
 /* ---------- phones on their side: toy box | board | tools, all at once ---------- */
-@media (orientation:landscape) and (max-height:540px){
-  body{padding-inline:max(8px, env(safe-area-inset-left, 0px)) max(8px, env(safe-area-inset-right, 0px))}
+@media (orientation:landscape) and (max-height:540px) and (orientation:landscape), (orientation:portrait) and (max-width:540px) and (orientation:portrait) and (pointer:coarse){
+  body{padding-inline:max(8px, var(--sa-left, 0px)) max(8px, var(--sa-right, 0px))}
   .app{padding-block:4px 6px;gap:6px}
   .topbar{min-height:44px;gap:6px;padding:3px 6px;border-radius:16px}
   .tb-home{width:40px;height:40px}
@@ -1111,7 +1111,7 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .zoombar{flex-direction:column;bottom:16px;inset-inline-end:0}
   .gp-text,.gp-bar{display:none}
   .zbtn{width:38px;height:38px}
-  .tray{top:4px;max-height:calc(100dvh - 62px);padding:8px;gap:10px;border-radius:20px}
+  .tray{top:4px;max-height:calc(calc(100 * var(--u-dvh)) - 62px);padding:8px;gap:10px;border-radius:20px}
   .tray h2,.tray h3{font-size:.8rem;margin:0}
   .tray-sec{gap:6px}
   .sec-name{flex-direction:row!important;gap:6px}
@@ -1122,7 +1122,7 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .swatch{min-width:0;min-height:0}
   .shapes{grid-template-columns:1fr 1fr;gap:6px}
   .card{min-height:56px}
-  .tools{top:4px;height:calc(100dvh - 62px);display:grid;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto;gap:6px}
+  .tools{top:4px;height:calc(calc(100 * var(--u-dvh)) - 62px);display:grid;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto;gap:6px}
   .tbtn.warn{grid-column:1 / -1;grid-row:1}
   .tools-main{grid-column:1 / -1;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start;gap:6px;overflow-y:auto;padding:2px 2px 4px}
   .tbtn.undo{grid-column:1 / -1;grid-row:3}
@@ -1133,7 +1133,7 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .tbtn.undo svg{width:26px;height:26px}
   .plate-wrap{padding:4px 4px 14px}
   .sheet{padding:8px}
-  .sheet-card{max-height:calc(100dvh - 16px);padding:12px;gap:8px;border-radius:20px}
+  .sheet-card{max-height:calc(calc(100 * var(--u-dvh)) - 16px);padding:12px;gap:8px;border-radius:20px}
   .sheet-x{width:42px;height:42px;font-size:1.5rem}
   .home{gap:10px}
 }
@@ -1145,8 +1145,8 @@ input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:tex
 
 /* the studio is exactly one screen tall: no page scrolling, and the board gets a box of its own.
    fitCell() reads --fit and sizes the studs to fill that box. */
-body[data-screen="studio"]{height:100vh;height:100dvh;overflow:hidden;padding-bottom:0}
-body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-bottom, 0px))}
+body[data-screen="studio"]{height:calc(100 * var(--u-vh));height:calc(100 * var(--u-dvh));overflow:hidden;padding-bottom:0}
+body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px, var(--sa-top, 0px)) max(10px, var(--sa-bottom, 0px))}
 #studioScreen{flex:1 1 auto;min-height:0}
 .studio{flex:1 1 0;min-height:0;grid-template-rows:minmax(0,1fr);align-items:stretch}
 .tray,.tools{position:static;top:auto;height:auto;max-height:none;min-height:0}
@@ -1158,7 +1158,7 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 .tools .zbtn{width:40px;height:40px}
 
 /* ---------- upright screens: tools, board, then the toy box along the bottom ---------- */
-@media (max-width:899px) and (min-height:541px){
+@media (max-width:899px) and (min-height:541px) and (orientation:landscape), (max-height:899px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .studio,body[data-hand="left"] .studio{display:flex;flex-direction:column;align-items:stretch}
   .tools{order:1;flex:none}
   .board-col{order:2;flex:1 1 0}
@@ -1171,8 +1171,8 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 }
 
 /* ---------- phones on their side: a thin top bar, so the board gets the height ---------- */
-@media (orientation:landscape) and (max-height:540px){
-  body[data-screen="studio"] .app{padding-block:max(4px, env(safe-area-inset-top, 0px)) max(4px, env(safe-area-inset-bottom, 0px));gap:4px}
+@media (orientation:landscape) and (max-height:540px) and (orientation:landscape), (orientation:portrait) and (max-width:540px) and (orientation:portrait) and (pointer:coarse){
+  body[data-screen="studio"] .app{padding-block:max(4px, var(--sa-top, 0px)) max(4px, var(--sa-bottom, 0px));gap:4px}
   #studioScreen{gap:5px}
   .topbar{min-height:38px;padding:2px 5px;gap:6px;border-width:2px;box-shadow:0 3px 0 var(--ink);border-radius:14px}
   .tb-home{width:34px;height:34px;border-width:2px;border-radius:11px;box-shadow:0 2px 0 var(--ink)}
@@ -1196,7 +1196,7 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 }
 
 /* ---------- games on phones: Bricky's bubble already says what to do, so the panel stays one slim block ---------- */
-@media (orientation:landscape) and (max-height:540px){
+@media (orientation:landscape) and (max-height:540px) and (orientation:landscape), (orientation:portrait) and (max-width:540px) and (orientation:portrait) and (pointer:coarse){
   .gamepanel{flex:none;padding:6px 8px;gap:8px}
   .gp-text,.gp-bar{display:none}
   .gp-target{flex-basis:64px;min-height:64px}
@@ -1206,7 +1206,7 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
   .gp-actions .btn{flex:none}
 }
 /* sideways phones: the game panel is a single short row, so the board keeps the height */
-@media (orientation:landscape) and (max-height:540px){
+@media (orientation:landscape) and (max-height:540px) and (orientation:landscape), (orientation:portrait) and (max-width:540px) and (orientation:portrait) and (pointer:coarse){
   .gamepanel{align-items:center;padding:4px 8px}
   .gp-target{flex-basis:52px;min-height:52px}
   .gp-emoji{font-size:1.5rem}
@@ -1495,20 +1495,20 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 .pprev[data-ps="jelly"]{border-radius:9px;box-shadow:inset 0 0 6px var(--jdk),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 
 /* upright tablets: eight styles in two rows of four instead of a row of six and two left over */
-@media (max-width:899px) and (min-height:541px){
+@media (max-width:899px) and (min-height:541px) and (orientation:landscape), (max-height:899px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .styles{grid-template-columns:repeat(4,56px)}
 }
 
 /* ===================== the style pickers (bricks and board) fit every screen ===================== */
 /* beside the board on computers and tablets on their side: two even columns of four big buttons,
    instead of three cramped columns with two left over */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (orientation:landscape), (orientation:portrait) and (min-height:900px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .styles{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
   .stylebtn{min-height:62px;padding:7px 4px 4px;gap:4px;font-size:.8rem}
   .pprev{width:52px;height:34px;--cell:17px}
 }
 /* the dock along the bottom of tablets: a little wider, so long names like Rainbow aren't squeezed */
-@media (orientation:landscape) and (max-width:899px) and (min-height:541px){
+@media (orientation:landscape) and (max-width:899px) and (min-height:541px) and (orientation:landscape), (orientation:portrait) and (max-height:899px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .styles{grid-template-columns:repeat(4,64px)}
 }
 
@@ -1524,7 +1524,7 @@ body[data-screen="studio"] .app{max-width:none}
 @property --bh{syntax:"*";inherits:false}
 @property --sw{syntax:"*";inherits:false}
 @property --free{syntax:"*";inherits:false}
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (orientation:landscape), (orientation:portrait) and (min-height:900px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .studio{grid-template-columns:240px minmax(0,var(--bw,1fr)) 94px;justify-content:center}
   #studioScreen > .topbar{width:var(--sw,auto);max-width:100%;margin-inline:auto;align-self:center}
   body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,var(--bw,1fr)) 240px}
@@ -1549,8 +1549,7 @@ body[data-screen="studio"] .app{max-width:none}
 
 /* ===================== tablets on their side (and squarer screens): the tools in one row above the board ===================== */
 /* the toy box on the left, the tools along the top, and the board filling the rest */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2),
-       (orientation:landscape) and (min-width:900px) and (min-height:541px) and (pointer:coarse){
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2) and (orientation:landscape), (orientation:portrait) and (min-height:900px) and (min-width:541px) and (min-aspect-ratio:2/3) and (orientation:portrait) and (pointer:coarse), (orientation:landscape) and (min-width:900px) and (min-height:541px) and (pointer:coarse) and (orientation:landscape), (orientation:portrait) and (min-height:900px) and (min-width:541px) and (pointer:coarse) and (orientation:portrait) and (pointer:coarse){
   .studio{grid-template-columns:240px minmax(0,var(--bw,1fr));grid-template-rows:auto minmax(0,var(--bh,1fr));grid-template-areas:"tray tools" "tray board";row-gap:8px}
   body[data-hand="left"] .studio{grid-template-columns:minmax(0,var(--bw,1fr)) 240px;grid-template-areas:"tools tray" "board tray"}
   .tray{grid-row:1 / -1;contain:size}          /* the toy box scrolls: its length never stretches the rows */
@@ -1567,18 +1566,17 @@ body[data-screen="studio"] .app{max-width:none}
   .tools .zbtn{width:34px;height:34px;font-size:1.25rem}
   .tools .zbtn svg{width:17px;height:17px}
 }
-@media (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (max-aspect-ratio:3/2),
-       (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (pointer:coarse){
+@media (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (max-aspect-ratio:3/2) and (orientation:landscape), (orientation:portrait) and (min-height:900px) and (max-height:1199px) and (min-width:541px) and (min-aspect-ratio:2/3) and (orientation:portrait) and (pointer:coarse), (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (pointer:coarse) and (orientation:landscape), (orientation:portrait) and (min-height:900px) and (max-height:1199px) and (min-width:541px) and (pointer:coarse) and (orientation:portrait) and (pointer:coarse){
   .tbtn.warn{flex-basis:64px}
   .tbtn.undo{flex-basis:76px}
 }
 
 /* ===================== phones on their side: the three doors fit on the home screen ===================== */
 /* a smaller logo sits beside Bricky's hello, so the doors are on screen without scrolling */
-@media (orientation:landscape) and (max-height:540px){
+@media (orientation:landscape) and (max-height:540px) and (orientation:landscape), (orientation:portrait) and (max-width:540px) and (orientation:portrait) and (pointer:coarse){
   .home{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"logo hello" "doors doors" "extras extras";
     align-items:center;justify-items:center;gap:10px 18px;padding-block:2px 10px;min-height:0}
-  .home-top{position:absolute;top:max(6px, env(safe-area-inset-top, 0px));inset-inline-end:10px;z-index:2}
+  .home-top{position:absolute;top:max(6px, var(--sa-top, 0px));inset-inline-end:10px;z-index:2}
   .home .lock{min-height:38px;padding:4px 12px;font-size:.78rem}
   .home .logo{grid-area:logo;justify-self:end}
   .home-hello{grid-area:hello;justify-self:start;gap:10px;padding-inline-end:120px}
@@ -1594,7 +1592,7 @@ body[data-screen="studio"] .app{max-width:none}
 
 /* ===================== Bricky's islands: room above the stops, so Bricky never covers the island's name ===================== */
 .isl-path{padding-top:52px}
-@media (max-width:899px){ .isl-path{padding-top:44px} }
+@media (max-width:899px) and (orientation:landscape), (max-height:899px) and (orientation:portrait) and (pointer:coarse){ .isl-path{padding-top:44px} }
 
 /* ===================== brick pencil and Bricky plays ===================== */
 .tbtn.sun{background:#FFF3B0}
@@ -1612,7 +1610,7 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes starGot{to{scale:2;opacity:0}}
 @media (prefers-reduced-motion: reduce){.pstar{animation:none}}
 /* upright tablets: all the tools share one row instead of wrapping onto a second */
-@media (max-width:899px) and (min-height:541px){
+@media (max-width:899px) and (min-height:541px) and (orientation:landscape), (max-height:899px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .tools-main,body[data-hand="left"] .tools-main{flex-wrap:nowrap}
   .tools-main .tbtn{flex:1 1 0;min-width:0}
 }
@@ -1620,7 +1618,7 @@ body[data-screen="studio"] .app{max-width:none}
 /* ===================== toy-box tabs on tablets and computers too ===================== */
 /* The toy box used to be one long list here, with the bricks below the colours and styles.
    Now it has the same tabs as phones, with Bricks open first and the colours right under the bricks. */
-@media (orientation:landscape) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px) and (orientation:landscape), (orientation:portrait) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .tray-tabs{display:flex;gap:4px;align-items:stretch;min-width:0;flex:none;order:-1}
   .sec-name{order:-2}
   .ttab{
@@ -1645,14 +1643,14 @@ body[data-screen="studio"] .app{max-width:none}
   .tray[data-tab="bricks"] .sec-colors h2{display:none}
 }
 /* toy box beside the board (computers, sideways tablets): Name and Photo side by side, then the tabs */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (orientation:landscape), (orientation:portrait) and (min-height:900px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .sec-name{flex-direction:row!important;gap:6px}
   .tray .name-open,.tray .photo-open{flex:1 1 0;width:auto;min-height:56px;font-size:.8rem!important;padding:4px!important;flex-direction:column;gap:0;line-height:1.05;white-space:normal}
   .tray .name-open > span:first-child,.tray .photo-open > span:first-child{font-size:1.25rem!important}
   .tray{gap:10px}
   .tray[data-tab="bricks"] .shapes .card{min-height:84px}
 }
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (orientation:landscape), (orientation:portrait) and (min-height:900px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .tray{padding-inline:10px}
   .tray-tabs{gap:3px}
   .ttab{font-size:.56rem;padding-inline:0;border-width:2px}
@@ -1695,7 +1693,7 @@ body[data-screen="studio"] .app{max-width:none}
 /* ===================== Build review: tidier toy box on every screen ===================== */
 /* phones on their side get the toy-box tabs too (picture tabs, the names are read out on a long press),
    so the colours sit right under the bricks instead of at the bottom of a long list */
-@media (orientation:landscape) and (max-height:540px){
+@media (orientation:landscape) and (max-height:540px) and (orientation:landscape), (orientation:portrait) and (max-width:540px) and (orientation:portrait) and (pointer:coarse){
   .studio,body[data-hand="left"] .studio{grid-template-columns:200px minmax(0,1fr) 136px}
   body[data-hand="left"] .studio{grid-template-columns:136px minmax(0,1fr) 200px}
   .tray-tabs{display:flex;gap:3px;align-items:stretch;min-width:0;flex:none;order:0}
@@ -1719,7 +1717,7 @@ body[data-screen="studio"] .app{max-width:none}
   .stamps{grid-template-columns:1fr 1fr}
 }
 /* computers and sideways tablets: tab names big enough to read */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (orientation:landscape), (orientation:portrait) and (min-height:900px) and (min-width:541px) and (orientation:portrait) and (pointer:coarse){
   .tray-tabs{gap:3px}
   .ttab{font-size:.64rem;min-height:58px}
   .ttab-ic{font-size:1.5rem}
@@ -1728,11 +1726,11 @@ body[data-screen="studio"] .app{max-width:none}
 /* ===================== phones on their side: every button on screen, the board as big as the height allows ===================== */
 /* The board's column hugs the board (fitBox() sets --bw) and the toy box and tools share the rest of the width,
    so on a wide phone they get roomier instead of leaving empty strips beside the board. Before --bw is set
-   the board's column takes everything it can (the 100vw fallback), so fitBox() measures the biggest box.
+   the board's column takes everything it can (the calc(100 * var(--u-vw)) fallback), so fitBox() measures the biggest box.
    The Name and Photo buttons and the tabs stay put; only the toy box's contents scroll. */
-@media (orientation:landscape) and (max-height:540px){
-  .studio{--hold-bw:1;grid-template-columns:minmax(176px,1fr) minmax(0,var(--bw,100vw)) minmax(152px,1fr);gap:6px}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(152px,1fr) minmax(0,var(--bw,100vw)) minmax(176px,1fr)}
+@media (orientation:landscape) and (max-height:540px) and (orientation:landscape), (orientation:portrait) and (max-width:540px) and (orientation:portrait) and (pointer:coarse){
+  .studio{--hold-bw:1;grid-template-columns:minmax(176px,1fr) minmax(0,var(--bw,calc(100 * var(--u-vw)))) minmax(152px,1fr);gap:6px}
+  body[data-hand="left"] .studio{grid-template-columns:minmax(152px,1fr) minmax(0,var(--bw,calc(100 * var(--u-vw)))) minmax(176px,1fr)}
   .tray,.tools{max-width:300px;width:100%}
   .studio > .tray{justify-self:end}
   .studio > .tools{justify-self:start}
@@ -1768,7 +1766,7 @@ body[data-screen="studio"] .app{max-width:none}
 @container traybox (min-width:230px){
   .tray .swatches{grid-template-columns:repeat(5,minmax(0,1fr))}
 }
-@media (orientation:landscape) and (max-height:540px){
+@media (orientation:landscape) and (max-height:540px) and (orientation:landscape), (orientation:portrait) and (max-width:540px) and (orientation:portrait) and (pointer:coarse){
   @container sidetools (min-width:184px){
     .tools-main{grid-template-columns:repeat(4,minmax(0,1fr))}
     body[data-age="little"] .tools-main{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -1793,14 +1791,14 @@ body[data-screen="studio"] .app{max-width:none}
 }
 
 /* ===================== Snappy Bricks plays sideways ===================== */
-/* held upright, a friendly screen asks for the phone (or tablet) to be turned; on a computer, for a wider window */
+/* phones and tablets held upright turn the whole page (build.py, TURN_CSS); a computer with a tall window asks for a wider one */
 .turn-me{display:none}
-@media (orientation:portrait){
+@media (orientation:portrait) and (pointer:fine){
   html,body{overflow:hidden}
   .app{visibility:hidden}
   .turn-me{
     position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
-    padding:max(24px, env(safe-area-inset-top, 0px)) 24px max(24px, env(safe-area-inset-bottom, 0px));
+    padding:max(24px, var(--sa-top, 0px)) 24px max(24px, var(--sa-bottom, 0px));
     background-color:var(--bg);background-image:var(--bg-img);background-size:var(--bg-size);text-align:center;
   }
   .turn-pic{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -1814,18 +1812,29 @@ body[data-screen="studio"] .app{max-width:none}
     margin:0;max-width:340px;padding:14px 22px;border:4px solid var(--ink);border-radius:24px;background:var(--sun);
     box-shadow:0 6px 0 var(--ink);color:var(--ink);font-size:1.6rem;font-weight:800;line-height:1.2;
   }
-  .turn-mouse{display:none}
-}
-@media (orientation:portrait) and (pointer:fine){
-  .turn-touch{display:none}
-  .turn-mouse{display:block}
 }
 @keyframes turnMe{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
 @keyframes turnBricky{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(90deg)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion: reduce){.turn-phone{animation:none;transform:rotate(-90deg)}.turn-phone .bricky{animation:none;transform:rotate(90deg)}}
 
+:root{--u-vw:1vw;--u-vh:1vh;--u-dvh:1vh;
+  --sa-top:env(safe-area-inset-top, 0px);--sa-right:env(safe-area-inset-right, 0px);--sa-bottom:env(safe-area-inset-bottom, 0px);--sa-left:env(safe-area-inset-left, 0px)}
+@supports (height:1dvh){:root{--u-dvh:1dvh}}
+/* held upright, the page turns a quarter turn clockwise to fill the screen sideways (--rw/--rh: the real screen, from turn.js) */
+@media (orientation:portrait) and (pointer:coarse){
+  :root{--u-vw:calc(var(--rh, 100vh) / 100);--u-vh:calc(var(--rw, 100vw) / 100);--u-dvh:calc(var(--rw, 100vw) / 100);
+    --sa-left:env(safe-area-inset-top, 0px);--sa-right:env(safe-area-inset-bottom, 0px);--sa-top:env(safe-area-inset-right, 0px);--sa-bottom:env(safe-area-inset-left, 0px)}
+  html{height:100%;overflow:hidden}
+  body,body[data-screen]{
+    position:fixed;top:0;left:0;margin:0;overflow:hidden;
+    width:var(--rh, 100vh);height:var(--rw, 100vw);
+    transform:translateX(var(--rw, 100vw)) rotate(90deg);transform-origin:0 0;
+  }
+  .app{height:100%;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+}
+
 </style>
-<!-- Snappy Bricks plays sideways: held upright, the screen asks to be turned -->
+<!-- Snappy Bricks plays sideways: a computer window taller than it is wide asks to be made wider -->
 <div class="turn-me" id="turnMe" aria-live="polite">
   <div class="turn-pic" aria-hidden="true">
     <svg class="turn-arrow" viewBox="0 0 160 64"><path d="M136 54Q82 -6 30 44" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/><path d="M14 30l8 30 26-14z" fill="#fff"/></svg>
@@ -1841,8 +1850,7 @@ body[data-screen="studio"] .app{max-width:none}
       </svg>
     </div>
   </div>
-  <p class="turn-txt turn-touch" data-i18n="turnSideways">Turn your screen sideways!</p>
-  <p class="turn-txt turn-mouse" data-i18n="turnWider">Make the window wider to play!</p>
+  <p class="turn-txt" data-i18n="turnWider">Make the window wider to play!</p>
 </div>
 
 <div class="app">
@@ -2225,6 +2233,83 @@ body[data-screen="studio"] .app{max-width:none}
 (() => {
 "use strict";
 const EDITION = "standalone";
+/* ===================== always sideways ===================== */
+/* A phone or tablet held upright still shows Snappy Bricks sideways: the whole page is turned a quarter turn
+   (TURN_CSS in build.py) and everything that measures the screen is told the turned sizes, so the
+   sideways layouts, dragging, drawing and pinching work as if the device were on its side.
+   build.py gives every size @media rule a turned twin; turnQuery() below does the same for matchMedia().
+   Computers with a tall window are not turned: they show the "make the window wider" sign instead. */
+const realMatchMedia = window.matchMedia.bind(window);
+const turnedQ = realMatchMedia("(orientation:portrait) and (pointer:coarse)");
+const pageTurned = () => turnedQ.matches;
+const SIZE_FEATURE = /width|height|aspect-ratio|orientation/;
+function splitQueries(q){
+  const out = []; let d = 0, cur = "";
+  for (const ch of q){
+    if (ch === "(") d++; else if (ch === ")") d--;
+    if (ch === "," && !d){ out.push(cur); cur = ""; } else cur += ch;
+  }
+  out.push(cur); return out.map(s => s.trim()).filter(Boolean);
+}
+function swapQuery(q){
+  return q.replace(/(min-|max-)?(width|height|aspect-ratio)\s*:\s*([0-9.]+)\s*\/\s*([0-9.]+)|(min-|max-)?(width|height)(?=\s*:)|orientation\s*:\s*landscape/g,
+    (m, ap, af, a, b, p, f) => {
+      if (af === "aspect-ratio") return (ap === "min-" ? "max-" : ap === "max-" ? "min-" : "") + "aspect-ratio:" + b + "/" + a;
+      if (f) return (p || "") + (f === "width" ? "height" : "width");
+      return "orientation:portrait";
+    });
+}
+// a size query keeps its meaning on a sideways screen, and gets a twin that matches the same sizes turned upright
+function turnQuery(q){
+  return splitQueries(q).flatMap(s => {
+    if (!SIZE_FEATURE.test(s) || /orientation\s*:\s*portrait/.test(s)) return [s];
+    return [s + " and (orientation:landscape)", swapQuery(s) + " and (orientation:portrait) and (pointer:coarse)"];
+  }).join(", ");
+}
+window.matchMedia = q => realMatchMedia(turnQuery(q));
+
+(function turnTheScreen(){
+  const root = document.documentElement;
+  const W = Object.getOwnPropertyDescriptor(window, "innerWidth") || Object.getOwnPropertyDescriptor(Window.prototype, "innerWidth");
+  const H = Object.getOwnPropertyDescriptor(window, "innerHeight") || Object.getOwnPropertyDescriptor(Window.prototype, "innerHeight");
+  if (!W || !H || !W.get || !H.get) return;
+  const realW = () => W.get.call(window), realH = () => H.get.call(window);
+  // the real screen size, for the turned page's width and height (styles8.css)
+  const size = () => { root.style.setProperty("--rw", realW() + "px"); root.style.setProperty("--rh", realH() + "px"); };
+  size(); window.addEventListener("resize", size); window.addEventListener("orientationchange", size);
+  Object.defineProperty(window, "innerWidth", {configurable: true, get: () => pageTurned() ? realH() : realW()});
+  Object.defineProperty(window, "innerHeight", {configurable: true, get: () => pageTurned() ? realW() : realH()});
+  // the page is turned clockwise: a spot (x, y) on the turned page sits at (screen width - y, x) on the glass
+  const toPage = (x, y) => [y, realW() - x];
+  const toGlass = (x, y) => [realW() - y, x];
+  const patchXY = (proto, xs, ys) => {
+    if (!proto) return;
+    xs.forEach((xk, i) => {
+      const yk = ys[i], dx = Object.getOwnPropertyDescriptor(proto, xk), dy = Object.getOwnPropertyDescriptor(proto, yk);
+      if (!dx || !dy || !dx.get || !dy.get) return;
+      Object.defineProperty(proto, xk, {configurable: true, enumerable: true, get(){ const x = dx.get.call(this); return pageTurned() ? toPage(x, dy.get.call(this))[0] : x; }});
+      Object.defineProperty(proto, yk, {configurable: true, enumerable: true, get(){ const y = dy.get.call(this); return pageTurned() ? toPage(dx.get.call(this), y)[1] : y; }});
+    });
+  };
+  patchXY(window.MouseEvent && MouseEvent.prototype, ["clientX", "pageX", "x", "screenX"], ["clientY", "pageY", "y", "screenY"]);
+  patchXY(window.Touch && Touch.prototype, ["clientX", "pageX", "screenX"], ["clientY", "pageY", "screenY"]);
+  const rect = Element.prototype.getBoundingClientRect;
+  Element.prototype.getBoundingClientRect = function(){
+    const r = rect.call(this);
+    if (!pageTurned()) return r;
+    const w = realW();
+    return new DOMRect(r.top, w - r.right, r.height, r.width);
+  };
+  const atPoint = Document.prototype.elementFromPoint, allAtPoint = Document.prototype.elementsFromPoint;
+  Document.prototype.elementFromPoint = function(x, y){ return pageTurned() ? atPoint.apply(this, toGlass(x, y)) : atPoint.call(this, x, y); };
+  if (allAtPoint) Document.prototype.elementsFromPoint = function(x, y){ return pageTurned() ? allAtPoint.apply(this, toGlass(x, y)) : allAtPoint.call(this, x, y); };
+})();
+
+// the page itself does not scroll while turned; the app inside it does
+function pageScroller(){ return pageTurned() ? document.querySelector(".app") : null; }
+function pageScrollY(){ const s = pageScroller(); return s ? s.scrollTop : window.scrollY; }
+function pageScrollTo(top, behavior){ const s = pageScroller(); (s || window).scrollTo({top, behavior: behavior || "auto"}); }
+
 /* ===================== data ===================== */
 // smallest first: names grow through this list in order until they fit
 const SIZES = [
@@ -2869,7 +2954,7 @@ function fitBox(wrap){
   const below = docked || boxed && getComputedStyle(tray).getPropertyValue("--below").trim() === "1";
   document.body.style.setProperty("--dock-h", (below ? tray.offsetHeight : 0) + "px");
   const H = window.innerHeight;
-  const top = wrap.getBoundingClientRect().top + window.scrollY;
+  const top = wrap.getBoundingClientRect().top + pageScrollY();
   const zb = $("#zoomBar");
   const zbH = !boxed && zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
   const maxH = boxed ? wrap.clientHeight - padY : Math.max(H * .3, H - top - dock - 22 - zbH);
@@ -5318,7 +5403,7 @@ function showScreen(name){
   if (name === "games"){ document.body.dataset.area = "games"; refreshGamesPick(); }
   if (name === "map") document.body.dataset.area = "map";
   if (name === "studio"){ refreshArea(); requestAnimationFrame(() => { fitCell(); requestAnimationFrame(fitCell); }); }
-  window.scrollTo(0, 0);
+  pageScrollTo(0);
 }
 function refreshArea(){
   const m = currentMode;
@@ -5666,12 +5751,11 @@ addStrings({
   tabShapes: ["Shapes", "أشكال"], tabBoard: ["Board", "اللوحة"],
   zoomIn: ["Make the board bigger", "كبّر اللوحة"], zoomOut: ["Make the board smaller", "صغّر اللوحة"],
   zoomFit: ["Show the whole board", "اعرض اللوحة كلها"],
-  turnSideways: ["Turn your screen sideways!", "أدر الشاشة على جنبها!"],
   turnWider: ["Make the window wider to play!", "وسّع النافذة لتلعب!"],
 });
 
-/* ---- Snappy Bricks plays sideways: where the browser allows it (an installed app, full screen),
-   hold the screen sideways; elsewhere the turn-me screen (styles8.css) asks for it ---- */
+/* ---- Snappy Bricks plays sideways: where the browser allows it (an installed app, full screen), the screen
+   is held sideways; elsewhere an upright phone or tablet gets the turned page (turn.js) ---- */
 (function stayLandscape(){
   const so = screen.orientation;
   if (!so || !so.lock) return;
@@ -6400,7 +6484,7 @@ function scrollToCurrent(){
   const here = $("#mapIslands .stop.here") || $("#mapIslands .island:last-child");
   if (!here) return;
   const r = here.getBoundingClientRect();
-  window.scrollTo({top: Math.max(0, window.scrollY + r.top - window.innerHeight / 2 + r.height / 2), behavior: reduceMotion ? "auto" : "smooth"});
+  pageScrollTo(Math.max(0, pageScrollY() + r.top - window.innerHeight / 2 + r.height / 2), reduceMotion ? "auto" : "smooth");
 }
 
 /* ---------- playing a stop ---------- */
