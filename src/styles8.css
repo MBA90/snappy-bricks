@@ -405,9 +405,6 @@ body[data-screen="studio"] .app{max-width:none}
   .tray-body > .tray-sec{flex:none}
   .tray .shapes{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;grid-auto-flow:row;gap:6px}
   .tray .shapes .card{min-height:50px}
-  .sec-bricks .row{margin:0}
-  .sec-bricks .row .btn{width:100%;min-height:36px;padding:2px 8px;font-size:.8rem;gap:6px}
-  .sec-bricks .row .btn svg{width:18px;height:18px}
 
   /* the tools: Clear on top, the tools four to a row, the zoom buttons, and Undo at the bottom */
   .tools{container:sidetools / size;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr) auto auto;padding:6px;gap:5px}
@@ -476,3 +473,31 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes turnMe{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
 @keyframes turnBricky{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(90deg)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion: reduce){.turn-phone{animation:none;transform:rotate(-90deg)}.turn-phone .bricky{animation:none;transform:rotate(90deg)}}
+
+/* ===================== toy box and tools at the screen's edges, the board fills the middle ===================== */
+/* The toy box hugs the left edge and the tools the right (swapped for left-handers); the board's column takes
+   everything between them, and fitBox() adds or takes away columns of studs so the board fills it. */
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+  .studio{grid-template-columns:204px minmax(0,1fr) 88px}
+  body[data-hand="left"] .studio{grid-template-columns:88px minmax(0,1fr) 204px}
+}
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2),
+       (orientation:landscape) and (min-width:900px) and (min-height:541px) and (pointer:coarse){
+  .studio{grid-template-columns:204px minmax(0,1fr)}
+  body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr) 204px}
+}
+@media (orientation:landscape) and (max-height:540px){
+  .studio{grid-template-columns:clamp(160px,21vw,180px) minmax(0,1fr) clamp(146px,19vw,164px)}
+  body[data-hand="left"] .studio{grid-template-columns:clamp(146px,19vw,164px) minmax(0,1fr) clamp(160px,21vw,180px)}
+  .tray,.tools{max-width:none}
+  .studio > .tray,.studio > .tools,body[data-hand="left"] .studio > .tray,body[data-hand="left"] .studio > .tools{justify-self:stretch}
+  /* a narrow toy box: Name and Photo keep their words on two lines */
+  @container traybox (max-width:185px){
+    .name-open,.photo-open{font-size:.64rem!important;gap:2px!important;padding:3px 2px!important}
+    .name-open > span:first-child,.photo-open > span:first-child{font-size:.9rem!important}
+  }
+  /* the tools three to a row */
+  .tools-main,body[data-age="little"] .tools-main{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tools .zbtn{width:30px;height:30px;font-size:1.15rem}
+  .tools .zbtn svg{width:15px;height:15px}
+}
