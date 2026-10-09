@@ -387,3 +387,18 @@ body[data-screen="studio"] .app{max-width:none}
   .tray-body{height:216px;overflow-y:auto}
   .tray[data-tab="plates"] .sec-plates{display:grid!important;grid-template-rows:auto auto;grid-auto-flow:column;column-gap:22px;row-gap:6px;align-items:start}
 }
+/* upright phones with a short toy box (a taller board, a two-line message): the colours still sit under the bricks,
+   with the brick cards a little shorter and the colour buttons a little smaller so both fit */
+@container traybody (min-height:100px) and (max-height:199.98px){
+  .tray[data-tab="bricks"] .tray-body{row-gap:6px;align-content:center}
+  .tray[data-tab="bricks"] .tray-body > .sec-bricks{order:-1}
+  .tray[data-tab="bricks"] .tray-body > .sec-colors{display:flex!important;flex-basis:100%}
+  .tray[data-tab="bricks"] .shapes .card{min-height:62px;height:62px;padding-bottom:16px}
+  .tray[data-tab="bricks"] #turnBtn{min-height:0;height:62px}
+  .tray[data-tab="bricks"] .swatches{grid-template-columns:repeat(8,minmax(0,34px));justify-content:center;gap:5px 6px;padding:2px 0}
+}
+/* shorter still: the colours make one row you can slide sideways */
+@container traybody (min-height:100px) and (max-height:149.98px){
+  .tray[data-tab="bricks"] .swatches{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:38px;justify-content:start;overflow-x:auto;overflow-y:hidden;padding:2px 4px;scrollbar-width:none}
+  .tray[data-tab="bricks"] .swatches .swatch{width:38px}
+}
