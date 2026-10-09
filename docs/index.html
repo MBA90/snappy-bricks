@@ -1950,6 +1950,44 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes signIn{from{opacity:0;transform:translate(-50%, -6px)}}
 @media (prefers-reduced-motion: reduce){.tool-sign,.more-pop:not([hidden]){animation:none}}
 
+/* ===================== the Create button, tab swipes and the pull-up toy box ===================== */
+.create-open,.tray-grip{display:none}
+.create-pop{display:contents}
+@media (orientation:portrait) and (max-width:699px){
+  .sec-name{position:relative}
+  .create-open{
+    display:flex;width:62px;min-height:54px;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:3px 2px!important;
+    font-size:.66rem!important;line-height:1.05;border-radius:14px;box-shadow:0 3px 0 var(--ink);
+    background:linear-gradient(135deg,#FF7AB6,#FFC94D);color:var(--ink);
+  }
+  .create-open > span:first-child{font-size:1.35rem}
+  .create-open[aria-expanded="true"]{background:#FFF5B5}
+  .create-pop{display:none}
+  .sec-name.open .create-pop{
+    display:flex;gap:8px;position:absolute;bottom:calc(100% + 10px);inset-inline-start:-4px;z-index:30;
+    padding:8px;border:3px solid var(--ink);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--ink);
+    animation:popIn .16s ease-out;
+  }
+  .sec-name.open .name-open,.sec-name.open .photo-open{width:96px!important;min-height:78px;font-size:.8rem!important}
+  .sec-name.open .name-open > span:first-child,.sec-name.open .photo-open > span:first-child{font-size:1.7rem!important}
+  /* the toy box's handle: drag it up for a taller toy box over the board, tap it to open or close */
+  .tray{padding-top:18px;margin-top:calc(-1 * var(--pull, 0px));z-index:20}
+  .tray.pull-anim{transition:margin-top .25s cubic-bezier(.3,1.3,.5,1)}
+  .tray.pulled{box-shadow:0 -10px 24px rgba(30,10,60,.25)}
+  .tray-grip{
+    display:block;position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:20px;padding:0;
+    border:0;background:none;cursor:grab;touch-action:none;
+  }
+  .tray-grip > span{display:block;width:48px;height:6px;margin:7px auto 0;border-radius:3px;background:var(--ink);opacity:.35}
+  .tray-grip:active > span,.tray.pulled .tray-grip > span{opacity:.7}
+}
+/* a swipe slides the new tab in from the side the finger came from */
+.tray-body.swipe-next{animation:swipeNext .22s ease-out}
+.tray-body.swipe-back{animation:swipeBack .22s ease-out}
+@keyframes swipeNext{from{opacity:.2;translate:40px 0}}
+@keyframes swipeBack{from{opacity:.2;translate:-40px 0}}
+@media (prefers-reduced-motion: reduce){.tray-body.swipe-next,.tray-body.swipe-back,.sec-name.open .create-pop{animation:none}.tray.pull-anim{transition:none}}
+
 </style>
 <div class="app">
 
@@ -2078,9 +2116,13 @@ body[data-screen="studio"] .app{max-width:none}
     <main class="studio">
       <!-- the toy box -->
       <section class="panel tray" id="tray" aria-labelledby="trayTitle">
+        <button class="tray-grip" id="trayGrip" type="button" aria-expanded="false" data-i18n-aria="pullUp" data-i18n-title="pullUp"><span aria-hidden="true"></span></button>
         <div class="tray-sec sec-name">
-          <button class="btn big name-open" id="nameOpenBtn" type="button"><span aria-hidden="true">✍️</span> <span data-i18n="writeName">Write my name</span></button>
-          <button class="btn photo-open" id="photoOpenBtn" type="button"><span aria-hidden="true">📷</span> <span data-i18n="photoOpen">Brick my photo</span></button>
+          <button class="btn create-open" id="createBtn" type="button" aria-expanded="false" aria-controls="createPop"><span aria-hidden="true">🪄</span> <span data-i18n="create">Create</span></button>
+          <div class="create-pop" id="createPop">
+            <button class="btn big name-open" id="nameOpenBtn" type="button"><span aria-hidden="true">✍️</span> <span data-i18n="writeName">Write my name</span></button>
+            <button class="btn photo-open" id="photoOpenBtn" type="button"><span aria-hidden="true">📷</span> <span data-i18n="photoOpen">Brick my photo</span></button>
+          </div>
         </div>
         <div class="tray-tabs" id="trayTabs" role="tablist" data-i18n-aria="toyBox">
           <button class="ttab" type="button" role="tab" data-tab="bricks" aria-selected="true"><span class="ttab-ic" aria-hidden="true">🧱</span><span class="ttab-txt" data-i18n="tabBricks">Bricks</span></button>
@@ -3721,7 +3763,7 @@ function waitForHold(e){
   }, HOLD_MS);
 }
 function pickUp(e){
-  ptr.moved = true; showFloat(); if (e.pointerType !== "mouse") showSpin();
+  ptr.moved = true; emit("pickup"); showFloat(); if (e.pointerType !== "mouse") showSpin();
   if (e.pointerType === "touch" && ptr.piece.single && ptr.piece.w !== ptr.piece.h && !store("snappy-tip-turn")){ store("snappy-tip-turn", 1); say(t("tipTwoFinger")); }
   moveFloat(e); computeTarget(e);
 }
@@ -5960,6 +6002,95 @@ plateWrap.addEventListener("wheel", e => {
   on("tool", show); on("lang", () => show(tool));
   sign.addEventListener("click", () => setTool("move"));
   on("resize", place); on("board", place);
+})();
+
+addStrings({
+  create: ["Create", "اصنع"],
+  pullUp: ["Pull up to see more of the toy box", "اسحب للأعلى لترى المزيد من صندوق الألعاب"],
+});
+
+/* ---- upright phones: Write my name and Brick my photo wait behind one Create button, so the tabs have room ---- */
+(function createMenu(){
+  const btn = $("#createBtn"), sec = btn.parentNode, pop = $("#createPop");
+  const close = () => { sec.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); };
+  btn.addEventListener("click", () => {
+    sfx.click(); const open = !sec.classList.contains("open");
+    sec.classList.toggle("open", open); btn.setAttribute("aria-expanded", open);
+  });
+  pop.addEventListener("click", close);
+  document.addEventListener("pointerdown", e => { if (!sec.contains(e.target)) close(); }, true);
+  matchMedia("(orientation:portrait) and (max-width:699px)").addEventListener("change", close);
+})();
+
+/* ---- swipe the toy box left or right for the next or last tab ---- */
+// a quick sideways swipe changes the tab; if the row under the finger scrolled instead, the swipe was for scrolling.
+// Touch events (not pointer events) because the browser takes over pointers once a row starts to scroll.
+(function traySwipe(){
+  const body = $("#trayBody"), tray = $("#tray");
+  let s = null;
+  body.addEventListener("touchstart", e => {
+    if (e.touches.length !== 1){ s = null; return; }
+    const t0 = e.touches[0], scrolls = [];
+    for (let el = e.target; el && el !== tray; el = el.parentElement) scrolls.push([el, el.scrollLeft]);
+    s = {x: t0.clientX, y: t0.clientY, at: performance.now(), scrolls};
+  }, {passive: true});
+  body.addEventListener("touchend", e => {
+    const st = s; s = null;
+    if (!st || e.changedTouches.length !== 1 || (ptr && ptr.moved)) return;
+    const t1 = e.changedTouches[0], dx = t1.clientX - st.x, dy = t1.clientY - st.y;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 2 || performance.now() - st.at > 700) return;
+    if (st.scrolls.some(([el, x]) => Math.abs(el.scrollLeft - x) > 2)) return;
+    const tabs = $$("#trayTabs .ttab").filter(b => b.offsetParent);
+    const i = tabs.findIndex(b => b.dataset.tab === tray.dataset.tab);
+    const rtl = document.documentElement.dir === "rtl";
+    const step = (dx < 0) !== rtl ? 1 : -1;                // finger to the left: the next tab (the other way in Arabic)
+    const next = tabs[i + step]; if (!next) return;
+    next.click();
+    body.classList.remove("swipe-next", "swipe-back"); void body.offsetWidth;
+    body.classList.add(dx < 0 ? "swipe-next" : "swipe-back");
+  }, {passive: true});
+  body.addEventListener("animationend", () => body.classList.remove("swipe-next", "swipe-back"));
+})();
+
+/* ---- upright phones: pull the toy box up over the board to see more at once; it slides back down
+   when a brick is picked up or the board is touched ---- */
+(function trayPull(){
+  const tray = $("#tray"), grip = $("#trayGrip"), tools = $("#tools");
+  const phone = matchMedia("(orientation:portrait) and (max-width:699px)");
+  let pull = 0, drag = null;
+  const most = () => Math.max(0, tray.getBoundingClientRect().top + pull - tools.getBoundingClientRect().bottom - 8);
+  const set = (px, anim) => {
+    pull = Math.round(px);
+    tray.classList.toggle("pull-anim", !!anim);
+    tray.style.setProperty("--pull", pull + "px");
+    tray.classList.toggle("pulled", pull > 0);
+    grip.setAttribute("aria-expanded", pull > 0);
+  };
+  const open = () => set(most() * .75, true);
+  const shut = () => { if (pull) set(0, true); };
+  grip.addEventListener("pointerdown", e => {
+    if (!phone.matches) return;
+    e.preventDefault(); grip.setPointerCapture(e.pointerId);
+    drag = {y: e.clientY, p0: pull, max: most(), moved: false};
+  });
+  grip.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const d = drag.y - e.clientY;
+    if (Math.abs(d) > 6) drag.moved = true;
+    if (drag.moved) set(clamp(drag.p0 + d, 0, drag.max));
+  });
+  const end = () => {
+    if (!drag) return;
+    const d = drag; drag = null;
+    if (!d.moved){ sfx.click(); pull ? shut() : open(); return; }   // a tap opens or closes it
+    pull > d.max * .3 ? open() : shut();
+  };
+  grip.addEventListener("pointerup", end);
+  grip.addEventListener("pointercancel", end);
+  on("pickup", shut);
+  $("#plate").addEventListener("pointerdown", shut);
+  phone.addEventListener("change", () => set(0));
+  on("resize", () => { if (pull) set(Math.min(pull, most())); });
 })();
 
 /* ===================== photo to bricks =====================

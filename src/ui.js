@@ -179,7 +179,7 @@ function waitForHold(e){
   }, HOLD_MS);
 }
 function pickUp(e){
-  ptr.moved = true; showFloat(); if (e.pointerType !== "mouse") showSpin();
+  ptr.moved = true; emit("pickup"); showFloat(); if (e.pointerType !== "mouse") showSpin();
   if (e.pointerType === "touch" && ptr.piece.single && ptr.piece.w !== ptr.piece.h && !store("snappy-tip-turn")){ store("snappy-tip-turn", 1); say(t("tipTwoFinger")); }
   moveFloat(e); computeTarget(e);
 }
