@@ -579,11 +579,6 @@ function toggleTurn(){
 
 /* ===================== toolbar actions ===================== */
 let clearArmed = null;
-// put the "Sure?" away (the phone's More menu closing), so a later single tap never clears the board
-function disarmClear(){
-  if (!clearArmed) return;
-  clearTimeout(clearArmed); clearArmed = null; $("#clearTxt").textContent = t("clear");
-}
 function clearBoard(){
   if (!B.bricks.length){ say(t("alreadyEmpty")); return; }
   if (!clearArmed){

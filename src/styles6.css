@@ -24,90 +24,8 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
 .zbtn:active:not(:disabled){transform:translateY(2px)}
 .zbtn:disabled{opacity:.35;cursor:default}
 
-/* ---------- upright phones ---------- */
-@media (orientation:portrait) and (max-width:699px){
-  body{padding-inline:10px}
-  .app{padding-block:6px 10px;gap:8px}
-
-  /* all the tools in two short rows of four (one row of six for Little builders): Clear first, Undo last */
-  .tools,body[data-hand="left"] .tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;flex-direction:initial}
-  .tools-main,body[data-hand="left"] .tools-main{display:contents}
-  body[data-age="little"] .tools{grid-template-columns:repeat(6,minmax(0,1fr))}
-  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{
-    width:auto;min-width:0;min-height:50px;flex:none;padding:3px 2px 2px;border-radius:14px;border-width:3px;
-    font-size:.64rem;box-shadow:0 3px 0 var(--ink);gap:1px;
-  }
-  .tools .tbtn svg,.tbtn.undo svg{width:22px;height:22px}
-  .tbtn.undo{grid-column:-2 / -1;font-size:.72rem}
-  body[data-hand="left"] .tbtn.undo{grid-column:1 / 2;grid-row:2}
-  body[data-age="little"][data-hand="left"] .tbtn.undo{grid-row:1}
-  body[data-hand="left"] .tbtn.warn{grid-column:-2 / -1;grid-row:1}
-  body[data-hand="left"] .tools{grid-auto-flow:row dense}
-
-  /* the toy box: Name and Photo, then tabs, then one tidy row of choices */
-  .tray{
-    display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"name tabs" "body body";
-    gap:8px 8px;overflow:visible;padding:8px 10px calc(10px + env(safe-area-inset-bottom, 0px));
-    -webkit-mask-image:none;mask-image:none;
-  }
-  [dir="rtl"] .tray{-webkit-mask-image:none;mask-image:none}
-  .sec-name{grid-area:name;flex-direction:row!important;gap:6px;align-self:stretch}
-  .name-open,.photo-open{
-    width:54px!important;min-height:54px;height:auto;flex:none;flex-direction:column;gap:0;padding:3px 2px!important;
-    font-size:.6rem!important;line-height:1.05;border-radius:14px;white-space:normal;box-shadow:0 3px 0 var(--ink);
-  }
-  .name-open > span:first-child,.photo-open > span:first-child{font-size:1.25rem!important}
-  .tray-tabs{grid-area:tabs;display:flex;gap:4px;align-items:stretch;min-width:0}
-  .ttab{
-    flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
-    padding:3px 1px 1px;border:3px solid transparent;border-radius:14px;background:var(--tint);cursor:pointer;
-    font:inherit;font-size:.62rem;font-weight:800;line-height:1.05;color:var(--ink-soft);
-    -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
-  }
-  .ttab-ic{font-size:1.25rem;line-height:1.1}
-  .ttab-txt{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
-  .ttab-dot{width:20px;height:20px;margin:2px 0 1px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
-  body[data-age="little"] .ttab[data-tab="styles"]{display:none}
-
-  .tray-body{
-    grid-area:body;display:flex;gap:12px;align-items:flex-start;min-width:0;height:116px;
-    overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;scrollbar-width:thin;padding-bottom:2px;
-  }
-  .tray-body .tray-sec{flex:none;gap:4px}
-  .tray-body h2,.tray-body h3{display:none}
-  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks),
-  .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
-  .tray[data-tab="styles"] .tray-body > :not(.sec-styles),
-  .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps),
-  .tray[data-tab="plates"] .tray-body > :not(.sec-plates){display:none!important}
-
-  /* bricks: one row of big bricks to drag, with Turn at the end */
-  .sec-bricks{display:flex!important;flex-direction:row;align-items:stretch;gap:8px}
-  .shapes{grid-template-rows:none;grid-auto-flow:column;grid-auto-columns:minmax(66px,auto);gap:6px}
-  .shapes .card{min-height:108px;padding-bottom:22px}
-  .sec-bricks .row{margin:0;align-self:stretch}
-  .sec-bricks .row .btn{flex-direction:column;height:100%;min-height:0;width:58px;padding:4px 2px;font-size:.66rem;line-height:1.1;white-space:normal}
-  .sec-bricks .row .btn svg{width:26px;height:26px}
-
-  /* colors: all 16 in two rows */
-  .tray .swatches{grid-template-columns:repeat(8,38px);gap:8px 6px;padding:4px 2px}
-  .swatch{min-width:38px;min-height:38px}
-
-  /* six styles in two rows of three, so all of them fit without scrolling */
-  .styles{grid-template-columns:repeat(3,minmax(0,104px));gap:6px}
-  .stylebtn{min-height:50px;font-size:.8rem;flex-direction:row;justify-content:center;gap:6px;padding:4px}
-  .stamps{grid-template-rows:none;grid-auto-flow:column;grid-auto-columns:74px;gap:6px}
-  .stamps .card{min-height:104px}
-  .plates{grid-template-columns:repeat(4,48px);gap:8px}
-  .plates > *{min-width:48px;min-height:48px}
-
-  /* the zoom buttons sit under the board instead of over it */
-  .zoombar{position:static;align-self:center;margin-top:-8px;padding:3px}
-  .zbtn{width:40px;height:40px}
-}
 /* games on phones: a slim panel so the board stays in view */
-@media (orientation:portrait) and (max-width:699px), (orientation:landscape) and (max-height:540px){
+@media (orientation:landscape) and (max-height:540px){
   .gamepanel{padding:8px;gap:8px;border-radius:18px;border-width:3px;box-shadow:0 4px 0 var(--ink);align-items:flex-start}
   .gp-target{flex:0 0 72px;min-height:72px;padding:4px;border-radius:12px}
   .gp-emoji{font-size:1.9rem}
@@ -122,29 +40,6 @@ body[data-screen="studio"] .toast{bottom:calc(var(--dock-h, 0px) + 14px + env(sa
   .gp-actions{gap:5px}
   .gp-actions .btn{min-height:36px;font-size:.78rem;padding:2px 9px 0;border-radius:11px;box-shadow:0 3px 0 var(--ink)}
   .gletter{min-width:40px;height:40px;font-size:1.2rem}
-}
-/* short phones: a shorter toy box */
-@media (orientation:portrait) and (max-width:699px) and (max-height:720px){
-  .tray-body{height:96px}
-  .shapes .card{min-height:90px}
-  .stamps .card{min-height:88px}
-  .styles{gap:4px}
-  .stylebtn{min-height:44px}
-  .plates{grid-template-columns:repeat(4,42px);gap:6px}
-  .plates > *{min-width:42px;min-height:42px}
-  .tray .swatches{gap:6px}
-  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{min-height:44px}
-  .tools .tbtn svg,.tbtn.undo svg{width:20px;height:20px}
-  .gp-text,.gp-bar{display:none}
-  .gp-actions{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
-  .gp-actions .btn{flex:none}
-}
-@media (orientation:portrait) and (max-width:379px){
-  .tray .swatches{grid-template-columns:repeat(8,34px);gap:6px 5px}
-  .swatch{min-width:34px;min-height:34px}
-  .shapes{grid-auto-columns:minmax(60px,auto);gap:5px}
-  .sec-bricks .row .btn{width:52px}
-  .ttab-txt{font-size:.56rem}
 }
 
 /* ---------- phones on their side: toy box | board | tools, all at once ---------- */
@@ -215,7 +110,7 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 .tools .zbtn{width:40px;height:40px}
 
 /* ---------- upright screens: tools, board, then the toy box along the bottom ---------- */
-@media (orientation:portrait), (max-width:899px) and (min-height:541px){
+@media (max-width:899px) and (min-height:541px){
   .studio,body[data-hand="left"] .studio{display:flex;flex-direction:column;align-items:stretch}
   .tools{order:1;flex:none}
   .board-col{order:2;flex:1 1 0}
@@ -225,42 +120,6 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
   }
   body[data-screen="studio"] .app{padding-bottom:0}
   .zoombar{position:static;align-self:center;margin:0}
-}
-
-/* ---------- upright phones: the board as wide as the phone, the toy box takes whatever height is left ---------- */
-@media (orientation:portrait) and (max-width:699px){
-  body[data-screen="studio"]{--side:max(5px, env(safe-area-inset-left, 0px));padding-inline:var(--side)}
-  body[data-screen="studio"] .app{padding-top:max(6px, env(safe-area-inset-top, 0px));gap:6px}
-  #studioScreen{gap:6px}
-  .topbar{min-height:50px;padding:4px 5px}
-  .tb-home{width:42px;height:42px}
-  .tb-home svg{width:26px;height:26px}
-  .topbar .bricky{width:32px;height:32px}
-  .topbar .bubble{min-height:34px;font-size:.84rem;line-height:1.2}
-  .studio,body[data-hand="left"] .studio{gap:6px}
-  .tools{padding-inline:1px}
-  .board-col{flex:0 1 auto;gap:2px;container-type:inline-size}
-  .plate-wrap{flex:0 1 auto;padding:2px 1px 12px;height:calc((100cqw - 2px) * var(--rows, 18) / var(--cols, 24) + 14px)}
-  .tray{flex:1 0 auto;grid-template-rows:auto minmax(0,1fr)}
-  /* a tall toy box shows more at once: the colors under the bricks, then the styles */
-  .tray-body{height:auto;min-height:112px;align-self:stretch;align-items:center;align-content:center;flex-wrap:wrap;row-gap:10px;container:traybody / size}
-  /* the zoom buttons: a slim pill tucked under the board */
-  .zoombar{padding:2px;gap:4px;border-width:2px;box-shadow:0 2px 0 var(--ink)}
-  .zbtn{width:34px;height:34px;border-width:2px;font-size:1.3rem}
-  .zbtn svg{width:17px;height:17px}
-}
-@container traybody (min-height:200px){
-  .tray[data-tab="bricks"] .tray-body > .sec-bricks{order:-1}
-  .tray[data-tab="bricks"] .tray-body > .sec-colors{display:flex!important;flex-basis:100%}
-  .tray[data-tab="bricks"] .shapes .card{min-height:96px}
-}
-@container traybody (min-height:330px){
-  body:not([data-age="little"]) .tray[data-tab="bricks"] .tray-body > .sec-styles{display:flex!important;flex-basis:100%}
-}
-@media (orientation:portrait) and (max-width:699px) and (max-height:720px){
-  .tray-body{min-height:88px}
-  .topbar{min-height:44px}
-  .tb-home{width:38px;height:38px}
 }
 
 /* ---------- phones on their side: a thin top bar, so the board gets the height ---------- */
@@ -289,7 +148,7 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 }
 
 /* ---------- games on phones: Bricky's bubble already says what to do, so the panel stays one slim block ---------- */
-@media (orientation:portrait) and (max-width:699px), (orientation:landscape) and (max-height:540px){
+@media (orientation:landscape) and (max-height:540px){
   .gamepanel{flex:none;padding:6px 8px;gap:8px}
   .gp-text,.gp-bar{display:none}
   .gp-target{flex-basis:64px;min-height:64px}
@@ -297,12 +156,6 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
   .gletter{min-width:34px;height:34px;font-size:1.05rem;border-radius:10px}
   .gp-actions{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
   .gp-actions .btn{flex:none}
-}
-/* in a game the board matters more than a roomy toy box */
-@media (orientation:portrait) and (max-width:699px){
-  body:not([data-mode="free"]) .board-col{flex:1 1 0}
-  body:not([data-mode="free"]) .plate-wrap{flex:1 1 0;height:auto}
-  body:not([data-mode="free"]) .tray{flex:none}
 }
 /* sideways phones: the game panel is a single short row, so the board keeps the height */
 @media (orientation:landscape) and (max-height:540px){

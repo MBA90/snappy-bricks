@@ -129,7 +129,6 @@ addStrings({
   paint: ["Paint", "تلوين"], fill: ["Fill", "تعبئة"], eraser: ["Eraser", "ممحاة"],
   tt_paint: ["Tap or swipe over bricks to color them", "اضغط أو مرّر على المكعبات لتلوينها"],
   tt_fill: ["Fill an empty space, or recolor a whole shape", "املأ مكانًا فارغًا، أو غيّر لون شكل كامل"],
-  more: ["More", "المزيد"],
   tt_draw: ["Draw with your finger to make bricks", "ارسم بإصبعك لتصنع مكعبات"],
   tt_play: ["Watch Bricky play on your build", "شاهد بريكي يلعب على بنائك"],
   draw: ["Draw", "ارسم"], play: ["Play", "العب"],

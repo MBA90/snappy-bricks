@@ -5,7 +5,20 @@ addStrings({
   tabShapes: ["Shapes", "أشكال"], tabBoard: ["Board", "اللوحة"],
   zoomIn: ["Make the board bigger", "كبّر اللوحة"], zoomOut: ["Make the board smaller", "صغّر اللوحة"],
   zoomFit: ["Show the whole board", "اعرض اللوحة كلها"],
+  turnSideways: ["Turn your screen sideways!", "أدر الشاشة على جنبها!"],
+  turnWider: ["Make the window wider to play!", "وسّع النافذة لتلعب!"],
 });
+
+/* ---- Snappy Bricks plays sideways: where the browser allows it (an installed app, full screen),
+   hold the screen sideways; elsewhere the turn-me screen (styles8.css) asks for it ---- */
+(function stayLandscape(){
+  const so = screen.orientation;
+  if (!so || !so.lock) return;
+  const lock = () => so.lock("landscape").catch(() => {});
+  lock();
+  document.addEventListener("fullscreenchange", lock);
+  document.addEventListener("pointerdown", lock, {once: true});
+})();
 
 /* ---- toy box tabs (only shown on phones, where the toy box is a short dock) ---- */
 (function trayTabs(){
@@ -74,12 +87,12 @@ function updateZoomBtns(){
 // when the tools stand in a column beside the board, the zoom buttons move into it, above Undo, so they never cover the board
 (function zoomHome(){
   const zb = $("#zoomBar"), home = zb.parentNode, after = zb.nextSibling;
-  const upright = matchMedia("(orientation:portrait), (max-width:899px) and (min-height:541px)");
+  const upright = matchMedia("(max-width:899px) and (min-height:541px)");
   const place = () => {
     const tools = $("#tools"), undo = $("#undoBtn");
-    if (!upright.matches) tools.insertBefore(zb, undo.parentNode === tools ? undo : null);   // Undo may still be on the phone's board
+    if (!upright.matches) tools.insertBefore(zb, undo);
     else home.insertBefore(zb, after);
-    fitStale = true;                                   // the phone turned: every brick gets a new size, style them once
+    fitStale = true;                                   // the layout changed: every brick gets a new size, style them once
     fitCell();
   };
   upright.addEventListener ? upright.addEventListener("change", place) : upright.addListener(place);
@@ -154,37 +167,6 @@ plateWrap.addEventListener("wheel", e => {
   window.addEventListener("pointercancel", up);
 })();
 
-/* ---- upright phones: the tools in one row, a More button for Clear, Replay and Save, and Undo by the thumb ---- */
-(function phoneTools(){
-  const phone = matchMedia("(orientation:portrait) and (max-width:699px)");
-  const more = $("#moreBtn"), pop = $("#morePop"), undo = $("#undoBtn"), col = $(".board-col");
-  // where each button lives on bigger screens, so it can go back there (put back last-moved first)
-  const homes = ["#clearBtn", "#replayBtn", "#saveMenuBtn", "#undoBtn"].map(s => { const el = $(s); return {el, home: el.parentNode, after: el.nextSibling}; });
-  const openMore = () => { pop.hidden = false; more.setAttribute("aria-expanded", "true"); };
-  const closeMore = () => { pop.hidden = true; more.setAttribute("aria-expanded", "false"); disarmClear(); };
-  const place = () => {
-    if (phone.matches){
-      homes.slice(0, 3).forEach(h => pop.appendChild(h.el));
-      col.appendChild(undo); undo.classList.add("float");
-    } else {
-      closeMore(); undo.classList.remove("float");
-      homes.slice().reverse().forEach(h => h.home.insertBefore(h.el, h.after));
-      const zb = $("#zoomBar");
-      if (zb.parentNode === undo.parentNode) undo.parentNode.insertBefore(zb, undo);   // the zoom buttons stay above Undo
-    }
-  };
-  phone.addEventListener ? phone.addEventListener("change", place) : phone.addListener(place);
-  place();
-  more.addEventListener("click", () => { sfx.click(); pop.hidden ? openMore() : closeMore(); });
-  // Replay and Save close the menu; Clear keeps it open for its "Sure?" tap, and closes once the board is empty
-  pop.addEventListener("click", e => {
-    if (e.target.closest("#replayBtn, #saveMenuBtn") || !B.bricks.length) closeMore();
-  });
-  document.addEventListener("pointerdown", e => {
-    if (!pop.hidden && !pop.contains(e.target) && !more.contains(e.target)) closeMore();
-  }, true);
-})();
-
 /* ---- a sign on the board while Paint, Eraser, Draw or Fill is on: the board's edge takes the tool's colour,
    and tapping the sign goes back to building ---- */
 (function toolSign(){
@@ -211,25 +193,6 @@ plateWrap.addEventListener("wheel", e => {
   on("tool", show); on("lang", () => show(tool));
   sign.addEventListener("click", () => setTool("move"));
   on("resize", place); on("board", place);
-})();
-
-addStrings({
-  create: ["Create", "اصنع"],
-  pullUp: ["Pull up to see more of the toy box", "اسحب للأعلى لترى المزيد من صندوق الألعاب"],
-});
-
-/* ---- upright phones: Write my name and Brick my photo wait behind one Create button, so the tabs have room ---- */
-(function createMenu(){
-  const btn = $("#createBtn"), sec = btn.parentNode, pop = $("#createPop");
-  const close = () => { sec.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); };
-  btn.addEventListener("click", () => {
-    sfx.click(); const open = !sec.classList.contains("open");
-    sec.classList.toggle("open", open); btn.setAttribute("aria-expanded", open);
-  });
-  pop.addEventListener("click", close);
-  document.addEventListener("pointerdown", e => { if (!sec.contains(e.target)) close(); }, true);
-  const phone = matchMedia("(orientation:portrait) and (max-width:699px)");
-  phone.addEventListener ? phone.addEventListener("change", close) : phone.addListener(close);
 })();
 
 /* ---- swipe the toy box left or right for the next or last tab ---- */
@@ -262,75 +225,3 @@ addStrings({
   body.addEventListener("animationend", () => body.classList.remove("swipe-next", "swipe-back"));
 })();
 
-/* ---- upright phones: pull the toy box up over the board to see more at once; it slides back down
-   when a brick is picked up or the board is touched ---- */
-(function trayPull(){
-  const tray = $("#tray"), grip = $("#trayGrip"), tools = $("#tools");
-  const phone = matchMedia("(orientation:portrait) and (max-width:699px)");
-  let pull = 0, drag = null;
-  const most = () => Math.max(0, tray.getBoundingClientRect().top + pull - tools.getBoundingClientRect().bottom - 8);
-  // the board keeps its size while the toy box is up (it would otherwise grow into the space the toy box left)
-  const col = $(".board-col");
-  const lock = on => {
-    if (on && !col.style.flex) col.style.flex = `0 0 ${col.getBoundingClientRect().height}px`;
-    if (!on) setTimeout(() => { if (!pull) col.style.flex = ""; }, 320);
-  };
-  const set = (px, anim) => {
-    lock(px > 0);
-    pull = Math.round(px);
-    tray.classList.toggle("pull-anim", !!anim);
-    tray.style.setProperty("--pull", pull + "px");
-    tray.classList.toggle("pulled", pull > 0);
-    roomy();
-    grip.setAttribute("aria-expanded", pull > 0);
-  };
-  // open just as far as the tab needs (never over the whole board); if it already fits, a little bounce says so
-  const body = $("#trayBody");
-  // with room to spare (pulled up, or a short board) the toy box lays out like a page: see .tray.roomy
-  // (not pulled up, it only takes that layout when the whole tab fits in it; otherwise it keeps its compact rows)
-  const roomy = () => {
-    let on = phone.matches && (pull > 0 || body.clientHeight >= 200);
-    tray.classList.toggle("roomy", on);
-    if (on && !pull && body.scrollHeight > body.clientHeight + 2) tray.classList.remove("roomy");
-  };
-  new ResizeObserver(roomy).observe(body);
-  // the toy box's rows change size as it grows, so it measures again once it has moved, until the tab fits
-  let refit = 0;
-  const open = (again) => {
-    tray.classList.add("roomy"); if (!again) body.scrollTop = 0;
-    const cap = most() * .8, want = clamp(pull + body.scrollHeight - body.clientHeight + 6, 0, cap);
-    clearTimeout(refit);
-    if (want <= 24 && !again){ set(36, true); refit = setTimeout(() => set(0, true), 260); return; }
-    if (Math.abs(want - pull) < 3) return;
-    set(want, true);
-    if (want < cap) refit = setTimeout(() => { if (pull && !drag) open(true); }, 280);
-  };
-
-  const shut = () => { clearTimeout(refit); if (pull) set(0, true); };
-  grip.addEventListener("pointerdown", e => {
-    if (!phone.matches) return;
-    e.preventDefault(); grip.setPointerCapture(e.pointerId);
-    drag = {y: e.clientY, p0: pull, max: most(), moved: false};
-  });
-  grip.addEventListener("pointermove", e => {
-    if (!drag) return;
-    const d = drag.y - e.clientY;
-    if (Math.abs(d) > 6) drag.moved = true;
-    if (drag.moved) set(clamp(drag.p0 + d, 0, drag.max));
-  });
-  const end = () => {
-    if (!drag) return;
-    const d = drag; drag = null;
-    if (!d.moved){ sfx.click(); pull ? shut() : open(); return; }   // a tap opens or closes it
-    pull > d.max * .3 ? open() : shut();
-  };
-  grip.addEventListener("pointerup", end);
-  grip.addEventListener("pointercancel", end);
-  // a new tab while pulled up: fit the toy box to it
-  new MutationObserver(() => { if (pull && !drag) open(); else roomy(); }).observe(tray, {attributes: true, attributeFilter: ["data-tab"]});
-  on("lang", roomy); on("resize", roomy);
-  on("pickup", shut);
-  $("#plate").addEventListener("pointerdown", shut);
-  phone.addEventListener ? phone.addEventListener("change", () => set(0)) : phone.addListener(() => set(0));
-  on("resize", () => { if (pull) set(Math.min(pull, most())); });
-})();
