@@ -94,7 +94,8 @@
   box-shadow:
     inset 0 0 calc(var(--cell)*1.1) var(--jdk),
     inset 0 calc(var(--cell)*-.12) calc(var(--cell)*.2) var(--jdk),
-    inset 0 calc(var(--cell)*.08) calc(var(--cell)*.1) rgba(255,255,255,.4);
+    inset 0 calc(var(--cell)*.08) calc(var(--cell)*.1) rgba(255,255,255,.4),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
 }
 .plate[data-ps="jelly"]::before{
   content:"";
@@ -118,7 +119,8 @@
   box-shadow:
     inset 0 0 0 calc(var(--cell)*.14) rgba(255,255,255,.55),
     inset 0 0 calc(var(--cell)*.6) rgba(255,255,255,.7),
-    inset 0 -3px 0 var(--pdk);
+    inset 0 -3px 0 var(--pdk),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
 }
 
 /* rainbow: soft rainbow bands across the board from its own colour, white studs, and the colours slowly
@@ -142,8 +144,8 @@
 @keyframes rainbowshift{50%{opacity:.45}}
 
 /* the picker */
-.pprev[data-ps="candy"]{box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}
-.pprev[data-ps="jelly"]{border-radius:9px;box-shadow:inset 0 0 6px var(--jdk)}
+.pprev[data-ps="candy"]{box-shadow:inset 0 0 0 3px rgba(255,255,255,.6),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="jelly"]{border-radius:9px;box-shadow:inset 0 0 6px var(--jdk),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 
 /* upright tablets: eight styles in two rows of four instead of a row of six and two left over */
 @media (orientation:portrait) and (max-width:899px) and (min-height:541px){
@@ -257,7 +259,7 @@ body[data-screen="studio"] .app{max-width:none}
   .ttab-ic{font-size:1.4rem;line-height:1.1}
   .ttab-txt{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
-  .ttab-dot{width:22px;height:22px;margin:2px 0 1px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2))}
+  .ttab-dot{width:22px;height:22px;margin:2px 0 1px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
   body[data-age="little"] .ttab[data-tab="styles"]{display:none}
   /* one tab at a time; the Bricks tab also shows the colours, under the bricks */
   .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks):not(.sec-colors),
@@ -333,7 +335,7 @@ body[data-screen="studio"] .app{max-width:none}
   .ttab-ic{font-size:1.15rem;line-height:1}
   .ttab-txt{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
   .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
-  .ttab-dot{width:20px;height:20px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2))}
+  .ttab-dot{width:20px;height:20px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
   body[data-age="little"] .ttab[data-tab="styles"]{display:none}
   .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks):not(.sec-colors),
   .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
@@ -491,19 +493,3 @@ body[data-screen="studio"] .app{max-width:none}
 /* pressing a tool only lights up its button: no sign over the board and no board edge in the tool's colour */
 .tool-sign{display:none!important}
 .board-col[data-using-tool]:not([data-using-tool="move"]) .plate::after{content:none}
-
-/* ===================== no borders or shadows ===================== */
-/* panels, buttons, tabs, bars, cards and pop-ups are flat: no thick outlines round them and no shadows under them.
-   The bricks, the board and its style previews keep their own 3D look, and game hints (dashed target cells,
-   letter blanks, the island path) keep the lines that make them work */
-:not(:is(.brick,.aura,.plate,.pprev,.swatch-face,.ttab-dot,.hintcell,.gp-slots span)){box-shadow:none!important}
-:not(:is(.brick,.aura,.plate,.pprev,.isl-path))::before,
-:not(:is(.brick,.aura,.plate,.pprev))::after{border:0 none!important;box-shadow:none!important}
-/* a clear but light line is left round the things that had an outline */
-:not(:is(.brick,.aura,.plate,.pprev,.swatch-face,.ttab-dot,.hintcell,.gp-slots span)){border-width:2px!important;border-color:rgba(43,30,92,.3)!important}
-.swatch[aria-pressed="true"]{outline:none}
-/* and the panels, buttons, cards and pop-ups sit on a soft shadow instead of the old solid dark one */
-body :is(.panel,.chip,.btn,.bubble,.modal-card,.toast,.gamepanel,.gletter,.lv-item,.theme-card,.badge.got,
-  .door,.pill,.topbar,.tb-home,.tb-btn,.gcard,.tbtn,.sheet-card,.sheet-x,.kbtn,.tile,.big-choice,.coach,
-  .island,.isl-sticker.got,.stop,.sticker.got,.zoombar,.turn-phone,.turn-txt){box-shadow:0 3px 8px rgba(43,30,92,.2)!important}
-body :is(.chip,.btn,.gletter,.door,.pill,.tb-home,.tb-btn,.gcard,.tbtn,.kbtn,.tile,.big-choice,.stop):active{box-shadow:0 1px 3px rgba(43,30,92,.2)!important}
