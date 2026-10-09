@@ -7,9 +7,6 @@ addStrings({
   zoomFit: ["Show the whole board", "اعرض اللوحة كلها"],
   turnSideways: ["Turn your screen sideways!", "أدر الشاشة على جنبها!"],
   turnWider: ["Make the window wider to play!", "وسّع النافذة لتلعب!"],
-  hide: ["Hide", "إخفاء"], toolsName: ["Tools", "الأدوات"],
-  hideToyBox: ["Hide the toy box", "أخفِ صندوق الألعاب"], showToyBox: ["Show the toy box", "أظهر صندوق الألعاب"],
-  hideTools: ["Hide the tools", "أخفِ الأدوات"], showTools: ["Show the tools", "أظهر الأدوات"],
 });
 
 /* ---- Snappy Bricks plays sideways: where the browser allows it (an installed app, full screen),
@@ -196,34 +193,6 @@ plateWrap.addEventListener("wheel", e => {
   on("tool", show); on("lang", () => show(tool));
   sign.addEventListener("click", () => setTool("move"));
   on("resize", place); on("board", place);
-})();
-
-/* ---- Build: the board fills the whole screen and the toy box and tools float over its edges (styles9.css).
-   Each has a tab that slides it away, so every stud can be reached, and back again ---- */
-(function drawers(){
-  const studio = $(".studio");
-  const label = {tray: ["hide", "toyBox", "hideToyBox", "showToyBox"], tools: ["hide", "toolsName", "hideTools", "showTools"]};
-  const paint = () => $$(".drawer-tab").forEach(b => {
-    const d = b.dataset.drawer, away = studio.classList.contains(d + "-away"), k = label[d];
-    b.setAttribute("aria-expanded", !away);
-    b.querySelector(".dt-txt").textContent = t(away ? k[1] : k[0]);
-    b.title = t(away ? k[3] : k[2]); b.setAttribute("aria-label", b.title);
-  });
-  $$(".drawer-tab").forEach(b => b.addEventListener("click", () => {
-    sfx.click(); studio.classList.toggle(b.dataset.drawer + "-away"); paint();
-  }));
-  paint(); on("lang", paint);
-})();
-
-/* ---- Build: Bricky's words show for a little while, then the top bar shrinks back to a small corner;
-   tapping Bricky shows them again ---- */
-(function quietBubble(){
-  const bar = $("#studioScreen > .topbar"), bubble = $("#bubble");
-  let timer = 0;
-  const talk = () => { bar.classList.add("talking"); clearTimeout(timer); timer = setTimeout(() => bar.classList.remove("talking"), 6000); };
-  new MutationObserver(talk).observe(bubble, {childList: true, characterData: true, subtree: true});
-  $("#bricky").addEventListener("click", talk);
-  talk();
 })();
 
 /* ---- swipe the toy box left or right for the next or last tab ---- */
