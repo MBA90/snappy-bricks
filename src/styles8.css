@@ -499,6 +499,11 @@ body[data-screen="studio"] .app{max-width:none}
 :not(:is(.brick,.aura,.plate,.pprev,.swatch-face,.ttab-dot,.hintcell,.gp-slots span)){box-shadow:none!important}
 :not(:is(.brick,.aura,.plate,.pprev,.isl-path))::before,
 :not(:is(.brick,.aura,.plate,.pprev))::after{border:0 none!important;box-shadow:none!important}
-/* only a thin, soft line is left round the things that had an outline */
-:not(:is(.brick,.aura,.plate,.pprev,.swatch-face,.ttab-dot,.hintcell,.gp-slots span)){border-width:1.5px!important;border-color:rgba(43,30,92,.16)!important}
+/* a clear but light line is left round the things that had an outline */
+:not(:is(.brick,.aura,.plate,.pprev,.swatch-face,.ttab-dot,.hintcell,.gp-slots span)){border-width:2px!important;border-color:rgba(43,30,92,.3)!important}
 .swatch[aria-pressed="true"]{outline:none}
+/* and the panels, buttons, cards and pop-ups sit on a soft shadow instead of the old solid dark one */
+body :is(.panel,.chip,.btn,.bubble,.modal-card,.toast,.gamepanel,.gletter,.lv-item,.theme-card,.badge.got,
+  .door,.pill,.topbar,.tb-home,.tb-btn,.gcard,.tbtn,.sheet-card,.sheet-x,.kbtn,.tile,.big-choice,.coach,
+  .island,.isl-sticker.got,.stop,.sticker.got,.zoombar,.turn-phone,.turn-txt){box-shadow:0 3px 8px rgba(43,30,92,.2)!important}
+body :is(.chip,.btn,.gletter,.door,.pill,.tb-home,.tb-btn,.gcard,.tbtn,.kbtn,.tile,.big-choice,.stop):active{box-shadow:0 1px 3px rgba(43,30,92,.2)!important}
