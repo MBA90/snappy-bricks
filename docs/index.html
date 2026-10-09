@@ -1833,21 +1833,19 @@ body[data-screen="studio"] .app{max-width:none}
   body[data-hand="left"] .studio{grid-template-columns:minmax(0,var(--bw,1fr)) 204px}
 }
 @media (orientation:landscape) and (max-height:540px){
-  .studio{grid-template-columns:minmax(160px,1fr) minmax(0,var(--bw,100vw)) minmax(118px,1fr)}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(118px,1fr) minmax(0,var(--bw,100vw)) minmax(160px,1fr)}
+  .studio{grid-template-columns:minmax(160px,1fr) minmax(0,var(--bw,100vw)) minmax(146px,1fr)}
+  body[data-hand="left"] .studio{grid-template-columns:minmax(146px,1fr) minmax(0,var(--bw,100vw)) minmax(160px,1fr)}
   .tray{max-width:180px}
-  .tools{max-width:140px}
+  .tools{max-width:164px}
   /* a narrow toy box: Name and Photo keep their words on two lines */
   @container traybox (max-width:185px){
     .name-open,.photo-open{font-size:.64rem!important;gap:2px!important;padding:3px 2px!important}
     .name-open > span:first-child,.photo-open > span:first-child{font-size:.9rem!important}
   }
-  /* a narrow tools column: the tools two to a row */
-  @container sidetools (max-width:150px){
-    .tools-main,body[data-age="little"] .tools-main{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .tools .zbtn{width:30px;height:30px;font-size:1.15rem}
-    .tools .zbtn svg{width:15px;height:15px}
-  }
+  /* the tools three to a row */
+  .tools-main,body[data-age="little"] .tools-main{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tools .zbtn{width:30px;height:30px;font-size:1.15rem}
+  .tools .zbtn svg{width:15px;height:15px}
 }
 
 </style>
