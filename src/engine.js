@@ -334,6 +334,23 @@ function fitCell(){
   if (tuck) plate.style.display = "none";
   try { if (fitBox(wrap) === false) fitStale = true; } finally { if (tuck) plate.style.display = ""; }
 }
+// the space the board was last given, and how many columns of studs fill it
+let fitRoom = null;
+function autoWidth(){ return B === FREE && fitRoom && boardZoom <= 1 && !isPhotoBoard(); }
+function fitCols(rows){
+  const need = B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
+  if (!fitRoom || fitRoom.h <= 0) return Math.max(need, B.cols);
+  return clamp(Math.max(need, Math.floor(fitRoom.w / (fitRoom.h / rows))), Math.max(need, 8), 120);
+}
+// the picked size sets the rows; the columns fill the width, and when bricks stop the board getting narrower,
+// extra rows fill the height instead
+function fitDims(){
+  if (!B.size) B.size = sizeOf().id;
+  const base = sizeOf().rows, cols = fitCols(base);
+  const needRows = B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
+  const rows = Math.min(120, Math.max(base, needRows, Math.floor(fitRoom.h / (fitRoom.w / cols))));
+  return [cols, rows];
+}
 function fitBox(wrap){
   if (!wrap.offsetParent) return false;              // the studio is not on screen
   wrap.style.setProperty("--cols", B.cols); wrap.style.setProperty("--rows", B.rows);
@@ -357,6 +374,17 @@ function fitBox(wrap){
   const zb = $("#zoomBar");
   const zbH = !boxed && zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
   const maxH = boxed ? wrap.clientHeight - padY : Math.max(H * .3, H - top - dock - 22 - zbH);
+  // the building board grows or shrinks sideways, a column of studs at a time, to fill the space it is given
+  fitRoom = boxed ? {w, h: maxH} : null;
+  if (autoWidth()){
+    const [c, r] = fitDims();
+    if (c !== B.cols || r !== B.rows){
+      B.cols = c; B.rows = r;
+      plate.style.width = `calc(var(--cell) * ${B.cols})`; plate.style.height = `calc(var(--cell) * ${B.rows})`;
+      if (studio) studio.style.removeProperty("--bw");
+      commit(); emit("board");
+    }
+  }
   // studs may be part of a pixel wide, so the board fills its box right to the edge instead of losing up to a pixel a row
   const fit = Math.floor(100 * clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 120 : 48)) / 100;
   // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted

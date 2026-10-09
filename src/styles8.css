@@ -474,22 +474,23 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes turnBricky{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(90deg)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion: reduce){.turn-phone{animation:none;transform:rotate(-90deg)}.turn-phone .bricky{animation:none;transform:rotate(90deg)}}
 
-/* ===================== slimmer toy box and tools: the board fills the full height ===================== */
-/* The toy box and tools columns are narrower, so the board gets the width it needs to be as tall as its box. */
+/* ===================== toy box and tools at the screen's edges, the board fills the middle ===================== */
+/* The toy box hugs the left edge and the tools the right (swapped for left-handers); the board's column takes
+   everything between them, and fitBox() adds or takes away columns of studs so the board fills it. */
 @media (orientation:landscape) and (min-width:900px) and (min-height:541px){
-  .studio{grid-template-columns:204px minmax(0,var(--bw,1fr)) 88px}
-  body[data-hand="left"] .studio{grid-template-columns:88px minmax(0,var(--bw,1fr)) 204px}
+  .studio{grid-template-columns:204px minmax(0,1fr) 88px}
+  body[data-hand="left"] .studio{grid-template-columns:88px minmax(0,1fr) 204px}
 }
 @media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2),
        (orientation:landscape) and (min-width:900px) and (min-height:541px) and (pointer:coarse){
-  .studio{grid-template-columns:204px minmax(0,var(--bw,1fr))}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(0,var(--bw,1fr)) 204px}
+  .studio{grid-template-columns:204px minmax(0,1fr)}
+  body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr) 204px}
 }
 @media (orientation:landscape) and (max-height:540px){
-  .studio{grid-template-columns:minmax(160px,1fr) minmax(0,var(--bw,100vw)) minmax(146px,1fr)}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(146px,1fr) minmax(0,var(--bw,100vw)) minmax(160px,1fr)}
-  .tray{max-width:180px}
-  .tools{max-width:164px}
+  .studio{grid-template-columns:clamp(160px,21vw,180px) minmax(0,1fr) clamp(146px,19vw,164px)}
+  body[data-hand="left"] .studio{grid-template-columns:clamp(146px,19vw,164px) minmax(0,1fr) clamp(160px,21vw,180px)}
+  .tray,.tools{max-width:none}
+  .studio > .tray,.studio > .tools,body[data-hand="left"] .studio > .tray,body[data-hand="left"] .studio > .tools{justify-self:stretch}
   /* a narrow toy box: Name and Photo keep their words on two lines */
   @container traybox (max-width:185px){
     .name-open,.photo-open{font-size:.64rem!important;gap:2px!important;padding:3px 2px!important}
