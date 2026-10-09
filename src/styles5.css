@@ -26,7 +26,7 @@
 .photo-zbtn:disabled{opacity:.4}
 .photo-build{align-self:stretch}
 .photo-build:disabled{opacity:.45}
-@media (orientation:portrait), (max-width:899px) and (min-height:541px){
+@media (max-width:899px) and (min-height:541px){
   .sec-name{display:flex;flex-direction:column;gap:6px}
   .name-open{height:auto;min-height:0;flex:1 1 auto;font-size:.9rem}
   .name-open > span:first-child{font-size:1.5rem}
