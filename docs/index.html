@@ -1836,12 +1836,14 @@ body[data-screen="studio"] .app{max-width:none}
 .board-col[data-using-tool]:not([data-using-tool="move"]) .plate::after{content:none}
 
 /* ===================== no borders or shadows ===================== */
-/* panels, buttons, tabs, bars, cards and pop-ups are flat: no outlines round them and no shadows under them.
+/* panels, buttons, tabs, bars, cards and pop-ups are flat: no thick outlines round them and no shadows under them.
    The bricks, the board and its style previews keep their own 3D look, and game hints (dashed target cells,
    letter blanks, the island path) keep the lines that make them work */
-:not(:is(.brick,.aura,.plate,.pprev,.swatch-face,.ttab-dot,.hintcell,.gp-slots span)),
+:not(:is(.brick,.aura,.plate,.pprev,.swatch-face,.ttab-dot,.hintcell,.gp-slots span)){box-shadow:none!important}
 :not(:is(.brick,.aura,.plate,.pprev,.isl-path))::before,
 :not(:is(.brick,.aura,.plate,.pprev))::after{border:0 none!important;box-shadow:none!important}
+/* only a thin, soft line is left round the things that had an outline */
+:not(:is(.brick,.aura,.plate,.pprev,.swatch-face,.ttab-dot,.hintcell,.gp-slots span)){border-width:1.5px!important;border-color:rgba(43,30,92,.16)!important}
 .swatch[aria-pressed="true"]{outline:none}
 
 </style>
