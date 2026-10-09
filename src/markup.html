@@ -125,9 +125,13 @@
     <main class="studio">
       <!-- the toy box -->
       <section class="panel tray" id="tray" aria-labelledby="trayTitle">
+        <button class="tray-grip" id="trayGrip" type="button" aria-expanded="false" data-i18n-aria="pullUp" data-i18n-title="pullUp"><span aria-hidden="true"></span></button>
         <div class="tray-sec sec-name">
-          <button class="btn big name-open" id="nameOpenBtn" type="button"><span aria-hidden="true">✍️</span> <span data-i18n="writeName">Write my name</span></button>
-          <button class="btn photo-open" id="photoOpenBtn" type="button"><span aria-hidden="true">📷</span> <span data-i18n="photoOpen">Brick my photo</span></button>
+          <button class="btn create-open" id="createBtn" type="button" aria-expanded="false" aria-controls="createPop"><span aria-hidden="true">🪄</span> <span data-i18n="create">Create</span></button>
+          <div class="create-pop" id="createPop">
+            <button class="btn big name-open" id="nameOpenBtn" type="button"><span aria-hidden="true">✍️</span> <span data-i18n="writeName">Write my name</span></button>
+            <button class="btn photo-open" id="photoOpenBtn" type="button"><span aria-hidden="true">📷</span> <span data-i18n="photoOpen">Brick my photo</span></button>
+          </div>
         </div>
         <div class="tray-tabs" id="trayTabs" role="tablist" data-i18n-aria="toyBox">
           <button class="ttab" type="button" role="tab" data-tab="bricks" aria-selected="true"><span class="ttab-ic" aria-hidden="true">🧱</span><span class="ttab-txt" data-i18n="tabBricks">Bricks</span></button>

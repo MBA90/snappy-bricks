@@ -455,3 +455,41 @@ body[data-screen="studio"] .app{max-width:none}
 .tool-sign .ts-x{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#fff;color:var(--ink);font-size:.8rem}
 @keyframes signIn{from{opacity:0;transform:translate(-50%, -6px)}}
 @media (prefers-reduced-motion: reduce){.tool-sign,.more-pop:not([hidden]){animation:none}}
+
+/* ===================== the Create button, tab swipes and the pull-up toy box ===================== */
+.create-open,.tray-grip{display:none}
+.create-pop{display:contents}
+@media (orientation:portrait) and (max-width:699px){
+  .sec-name{position:relative}
+  .create-open{
+    display:flex;width:62px;min-height:54px;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:3px 2px!important;
+    font-size:.66rem!important;line-height:1.05;border-radius:14px;box-shadow:0 3px 0 var(--ink);
+    background:linear-gradient(135deg,#FF7AB6,#FFC94D);color:var(--ink);
+  }
+  .create-open > span:first-child{font-size:1.35rem}
+  .create-open[aria-expanded="true"]{background:#FFF5B5}
+  .create-pop{display:none}
+  .sec-name.open .create-pop{
+    display:flex;gap:8px;position:absolute;bottom:calc(100% + 10px);inset-inline-start:-4px;z-index:30;
+    padding:8px;border:3px solid var(--ink);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--ink);
+    animation:popIn .16s ease-out;
+  }
+  .sec-name.open .name-open,.sec-name.open .photo-open{width:96px!important;min-height:78px;font-size:.8rem!important}
+  .sec-name.open .name-open > span:first-child,.sec-name.open .photo-open > span:first-child{font-size:1.7rem!important}
+  /* the toy box's handle: drag it up for a taller toy box over the board, tap it to open or close */
+  .tray{padding-top:18px;margin-top:calc(-1 * var(--pull, 0px));z-index:20}
+  .tray.pull-anim{transition:margin-top .25s cubic-bezier(.3,1.3,.5,1)}
+  .tray.pulled{box-shadow:0 -10px 24px rgba(30,10,60,.25)}
+  .tray-grip{
+    display:block;position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:20px;padding:0;
+    border:0;background:none;cursor:grab;touch-action:none;
+  }
+  .tray-grip > span{display:block;width:48px;height:6px;margin:7px auto 0;border-radius:3px;background:var(--ink);opacity:.35}
+  .tray-grip:active > span,.tray.pulled .tray-grip > span{opacity:.7}
+}
+/* a swipe slides the new tab in from the side the finger came from */
+.tray-body.swipe-next{animation:swipeNext .22s ease-out}
+.tray-body.swipe-back{animation:swipeBack .22s ease-out}
+@keyframes swipeNext{from{opacity:.2;translate:40px 0}}
+@keyframes swipeBack{from{opacity:.2;translate:-40px 0}}
+@media (prefers-reduced-motion: reduce){.tray-body.swipe-next,.tray-body.swipe-back,.sec-name.open .create-pop{animation:none}.tray.pull-anim{transition:none}}

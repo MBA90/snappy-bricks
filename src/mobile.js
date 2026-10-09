@@ -206,3 +206,92 @@ plateWrap.addEventListener("wheel", e => {
   sign.addEventListener("click", () => setTool("move"));
   on("resize", place); on("board", place);
 })();
+
+addStrings({
+  create: ["Create", "اصنع"],
+  pullUp: ["Pull up to see more of the toy box", "اسحب للأعلى لترى المزيد من صندوق الألعاب"],
+});
+
+/* ---- upright phones: Write my name and Brick my photo wait behind one Create button, so the tabs have room ---- */
+(function createMenu(){
+  const btn = $("#createBtn"), sec = btn.parentNode, pop = $("#createPop");
+  const close = () => { sec.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); };
+  btn.addEventListener("click", () => {
+    sfx.click(); const open = !sec.classList.contains("open");
+    sec.classList.toggle("open", open); btn.setAttribute("aria-expanded", open);
+  });
+  pop.addEventListener("click", close);
+  document.addEventListener("pointerdown", e => { if (!sec.contains(e.target)) close(); }, true);
+  matchMedia("(orientation:portrait) and (max-width:699px)").addEventListener("change", close);
+})();
+
+/* ---- swipe the toy box left or right for the next or last tab ---- */
+// a quick sideways swipe changes the tab; if the row under the finger scrolled instead, the swipe was for scrolling.
+// Touch events (not pointer events) because the browser takes over pointers once a row starts to scroll.
+(function traySwipe(){
+  const body = $("#trayBody"), tray = $("#tray");
+  let s = null;
+  body.addEventListener("touchstart", e => {
+    if (e.touches.length !== 1){ s = null; return; }
+    const t0 = e.touches[0], scrolls = [];
+    for (let el = e.target; el && el !== tray; el = el.parentElement) scrolls.push([el, el.scrollLeft]);
+    s = {x: t0.clientX, y: t0.clientY, at: performance.now(), scrolls};
+  }, {passive: true});
+  body.addEventListener("touchend", e => {
+    const st = s; s = null;
+    if (!st || e.changedTouches.length !== 1 || (ptr && ptr.moved)) return;
+    const t1 = e.changedTouches[0], dx = t1.clientX - st.x, dy = t1.clientY - st.y;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 2 || performance.now() - st.at > 700) return;
+    if (st.scrolls.some(([el, x]) => Math.abs(el.scrollLeft - x) > 2)) return;
+    const tabs = $$("#trayTabs .ttab").filter(b => b.offsetParent);
+    const i = tabs.findIndex(b => b.dataset.tab === tray.dataset.tab);
+    const rtl = document.documentElement.dir === "rtl";
+    const step = (dx < 0) !== rtl ? 1 : -1;                // finger to the left: the next tab (the other way in Arabic)
+    const next = tabs[i + step]; if (!next) return;
+    next.click();
+    body.classList.remove("swipe-next", "swipe-back"); void body.offsetWidth;
+    body.classList.add(dx < 0 ? "swipe-next" : "swipe-back");
+  }, {passive: true});
+  body.addEventListener("animationend", () => body.classList.remove("swipe-next", "swipe-back"));
+})();
+
+/* ---- upright phones: pull the toy box up over the board to see more at once; it slides back down
+   when a brick is picked up or the board is touched ---- */
+(function trayPull(){
+  const tray = $("#tray"), grip = $("#trayGrip"), tools = $("#tools");
+  const phone = matchMedia("(orientation:portrait) and (max-width:699px)");
+  let pull = 0, drag = null;
+  const most = () => Math.max(0, tray.getBoundingClientRect().top + pull - tools.getBoundingClientRect().bottom - 8);
+  const set = (px, anim) => {
+    pull = Math.round(px);
+    tray.classList.toggle("pull-anim", !!anim);
+    tray.style.setProperty("--pull", pull + "px");
+    tray.classList.toggle("pulled", pull > 0);
+    grip.setAttribute("aria-expanded", pull > 0);
+  };
+  const open = () => set(most() * .75, true);
+  const shut = () => { if (pull) set(0, true); };
+  grip.addEventListener("pointerdown", e => {
+    if (!phone.matches) return;
+    e.preventDefault(); grip.setPointerCapture(e.pointerId);
+    drag = {y: e.clientY, p0: pull, max: most(), moved: false};
+  });
+  grip.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const d = drag.y - e.clientY;
+    if (Math.abs(d) > 6) drag.moved = true;
+    if (drag.moved) set(clamp(drag.p0 + d, 0, drag.max));
+  });
+  const end = () => {
+    if (!drag) return;
+    const d = drag; drag = null;
+    if (!d.moved){ sfx.click(); pull ? shut() : open(); return; }   // a tap opens or closes it
+    pull > d.max * .3 ? open() : shut();
+  };
+  grip.addEventListener("pointerup", end);
+  grip.addEventListener("pointercancel", end);
+  on("pickup", shut);
+  $("#plate").addEventListener("pointerdown", shut);
+  phone.addEventListener("change", () => set(0));
+  on("resize", () => { if (pull) set(Math.min(pull, most())); });
+})();
