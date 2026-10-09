@@ -1897,6 +1897,59 @@ body[data-screen="studio"] .app{max-width:none}
   .tray[data-tab="bricks"] .swatches .swatch{width:38px}
 }
 
+/* ===================== the More button, Undo by the thumb, and the tool sign ===================== */
+.tbtn.more,.more-pop{display:none}
+/* upright phones: one row of tools (Paint, Eraser, Draw, Fill, Stack, Play, More), the rest in the More menu */
+@media (orientation:portrait) and (max-width:699px){
+  .tools{position:relative}
+  .tools,body[data-hand="left"] .tools{grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+  body[data-age="little"] .tools,body[data-age="little"][data-hand="left"] .tools{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .tbtn.more{display:flex;background:#fff}
+  .tbtn.more[aria-expanded="true"]{background:#FFF5B5}
+  body[data-hand="left"] .tbtn.more{order:-1}
+  .tools .tbtn,.tools-main .tbtn{font-size:.6rem;padding-inline:0}
+  .more-pop:not([hidden]){
+    display:flex;gap:8px;position:absolute;top:calc(100% + 8px);inset-inline-end:0;z-index:30;
+    padding:8px;border:3px solid var(--ink);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--ink);
+    animation:popIn .16s ease-out;
+  }
+  body[data-hand="left"] .more-pop{inset-inline-end:auto;inset-inline-start:0}
+  .more-pop .tbtn{width:78px;min-height:70px;font-size:.78rem;flex:none}
+  .more-pop .tbtn svg{width:28px;height:28px}
+  /* Undo: a big round button on the board's bottom corner, on the side of the hand that builds */
+  .board-col:has(#zoomBar[hidden]){padding-bottom:30px}
+  .tbtn.undo.float{
+    position:absolute;right:2px;bottom:-4px;z-index:12;width:62px;height:62px;min-height:0;min-width:0;padding:0;
+    border-radius:50%;border-width:3px;box-shadow:0 4px 0 var(--ink);font-size:.6rem;gap:0;grid-column:auto;grid-row:auto;
+  }
+  body[data-hand="left"] .tbtn.undo.float{right:auto;left:2px}
+  .tbtn.undo.float svg{width:26px;height:26px}
+  .tbtn.undo.float:disabled{opacity:.55;box-shadow:0 2px 0 var(--ink)}
+}
+@keyframes popIn{from{opacity:0;transform:translateY(-6px) scale(.95)}}
+/* the tool sign, over the top of the board, and the board's edge in the tool's colour */
+.board-col{--tc:var(--ink)}
+.board-col[data-using-tool="paint"]{--tc:#FF4FA0}
+.board-col[data-using-tool="erase"]{--tc:#FF8A3D}
+.board-col[data-using-tool="draw"]{--tc:#7A6CFF}
+.board-col[data-using-tool="fill"]{--tc:#18B4A6}
+.board-col[data-using-tool]:not([data-using-tool="move"]) .plate::after{
+  content:"";position:absolute;inset:-3px;border:5px solid var(--tc);border-radius:inherit;pointer-events:none;z-index:40;
+  box-shadow:inset 0 0 0 3px #fff;
+}
+.tool-sign{
+  position:absolute;left:50%;top:0;z-index:45;transform:translate(-50%, 4px);
+  display:flex;align-items:center;gap:5px;padding:4px 6px 4px 10px;cursor:pointer;
+  border:3px solid var(--ink);border-radius:999px;background:var(--tc);color:#fff;box-shadow:0 3px 0 var(--ink);
+  font:inherit;font-weight:800;font-size:.85rem;line-height:1;white-space:nowrap;
+  animation:signIn .2s ease-out;
+}
+.tool-sign[hidden]{display:none}
+.tool-sign svg{width:20px;height:20px}
+.tool-sign .ts-x{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#fff;color:var(--ink);font-size:.8rem}
+@keyframes signIn{from{opacity:0;transform:translate(-50%, -6px)}}
+@media (prefers-reduced-motion: reduce){.tool-sign,.more-pop:not([hidden]){animation:none}}
+
 </style>
 <div class="app">
 
@@ -2146,7 +2199,12 @@ body[data-screen="studio"] .app{max-width:none}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
             <span class="txt" data-i18n="save">Save</span>
           </button>
+          <button class="tbtn more" id="moreBtn" type="button" aria-expanded="false" aria-controls="morePop" data-i18n-title="more">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2.4"/><circle cx="12" cy="12" r="2.4"/><circle cx="19" cy="12" r="2.4"/></svg>
+            <span class="txt" data-i18n="more">More</span>
+          </button>
         </div>
+        <div class="more-pop" id="morePop" hidden></div>
         <button class="tbtn undo" id="undoBtn" type="button" disabled data-i18n-title="undo">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
           <span class="txt" data-i18n="undo">Undo</span>
@@ -2409,6 +2467,7 @@ addStrings({
   paint: ["Paint", "تلوين"], fill: ["Fill", "تعبئة"], eraser: ["Eraser", "ممحاة"],
   tt_paint: ["Tap or swipe over bricks to color them", "اضغط أو مرّر على المكعبات لتلوينها"],
   tt_fill: ["Fill an empty space, or recolor a whole shape", "املأ مكانًا فارغًا، أو غيّر لون شكل كامل"],
+  more: ["More", "المزيد"],
   tt_draw: ["Draw with your finger to make bricks", "ارسم بإصبعك لتصنع مكعبات"],
   tt_play: ["Watch Bricky play on your build", "شاهد بريكي يلعب على بنائك"],
   draw: ["Draw", "ارسم"], play: ["Play", "العب"],
@@ -5772,7 +5831,8 @@ function updateZoomBtns(){
   const zb = $("#zoomBar"), home = zb.parentNode, after = zb.nextSibling;
   const upright = matchMedia("(orientation:portrait), (max-width:899px) and (min-height:541px)");
   const place = () => {
-    if (!upright.matches) $("#tools").insertBefore(zb, $("#undoBtn"));
+    const tools = $("#tools"), undo = $("#undoBtn");
+    if (!upright.matches) tools.insertBefore(zb, undo.parentNode === tools ? undo : null);   // Undo may still be on the phone's board
     else home.insertBefore(zb, after);
     fitStale = true;                                   // the phone turned: every brick gets a new size, style them once
     fitCell();
@@ -5846,6 +5906,60 @@ plateWrap.addEventListener("wheel", e => {
   const up = e => { pts.delete(e.pointerId); if (pts.size < 2 && g) finish(); };
   window.addEventListener("pointerup", up);
   window.addEventListener("pointercancel", up);
+})();
+
+/* ---- upright phones: the tools in one row, a More button for Clear, Replay and Save, and Undo by the thumb ---- */
+(function phoneTools(){
+  const phone = matchMedia("(orientation:portrait) and (max-width:699px)");
+  const more = $("#moreBtn"), pop = $("#morePop"), undo = $("#undoBtn"), col = $(".board-col");
+  // where each button lives on bigger screens, so it can go back there (put back last-moved first)
+  const homes = ["#clearBtn", "#replayBtn", "#saveMenuBtn", "#undoBtn"].map(s => { const el = $(s); return {el, home: el.parentNode, after: el.nextSibling}; });
+  const openMore = () => { pop.hidden = false; more.setAttribute("aria-expanded", "true"); };
+  const closeMore = () => { pop.hidden = true; more.setAttribute("aria-expanded", "false"); };
+  const place = () => {
+    if (phone.matches){
+      homes.slice(0, 3).forEach(h => pop.appendChild(h.el));
+      col.appendChild(undo); undo.classList.add("float");
+    } else {
+      closeMore(); undo.classList.remove("float");
+      homes.slice().reverse().forEach(h => h.home.insertBefore(h.el, h.after));
+      const zb = $("#zoomBar");
+      if (zb.parentNode === undo.parentNode) undo.parentNode.insertBefore(zb, undo);   // the zoom buttons stay above Undo
+    }
+  };
+  phone.addEventListener ? phone.addEventListener("change", place) : phone.addListener(place);
+  place();
+  more.addEventListener("click", () => { sfx.click(); pop.hidden ? openMore() : closeMore(); });
+  // Replay and Save close the menu; Clear keeps it open for its "Sure?" tap, and closes once the board is empty
+  pop.addEventListener("click", e => {
+    if (e.target.closest("#replayBtn, #saveMenuBtn") || !B.bricks.length) closeMore();
+  });
+  document.addEventListener("pointerdown", e => {
+    if (!pop.hidden && !pop.contains(e.target) && !more.contains(e.target)) closeMore();
+  }, true);
+})();
+
+/* ---- a sign on the board while Paint, Eraser, Draw or Fill is on: the board's edge takes the tool's colour,
+   and tapping the sign goes back to building ---- */
+(function toolSign(){
+  const col = $(".board-col"), wrap = $("#plateWrap");
+  const sign = document.createElement("button");
+  sign.type = "button"; sign.className = "tool-sign"; sign.hidden = true;
+  col.appendChild(sign);
+  const place = () => { if (!sign.hidden) sign.style.top = wrap.offsetTop + "px"; };
+  const show = tl => {
+    col.dataset.usingTool = tl;   // not data-tool: that marks the tool buttons
+    const btn = $(`#tools [data-tool="${tl}"]`);
+    if (tl === "move" || !btn){ sign.hidden = true; return; }
+    const name = btn.querySelector(".txt").textContent;
+    sign.innerHTML = btn.querySelector("svg").outerHTML + `<span class="ts-txt"></span><span class="ts-x" aria-hidden="true">✕</span>`;
+    sign.querySelector(".ts-txt").textContent = name;
+    sign.setAttribute("aria-label", name + " ✕");
+    sign.hidden = false; place();
+  };
+  on("tool", show); on("lang", () => show(tool));
+  sign.addEventListener("click", () => setTool("move"));
+  on("resize", place); on("board", place);
 })();
 
 /* ===================== photo to bricks =====================

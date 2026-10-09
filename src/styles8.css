@@ -402,3 +402,56 @@ body[data-screen="studio"] .app{max-width:none}
   .tray[data-tab="bricks"] .swatches{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:38px;justify-content:start;overflow-x:auto;overflow-y:hidden;padding:2px 4px;scrollbar-width:none}
   .tray[data-tab="bricks"] .swatches .swatch{width:38px}
 }
+
+/* ===================== the More button, Undo by the thumb, and the tool sign ===================== */
+.tbtn.more,.more-pop{display:none}
+/* upright phones: one row of tools (Paint, Eraser, Draw, Fill, Stack, Play, More), the rest in the More menu */
+@media (orientation:portrait) and (max-width:699px){
+  .tools{position:relative}
+  .tools,body[data-hand="left"] .tools{grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+  body[data-age="little"] .tools,body[data-age="little"][data-hand="left"] .tools{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .tbtn.more{display:flex;background:#fff}
+  .tbtn.more[aria-expanded="true"]{background:#FFF5B5}
+  body[data-hand="left"] .tbtn.more{order:-1}
+  .tools .tbtn,.tools-main .tbtn{font-size:.6rem;padding-inline:0}
+  .more-pop:not([hidden]){
+    display:flex;gap:8px;position:absolute;top:calc(100% + 8px);inset-inline-end:0;z-index:30;
+    padding:8px;border:3px solid var(--ink);border-radius:20px;background:#fff;box-shadow:0 5px 0 var(--ink);
+    animation:popIn .16s ease-out;
+  }
+  body[data-hand="left"] .more-pop{inset-inline-end:auto;inset-inline-start:0}
+  .more-pop .tbtn{width:78px;min-height:70px;font-size:.78rem;flex:none}
+  .more-pop .tbtn svg{width:28px;height:28px}
+  /* Undo: a big round button on the board's bottom corner, on the side of the hand that builds */
+  .board-col:has(#zoomBar[hidden]){padding-bottom:30px}
+  .tbtn.undo.float{
+    position:absolute;right:2px;bottom:-4px;z-index:12;width:62px;height:62px;min-height:0;min-width:0;padding:0;
+    border-radius:50%;border-width:3px;box-shadow:0 4px 0 var(--ink);font-size:.6rem;gap:0;grid-column:auto;grid-row:auto;
+  }
+  body[data-hand="left"] .tbtn.undo.float{right:auto;left:2px}
+  .tbtn.undo.float svg{width:26px;height:26px}
+  .tbtn.undo.float:disabled{opacity:.55;box-shadow:0 2px 0 var(--ink)}
+}
+@keyframes popIn{from{opacity:0;transform:translateY(-6px) scale(.95)}}
+/* the tool sign, over the top of the board, and the board's edge in the tool's colour */
+.board-col{--tc:var(--ink)}
+.board-col[data-using-tool="paint"]{--tc:#FF4FA0}
+.board-col[data-using-tool="erase"]{--tc:#FF8A3D}
+.board-col[data-using-tool="draw"]{--tc:#7A6CFF}
+.board-col[data-using-tool="fill"]{--tc:#18B4A6}
+.board-col[data-using-tool]:not([data-using-tool="move"]) .plate::after{
+  content:"";position:absolute;inset:-3px;border:5px solid var(--tc);border-radius:inherit;pointer-events:none;z-index:40;
+  box-shadow:inset 0 0 0 3px #fff;
+}
+.tool-sign{
+  position:absolute;left:50%;top:0;z-index:45;transform:translate(-50%, 4px);
+  display:flex;align-items:center;gap:5px;padding:4px 6px 4px 10px;cursor:pointer;
+  border:3px solid var(--ink);border-radius:999px;background:var(--tc);color:#fff;box-shadow:0 3px 0 var(--ink);
+  font:inherit;font-weight:800;font-size:.85rem;line-height:1;white-space:nowrap;
+  animation:signIn .2s ease-out;
+}
+.tool-sign[hidden]{display:none}
+.tool-sign svg{width:20px;height:20px}
+.tool-sign .ts-x{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#fff;color:var(--ink);font-size:.8rem}
+@keyframes signIn{from{opacity:0;transform:translate(-50%, -6px)}}
+@media (prefers-reduced-motion: reduce){.tool-sign,.more-pop:not([hidden]){animation:none}}
