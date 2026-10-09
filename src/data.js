@@ -53,6 +53,8 @@ const STYLES = [
   {id: "jelly",   en: "Jelly",   ar: "جيلي"},
   {id: "candy",   en: "Candy",   ar: "حلوى"},
   {id: "rainbow", en: "Rainbow", ar: "قوس قزح"},
+  {id: "pixel",   en: "Pixel",   ar: "بكسل"},
+  {id: "ice",     en: "Ice",     ar: "ثلج"},
 ];
 // long side first (lying down)
 const SHAPES = [[1,1],[2,2],[3,2],[4,2]];
@@ -155,6 +157,8 @@ addStrings({
   plateStyleSay_jelly: ["A wobbly jelly board, like a big gummy sweet!", "لوحة جيلي تهتز مثل حلوى جيلي كبيرة!"],
   plateStyleSay_candy: ["A candy board, like a cake with sprinkles!", "لوحة حلوى مثل كعكة عليها حبيبات ملونة!"],
   plateStyleSay_rainbow: ["A rainbow board full of colors!", "لوحة قوس قزح مليئة بالألوان!"],
+  plateStyleSay_pixel: ["A pixel board, like a video game screen!", "لوحة بكسل مثل شاشة لعبة فيديو!"],
+  plateStyleSay_ice: ["An ice board, like a frozen pond!", "لوحة ثلج مثل بركة متجمدة!"],
   undone: ["Undone! It's back the way it was.", "تم التراجع! عاد كما كان."],
   oneBrick: ["1 brick", "المكعبات: 1"], nBricks: ["{n} bricks", "المكعبات: {n}"],
   builtWith: ["Built with Snappy Bricks", "صُنعت بمكعبات سنابي"],
@@ -169,6 +173,8 @@ addStrings({
   styleSay_jelly: ["Jelly bricks wobble like gummy sweets!", "مكعبات الجيلي تهتز مثل حلوى الجيلي!"],
   styleSay_candy: ["Candy bricks with sweet stripes!", "مكعبات حلوى بخطوط لذيذة!"],
   styleSay_rainbow: ["Rainbow bricks in every color!", "مكعبات قوس قزح بكل الألوان!"],
+  styleSay_pixel: ["Pixel bricks, like in a video game!", "مكعبات بكسل مثل لعبة فيديو!"],
+  styleSay_ice: ["Frosty ice bricks with snowflakes!", "مكعبات ثلج باردة عليها ندف الثلج!"],
   brickAria: ["{s} brick", "مكعب {s}"],
   tapToPlace: ["Now tap the board to put it there. Tap it again to stop.", "الآن اضغط على اللوحة لتضعه. اضغط عليه مرة أخرى للتوقف."],
   dragAnytime: ["Okay! Drag a brick onto the board whenever you like.", "حسنًا! اسحب مكعبًا إلى اللوحة متى شئت."],

@@ -15,7 +15,7 @@ def read(name):
     return open(p, encoding="utf-8").read() if os.path.exists(p) else ""
 
 def bundle(edition="public"):
-    css = read("styles.css") + "\n" + read("styles2.css") + "\n" + read("styles3.css") + "\n" + read("styles4.css") + "\n" + read("styles5.css") + "\n" + read("styles6.css") + "\n" + read("styles7.css") + "\n" + read("styles8.css")
+    css = read("styles.css") + "\n" + read("styles2.css") + "\n" + read("styles3.css") + "\n" + read("styles4.css") + "\n" + read("styles5.css") + "\n" + read("styles6.css") + "\n" + read("styles7.css") + "\n" + read("styles8.css") + "\n" + read("styles9.css")
     markup = read("markup.html")
     js = "\n".join(read(f) for f in JS_ORDER if f != "classwall.js" or edition == "class")
     title = "Snappy Bricks Classroom" if edition == "class" else "Snappy Bricks"

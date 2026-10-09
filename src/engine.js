@@ -83,6 +83,11 @@ function richPlate(c){
     return Math.round(x * 255).toString(16).padStart(2, "0"); };
   return "#" + k(0) + k(8) + k(4);
 }
+// ice: the brick's colour frozen, mixed with a cold blue-white so every colour reads as ice
+function iceColor(c){
+  const n = parseInt(c.slice(1), 16), m = (v, w) => Math.round(v + (w - v) * .5).toString(16).padStart(2, "0");
+  return "#" + m(n >> 16, 228) + m((n >> 8) & 255, 244) + m(n & 255, 255);
+}
 // the pastel of the Light and Candy boards: less white than a light brick's, so the board keeps its colour
 function boardPastel(c){
   const n = parseInt(c.slice(1), 16), m = v => Math.round(v + (255 - v) * .3).toString(16).padStart(2, "0");
@@ -95,7 +100,7 @@ function colorVars(c){
   if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)], ["--spark2", spark2Color(c)],
     ["--pl", pastel(c)], ["--plt", shade(pastel(c), .45)], ["--pdk", shade(pastel(c), -.16)], ["--glo", lampColor(c, .75)],
     ["--jel", jellyColor(c, 0, .8)], ["--jlt", jellyColor(c, .45, .9)], ["--jdk", jellyColor(c, -.35, .85)], ["--jsh", jellyColor(c, -.45, .4)],
-    ["--cs", candyStripe(c)], ...rainbowOf(c).map((r, i) => ["--r" + i, r])]; varsCache.set(c, v); }
+    ["--cs", candyStripe(c)], ["--ice", iceColor(c)], ["--idk", shade(iceColor(c), -.2)], ...rainbowOf(c).map((r, i) => ["--r" + i, r])]; varsCache.set(c, v); }
   return v;
 }
 function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
@@ -186,7 +191,7 @@ function artToPix(art, recolor){
 }
 
 /* ===================== boards ===================== */
-// board styles are the brick styles (Classic, Glitter, Glow, Neon, Light, Jelly, Candy, Rainbow) worn by the board itself
+// board styles are the brick styles (Classic, Glitter, Glow, Neon, Light, Jelly, Candy, Rainbow, Pixel, Ice) worn by the board itself
 const plateStyle = v => STYLES.some(s => s.id === v) ? v : "std";
 // the colour a board shows to the eye: neon boards are dark glass whatever their colour
 function plateTone(board){ const r = richPlate(board.plate); return plateStyle(board.ps) === "neon" ? shade(r, -.68) : r; }
@@ -590,12 +595,53 @@ function candyStripes(ctx, col, x, y, w, h, c){
   const p = c * .42 * Math.SQRT2, sw = c * .14 * Math.SQRT2;
   for (let s = -h; s < w + h; s += p){ ctx.beginPath(); ctx.moveTo(x + s, y); ctx.lineTo(x + s + sw, y); ctx.lineTo(x + s + sw - h, y + h); ctx.lineTo(x + s - h, y + h); ctx.fill(); }
 }
+// a pixel stud: a square with a hard light top-left edge and a hard shadow (the same as --pxstud in styles9.css);
+// x, y is the top left of the stud's cell. board: the flatter studs and grid lines of a Pixel board
+function pixelStud(ctx, x, y, c, board){
+  const u = c / 20, r = (a, b, w, h, f) => { ctx.fillStyle = f; ctx.fillRect(x + a * u, y + b * u, w * u, h * u); };
+  if (board){
+    r(0, 0, 20, 1, "rgba(30,10,50,.12)"); r(0, 1, 1, 19, "rgba(30,10,50,.12)");
+    r(7, 7, 8, 8, "rgba(30,10,50,.24)"); r(6, 6, 8, 8, "rgba(255,255,255,.14)");
+    r(6, 6, 8, 2, "rgba(255,255,255,.32)"); r(6, 8, 2, 6, "rgba(255,255,255,.18)");
+    return;
+  }
+  r(6.5, 6.5, 9, 9, "rgba(30,10,50,.22)"); r(5, 5, 9, 9, "rgba(255,255,255,.3)");
+  r(5, 5, 9, 1.6, "rgba(255,255,255,.7)"); r(5, 6.6, 1.6, 7.4, "rgba(255,255,255,.45)");
+  r(6.6, 12.4, 7.4, 1.6, "rgba(30,10,50,.22)"); r(12.4, 6.6, 1.6, 5.8, "rgba(30,10,50,.12)");
+}
+// an ice stud (as --flake and --icestud in styles9.css): a frosted dome with a snowflake on bricks, a plain
+// frosted dome with a glint on the board. x, y is the top left of the stud's cell
+function iceStud(ctx, x, y, c, board){
+  const u = c / 20, dot = (cx, cy, r, f) => { ctx.fillStyle = f; ctx.beginPath(); ctx.arc(x + cx * u, y + cy * u, r * u, 0, 7); ctx.fill(); };
+  if (board){
+    dot(10.8, 11.4, 4.8, "rgba(40,80,140,.1)"); dot(10, 10, 4.4, "rgba(255,255,255,.22)");
+    ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = .5 * u; ctx.beginPath(); ctx.arc(x + 10 * u, y + 10 * u, 4.4 * u, 0, 7); ctx.stroke();
+    dot(8.6, 8.4, 1.1, "rgba(255,255,255,.7)");
+    return;
+  }
+  dot(11, 11.7, 5.3, "rgba(40,80,140,.2)"); dot(10, 10, 5, "rgba(255,255,255,.32)");
+  ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = .5 * u; ctx.beginPath(); ctx.arc(x + 10 * u, y + 10 * u, 5 * u, 0, 7); ctx.stroke();
+  ctx.strokeStyle = "rgba(255,255,255,.95)"; ctx.lineCap = "round"; ctx.lineWidth = u;
+  const ln = (a, b, e, f) => { ctx.moveTo(x + a * u, y + b * u); ctx.lineTo(x + e * u, y + f * u); };
+  ctx.beginPath(); ln(10, 6.4, 10, 13.6); ln(6.9, 8.2, 13.1, 11.8); ln(6.9, 11.8, 13.1, 8.2); ctx.stroke();
+  ctx.lineWidth = .6 * u; ctx.beginPath(); ln(8.9, 6.9, 10, 7.9); ln(10, 7.9, 11.1, 6.9); ln(8.9, 13.1, 10, 12.1); ln(10, 12.1, 11.1, 13.1); ctx.stroke();
+}
+// frosty cracks in the ice (as --cracks in styles9.css), one pattern per n×n studs, clipped by the caller
+const CRACKS = [[[2, 31], [11, 24], [14, 27], [23, 17], [27, 18]], [[11, 24], [9, 17]], [[23, 17], [24, 11]], [[27, 39], [33, 33], [39, 34]], [[33, 33], [32, 28]]];
+function iceCracks(ctx, x, y, w, h, c, n, a){
+  const u = c * n / 40;
+  ctx.strokeStyle = `rgba(255,255,255,${a})`; ctx.lineWidth = .7 * u; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.beginPath();
+  for (let ty = 0; ty < h; ty += c * n) for (let tx = 0; tx < w; tx += c * n)
+    for (const line of CRACKS) line.forEach(([px, py], i) => ctx[i ? "lineTo" : "moveTo"](x + tx + px * u, y + ty + py * u));
+  ctx.stroke();
+}
 // the sprinkles between a candy board's studs (the same as --sprinkles in styles8.css), per 3×3 studs
 const SPRINKLES = [["#FF4F9A", 90, 94, 110, 106], ["#3D9BFF", 192, 108, 208, 92], ["#36C46A", 89, 200, 111, 200], ["#FFB800", 200, 189, 200, 211]];
 // the board under the bricks in each board style (matches styles7.css; Classic is the plain board)
 function drawPlate(ctx, board, ox, oy, c){
   const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = richPlate(board.plate), glass = shade(col, -.68);
-  const rad = ps === "jelly" ? c * .6 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
+  const rad = ps === "jelly" ? c * .6 : ps === "pixel" ? 0 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
   const each = fn => { for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) fn(ox + (x + .5) * c, oy + (y + .5) * c, x, y); };
   // glow, neon and light boards shine out past their edge in their own colour
   if (ps === "glow" || ps === "neon" || ps === "light"){
@@ -603,7 +649,7 @@ function drawPlate(ctx, board, ox, oy, c){
     ctx.fillStyle = ps === "neon" ? glass : col; path(); ctx.fill(); ctx.restore();
   }
   ctx.save(); path(); ctx.clip();
-  ctx.fillStyle = ps === "neon" ? glass : ps === "light" ? boardPastel(col) : col; ctx.fillRect(ox, oy, bw, bh);
+  ctx.fillStyle = ps === "neon" ? glass : ps === "light" ? boardPastel(col) : ps === "ice" ? iceColor(col) : col; ctx.fillRect(ox, oy, bw, bh);
   if (ps === "glow"){
     const g = ctx.createRadialGradient(ox + bw / 2, oy + bh * .45, 0, ox + bw / 2, oy + bh * .45, Math.max(bw, bh) * .62);
     g.addColorStop(0, "rgba(255,255,255,.55)"); g.addColorStop(.45, shade(col, .18)); g.addColorStop(1, col);
@@ -630,6 +676,13 @@ function drawPlate(ctx, board, ox, oy, c){
     const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
     wg.addColorStop(0, "rgba(255,255,255,.22)"); wg.addColorStop(1, "rgba(255,255,255,.05)");
     ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
+  } else if (ps === "pixel"){
+    // a flat game screen: the grid and studs are drawn with the studs below
+  } else if (ps === "ice"){
+    const ig = ctx.createLinearGradient(ox, oy, ox + bw * .26, oy + bh);
+    ig.addColorStop(0, "rgba(255,255,255,.55)"); ig.addColorStop(.35, "rgba(255,255,255,.1)"); ig.addColorStop(.55, "rgba(255,255,255,0)"); ig.addColorStop(1, "rgba(90,140,210,.18)");
+    ctx.fillStyle = ig; ctx.fillRect(ox, oy, bw, bh);
+    iceCracks(ctx, ox, oy, bw, bh, c, 3, .3);
   } else if (ps === "light"){
     const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
     wg.addColorStop(0, "rgba(255,255,255,.4)"); wg.addColorStop(.5, "rgba(255,255,255,0)");
@@ -653,12 +706,20 @@ function drawPlate(ctx, board, ox, oy, c){
     ctx.shadowColor = neonColor(col); ctx.shadowBlur = c * .8; ctx.lineWidth = c * .24; ctx.strokeStyle = neonColor(col);
   } else if (ps === "jelly"){
     ctx.shadowColor = jellyColor(col, -.35, .85); ctx.shadowBlur = c * 1.6; ctx.lineWidth = c; ctx.strokeStyle = jellyColor(col, -.35, .35);
-  } else if (ps === "candy"){
+  } else if (ps === "candy" || ps === "ice"){
     ctx.shadowColor = "rgba(255,255,255,.9)"; ctx.shadowBlur = c * .8; ctx.lineWidth = c * .5; ctx.strokeStyle = "rgba(255,255,255,.6)";
   } else {
     ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
   }
   if (ps === "neon"){ path(); ctx.stroke(); ctx.stroke(); }
+  else if (ps === "pixel"){
+    // hard steps of light and shadow round the edge, no blur
+    const e = Math.max(3, c * .14);
+    ctx.fillStyle = "rgba(255,255,255,.28)"; ctx.fillRect(ox, oy, bw, e);
+    ctx.fillStyle = "rgba(255,255,255,.14)"; ctx.fillRect(ox, oy + e, e, bh - e);
+    ctx.fillStyle = "rgba(30,10,60,.26)"; ctx.fillRect(ox, oy + bh - e, bw, e);
+    ctx.fillStyle = "rgba(30,10,60,.16)"; ctx.fillRect(ox + bw - e, oy, e, bh - e);
+  }
   else { rrect(ctx, ox - c / 2, oy - c / 2, bw + c, bh + c, rad + c * .5); ctx.stroke(); }
   ctx.restore();
   if (ps === "neon"){
@@ -685,6 +746,16 @@ function drawPlate(ctx, board, ox, oy, c){
     each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
   } else if (ps === "rainbow"){
     each((sx, sy) => glassStud(ctx, sx, sy, c));
+  } else if (ps === "pixel" || ps === "ice"){
+    // drawn once and stamped
+    const key = ps + "b|" + c;
+    let tile = studTiles.get(key);
+    if (!tile){
+      const sz = Math.ceil(c); tile = document.createElement("canvas"); tile.width = sz; tile.height = sz;
+      (ps === "pixel" ? pixelStud : iceStud)(tile.getContext("2d"), 0, 0, c, true);
+      studTiles.set(key, tile);
+    }
+    each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
   } else if (ps === "jelly"){
     // gummy studs, drawn once and stamped
     const key = ps + "|" + c + "|" + col;
@@ -718,12 +789,44 @@ function drawBoard(ctx, board, ox, oy, c){
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
     const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
-    const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
+    const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : t === "pixel" ? 0 : t === "ice" ? c * .18 : c * .14;
     const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
     ctx.save();
-    ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
-    ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = (t === "light" ? 4 : 3) + z * 3;
+    ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = t === "pixel" ? 0 : (t === "light" ? 8 : 4) + z * 3;
+    ctx.shadowOffsetX = (t === "pixel" ? 2 : 1) + z; ctx.shadowOffsetY = (t === "light" ? 4 : 3) + z * 3;
     ctx.fillStyle = "rgba(30,10,60,.2)"; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.restore();
+    if (t === "pixel"){
+      // flat colour, hard steps of light and shadow, a hard outline and square studs
+      const e = Math.max(2, c * .1);
+      ctx.fillStyle = b.c; ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = "rgba(255,255,255,.45)"; ctx.fillRect(x, y, w, e);
+      ctx.fillStyle = "rgba(255,255,255,.22)"; ctx.fillRect(x, y + e, e, h - e);
+      ctx.fillStyle = "rgba(30,10,60,.32)"; ctx.fillRect(x, y + h - e, w, e);
+      ctx.fillStyle = "rgba(30,10,60,.18)"; ctx.fillRect(x + w - e, y + e, e, h - 2 * e);
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) pixelStud(ctx, x - gap + xx * c, y - gap + yy * c, c);
+      ctx.strokeStyle = "rgba(30,10,60,.6)"; ctx.lineWidth = Math.max(1, c * .04);
+      ctx.strokeRect(x - ctx.lineWidth / 2, y - ctx.lineWidth / 2, w + ctx.lineWidth, h + ctx.lineWidth);
+      ctx.restore();
+      continue;
+    }
+    if (t === "ice"){
+      // frozen colour, a frosty light from the top left, cracks inside, a white frost rim and snowflake studs
+      ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
+      ctx.fillStyle = iceColor(b.c); ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = shade(iceColor(b.c), -.2); ctx.fillRect(x, y + h - c * .08, w, c * .08);
+      const fg = ctx.createLinearGradient(x, y, x + w * .36, y + h);
+      fg.addColorStop(0, "rgba(255,255,255,.7)"); fg.addColorStop(.28, "rgba(255,255,255,.18)"); fg.addColorStop(.5, "rgba(255,255,255,0)"); fg.addColorStop(.7, "rgba(90,140,210,0)"); fg.addColorStop(1, "rgba(90,140,210,.2)");
+      ctx.fillStyle = fg; ctx.fillRect(x, y, w, h);
+      iceCracks(ctx, x - gap, y - gap, w + gap, h + gap, c, 2, .75);
+      ctx.shadowColor = "rgba(255,255,255,.8)"; ctx.shadowBlur = c * .3; ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = Math.max(3, c * .1);
+      rrect(ctx, x, y, w, h, rad); ctx.stroke();
+      ctx.restore();
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) iceStud(ctx, x - gap + xx * c, y - gap + yy * c, c);
+      ctx.strokeStyle = "rgba(40,70,130,.28)"; ctx.lineWidth = 1;
+      rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();
+      ctx.restore();
+      continue;
+    }
     if (t === "neon"){
       // dark glass, a glowing tube of light round the edge with a white-hot core, and ring studs
       const nc = neonColor(b.c), lw = Math.max(2, c * .07);
