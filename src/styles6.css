@@ -110,7 +110,7 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 .tools .zbtn{width:40px;height:40px}
 
 /* ---------- upright screens: tools, board, then the toy box along the bottom ---------- */
-@media (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   .studio,body[data-hand="left"] .studio{display:flex;flex-direction:column;align-items:stretch}
   .tools{order:1;flex:none}
   .board-col{order:2;flex:1 1 0}

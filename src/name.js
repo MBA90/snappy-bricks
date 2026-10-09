@@ -167,9 +167,11 @@ function buildText(raw, opts = {}){
   if (!text) return {ok: false, reason: "empty"};
   const up = text.toUpperCase();
   const shown = (!hasArabic(text) && isPixelText(up)) ? up : text;
-  // names grow through the normal sizes only; on a photo's Poster board they are written in place
-  const startIdx = Math.max(0, SIZES.indexOf(sizeOf()));
-  const sizes = opts.grow && !isPhotoBoard() ? SIZES.slice(startIdx) : [sizeOf()];
+  // a long name makes the building board bigger (smaller studs), a quarter more each way at a time;
+  // on a photo's Poster board and in games it is written in place
+  const sizes = [{cols: B.cols, rows: B.rows}];
+  if (opts.grow && B === FREE && !isPhotoBoard())
+    for (let c = B.cols, r = B.rows; c < 120 && r < 120;){ c = Math.min(120, Math.ceil(c * 1.25)); r = Math.min(120, Math.ceil(r * 1.25)); sizes.push({cols: c, rows: r}); }
   let plan = null, size = null;
   for (const s of sizes){
     const p = compose(text, s.cols, s.rows, opts.mode || nameMode, opts.colors);
@@ -177,7 +179,8 @@ function buildText(raw, opts = {}){
   }
   if (!plan) return {ok: false, reason: "tooLong"};
   if (!opts.noHistory) pushHistory();
-  if (size.cols !== B.cols || size.rows !== B.rows) setSize(size, false);
+  const grew = size.cols !== B.cols || size.rows !== B.rows;
+  if (grew){ B.cols = size.cols; B.rows = size.rows; }
   rebuildGrid();
   const gx = opts.x != null ? opts.x : Math.floor((B.cols - plan.w) / 2);
   const rel = plan.bricks.map(b => ({...b, x: b.x + gx}));
@@ -206,6 +209,7 @@ function buildText(raw, opts = {}){
     B.bricks.push(nb); anim.set(nb.id, opts.fast ? Math.min(b.delay, 300) : b.delay);
   });
   commit(opts.noAnim ? null : anim);
+  if (grew) applyBoard();                            // the board fits the screen again, around the name
   if (!opts.quiet){
     if (plan.kind === "pixel"){
       plan.letters.forEach(l => setTimeout(() => { sfx.snap(); if (settings.talk && !opts.noSpeak) speak(l.ch === "♥" ? "heart" : l.ch === "★" ? "star" : l.ch, "en"); }, reduceMotion ? 0 : l.delay));

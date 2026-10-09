@@ -752,7 +752,7 @@ body[data-age="little"] .big-only,
 body[data-age="little"] .sec-styles{display:none!important}
 
 /* ---------- upright screens: toy box becomes a dock along the bottom ---------- */
-@media (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   body[data-screen="studio"]{padding-bottom:calc(var(--dock-h, 200px) + 12px)}
   .studio,body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr);grid-template-areas:"tools" "board";gap:10px}
   .tools{position:static;flex-direction:row;height:auto;max-height:none;gap:8px}
@@ -943,7 +943,7 @@ body[data-screen="studio"] .coach{bottom:calc(var(--dock-h, 0px) + 18px)}
 .photo-zbtn:disabled{opacity:.4}
 .photo-build{align-self:stretch}
 .photo-build:disabled{opacity:.45}
-@media (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   .sec-name{display:flex;flex-direction:column;gap:6px}
   .name-open{height:auto;min-height:0;flex:1 1 auto;font-size:.9rem}
   .name-open > span:first-child{font-size:1.5rem}
@@ -1158,7 +1158,7 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 .tools .zbtn{width:40px;height:40px}
 
 /* ---------- upright screens: tools, board, then the toy box along the bottom ---------- */
-@media (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   .studio,body[data-hand="left"] .studio{display:flex;flex-direction:column;align-items:stretch}
   .tools{order:1;flex:none}
   .board-col{order:2;flex:1 1 0}
@@ -1495,20 +1495,20 @@ body[data-screen="studio"] .app{height:100%;min-height:0;padding-block:max(10px,
 .pprev[data-ps="jelly"]{border-radius:9px;box-shadow:inset 0 0 6px var(--jdk),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 
 /* upright tablets: eight styles in two rows of four instead of a row of six and two left over */
-@media (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   .styles{grid-template-columns:repeat(4,56px)}
 }
 
 /* ===================== the style pickers (bricks and board) fit every screen ===================== */
 /* beside the board on computers and tablets on their side: two even columns of four big buttons,
    instead of three cramped columns with two left over */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px){
   .styles{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
   .stylebtn{min-height:62px;padding:7px 4px 4px;gap:4px;font-size:.8rem}
   .pprev{width:52px;height:34px;--cell:17px}
 }
 /* the dock along the bottom of tablets: a little wider, so long names like Rainbow aren't squeezed */
-@media (orientation:landscape) and (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   .styles{grid-template-columns:repeat(4,64px)}
 }
 
@@ -1524,7 +1524,7 @@ body[data-screen="studio"] .app{max-width:none}
 @property --bh{syntax:"*";inherits:false}
 @property --sw{syntax:"*";inherits:false}
 @property --free{syntax:"*";inherits:false}
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px){
   .studio{grid-template-columns:240px minmax(0,var(--bw,1fr)) 94px;justify-content:center}
   #studioScreen > .topbar{width:var(--sw,auto);max-width:100%;margin-inline:auto;align-self:center}
   body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,var(--bw,1fr)) 240px}
@@ -1545,32 +1545,6 @@ body[data-screen="studio"] .app{max-width:none}
   .tools .zoombar{flex-direction:row;padding:2px;gap:2px;border-width:2px}
   .tools .zbtn{width:26px;height:26px;border-width:2px;font-size:1.05rem}
   .tools .zbtn svg{width:14px;height:14px}
-}
-
-/* ===================== tablets on their side (and squarer screens): the tools in one row above the board ===================== */
-/* the toy box on the left, the tools along the top, and the board filling the rest */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2),
-       (orientation:landscape) and (min-width:900px) and (min-height:541px) and (pointer:coarse){
-  .studio{grid-template-columns:240px minmax(0,var(--bw,1fr));grid-template-rows:auto minmax(0,var(--bh,1fr));grid-template-areas:"tray tools" "tray board";row-gap:8px}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(0,var(--bw,1fr)) 240px;grid-template-areas:"tools tray" "board tray"}
-  .tray{grid-row:1 / -1;contain:size}          /* the toy box scrolls: its length never stretches the rows */
-  .tools,body[data-hand="left"] .tools{container-type:normal;position:static;height:auto;max-height:none;flex-direction:row;align-items:stretch;gap:6px}
-  body[data-hand="left"] .tools{flex-direction:row-reverse}
-  .tools-main,body[data-hand="left"] .tools-main{display:flex;flex-direction:row;flex:1 1 auto;overflow:visible;padding:0 0 4px;gap:6px}
-  .tools-main .tbtn .txt{display:inline}
-  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{flex:1 1 0;width:auto;min-width:0;min-height:58px;padding:4px 2px 3px;font-size:.7rem;border-radius:16px}
-  .tools .tbtn svg{width:22px;height:22px}
-  .tbtn.warn{flex:0 0 76px}
-  .tbtn.undo{flex:0 0 92px;font-size:.85rem}
-  .tbtn.undo svg{width:28px;height:28px}
-  .tools .zoombar{flex-direction:row;align-self:center;flex:none;padding:2px;gap:3px}
-  .tools .zbtn{width:34px;height:34px;font-size:1.25rem}
-  .tools .zbtn svg{width:17px;height:17px}
-}
-@media (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (max-aspect-ratio:3/2),
-       (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (pointer:coarse){
-  .tbtn.warn{flex-basis:64px}
-  .tbtn.undo{flex-basis:76px}
 }
 
 /* ===================== phones on their side: the three doors fit on the home screen ===================== */
@@ -1612,7 +1586,7 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes starGot{to{scale:2;opacity:0}}
 @media (prefers-reduced-motion: reduce){.pstar{animation:none}}
 /* upright tablets: all the tools share one row instead of wrapping onto a second */
-@media (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   .tools-main,body[data-hand="left"] .tools-main{flex-wrap:nowrap}
   .tools-main .tbtn{flex:1 1 0;min-width:0}
 }
@@ -1645,14 +1619,14 @@ body[data-screen="studio"] .app{max-width:none}
   .tray[data-tab="bricks"] .sec-colors h2{display:none}
 }
 /* toy box beside the board (computers, sideways tablets): Name and Photo side by side, then the tabs */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px){
   .sec-name{flex-direction:row!important;gap:6px}
   .tray .name-open,.tray .photo-open{flex:1 1 0;width:auto;min-height:56px;font-size:.8rem!important;padding:4px!important;flex-direction:column;gap:0;line-height:1.05;white-space:normal}
   .tray .name-open > span:first-child,.tray .photo-open > span:first-child{font-size:1.25rem!important}
   .tray{gap:10px}
   .tray[data-tab="bricks"] .shapes .card{min-height:84px}
 }
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px){
   .tray{padding-inline:10px}
   .tray-tabs{gap:3px}
   .ttab{font-size:.56rem;padding-inline:0;border-width:2px}
@@ -1719,7 +1693,7 @@ body[data-screen="studio"] .app{max-width:none}
   .stamps{grid-template-columns:1fr 1fr}
 }
 /* computers and sideways tablets: tab names big enough to read */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px){
   .tray-tabs{gap:3px}
   .ttab{font-size:.64rem;min-height:58px}
   .ttab-ic{font-size:1.5rem}
@@ -1821,17 +1795,12 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes turnBricky{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(90deg)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion: reduce){.turn-phone{animation:none;transform:rotate(-90deg)}.turn-phone .bricky{animation:none;transform:rotate(90deg)}}
 
-/* ===================== toy box and tools at the screen's edges, the board fills the middle ===================== */
+/* ===================== three sections on every screen: toy box, board, tools ===================== */
 /* The toy box hugs the left edge and the tools the right (swapped for left-handers); the board's column takes
-   everything between them, and fitBox() adds or takes away columns of studs so the board fills it. */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+   everything between them, and fitBox() works out how many studs across and down fill it. */
+@media (orientation:landscape) and (min-height:541px){
   .studio{grid-template-columns:204px minmax(0,1fr) 88px}
   body[data-hand="left"] .studio{grid-template-columns:88px minmax(0,1fr) 204px}
-}
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2),
-       (orientation:landscape) and (min-width:900px) and (min-height:541px) and (pointer:coarse){
-  .studio{grid-template-columns:204px minmax(0,1fr)}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr) 204px}
 }
 @media (orientation:landscape) and (max-height:540px){
   .studio{grid-template-columns:clamp(160px,21vw,180px) minmax(0,1fr) clamp(146px,19vw,164px)}
@@ -2224,7 +2193,6 @@ body[data-screen="studio"] .app{max-width:none}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
           <span class="txt" id="soundTxt" data-i18n="soundOn">Sound on</span>
         </button></div>
-      <div class="gu-row"><span class="gu-label" data-i18n="boardSize">Board size</span><div class="seg" id="sizes"></div></div>
       <div class="gu-row"><span class="gu-label" data-i18n="guHand">Toy box side</span>
         <div class="seg" id="handSeg">
           <button class="btn" type="button" data-hand="right" aria-pressed="true" data-i18n="handRight">Right-handed</button>
@@ -2868,21 +2836,19 @@ function fitCell(){
   if (tuck) plate.style.display = "none";
   try { if (fitBox(wrap) === false) fitStale = true; } finally { if (tuck) plate.style.display = ""; }
 }
-// the space the board was last given, and how many columns of studs fill it
+// the space the board was last given; the building board's studs across and down are worked out from it
 let fitRoom = null;
-function autoWidth(){ return B === FREE && fitRoom && boardZoom <= 1 && !isPhotoBoard(); }
-function fitCols(rows){
-  const need = B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
-  if (!fitRoom || fitRoom.h <= 0) return Math.max(need, B.cols);
-  return clamp(Math.max(need, Math.floor(fitRoom.w / (fitRoom.h / rows))), Math.max(need, 8), 120);
-}
-// the picked size sets the rows; the columns fill the width, and when bricks stop the board getting narrower,
-// extra rows fill the height instead
+function autoWidth(){ return B === FREE && fitRoom && fitRoom.w > 0 && fitRoom.h > 0 && boardZoom <= 1 && !isPhotoBoard(); }
+// studs about 1/18 of the board's height, between 22px and 32px: big enough for fingers on a phone,
+// more of them on a big screen. The columns then fill the width. The board never gets smaller than
+// the bricks on it; when bricks make it wider than the screen allows, extra rows fill the height instead.
 function fitDims(){
-  if (!B.size) B.size = sizeOf().id;
-  const base = sizeOf().rows, cols = fitCols(base);
-  const needRows = B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
-  const rows = Math.min(120, Math.max(base, needRows, Math.floor(fitRoom.h / (fitRoom.w / cols))));
+  const needC = B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
+  const needR = B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
+  const stud = clamp(fitRoom.h / 18, 22, 32);
+  let rows = clamp(Math.max(Math.round(fitRoom.h / stud), needR), 6, 120);
+  const cols = clamp(Math.max(Math.floor(fitRoom.w / (fitRoom.h / rows)), needC), 6, 120);
+  rows = clamp(Math.max(rows, Math.floor(fitRoom.h / (fitRoom.w / cols))), 6, 120);
   return [cols, rows];
 }
 function fitBox(wrap){
@@ -4135,13 +4101,6 @@ function closeModal(){ if (modalEl){ modalEl.remove(); modalEl = null; } }
 
 /* ---- board settings ---- */
 function buildBoardControls(){
-  const sz = $("#sizes"); sz.innerHTML = "";
-  for (const s of SIZES){
-    const b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.dataset.size = s.id;
-    b.textContent = s[LANG]; b.title = `${s.cols} × ${s.rows}`;
-    b.addEventListener("click", () => setSize(s, true));
-    sz.appendChild(b);
-  }
   const pl = $("#plates"); pl.innerHTML = "";
   for (const p of PLATES){
     const b = document.createElement("button"); b.type = "button"; b.className = "swatch"; b.dataset.hex = p.hex;
@@ -4170,14 +4129,13 @@ function buildBoardControls(){
   syncBoardControls();
 }
 function syncBoardControls(){
-  $$("#sizes .btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === sizeOf().id));
   $$("#plates .swatch").forEach(b => b.setAttribute("aria-pressed", b.dataset.hex === B.plate));
   $$("#plateStyles .stylebtn").forEach(b => b.setAttribute("aria-pressed", b.dataset.ps === plateStyle(B.ps)));
   $$("#plateStyles .pprev").forEach(e => paintBoardVars(e, B.plate));
 }
 // boards can also stand upright (tall photos), so a size matches either way round
 const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);
-// the building board's width follows the screen, so a saved board can have any number of columns
+// the building board's size follows the screen, so a saved board can have any number of studs
 function isBoardSize(cols, rows){
   return ALL_SIZES.some(s => sizeFits(s, cols, rows)) || [cols, rows].every(n => Number.isInteger(n) && n >= 4 && n <= 120);
 }
@@ -4186,24 +4144,6 @@ function isPhotoBoard(){ return PHOTO_SIZES.some(s => sizeFits(s, B.cols, B.rows
 function leavePhotoBoard(){
   if (!isPhotoBoard()) return;
   const s = SIZES.find(z => z.id === "l"); B.cols = s.cols; B.rows = s.rows; applyBoard();
-}
-// the size picked last (its rows set the studs' size; the columns fill the screen)
-function sizeOf(){
-  const picked = B === FREE && B.size && !isPhotoBoard() && SIZES.find(z => z.id === B.size);
-  return picked || ALL_SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES.find(z => z.rows === B.rows) || SIZES.find(z => z.id === "m");
-}
-function setSize(s, fromUser){
-  if (s.cols === B.cols && s.rows === B.rows) return;
-  if (fromUser && sizeOf() === s) return;
-  const tall = fromUser && isPhotoBoard() && B.rows > B.cols;   // an upright photo board stays upright
-  if (fromUser) pushHistory();
-  const before = B.bricks.length;
-  if (B === FREE) B.size = s.id;
-  B.rows = tall ? s.cols : s.rows;
-  B.cols = tall ? s.rows : B === FREE && fitRoom && SIZES.includes(s) ? fitCols(B.rows) : s.cols;
-  B.bricks = B.bricks.filter(b => b.x + b.w <= B.cols && b.y + b.h <= B.rows);
-  applyBoard(); commit();
-  if (fromUser){ sfx.click(); say(before > B.bricks.length ? t("sizeCut") : t("sizeSay", {s: s[LANG], c: s.cols, r: s.rows})); }
 }
 on("board", syncBoardControls);
 
@@ -4376,9 +4316,11 @@ function buildText(raw, opts = {}){
   if (!text) return {ok: false, reason: "empty"};
   const up = text.toUpperCase();
   const shown = (!hasArabic(text) && isPixelText(up)) ? up : text;
-  // names grow through the normal sizes only; on a photo's Poster board they are written in place
-  const startIdx = Math.max(0, SIZES.indexOf(sizeOf()));
-  const sizes = opts.grow && !isPhotoBoard() ? SIZES.slice(startIdx) : [sizeOf()];
+  // a long name makes the building board bigger (smaller studs), a quarter more each way at a time;
+  // on a photo's Poster board and in games it is written in place
+  const sizes = [{cols: B.cols, rows: B.rows}];
+  if (opts.grow && B === FREE && !isPhotoBoard())
+    for (let c = B.cols, r = B.rows; c < 120 && r < 120;){ c = Math.min(120, Math.ceil(c * 1.25)); r = Math.min(120, Math.ceil(r * 1.25)); sizes.push({cols: c, rows: r}); }
   let plan = null, size = null;
   for (const s of sizes){
     const p = compose(text, s.cols, s.rows, opts.mode || nameMode, opts.colors);
@@ -4386,7 +4328,8 @@ function buildText(raw, opts = {}){
   }
   if (!plan) return {ok: false, reason: "tooLong"};
   if (!opts.noHistory) pushHistory();
-  if (size.cols !== B.cols || size.rows !== B.rows) setSize(size, false);
+  const grew = size.cols !== B.cols || size.rows !== B.rows;
+  if (grew){ B.cols = size.cols; B.rows = size.rows; }
   rebuildGrid();
   const gx = opts.x != null ? opts.x : Math.floor((B.cols - plan.w) / 2);
   const rel = plan.bricks.map(b => ({...b, x: b.x + gx}));
@@ -4415,6 +4358,7 @@ function buildText(raw, opts = {}){
     B.bricks.push(nb); anim.set(nb.id, opts.fast ? Math.min(b.delay, 300) : b.delay);
   });
   commit(opts.noAnim ? null : anim);
+  if (grew) applyBoard();                            // the board fits the screen again, around the name
   if (!opts.quiet){
     if (plan.kind === "pixel"){
       plan.letters.forEach(l => setTimeout(() => { sfx.snap(); if (settings.talk && !opts.noSpeak) speak(l.ch === "♥" ? "heart" : l.ch === "★" ? "star" : l.ch, "en"); }, reduceMotion ? 0 : l.delay));
@@ -5801,7 +5745,7 @@ function updateZoomBtns(){
 // when the tools stand in a column beside the board, the zoom buttons move into it, above Undo, so they never cover the board
 (function zoomHome(){
   const zb = $("#zoomBar"), home = zb.parentNode, after = zb.nextSibling;
-  const upright = matchMedia("(max-width:899px) and (min-height:541px)");
+  const upright = matchMedia("(orientation:portrait) and (max-width:899px) and (min-height:541px)");
   const place = () => {
     const tools = $("#tools"), undo = $("#undoBtn");
     if (!upright.matches) tools.insertBefore(zb, undo);
@@ -6570,7 +6514,7 @@ on("boot", () => refreshMapBtn());
 
 /* ===================== start-up + wiring ===================== */
 const SAVE_KEY = "snappy-bricks-v2";
-const saveFree = later(() => store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, size: FREE.size, plate: FREE.plate, ps: FREE.ps, bricks: FREE.bricks}), 300);
+const saveFree = later(() => store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, ps: FREE.ps, bricks: FREE.bricks}), 300);
 on("change", () => { if (B === FREE) saveFree(); });
 // never lose the last few moves when the tab is closed or put away
 window.addEventListener("pagehide", saveFree.flush);
@@ -6578,7 +6522,7 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) saveF
 function loadFree(){
   const d = store(SAVE_KEY) || store("snappy-bricks-v1");
   if (!d || !Array.isArray(d.bricks) || !isBoardSize(d.cols, d.rows)) return false;
-  FREE.cols = d.cols; FREE.rows = d.rows; FREE.size = typeof d.size === "string" ? d.size : undefined; FREE.plate = typeof d.plate === "string" ? d.plate : "#FF2E8A"; FREE.ps = plateStyle(d.ps);
+  FREE.cols = d.cols; FREE.rows = d.rows; FREE.plate = typeof d.plate === "string" ? d.plate : "#FF2E8A"; FREE.ps = plateStyle(d.ps);
   FREE.bricks = fitBricks(d.bricks.filter(b => b && [b.x, b.y, b.w, b.h].every(Number.isFinite) && typeof b.c === "string")
     .map(b => ({id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: b.z || 0})));
   return true;

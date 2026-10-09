@@ -655,13 +655,6 @@ function closeModal(){ if (modalEl){ modalEl.remove(); modalEl = null; } }
 
 /* ---- board settings ---- */
 function buildBoardControls(){
-  const sz = $("#sizes"); sz.innerHTML = "";
-  for (const s of SIZES){
-    const b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.dataset.size = s.id;
-    b.textContent = s[LANG]; b.title = `${s.cols} × ${s.rows}`;
-    b.addEventListener("click", () => setSize(s, true));
-    sz.appendChild(b);
-  }
   const pl = $("#plates"); pl.innerHTML = "";
   for (const p of PLATES){
     const b = document.createElement("button"); b.type = "button"; b.className = "swatch"; b.dataset.hex = p.hex;
@@ -690,14 +683,13 @@ function buildBoardControls(){
   syncBoardControls();
 }
 function syncBoardControls(){
-  $$("#sizes .btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === sizeOf().id));
   $$("#plates .swatch").forEach(b => b.setAttribute("aria-pressed", b.dataset.hex === B.plate));
   $$("#plateStyles .stylebtn").forEach(b => b.setAttribute("aria-pressed", b.dataset.ps === plateStyle(B.ps)));
   $$("#plateStyles .pprev").forEach(e => paintBoardVars(e, B.plate));
 }
 // boards can also stand upright (tall photos), so a size matches either way round
 const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);
-// the building board's width follows the screen, so a saved board can have any number of columns
+// the building board's size follows the screen, so a saved board can have any number of studs
 function isBoardSize(cols, rows){
   return ALL_SIZES.some(s => sizeFits(s, cols, rows)) || [cols, rows].every(n => Number.isInteger(n) && n >= 4 && n <= 120);
 }
@@ -706,23 +698,5 @@ function isPhotoBoard(){ return PHOTO_SIZES.some(s => sizeFits(s, B.cols, B.rows
 function leavePhotoBoard(){
   if (!isPhotoBoard()) return;
   const s = SIZES.find(z => z.id === "l"); B.cols = s.cols; B.rows = s.rows; applyBoard();
-}
-// the size picked last (its rows set the studs' size; the columns fill the screen)
-function sizeOf(){
-  const picked = B === FREE && B.size && !isPhotoBoard() && SIZES.find(z => z.id === B.size);
-  return picked || ALL_SIZES.find(s => sizeFits(s, B.cols, B.rows)) || SIZES.find(z => z.rows === B.rows) || SIZES.find(z => z.id === "m");
-}
-function setSize(s, fromUser){
-  if (s.cols === B.cols && s.rows === B.rows) return;
-  if (fromUser && sizeOf() === s) return;
-  const tall = fromUser && isPhotoBoard() && B.rows > B.cols;   // an upright photo board stays upright
-  if (fromUser) pushHistory();
-  const before = B.bricks.length;
-  if (B === FREE) B.size = s.id;
-  B.rows = tall ? s.cols : s.rows;
-  B.cols = tall ? s.rows : B === FREE && fitRoom && SIZES.includes(s) ? fitCols(B.rows) : s.cols;
-  B.bricks = B.bricks.filter(b => b.x + b.w <= B.cols && b.y + b.h <= B.rows);
-  applyBoard(); commit();
-  if (fromUser){ sfx.click(); say(before > B.bricks.length ? t("sizeCut") : t("sizeSay", {s: s[LANG], c: s.cols, r: s.rows})); }
 }
 on("board", syncBoardControls);
