@@ -1,0 +1,96 @@
+/* ===================== Pixel and Ice: bricks and boards =====================
+   Pixel looks like an old video game: square corners, hard steps of light and shadow, square studs and a
+   shadow with no blur; it lands in little jumps. Ice is the brick's colour frozen (--ice from iceColor()),
+   with frosty cracks and snowflake studs. Both are pictures that never move on the bricks, so they are as
+   quick as Classic; only the Ice board has one layer of frost shine that fades in and out. */
+.brick,.plate,.swatch-face{
+  --pxstud:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' shape-rendering='crispEdges'%3E%3Crect x='6.5' y='6.5' width='9' height='9' fill='rgba(30,10,50,.22)'/%3E%3Crect x='5' y='5' width='9' height='9' fill='rgba(255,255,255,.3)'/%3E%3Crect x='5' y='5' width='9' height='1.6' fill='rgba(255,255,255,.7)'/%3E%3Crect x='5' y='6.6' width='1.6' height='7.4' fill='rgba(255,255,255,.45)'/%3E%3Crect x='6.6' y='12.4' width='7.4' height='1.6' fill='rgba(30,10,50,.22)'/%3E%3Crect x='12.4' y='6.6' width='1.6' height='5.8' fill='rgba(30,10,50,.12)'/%3E%3C/svg%3E");
+  --pxboard:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' shape-rendering='crispEdges'%3E%3Crect width='20' height='1' fill='rgba(30,10,50,.12)'/%3E%3Crect width='1' height='20' fill='rgba(30,10,50,.12)'/%3E%3Crect x='7' y='7' width='8' height='8' fill='rgba(30,10,50,.24)'/%3E%3Crect x='6' y='6' width='8' height='8' fill='rgba(255,255,255,.14)'/%3E%3Crect x='6' y='6' width='8' height='2' fill='rgba(255,255,255,.32)'/%3E%3Crect x='6' y='8' width='2' height='6' fill='rgba(255,255,255,.18)'/%3E%3C/svg%3E");
+  --flake:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='11' cy='11.7' r='5.3' fill='rgba(40,80,140,0.2)'/%3E%3Ccircle cx='10' cy='10' r='5' fill='rgba(255,255,255,0.32)' stroke='rgba(255,255,255,0.80)' stroke-width='.5'/%3E%3Cg stroke='rgba(255,255,255,0.95)' stroke-width='1' stroke-linecap='round' fill='none'%3E%3Cpath d='M10 6.4v7.2M6.9 8.2l6.2 3.6M6.9 11.8l6.2-3.6'/%3E%3Cpath d='M8.9 6.9l1.1 1 1.1-1M8.9 13.1l1.1-1 1.1 1' stroke-width='.6'/%3E%3C/g%3E%3C/svg%3E");
+  --icestud:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10.8' cy='11.4' r='4.8' fill='rgba(40,80,140,.1)'/%3E%3Ccircle cx='10' cy='10' r='4.4' fill='rgba(255,255,255,.22)' stroke='rgba(255,255,255,.55)' stroke-width='.5'/%3E%3Ccircle cx='8.6' cy='8.4' r='1.1' fill='rgba(255,255,255,.7)'/%3E%3C/svg%3E");
+  --cracks:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.75)' stroke-width='.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 31l9-7 3 3 9-10 4 1'/%3E%3Cpath d='M11 24l-2-7M23 17l1-6'/%3E%3Cpath d='M27 39l6-6 6 1M33 33l-1-5'/%3E%3C/g%3E%3C/svg%3E");
+  --cracksb:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.3)' stroke-width='.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 31l9-7 3 3 9-10 4 1'/%3E%3Cpath d='M11 24l-2-7M23 17l1-6'/%3E%3Cpath d='M27 39l6-6 6 1M33 33l-1-5'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* pixel: a flat brick with a stepped edge (light top and left, dark bottom and right) and a hard outline */
+.brick.t-pixel{
+  border-radius:0;
+  background-image:var(--pxstud);
+  background-size:var(--cell) var(--cell);
+  background-position:var(--at) var(--at);
+  background-repeat:repeat;
+  image-rendering:pixelated;
+  box-shadow:
+    inset 0 max(2px, calc(var(--cell)*.1)) 0 rgba(255,255,255,.45),
+    inset max(2px, calc(var(--cell)*.1)) 0 0 rgba(255,255,255,.22),
+    inset 0 min(-2px, calc(var(--cell)*-.1)) 0 rgba(30,10,60,.32),
+    inset min(-2px, calc(var(--cell)*-.1)) 0 0 rgba(30,10,60,.18),
+    0 0 0 max(1px, calc(var(--cell)*.04)) rgba(30,10,60,.6),
+    calc(2px + var(--z) * 1px) calc(3px + var(--z) * 3px) 0 rgba(30,10,60,.3);
+}
+/* landing in little jumps, like a game character */
+.brick.t-pixel.drop{animation-timing-function:steps(5,jump-end)}
+
+/* ice: frozen colour, a frosty light from the top left, cracks inside and snowflake studs */
+.brick.t-ice{
+  background-color:var(--ice);
+  background-image:
+    var(--flake),
+    var(--cracks),
+    linear-gradient(160deg, rgba(255,255,255,.7) 0, rgba(255,255,255,.18) 28%, rgba(255,255,255,0) 50%, rgba(90,140,210,0) 70%, rgba(90,140,210,.2) 100%);
+  background-size:var(--cell) var(--cell),calc(var(--cell)*2) calc(var(--cell)*2),100% 100%;
+  background-position:var(--at) var(--at),var(--at) var(--at),0 0;
+  background-repeat:repeat,repeat,no-repeat;
+  border-radius:calc(var(--cell)*.18);
+  box-shadow:
+    inset 0 calc(var(--cell)*-.08) 0 var(--idk),
+    inset 0 0 0 max(1.5px, calc(var(--cell)*.05)) rgba(255,255,255,.75),
+    inset 0 0 calc(var(--cell)*.35) rgba(255,255,255,.6),
+    0 0 0 1px rgba(40,70,130,.28),
+    0 1px 1px rgba(40,70,130,.25),
+    calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(40,60,120,.3);
+}
+
+/* ---------- boards ---------- */
+/* pixel: a game screen. The board's colour with a fine pixel grid, flat square studs and a square, stepped rim */
+.plate[data-ps="pixel"]{
+  border-radius:0;
+  background-image:var(--pxboard);
+  background-size:var(--cell) var(--cell);
+  background-repeat:repeat;
+  image-rendering:pixelated;
+  box-shadow:
+    inset 0 max(3px, calc(var(--cell)*.14)) 0 rgba(255,255,255,.28),
+    inset max(3px, calc(var(--cell)*.14)) 0 0 rgba(255,255,255,.14),
+    inset 0 min(-3px, calc(var(--cell)*-.14)) 0 rgba(30,10,60,.26),
+    inset min(-3px, calc(var(--cell)*-.14)) 0 0 rgba(30,10,60,.16),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="pixel"]::before,.plate[data-ps="pixel"]::after{border-radius:0}
+
+/* ice: a frozen pond in the board's colour, faint frosty cracks, round frosted studs, a white frost rim, and a
+   shine across the ice that comes and goes */
+.plate[data-ps="ice"]{
+  background-color:var(--ice);
+  background-image:
+    var(--icestud),
+    var(--cracksb),
+    linear-gradient(165deg, rgba(255,255,255,.55) 0, rgba(255,255,255,.1) 35%, rgba(255,255,255,0) 55%, rgba(90,140,210,.18) 100%);
+  background-size:var(--cell) var(--cell),calc(var(--cell)*3) calc(var(--cell)*3),100% 100%;
+  background-repeat:repeat,repeat,no-repeat;
+  box-shadow:
+    inset 0 0 0 calc(var(--cell)*.12) rgba(255,255,255,.6),
+    inset 0 0 calc(var(--cell)*.9) rgba(255,255,255,.75),
+    inset 0 -3px 0 var(--idk),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="ice"]::before{
+  content:"";opacity:0;
+  background:linear-gradient(120deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.45) 42%, rgba(255,255,255,0) 54%);
+  animation:iceshine 4.5s ease-in-out infinite;
+}
+@keyframes iceshine{50%{opacity:1}}
+
+/* the picker */
+.pprev[data-ps="pixel"]{border-radius:0;box-shadow:inset 0 2px 0 rgba(255,255,255,.3),inset 0 -2px 0 rgba(30,10,60,.25),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="ice"]{box-shadow:inset 0 0 6px rgba(255,255,255,.9),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
