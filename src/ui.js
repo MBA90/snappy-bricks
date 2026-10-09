@@ -104,6 +104,7 @@ function buildShapes(){
     const lab = `${Math.min(p.w, p.h)}×${Math.max(p.w, p.h)}`;
     box.appendChild(makeCard(p, trayCell(), lab, {kind: "brick", i}, t("brickAria", {s: lab})));
   });
+  fitCards(box);
   // colour the style previews too
   $$("#styles .brick").forEach(e => paintVars(e, color));
 }
@@ -115,6 +116,19 @@ function buildStamps(){
     const px = Math.max(4, Math.min(8, Math.floor(56 / Math.max(p.w, p.h))));
     box.appendChild(makeCard(p, px, ART[name][LANG], {kind: "art", name}));
   }
+  fitCards(box);
+}
+// the brick and fun-shape pictures shrink to fit their cards (three cards to a row in a slim toy box)
+function fitCards(box){
+  for (const card of box.children){
+    const pc = card.firstElementChild; if (!pc) continue;
+    const room = card.clientWidth - 12, w = pc.offsetWidth;
+    pc.style.scale = room > 0 && w > room ? room / w : "";
+  }
+}
+if (window.ResizeObserver){
+  const ro = new ResizeObserver(es => es.forEach(e => fitCards(e.target)));
+  ro.observe($("#shapes")); ro.observe($("#stamps"));
 }
 function sameSel(a, b){ return !!(a && b && a.kind === b.kind && a.i === b.i && a.name === b.name); }
 function toggleSelect(sel){
