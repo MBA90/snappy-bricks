@@ -310,3 +310,80 @@ body[data-screen="studio"] .app{max-width:none}
   .tools-main,body[data-hand="left"] .tools-main{flex-wrap:nowrap}
   .tools-main .tbtn{flex:1 1 0;min-width:0}
 }
+
+/* ===================== toy-box tabs on tablets and computers too ===================== */
+/* The toy box used to be one long list here, with the bricks below the colours and styles.
+   Now it has the same tabs as phones, with Bricks open first and the colours right under the bricks. */
+@media (orientation:portrait) and (min-width:700px), (orientation:landscape) and (min-height:541px){
+  .tray-tabs{display:flex;gap:4px;align-items:stretch;min-width:0;flex:none;order:-1}
+  .sec-name{order:-2}
+  .ttab{
+    flex:1 1 0;min-width:0;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+    padding:4px 1px 2px;border:3px solid transparent;border-radius:14px;background:var(--tint);cursor:pointer;
+    font:inherit;font-size:.66rem;font-weight:800;line-height:1.05;color:var(--ink-soft);
+    -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  }
+  .ttab-ic{font-size:1.4rem;line-height:1.1}
+  .ttab-txt{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
+  .ttab-dot{width:22px;height:22px;margin:2px 0 1px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
+  body[data-age="little"] .ttab[data-tab="styles"]{display:none}
+  /* one tab at a time; the Bricks tab also shows the colours, under the bricks */
+  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks):not(.sec-colors),
+  .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
+  .tray[data-tab="styles"] .tray-body > :not(.sec-styles),
+  .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps),
+  .tray[data-tab="plates"] .tray-body > :not(.sec-plates){display:none!important}
+  .tray[data-tab="bricks"] .sec-bricks{order:1}
+  .tray[data-tab="bricks"] .sec-colors{order:2}
+  .tray[data-tab="bricks"] .sec-colors h2{display:none}
+}
+/* toy box beside the board (computers, sideways tablets): Name and Photo side by side, then the tabs */
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+  .sec-name{flex-direction:row!important;gap:6px}
+  .tray .name-open,.tray .photo-open{flex:1 1 0;width:auto;min-height:56px;font-size:.8rem!important;padding:4px!important;flex-direction:column;gap:0;line-height:1.05;white-space:normal}
+  .tray .name-open > span:first-child,.tray .photo-open > span:first-child{font-size:1.25rem!important}
+  .tray{gap:10px}
+  .tray[data-tab="bricks"] .shapes .card{min-height:84px}
+}
+/* upright tablets: Name and Photo on the left, the tabs across the top, and the chosen tab below them */
+@media (orientation:portrait) and (min-width:700px){
+  .tray{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"name tabs" "name body";gap:8px 14px;overflow:visible;-webkit-mask-image:none;mask-image:none}
+  [dir="rtl"] .tray{-webkit-mask-image:none;mask-image:none}
+  .sec-name{grid-area:name}
+  .tray-tabs{grid-area:tabs}
+  .tray-body{grid-area:body;display:flex;gap:18px;align-items:flex-start;min-width:0;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;scrollbar-width:thin}
+  .tray-body .tray-sec{flex:none}
+  .tray[data-tab="bricks"] .sec-colors h2{display:none}
+  .tray .swatches{grid-template-columns:repeat(8,46px);gap:8px}
+  .swatch{min-width:46px;min-height:46px}
+}
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+  .tray{padding-inline:10px}
+  .tray-tabs{gap:3px}
+  .ttab{font-size:.56rem;padding-inline:0;border-width:2px}
+  .ttab-txt{overflow:visible;text-overflow:clip}
+  .tray[data-tab="bricks"] .sec-bricks > h2{display:none}
+}
+
+/* ===================== bigger toy-box and tool buttons on upright phones ===================== */
+@media (orientation:portrait) and (max-width:699px){
+  .tray{padding-inline:6px}
+  .ttab{min-height:54px}
+  .ttab-ic{font-size:1.45rem}
+  .ttab-dot{width:24px;height:24px}
+  .tray .swatches{grid-template-columns:repeat(8,minmax(0,1fr));gap:6px 4px;padding:4px 0;width:100%}
+  .tray-body .sec-colors{flex:1 1 100%;min-width:0}
+  .swatch{min-width:0;min-height:0;aspect-ratio:1}
+  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{min-height:56px}
+  .tools .tbtn svg,.tbtn.undo svg{width:24px;height:24px}
+}
+@media (orientation:portrait) and (max-width:699px) and (max-height:720px){
+  .ttab{min-height:48px}
+  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{min-height:48px}
+}
+/* upright tablets: the toy box keeps one height on every tab, so the board never jumps when the tab changes */
+@media (orientation:portrait) and (min-width:700px){
+  .tray-body{height:216px;overflow-y:auto}
+  .tray[data-tab="plates"] .sec-plates{display:grid!important;grid-template-rows:auto auto;grid-auto-flow:column;column-gap:22px;row-gap:6px;align-items:start}
+}
