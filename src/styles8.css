@@ -502,9 +502,3 @@ body[data-screen="studio"] .app{max-width:none}
     .tools .zbtn svg{width:15px;height:15px}
   }
 }
-/* the toy box's bricks, colours, styles, shapes and board colours: three to a row */
-@media (orientation:landscape){
-  #tray .shapes,#tray .swatches,#tray .styles,#tray .stamps,#tray .plates{
-    grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:none;grid-auto-flow:row;grid-auto-columns:auto;gap:6px}
-  #tray .shapes .card{min-height:0}
-}
