@@ -1799,8 +1799,8 @@ body[data-screen="studio"] .app{max-width:none}
 /* The toy box hugs the left edge and the tools the right (swapped for left-handers); the board's column takes
    everything between them, and fitBox() works out how many studs across and down fill it. */
 @media (orientation:landscape) and (min-height:541px){
-  .studio{grid-template-columns:204px minmax(0,1fr) 88px}
-  body[data-hand="left"] .studio{grid-template-columns:88px minmax(0,1fr) 204px}
+  .studio{grid-template-columns:204px minmax(0,1fr) 136px}
+  body[data-hand="left"] .studio{grid-template-columns:136px minmax(0,1fr) 204px}
 }
 @media (orientation:landscape) and (max-height:540px){
   .studio{grid-template-columns:clamp(160px,21vw,180px) minmax(0,1fr) clamp(146px,19vw,164px)}
@@ -1812,11 +1812,27 @@ body[data-screen="studio"] .app{max-width:none}
     .name-open,.photo-open{font-size:.64rem!important;gap:2px!important;padding:3px 2px!important}
     .name-open > span:first-child,.photo-open > span:first-child{font-size:.9rem!important}
   }
-  /* the tools three to a row */
-  .tools-main,body[data-age="little"] .tools-main{grid-template-columns:repeat(3,minmax(0,1fr))}
   .tools .zbtn{width:30px;height:30px;font-size:1.15rem}
   .tools .zbtn svg{width:15px;height:15px}
 }
+
+/* ===================== the tools: two to a row, every button the same size ===================== */
+/* Clear, the tools and Undo share one grid of equal buttons; the zoom buttons get a row of their own at the bottom */
+@media (orientation:landscape){
+  #tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;grid-auto-rows:minmax(0,64px);
+    align-content:start;gap:6px;padding:6px;overflow:hidden}
+  #tools .tools-main{display:contents}
+  #tools .tbtn,#tools .tbtn.warn,#tools .tbtn.undo{
+    grid-column:auto;grid-row:auto;order:1;width:auto;min-width:0;height:auto;min-height:0;max-height:none;flex:none;margin:0;
+    flex-direction:column;justify-content:center;gap:2px;padding:3px 2px;border-radius:14px;font-size:.64rem;line-height:1.05;box-shadow:0 3px 0 var(--ink)}
+  #tools .tbtn svg{width:22px;height:22px}
+  #tools .tbtn .txt{display:inline;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  #tools .tbtn.undo{order:2}
+  #tools .zoombar{order:3;grid-column:1 / -1;grid-row:auto;justify-self:center;align-self:center;flex-direction:row;margin:2px 0 0}
+}
+/* a short tools column (a phone with its browser bars showing): picture buttons, a long press says the name */
+@container sidetools (max-height:300px){ #tools .tbtn .txt{display:none} }
+@container tools (max-height:300px){ #tools .tbtn .txt{display:none} }
 
 </style>
 <!-- Snappy Bricks plays sideways: held upright, the screen asks to be turned -->
