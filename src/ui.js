@@ -573,7 +573,7 @@ window.addEventListener("pointerdown", e => {
   if (ptr.piece.single) turnDragged();
 }, true);
 function toggleTurn(){
-  turned = !turned; $("#turnBtn").setAttribute("aria-pressed", turned);
+  turned = !turned;
   buildShapes(); sfx.turn(); say(t(turned ? "turnedUp" : "turnedDown"));
 }
 

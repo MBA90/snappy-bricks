@@ -46,7 +46,6 @@ $("#soundBtn").addEventListener("click", () => {
 });
 $$("[data-tool]").forEach(b => b.addEventListener("click", () => setTool(b.dataset.tool)));
 $("#stackBtn").addEventListener("click", () => setStack(!settings.stack));
-$("#turnBtn").addEventListener("click", toggleTurn);
 $("#undoBtn").addEventListener("click", undo);
 $("#clearBtn").addEventListener("click", clearBoard);
 $("#saveBtn").addEventListener("click", savePicture);

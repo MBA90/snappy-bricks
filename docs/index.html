@@ -1634,15 +1634,12 @@ body[data-screen="studio"] .app{max-width:none}
   .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
   .ttab-dot{width:22px;height:22px;margin:2px 0 1px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
   body[data-age="little"] .ttab[data-tab="styles"]{display:none}
-  /* one tab at a time; the Bricks tab also shows the colours, under the bricks */
-  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks):not(.sec-colors),
+  /* one tab at a time */
+  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks),
   .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
   .tray[data-tab="styles"] .tray-body > :not(.sec-styles),
   .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps),
   .tray[data-tab="plates"] .tray-body > :not(.sec-plates){display:none!important}
-  .tray[data-tab="bricks"] .sec-bricks{order:1}
-  .tray[data-tab="bricks"] .sec-colors{order:2}
-  .tray[data-tab="bricks"] .sec-colors h2{display:none}
 }
 /* toy box beside the board (computers, sideways tablets): Name and Photo side by side, then the tabs */
 @media (orientation:landscape) and (min-width:900px) and (min-height:541px){
@@ -1710,12 +1707,12 @@ body[data-screen="studio"] .app{max-width:none}
   .ttab[aria-selected="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
   .ttab-dot{width:20px;height:20px;border-radius:50%;background:var(--c, #7FE3C0);box-shadow:inset -2px -3px 0 var(--dk, rgba(0,0,0,.2)), 0 0 0 2px var(--ink)}
   body[data-age="little"] .ttab[data-tab="styles"]{display:none}
-  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks):not(.sec-colors),
+  .tray[data-tab="bricks"] .tray-body > :not(.sec-bricks),
   .tray[data-tab="colors"] .tray-body > :not(.sec-colors),
   .tray[data-tab="styles"] .tray-body > :not(.sec-styles),
   .tray[data-tab="stamps"] .tray-body > :not(.sec-stamps),
   .tray[data-tab="plates"] .tray-body > :not(.sec-plates){display:none!important}
-  .tray[data-tab="bricks"] .sec-colors h2,.tray[data-tab="bricks"] .sec-bricks > h2{display:none}
+  .tray[data-tab="bricks"] .sec-bricks > h2{display:none}
   .stamps{grid-template-columns:1fr 1fr}
 }
 /* computers and sideways tablets: tab names big enough to read */
@@ -1752,9 +1749,6 @@ body[data-screen="studio"] .app{max-width:none}
   .tray-body > .tray-sec{flex:none}
   .tray .shapes{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;grid-auto-flow:row;gap:6px}
   .tray .shapes .card{min-height:50px}
-  .sec-bricks .row{margin:0}
-  .sec-bricks .row .btn{width:100%;min-height:36px;padding:2px 8px;font-size:.8rem;gap:6px}
-  .sec-bricks .row .btn svg{width:18px;height:18px}
 
   /* the tools: Clear on top, the tools four to a row, the zoom buttons, and Undo at the bottom */
   .tools{container:sidetools / size;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr) auto auto;padding:6px;gap:5px}
@@ -1823,6 +1817,35 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes turnMe{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
 @keyframes turnBricky{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(90deg)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion: reduce){.turn-phone{animation:none;transform:rotate(-90deg)}.turn-phone .bricky{animation:none;transform:rotate(90deg)}}
+
+/* ===================== slimmer toy box and tools: the board fills the full height ===================== */
+/* The toy box and tools columns are narrower, so the board gets the width it needs to be as tall as its box. */
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+  .studio{grid-template-columns:204px minmax(0,var(--bw,1fr)) 88px}
+  body[data-hand="left"] .studio{grid-template-columns:88px minmax(0,var(--bw,1fr)) 204px}
+}
+@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2),
+       (orientation:landscape) and (min-width:900px) and (min-height:541px) and (pointer:coarse){
+  .studio{grid-template-columns:204px minmax(0,var(--bw,1fr))}
+  body[data-hand="left"] .studio{grid-template-columns:minmax(0,var(--bw,1fr)) 204px}
+}
+@media (orientation:landscape) and (max-height:540px){
+  .studio{grid-template-columns:minmax(160px,1fr) minmax(0,var(--bw,100vw)) minmax(118px,1fr)}
+  body[data-hand="left"] .studio{grid-template-columns:minmax(118px,1fr) minmax(0,var(--bw,100vw)) minmax(160px,1fr)}
+  .tray{max-width:180px}
+  .tools{max-width:140px}
+  /* a narrow toy box: Name and Photo keep their words on two lines */
+  @container traybox (max-width:185px){
+    .name-open,.photo-open{font-size:.64rem!important;gap:2px!important;padding:3px 2px!important}
+    .name-open > span:first-child,.photo-open > span:first-child{font-size:.9rem!important}
+  }
+  /* a narrow tools column: the tools two to a row */
+  @container sidetools (max-width:150px){
+    .tools-main,body[data-age="little"] .tools-main{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .tools .zbtn{width:30px;height:30px;font-size:1.15rem}
+    .tools .zbtn svg{width:15px;height:15px}
+  }
+}
 
 </style>
 <!-- Snappy Bricks plays sideways: held upright, the screen asks to be turned -->
@@ -1996,12 +2019,6 @@ body[data-screen="studio"] .app{max-width:none}
           <h2 data-i18n="dragBrick">Drag a brick</h2>
           <p class="hint" data-i18n="dragHint">Drag it to the board, or tap it and then tap the board.</p>
           <div class="shapes" id="shapes"></div>
-          <div class="row">
-            <button class="btn lav" id="turnBtn" type="button" aria-pressed="false">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>
-              <span data-i18n="turnBricks">Turn bricks</span>
-            </button>
-          </div>
         </div>
         <div class="tray-sec sec-stamps">
           <h3 data-i18n="funShapes">Fun shapes</h3>
@@ -2873,7 +2890,8 @@ function fitBox(wrap){
   const zb = $("#zoomBar");
   const zbH = !boxed && zb && !zb.hidden && getComputedStyle(zb).position === "static" ? zb.offsetHeight : 0;
   const maxH = boxed ? wrap.clientHeight - padY : Math.max(H * .3, H - top - dock - 22 - zbH);
-  const fit = Math.floor(clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 120 : 48));
+  // studs may be part of a pixel wide, so the board fills its box right to the edge instead of losing up to a pixel a row
+  const fit = Math.floor(100 * clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 120 : 48)) / 100;
   // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted
   const dims = B.cols + "x" + B.rows;
   if (dims !== zoomDims){ zoomDims = dims; boardZoom = 1; }
@@ -4006,7 +4024,7 @@ window.addEventListener("pointerdown", e => {
   if (ptr.piece.single) turnDragged();
 }, true);
 function toggleTurn(){
-  turned = !turned; $("#turnBtn").setAttribute("aria-pressed", turned);
+  turned = !turned;
   buildShapes(); sfx.turn(); say(t(turned ? "turnedUp" : "turnedDown"));
 }
 
@@ -6563,7 +6581,6 @@ $("#soundBtn").addEventListener("click", () => {
 });
 $$("[data-tool]").forEach(b => b.addEventListener("click", () => setTool(b.dataset.tool)));
 $("#stackBtn").addEventListener("click", () => setStack(!settings.stack));
-$("#turnBtn").addEventListener("click", toggleTurn);
 $("#undoBtn").addEventListener("click", undo);
 $("#clearBtn").addEventListener("click", clearBoard);
 $("#saveBtn").addEventListener("click", savePicture);
