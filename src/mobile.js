@@ -5,11 +5,12 @@ addStrings({
   tabShapes: ["Shapes", "أشكال"], tabBoard: ["Board", "اللوحة"],
   zoomIn: ["Make the board bigger", "كبّر اللوحة"], zoomOut: ["Make the board smaller", "صغّر اللوحة"],
   zoomFit: ["Show the whole board", "اعرض اللوحة كلها"],
+  turnSideways: ["Turn your screen sideways!", "أدر الشاشة على جنبها!"],
   turnWider: ["Make the window wider to play!", "وسّع النافذة لتلعب!"],
 });
 
-/* ---- Snappy Bricks plays sideways: where the browser allows it (an installed app, full screen), the screen
-   is held sideways; elsewhere an upright phone or tablet gets the turned page (turn.js) ---- */
+/* ---- Snappy Bricks plays sideways: where the browser allows it (an installed app, full screen),
+   hold the screen sideways; elsewhere the turn-me screen (styles8.css) asks for it ---- */
 (function stayLandscape(){
   const so = screen.orientation;
   if (!so || !so.lock) return;

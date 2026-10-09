@@ -113,7 +113,7 @@ function scrollToCurrent(){
   const here = $("#mapIslands .stop.here") || $("#mapIslands .island:last-child");
   if (!here) return;
   const r = here.getBoundingClientRect();
-  pageScrollTo(Math.max(0, pageScrollY() + r.top - window.innerHeight / 2 + r.height / 2), reduceMotion ? "auto" : "smooth");
+  window.scrollTo({top: Math.max(0, window.scrollY + r.top - window.innerHeight / 2 + r.height / 2), behavior: reduceMotion ? "auto" : "smooth"});
 }
 
 /* ---------- playing a stop ---------- */
