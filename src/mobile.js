@@ -262,15 +262,44 @@ addStrings({
   const phone = matchMedia("(orientation:portrait) and (max-width:699px)");
   let pull = 0, drag = null;
   const most = () => Math.max(0, tray.getBoundingClientRect().top + pull - tools.getBoundingClientRect().bottom - 8);
+  // the board keeps its size while the toy box is up (it would otherwise grow into the space the toy box left)
+  const col = $(".board-col");
+  const lock = on => {
+    if (on && !col.style.flex) col.style.flex = `0 0 ${col.getBoundingClientRect().height}px`;
+    if (!on) setTimeout(() => { if (!pull) col.style.flex = ""; }, 320);
+  };
   const set = (px, anim) => {
+    lock(px > 0);
     pull = Math.round(px);
     tray.classList.toggle("pull-anim", !!anim);
     tray.style.setProperty("--pull", pull + "px");
     tray.classList.toggle("pulled", pull > 0);
+    roomy();
     grip.setAttribute("aria-expanded", pull > 0);
   };
-  const open = () => set(most() * .75, true);
-  const shut = () => { if (pull) set(0, true); };
+  // open just as far as the tab needs (never over the whole board); if it already fits, a little bounce says so
+  const body = $("#trayBody");
+  // with room to spare (pulled up, or a short board) the toy box lays out like a page: see .tray.roomy
+  // (not pulled up, it only takes that layout when the whole tab fits in it; otherwise it keeps its compact rows)
+  const roomy = () => {
+    let on = phone.matches && (pull > 0 || body.clientHeight >= 200);
+    tray.classList.toggle("roomy", on);
+    if (on && !pull && body.scrollHeight > body.clientHeight + 2) tray.classList.remove("roomy");
+  };
+  new ResizeObserver(roomy).observe(body);
+  // the toy box's rows change size as it grows, so it measures again once it has moved, until the tab fits
+  let refit = 0;
+  const open = (again) => {
+    tray.classList.add("roomy"); if (!again) body.scrollTop = 0;
+    const cap = most() * .8, want = clamp(pull + body.scrollHeight - body.clientHeight + 6, 0, cap);
+    clearTimeout(refit);
+    if (want <= 24 && !again){ set(36, true); refit = setTimeout(() => set(0, true), 260); return; }
+    if (Math.abs(want - pull) < 3) return;
+    set(want, true);
+    if (want < cap) refit = setTimeout(() => { if (pull && !drag) open(true); }, 280);
+  };
+
+  const shut = () => { clearTimeout(refit); if (pull) set(0, true); };
   grip.addEventListener("pointerdown", e => {
     if (!phone.matches) return;
     e.preventDefault(); grip.setPointerCapture(e.pointerId);
@@ -290,6 +319,9 @@ addStrings({
   };
   grip.addEventListener("pointerup", end);
   grip.addEventListener("pointercancel", end);
+  // a new tab while pulled up: fit the toy box to it
+  new MutationObserver(() => { if (pull && !drag) open(); else roomy(); }).observe(tray, {attributes: true, attributeFilter: ["data-tab"]});
+  on("lang", roomy); on("resize", roomy);
   on("pickup", shut);
   $("#plate").addEventListener("pointerdown", shut);
   phone.addEventListener("change", () => set(0));
