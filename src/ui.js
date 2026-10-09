@@ -651,7 +651,7 @@ function buildBoardControls(){
   for (const p of PLATES){
     const b = document.createElement("button"); b.type = "button"; b.className = "swatch"; b.dataset.hex = p.hex;
     b.setAttribute("aria-label", p[LANG]); b.title = p[LANG];
-    const f = document.createElement("span"); f.className = "swatch-face"; paintVars(f, p.hex); b.appendChild(f);
+    const f = document.createElement("span"); f.className = "swatch-face"; paintBoardVars(f, p.hex); b.appendChild(f);
     b.addEventListener("click", () => {
       if (B.plate === p.hex) return;
       pushHistory(); B.plate = p.hex; applyBoard(); emit("change"); sfx.click();
@@ -678,7 +678,7 @@ function syncBoardControls(){
   $$("#sizes .btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.size === sizeOf().id));
   $$("#plates .swatch").forEach(b => b.setAttribute("aria-pressed", b.dataset.hex === B.plate));
   $$("#plateStyles .stylebtn").forEach(b => b.setAttribute("aria-pressed", b.dataset.ps === plateStyle(B.ps)));
-  $$("#plateStyles .pprev").forEach(e => paintVars(e, B.plate));
+  $$("#plateStyles .pprev").forEach(e => paintBoardVars(e, B.plate));
 }
 // boards can also stand upright (tall photos), so a size matches either way round
 const sizeFits = (s, cols, rows) => (s.cols === cols && s.rows === rows) || (s.cols === rows && s.rows === cols);

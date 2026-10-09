@@ -337,7 +337,7 @@ button{font:inherit;color:inherit}
     radial-gradient(circle at 50% 50%, var(--lt) 0 calc(var(--cell)*.08), var(--c) calc(var(--cell)*.215), transparent calc(var(--cell)*.225)),
     radial-gradient(circle at 48% 47.5%, rgba(255,255,255,.5) 0 calc(var(--cell)*.215), transparent calc(var(--cell)*.23)),
     radial-gradient(circle at 52% 54%, var(--dk) 0 calc(var(--cell)*.225), transparent calc(var(--cell)*.24)),
-    radial-gradient(circle at 55% 59%, rgba(30,10,50,.24) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.29)),
+    radial-gradient(circle at 55% 59%, rgba(30,10,50,.3) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.29)),
     linear-gradient(160deg, rgba(255,255,255,.14) 0, rgba(255,255,255,0) 40%, rgba(30,10,60,0) 65%, rgba(30,10,60,.1) 100%);
   background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%;
   background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat;

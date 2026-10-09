@@ -63,13 +63,30 @@ function candyStripe(c){
 }
 // rainbow: five colours round the colour wheel starting from the brick's own colour; black, white and grey
 // have no colour of their own, so they get the usual rainbow from red
-function rainbowOf(c){
+function rainbowOf(c, light = 62){
   const n = parseInt(c.slice(1), 16), r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
   const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
   let h = 0;
   if (d > .16){ h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h *= 60; }
-  const hsl = k => `hsl(${Math.round((h + k * 62 + 360) % 360)},88%,62%)`;
+  const hsl = k => `hsl(${Math.round((h + k * 62 + 360) % 360)},${light < 62 ? 94 : 88}%,${light}%)`;
   return [0, 1, 2, 3, 4].map(hsl);
+}
+// boards wear their colour thick: more saturated and a little deeper than the colour picked, so the board reads
+// as a strong colour under the bricks (near-white boards, like the photo board, stay white)
+function richPlate(c){
+  const n = parseInt(c.slice(1), 16), r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let h = 0, l = (mx + mn) / 2, s = d ? d / (1 - Math.abs(2 * l - 1)) : 0;
+  if (d) h = (mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4) * 60;
+  if (l > .9){ l -= .02; } else { s = Math.min(1, s + (1 - s) * .4); l -= l > .35 ? .07 : .02; }
+  const k = m => { const v = (m + h / 30) % 12, x = l - s * Math.min(l, 1 - l) * Math.max(-1, Math.min(v - 3, 9 - v, 1));
+    return Math.round(x * 255).toString(16).padStart(2, "0"); };
+  return "#" + k(0) + k(8) + k(4);
+}
+// the pastel of the Light and Candy boards: less white than a light brick's, so the board keeps its colour
+function boardPastel(c){
+  const n = parseInt(c.slice(1), 16), m = v => Math.round(v + (255 - v) * .3).toString(16).padStart(2, "0");
+  return "#" + m(n >> 16) + m((n >> 8) & 255) + m(n & 255);
 }
 // the colour variables every brick, swatch and board needs, worked out once per colour
 const varsCache = new Map();
@@ -82,6 +99,18 @@ function colorVars(c){
   return v;
 }
 function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
+// a board's variables: its rich colour, deeper stud shading, denser pastels, more colour in the neon glass
+// and a deeper rainbow
+const boardCache = new Map();
+function boardVars(c){
+  let v = boardCache.get(c);
+  if (!v){ const r = richPlate(c), p = boardPastel(r);
+    v = [...colorVars(r).filter(([k]) => !/^--(lt|dk|pl|plt|pdk|glass|r\d)$/.test(k)), ["--lt", shade(r, .42)], ["--dk", shade(r, -.34)],
+      ["--pl", p], ["--plt", shade(p, .5)], ["--pdk", shade(p, -.24)], ["--glass", shade(r, -.68)], ...rainbowOf(r, 54).map((x, i) => ["--r" + i, x])];
+    boardCache.set(c, v); }
+  return v;
+}
+function paintBoardVars(el, c){ for (const [k, v] of boardVars(c)) el.style.setProperty(k, v); }
 function colorDist(a, b){
   const x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16);
   return Math.abs((x >> 16) - (y >> 16)) + Math.abs(((x >> 8) & 255) - ((y >> 8) & 255)) + Math.abs((x & 255) - (y & 255));
@@ -160,7 +189,7 @@ function artToPix(art, recolor){
 // board styles are the brick styles (Classic, Glitter, Glow, Neon, Light, Jelly, Candy, Rainbow) worn by the board itself
 const plateStyle = v => STYLES.some(s => s.id === v) ? v : "std";
 // the colour a board shows to the eye: neon boards are dark glass whatever their colour
-function plateTone(board){ return plateStyle(board.ps) === "neon" ? neonGlass(board.plate) : board.plate; }
+function plateTone(board){ const r = richPlate(board.plate); return plateStyle(board.ps) === "neon" ? shade(r, -.68) : r; }
 function newBoard(cols, rows, plate, ps = "std"){ return {cols, rows, plate, ps, bricks: [], hist: []}; }
 let FREE = newBoard(24, 18, "#FF2E8A");
 let B = FREE;            // the board on screen
@@ -286,7 +315,7 @@ function switchBoard(board){
   B = board; clearEls(); applyBoard(); commit(); updateUndo();
 }
 function applyBoard(){
-  paintVars(plate, B.plate);
+  paintBoardVars(plate, B.plate);
   plate.dataset.ps = plateStyle(B.ps);
   plate.style.width  = `calc(var(--cell) * ${B.cols})`;
   plate.style.height = `calc(var(--cell) * ${B.rows})`;
@@ -470,12 +499,12 @@ function stud(ctx, x, y, c, col, flat){
 function drawStud(ctx, x, y, c, col, flat){
   const cx = x + c * .5, cy = y + c * .5, r = c * (flat ? .22 : .24);
   const sh = ctx.createRadialGradient(x + c * (flat ? .55 : .56), y + c * (flat ? .59 : .61), 0, x + c * (flat ? .55 : .56), y + c * (flat ? .59 : .61), c * (flat ? .29 : .32));
-  sh.addColorStop(0, `rgba(30,10,50,${flat ? .24 : .34})`); sh.addColorStop(.7, `rgba(30,10,50,${flat ? .24 : .34})`); sh.addColorStop(1, "rgba(30,10,50,0)");
+  sh.addColorStop(0, `rgba(30,10,50,${flat ? .3 : .34})`); sh.addColorStop(.7, `rgba(30,10,50,${flat ? .3 : .34})`); sh.addColorStop(1, "rgba(30,10,50,0)");
   ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(x + c * (flat ? .55 : .56), y + c * (flat ? .59 : .61), c * (flat ? .29 : .32), 0, 7); ctx.fill();
-  ctx.fillStyle = shade(col, -.24); ctx.beginPath(); ctx.arc(x + c * .52, y + c * .54, r + c * .005, 0, 7); ctx.fill();
+  ctx.fillStyle = shade(col, flat ? -.34 : -.24); ctx.beginPath(); ctx.arc(x + c * .52, y + c * .54, r + c * .005, 0, 7); ctx.fill();
   ctx.fillStyle = `rgba(255,255,255,${flat ? .5 : .75})`; ctx.beginPath(); ctx.arc(x + c * .48, y + c * .475, r, 0, 7); ctx.fill();
   const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-  g.addColorStop(0, shade(col, .3)); g.addColorStop(flat ? .36 : .5, shade(col, .3)); g.addColorStop(1, col);
+  const hi = shade(col, flat ? .42 : .3); g.addColorStop(0, hi); g.addColorStop(flat ? .36 : .5, hi); g.addColorStop(1, col);
   ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r - c * .005, 0, 7); ctx.fill();
   if (!flat){
     // the faint embossed ring on top of a real stud
@@ -518,10 +547,10 @@ function glassStud(ctx, sx, sy, c){
   ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(gx, gy, c * .1, 0, 7); ctx.fill();
 }
 // the rainbow running across a brick or board (angle as in styles8.css)
-function rainbowFill(ctx, col, x, y, w, h, deg){
+function rainbowFill(ctx, col, x, y, w, h, deg, light){
   const a = deg * Math.PI / 180, dx = Math.sin(a), dy = -Math.cos(a), len = Math.abs(w * dx) + Math.abs(h * dy);
   const cx = x + w / 2, cy = y + h / 2, g = ctx.createLinearGradient(cx - dx * len / 2, cy - dy * len / 2, cx + dx * len / 2, cy + dy * len / 2);
-  rainbowOf(col).forEach((r, i) => g.addColorStop(i / 4, r));
+  rainbowOf(col, light).forEach((r, i) => g.addColorStop(i / 4, r));
   return g;
 }
 // candy stripes across a brick, clipped to it by the caller
@@ -535,19 +564,19 @@ function candyStripes(ctx, col, x, y, w, h, c){
 const SPRINKLES = [["#FF4F9A", 90, 94, 110, 106], ["#3D9BFF", 192, 108, 208, 92], ["#36C46A", 89, 200, 111, 200], ["#FFB800", 200, 189, 200, 211]];
 // the board under the bricks in each board style (matches styles7.css; Classic is the plain board)
 function drawPlate(ctx, board, ox, oy, c){
-  const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = board.plate;
+  const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = richPlate(board.plate), glass = shade(col, -.68);
   const rad = ps === "jelly" ? c * .6 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
   const each = fn => { for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) fn(ox + (x + .5) * c, oy + (y + .5) * c, x, y); };
   // glow, neon and light boards shine out past their edge in their own colour
   if (ps === "glow" || ps === "neon" || ps === "light"){
     ctx.save(); ctx.shadowColor = ps === "light" ? lampColor(col, .75) : neonColor(col); ctx.shadowBlur = c * (ps === "neon" ? .8 : 1.1);
-    ctx.fillStyle = ps === "neon" ? neonGlass(col) : col; path(); ctx.fill(); ctx.restore();
+    ctx.fillStyle = ps === "neon" ? glass : col; path(); ctx.fill(); ctx.restore();
   }
   ctx.save(); path(); ctx.clip();
-  ctx.fillStyle = ps === "neon" ? neonGlass(col) : ps === "light" ? pastel(col) : col; ctx.fillRect(ox, oy, bw, bh);
+  ctx.fillStyle = ps === "neon" ? glass : ps === "light" ? boardPastel(col) : col; ctx.fillRect(ox, oy, bw, bh);
   if (ps === "glow"){
     const g = ctx.createRadialGradient(ox + bw / 2, oy + bh * .45, 0, ox + bw / 2, oy + bh * .45, Math.max(bw, bh) * .62);
-    g.addColorStop(0, "rgba(255,255,255,.8)"); g.addColorStop(.45, shade(col, .3)); g.addColorStop(1, col);
+    g.addColorStop(0, "rgba(255,255,255,.55)"); g.addColorStop(.45, shade(col, .18)); g.addColorStop(1, col);
     ctx.fillStyle = g; ctx.fillRect(ox, oy, bw, bh);
   } else if (ps === "neon"){
     ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, 0); ctx.fillRect(ox, oy, bw, bh);
@@ -559,21 +588,21 @@ function drawPlate(ctx, board, ox, oy, c){
     const gl = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); gl.addColorStop(0, "rgba(255,255,255,.7)"); gl.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = gl; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
   } else if (ps === "candy"){
-    ctx.fillStyle = pastel(col); ctx.fillRect(ox, oy, bw, bh);
+    ctx.fillStyle = boardPastel(col); ctx.fillRect(ox, oy, bw, bh);
     const sg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
-    sg.addColorStop(0, "rgba(255,255,255,.4)"); sg.addColorStop(.4, "rgba(255,255,255,0)");
+    sg.addColorStop(0, "rgba(255,255,255,.3)"); sg.addColorStop(.4, "rgba(255,255,255,0)");
     ctx.fillStyle = sg; ctx.fillRect(ox, oy, bw, bh);
     ctx.lineCap = "round"; ctx.lineWidth = c * .09;
     for (let ty = 0; ty < board.rows; ty += 3) for (let tx = 0; tx < board.cols; tx += 3)
       for (const [f, x1, y1, x2, y2] of SPRINKLES){ ctx.strokeStyle = f; ctx.beginPath(); ctx.moveTo(ox + tx * c + x1 * c / 100, oy + ty * c + y1 * c / 100); ctx.lineTo(ox + tx * c + x2 * c / 100, oy + ty * c + y2 * c / 100); ctx.stroke(); }
   } else if (ps === "rainbow"){
-    ctx.fillStyle = rainbowFill(ctx, col, ox, oy, bw, bh, 120); ctx.fillRect(ox, oy, bw, bh);
+    ctx.fillStyle = rainbowFill(ctx, col, ox, oy, bw, bh, 120, 54); ctx.fillRect(ox, oy, bw, bh);
     const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
-    wg.addColorStop(0, "rgba(255,255,255,.4)"); wg.addColorStop(1, "rgba(255,255,255,.18)");
+    wg.addColorStop(0, "rgba(255,255,255,.22)"); wg.addColorStop(1, "rgba(255,255,255,.05)");
     ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
   } else if (ps === "light"){
     const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
-    wg.addColorStop(0, "rgba(255,255,255,.55)"); wg.addColorStop(.5, "rgba(255,255,255,0)");
+    wg.addColorStop(0, "rgba(255,255,255,.4)"); wg.addColorStop(.5, "rgba(255,255,255,0)");
     ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
   } else {
     ctx.fillStyle = sheen(ctx, ox, oy, bw, bh, .14, .1); ctx.fillRect(ox, oy, bw, bh);
@@ -637,7 +666,7 @@ function drawPlate(ctx, board, ox, oy, c){
       studTiles.set(key, tile);
     }
     each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
-  } else each((sx, sy) => stud(ctx, sx - c / 2, sy - c / 2, c, ps === "candy" ? pastel(col) : col, true));
+  } else each((sx, sy) => stud(ctx, sx - c / 2, sy - c / 2, c, ps === "candy" ? boardPastel(col) : col, true));
   if (ps === "glitter"){
     // a few twinkles caught mid-sparkle
     let sd = board.cols * 31 + board.rows * 17;

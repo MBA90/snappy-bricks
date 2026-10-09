@@ -115,7 +115,7 @@
     radial-gradient(circle at 54% 57%, var(--pdk) 0 calc(var(--cell)*.215), transparent calc(var(--cell)*.235)),
     radial-gradient(circle at 56% 61%, rgba(30,10,50,.14) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.28)),
     var(--sprinkles),
-    linear-gradient(170deg, rgba(255,255,255,.4) 0, rgba(255,255,255,0) 40%);
+    linear-gradient(170deg, rgba(255,255,255,.3) 0, rgba(255,255,255,0) 40%);
   background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),calc(var(--cell)*3) calc(var(--cell)*3),100% 100%;
   background-repeat:repeat,repeat,repeat,repeat,repeat,no-repeat;
   box-shadow:
@@ -131,7 +131,7 @@
   background-color:var(--r2);
   background-image:
     var(--wstuds),
-    linear-gradient(170deg, rgba(255,255,255,.4) 0, rgba(255,255,255,.18) 100%),
+    linear-gradient(170deg, rgba(255,255,255,.22) 0, rgba(255,255,255,.05) 100%),
     linear-gradient(120deg, var(--r0) 0, var(--r1) 25%, var(--r2) 50%, var(--r3) 75%, var(--r4) 100%);
   background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,100% 100%;
   background-repeat:repeat,repeat,repeat,no-repeat,no-repeat;
