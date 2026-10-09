@@ -148,20 +148,20 @@
 .pprev[data-ps="jelly"]{border-radius:9px;box-shadow:inset 0 0 6px var(--jdk),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 
 /* upright tablets: eight styles in two rows of four instead of a row of six and two left over */
-@media (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   .styles{grid-template-columns:repeat(4,56px)}
 }
 
 /* ===================== the style pickers (bricks and board) fit every screen ===================== */
 /* beside the board on computers and tablets on their side: two even columns of four big buttons,
    instead of three cramped columns with two left over */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px){
   .styles{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
   .stylebtn{min-height:62px;padding:7px 4px 4px;gap:4px;font-size:.8rem}
   .pprev{width:52px;height:34px;--cell:17px}
 }
 /* the dock along the bottom of tablets: a little wider, so long names like Rainbow aren't squeezed */
-@media (orientation:landscape) and (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   .styles{grid-template-columns:repeat(4,64px)}
 }
 
@@ -177,7 +177,7 @@ body[data-screen="studio"] .app{max-width:none}
 @property --bh{syntax:"*";inherits:false}
 @property --sw{syntax:"*";inherits:false}
 @property --free{syntax:"*";inherits:false}
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px){
   .studio{grid-template-columns:240px minmax(0,var(--bw,1fr)) 94px;justify-content:center}
   #studioScreen > .topbar{width:var(--sw,auto);max-width:100%;margin-inline:auto;align-self:center}
   body[data-hand="left"] .studio{grid-template-columns:94px minmax(0,var(--bw,1fr)) 240px}
@@ -198,32 +198,6 @@ body[data-screen="studio"] .app{max-width:none}
   .tools .zoombar{flex-direction:row;padding:2px;gap:2px;border-width:2px}
   .tools .zbtn{width:26px;height:26px;border-width:2px;font-size:1.05rem}
   .tools .zbtn svg{width:14px;height:14px}
-}
-
-/* ===================== tablets on their side (and squarer screens): the tools in one row above the board ===================== */
-/* the toy box on the left, the tools along the top, and the board filling the rest */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2),
-       (orientation:landscape) and (min-width:900px) and (min-height:541px) and (pointer:coarse){
-  .studio{grid-template-columns:240px minmax(0,var(--bw,1fr));grid-template-rows:auto minmax(0,var(--bh,1fr));grid-template-areas:"tray tools" "tray board";row-gap:8px}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(0,var(--bw,1fr)) 240px;grid-template-areas:"tools tray" "board tray"}
-  .tray{grid-row:1 / -1;contain:size}          /* the toy box scrolls: its length never stretches the rows */
-  .tools,body[data-hand="left"] .tools{container-type:normal;position:static;height:auto;max-height:none;flex-direction:row;align-items:stretch;gap:6px}
-  body[data-hand="left"] .tools{flex-direction:row-reverse}
-  .tools-main,body[data-hand="left"] .tools-main{display:flex;flex-direction:row;flex:1 1 auto;overflow:visible;padding:0 0 4px;gap:6px}
-  .tools-main .tbtn .txt{display:inline}
-  .tools .tbtn,.tools-main .tbtn,.tbtn.warn,.tbtn.undo{flex:1 1 0;width:auto;min-width:0;min-height:58px;padding:4px 2px 3px;font-size:.7rem;border-radius:16px}
-  .tools .tbtn svg{width:22px;height:22px}
-  .tbtn.warn{flex:0 0 76px}
-  .tbtn.undo{flex:0 0 92px;font-size:.85rem}
-  .tbtn.undo svg{width:28px;height:28px}
-  .tools .zoombar{flex-direction:row;align-self:center;flex:none;padding:2px;gap:3px}
-  .tools .zbtn{width:34px;height:34px;font-size:1.25rem}
-  .tools .zbtn svg{width:17px;height:17px}
-}
-@media (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (max-aspect-ratio:3/2),
-       (orientation:landscape) and (min-width:900px) and (max-width:1199px) and (min-height:541px) and (pointer:coarse){
-  .tbtn.warn{flex-basis:64px}
-  .tbtn.undo{flex-basis:76px}
 }
 
 /* ===================== phones on their side: the three doors fit on the home screen ===================== */
@@ -265,7 +239,7 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes starGot{to{scale:2;opacity:0}}
 @media (prefers-reduced-motion: reduce){.pstar{animation:none}}
 /* upright tablets: all the tools share one row instead of wrapping onto a second */
-@media (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   .tools-main,body[data-hand="left"] .tools-main{flex-wrap:nowrap}
   .tools-main .tbtn{flex:1 1 0;min-width:0}
 }
@@ -298,14 +272,14 @@ body[data-screen="studio"] .app{max-width:none}
   .tray[data-tab="bricks"] .sec-colors h2{display:none}
 }
 /* toy box beside the board (computers, sideways tablets): Name and Photo side by side, then the tabs */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px){
   .sec-name{flex-direction:row!important;gap:6px}
   .tray .name-open,.tray .photo-open{flex:1 1 0;width:auto;min-height:56px;font-size:.8rem!important;padding:4px!important;flex-direction:column;gap:0;line-height:1.05;white-space:normal}
   .tray .name-open > span:first-child,.tray .photo-open > span:first-child{font-size:1.25rem!important}
   .tray{gap:10px}
   .tray[data-tab="bricks"] .shapes .card{min-height:84px}
 }
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px){
   .tray{padding-inline:10px}
   .tray-tabs{gap:3px}
   .ttab{font-size:.56rem;padding-inline:0;border-width:2px}
@@ -372,7 +346,7 @@ body[data-screen="studio"] .app{max-width:none}
   .stamps{grid-template-columns:1fr 1fr}
 }
 /* computers and sideways tablets: tab names big enough to read */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
+@media (orientation:landscape) and (min-height:541px){
   .tray-tabs{gap:3px}
   .ttab{font-size:.64rem;min-height:58px}
   .ttab-ic{font-size:1.5rem}
@@ -474,17 +448,12 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes turnBricky{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(90deg)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion: reduce){.turn-phone{animation:none;transform:rotate(-90deg)}.turn-phone .bricky{animation:none;transform:rotate(90deg)}}
 
-/* ===================== toy box and tools at the screen's edges, the board fills the middle ===================== */
+/* ===================== three sections on every screen: toy box, board, tools ===================== */
 /* The toy box hugs the left edge and the tools the right (swapped for left-handers); the board's column takes
-   everything between them, and fitBox() adds or takes away columns of studs so the board fills it. */
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px){
-  .studio{grid-template-columns:204px minmax(0,1fr) 88px}
-  body[data-hand="left"] .studio{grid-template-columns:88px minmax(0,1fr) 204px}
-}
-@media (orientation:landscape) and (min-width:900px) and (min-height:541px) and (max-aspect-ratio:3/2),
-       (orientation:landscape) and (min-width:900px) and (min-height:541px) and (pointer:coarse){
-  .studio{grid-template-columns:204px minmax(0,1fr)}
-  body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr) 204px}
+   everything between them, and fitBox() works out how many studs across and down fill it. */
+@media (orientation:landscape) and (min-height:541px){
+  .studio{grid-template-columns:204px minmax(0,1fr) 136px}
+  body[data-hand="left"] .studio{grid-template-columns:136px minmax(0,1fr) 204px}
 }
 @media (orientation:landscape) and (max-height:540px){
   .studio{grid-template-columns:clamp(160px,21vw,180px) minmax(0,1fr) clamp(146px,19vw,164px)}
@@ -496,8 +465,26 @@ body[data-screen="studio"] .app{max-width:none}
     .name-open,.photo-open{font-size:.64rem!important;gap:2px!important;padding:3px 2px!important}
     .name-open > span:first-child,.photo-open > span:first-child{font-size:.9rem!important}
   }
-  /* the tools three to a row */
-  .tools-main,body[data-age="little"] .tools-main{grid-template-columns:repeat(3,minmax(0,1fr))}
   .tools .zbtn{width:30px;height:30px;font-size:1.15rem}
   .tools .zbtn svg{width:15px;height:15px}
 }
+
+/* ===================== the tools: two to a row, every button the same size ===================== */
+/* Clear, the tools and Undo share one grid of equal buttons; the zoom buttons get a row of their own at the bottom */
+@media (orientation:landscape){
+  #tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none;grid-auto-rows:minmax(0,64px);
+    align-content:start;gap:6px;padding:6px;overflow:hidden}
+  #tools .tools-main{display:contents}
+  #tools .tbtn,#tools .tbtn.warn,#tools .tbtn.undo{
+    grid-column:auto;grid-row:auto;order:1;width:auto;min-width:0;height:auto;min-height:0;max-height:none;flex:none;margin:0;
+    flex-direction:column;justify-content:center;gap:2px;padding:3px 2px;border-radius:14px;font-size:.64rem;line-height:1.05;box-shadow:0 3px 0 var(--ink)}
+  #tools .tbtn svg{width:22px;height:22px}
+  #tools .tbtn .txt{display:inline;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  #tools .tbtn.undo{order:2}
+  #tools .zoombar{order:3;grid-column:1 / -1;grid-row:auto;justify-self:center;align-self:center;flex-direction:row;margin:2px 0 0}
+}
+/* a short tools column (a phone with its browser bars showing): picture buttons, a long press says the name */
+@container sidetools (max-height:300px){ #tools .tbtn .txt{display:none} }
+@container tools (max-height:300px){ #tools .tbtn .txt{display:none} }
+/* the tools show no focus ring or tap highlight when pressed */
+#tools button,#tools button:focus,#tools button:focus-visible{outline:none;-webkit-tap-highlight-color:transparent}

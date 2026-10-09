@@ -334,21 +334,19 @@ function fitCell(){
   if (tuck) plate.style.display = "none";
   try { if (fitBox(wrap) === false) fitStale = true; } finally { if (tuck) plate.style.display = ""; }
 }
-// the space the board was last given, and how many columns of studs fill it
+// the space the board was last given; the building board's studs across and down are worked out from it
 let fitRoom = null;
-function autoWidth(){ return B === FREE && fitRoom && boardZoom <= 1 && !isPhotoBoard(); }
-function fitCols(rows){
-  const need = B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
-  if (!fitRoom || fitRoom.h <= 0) return Math.max(need, B.cols);
-  return clamp(Math.max(need, Math.floor(fitRoom.w / (fitRoom.h / rows))), Math.max(need, 8), 120);
-}
-// the picked size sets the rows; the columns fill the width, and when bricks stop the board getting narrower,
-// extra rows fill the height instead
+function autoWidth(){ return B === FREE && fitRoom && fitRoom.w > 0 && fitRoom.h > 0 && boardZoom <= 1 && !isPhotoBoard(); }
+// studs about 1/18 of the board's height, between 22px and 32px: big enough for fingers on a phone,
+// more of them on a big screen. The columns then fill the width. The board never gets smaller than
+// the bricks on it; when bricks make it wider than the screen allows, extra rows fill the height instead.
 function fitDims(){
-  if (!B.size) B.size = sizeOf().id;
-  const base = sizeOf().rows, cols = fitCols(base);
-  const needRows = B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
-  const rows = Math.min(120, Math.max(base, needRows, Math.floor(fitRoom.h / (fitRoom.w / cols))));
+  const needC = B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
+  const needR = B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
+  const stud = clamp(fitRoom.h / 18, 22, 32);
+  let rows = clamp(Math.max(Math.round(fitRoom.h / stud), needR), 6, 120);
+  const cols = clamp(Math.max(Math.floor(fitRoom.w / (fitRoom.h / rows)), needC), 6, 120);
+  rows = clamp(Math.max(rows, Math.floor(fitRoom.h / (fitRoom.w / cols))), 6, 120);
   return [cols, rows];
 }
 function fitBox(wrap){

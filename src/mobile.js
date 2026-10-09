@@ -84,7 +84,7 @@ function updateZoomBtns(){
 // when the tools stand in a column beside the board, the zoom buttons move into it, above Undo, so they never cover the board
 (function zoomHome(){
   const zb = $("#zoomBar"), home = zb.parentNode, after = zb.nextSibling;
-  const upright = matchMedia("(max-width:899px) and (min-height:541px)");
+  const upright = matchMedia("(orientation:portrait) and (max-width:899px) and (min-height:541px)");
   const place = () => {
     const tools = $("#tools"), undo = $("#undoBtn");
     if (!upright.matches) tools.insertBefore(zb, undo);

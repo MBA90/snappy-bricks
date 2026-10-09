@@ -151,7 +151,7 @@ body[data-age="little"] .big-only,
 body[data-age="little"] .sec-styles{display:none!important}
 
 /* ---------- upright screens: toy box becomes a dock along the bottom ---------- */
-@media (max-width:899px) and (min-height:541px){
+@media (orientation:portrait) and (max-width:899px) and (min-height:541px){
   body[data-screen="studio"]{padding-bottom:calc(var(--dock-h, 200px) + 12px)}
   .studio,body[data-hand="left"] .studio{grid-template-columns:minmax(0,1fr);grid-template-areas:"tools" "board";gap:10px}
   .tools{position:static;flex-direction:row;height:auto;max-height:none;gap:8px}
