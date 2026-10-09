@@ -6316,10 +6316,10 @@ function dailyStop(){
   const h = hashStr(dayKey() + LANG), kinds = ["copy", "trace", "spell", "math"], kind = kinds[h % 4];
   const s = {id: "daily", kind, daily: true};
   const little = settings.age === "little";
-  if (kind === "copy") s.idx = (h >> 3) % (little ? 6 : PUZZLES.length);
-  if (kind === "trace") s.idx = (h >> 3) % TRACE[LANG].length;
-  if (kind === "spell"){ const ok = SPELL[LANG].map((w, i) => [i, [...w[0]].length]).filter(w => !little || w[1] <= 3); s.idx = ok[(h >> 3) % ok.length][0]; }
-  if (kind === "math") s.level = little ? 1 + (h >> 3) % 3 : 1 + (h >> 3) % 7;
+  if (kind === "copy") s.idx = (h >>> 3) % (little ? 6 : PUZZLES.length);
+  if (kind === "trace") s.idx = (h >>> 3) % TRACE[LANG].length;
+  if (kind === "spell"){ const ok = SPELL[LANG].map((w, i) => [i, [...w[0]].length]).filter(w => !little || w[1] <= 3); s.idx = ok[(h >>> 3) % ok.length][0]; }
+  if (kind === "math") s.level = little ? 1 + (h >>> 3) % 3 : 1 + (h >>> 3) % 7;
   return s;
 }
 function renderDaily(){
