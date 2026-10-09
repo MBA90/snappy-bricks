@@ -76,7 +76,8 @@ function updateZoomBtns(){
   const zb = $("#zoomBar"), home = zb.parentNode, after = zb.nextSibling;
   const upright = matchMedia("(orientation:portrait), (max-width:899px) and (min-height:541px)");
   const place = () => {
-    if (!upright.matches) $("#tools").insertBefore(zb, $("#undoBtn"));
+    const tools = $("#tools"), undo = $("#undoBtn");
+    if (!upright.matches) tools.insertBefore(zb, undo.parentNode === tools ? undo : null);   // Undo may still be on the phone's board
     else home.insertBefore(zb, after);
     fitStale = true;                                   // the phone turned: every brick gets a new size, style them once
     fitCell();
@@ -150,4 +151,58 @@ plateWrap.addEventListener("wheel", e => {
   const up = e => { pts.delete(e.pointerId); if (pts.size < 2 && g) finish(); };
   window.addEventListener("pointerup", up);
   window.addEventListener("pointercancel", up);
+})();
+
+/* ---- upright phones: the tools in one row, a More button for Clear, Replay and Save, and Undo by the thumb ---- */
+(function phoneTools(){
+  const phone = matchMedia("(orientation:portrait) and (max-width:699px)");
+  const more = $("#moreBtn"), pop = $("#morePop"), undo = $("#undoBtn"), col = $(".board-col");
+  // where each button lives on bigger screens, so it can go back there (put back last-moved first)
+  const homes = ["#clearBtn", "#replayBtn", "#saveMenuBtn", "#undoBtn"].map(s => { const el = $(s); return {el, home: el.parentNode, after: el.nextSibling}; });
+  const openMore = () => { pop.hidden = false; more.setAttribute("aria-expanded", "true"); };
+  const closeMore = () => { pop.hidden = true; more.setAttribute("aria-expanded", "false"); };
+  const place = () => {
+    if (phone.matches){
+      homes.slice(0, 3).forEach(h => pop.appendChild(h.el));
+      col.appendChild(undo); undo.classList.add("float");
+    } else {
+      closeMore(); undo.classList.remove("float");
+      homes.slice().reverse().forEach(h => h.home.insertBefore(h.el, h.after));
+      const zb = $("#zoomBar");
+      if (zb.parentNode === undo.parentNode) undo.parentNode.insertBefore(zb, undo);   // the zoom buttons stay above Undo
+    }
+  };
+  phone.addEventListener ? phone.addEventListener("change", place) : phone.addListener(place);
+  place();
+  more.addEventListener("click", () => { sfx.click(); pop.hidden ? openMore() : closeMore(); });
+  // Replay and Save close the menu; Clear keeps it open for its "Sure?" tap, and closes once the board is empty
+  pop.addEventListener("click", e => {
+    if (e.target.closest("#replayBtn, #saveMenuBtn") || !B.bricks.length) closeMore();
+  });
+  document.addEventListener("pointerdown", e => {
+    if (!pop.hidden && !pop.contains(e.target) && !more.contains(e.target)) closeMore();
+  }, true);
+})();
+
+/* ---- a sign on the board while Paint, Eraser, Draw or Fill is on: the board's edge takes the tool's colour,
+   and tapping the sign goes back to building ---- */
+(function toolSign(){
+  const col = $(".board-col"), wrap = $("#plateWrap");
+  const sign = document.createElement("button");
+  sign.type = "button"; sign.className = "tool-sign"; sign.hidden = true;
+  col.appendChild(sign);
+  const place = () => { if (!sign.hidden) sign.style.top = wrap.offsetTop + "px"; };
+  const show = tl => {
+    col.dataset.usingTool = tl;   // not data-tool: that marks the tool buttons
+    const btn = $(`#tools [data-tool="${tl}"]`);
+    if (tl === "move" || !btn){ sign.hidden = true; return; }
+    const name = btn.querySelector(".txt").textContent;
+    sign.innerHTML = btn.querySelector("svg").outerHTML + `<span class="ts-txt"></span><span class="ts-x" aria-hidden="true">✕</span>`;
+    sign.querySelector(".ts-txt").textContent = name;
+    sign.setAttribute("aria-label", name + " ✕");
+    sign.hidden = false; place();
+  };
+  on("tool", show); on("lang", () => show(tool));
+  sign.addEventListener("click", () => setTool("move"));
+  on("resize", place); on("board", place);
 })();
