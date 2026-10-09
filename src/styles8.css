@@ -488,3 +488,8 @@ body[data-screen="studio"] .app{max-width:none}
 @container tools (max-height:300px){ #tools .tbtn .txt{display:none} }
 /* the tools show no focus ring or tap highlight when pressed */
 #tools button,#tools button:focus,#tools button:focus-visible{outline:none;-webkit-tap-highlight-color:transparent}
+
+/* ===================== no tool sign or coloured board edge ===================== */
+/* pressing a tool only lights up its button: no sign over the board and no board edge in the tool's colour */
+.tool-sign{display:none!important}
+.board-col[data-using-tool]:not([data-using-tool="move"]) .plate::after{content:none}
