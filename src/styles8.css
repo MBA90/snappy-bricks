@@ -493,3 +493,63 @@ body[data-screen="studio"] .app{max-width:none}
 @keyframes swipeNext{from{opacity:.2;translate:40px 0}}
 @keyframes swipeBack{from{opacity:.2;translate:-40px 0}}
 @media (prefers-reduced-motion: reduce){.tray-body.swipe-next,.tray-body.swipe-back,.sec-name.open .create-pop{animation:none}.tray.pull-anim{transition:none}}
+
+/* ===================== phones: Turn bricks looks like a button, not another brick ===================== */
+@media (orientation:portrait) and (max-width:699px){
+  .sec-bricks .row .btn,.tray[data-tab="bricks"] #turnBtn{
+    width:60px;height:auto;min-height:0;padding:0;gap:3px;justify-content:center;
+    background:none;border:0;box-shadow:none;color:var(--ink);font-size:.62rem;
+  }
+  .sec-bricks .row .btn svg{
+    box-sizing:content-box;width:24px;height:24px;padding:9px;border-radius:50%;
+    background:var(--lav);border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);
+  }
+  .sec-bricks .row .btn[aria-pressed="true"] svg{background:#FFE14D}
+}
+
+/* ===================== phones: a tall toy box (pulled up, or a short board) ===================== */
+/* With room to spare, the toy box reads like a page: everything starts at the top, each part has its name over it,
+   rows wrap instead of sliding sideways, and the Bricks tab shows only bricks and their colours. */
+@media (orientation:portrait) and (max-width:699px){
+  .tray.roomy .tray-body{
+    flex-direction:column;flex-wrap:nowrap;align-items:stretch;align-content:normal;justify-content:flex-start;
+    gap:16px;overflow-x:hidden;overflow-y:auto;padding:4px 4px 14px;
+  }
+  .tray.roomy .tray-body > .tray-sec{flex:none;width:100%;flex-direction:column;align-items:stretch;gap:8px}
+  .tray.roomy .tray-body > .sec-bricks{flex-direction:column}
+  .tray.roomy .tray-body h2,.tray.roomy .tray-body h3,
+  .tray.roomy[data-tab="bricks"] .tray-body .sec-colors h2,
+  .tray.roomy[data-tab="bricks"] .tray-body .sec-bricks > h2{
+    display:flex;align-items:center;gap:6px;margin:0;padding-inline:2px;
+    font-size:.85rem;font-weight:800;line-height:1.1;color:var(--ink);text-align:start;
+  }
+  .tray.roomy .sec-bricks > h2::before{content:"🧱"}
+  .tray.roomy .sec-colors > h2::before{content:"🎨"}
+  .tray.roomy .sec-styles > h3::before{content:"✨"}
+  .tray.roomy .sec-stamps > h3::before{content:"⭐"}
+  .tray.roomy .sec-plates > h3::before{content:"🟩"}
+  .tray.roomy .tray-body .hint{display:none}
+  body .tray.roomy[data-tab="bricks"] .tray-body > .sec-styles{display:none!important}
+  /* bricks in a grid of four, then Turn bricks as a wide button of its own */
+  .tray.roomy .shapes{grid-auto-flow:row;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-columns:auto;gap:8px}
+  .tray.roomy[data-tab="bricks"] .shapes .card,.tray.roomy .shapes .card{height:auto;min-height:92px;padding-bottom:22px}
+  .tray.roomy .sec-bricks .row{align-self:stretch;margin:0}
+  .tray.roomy .sec-bricks .row .btn,.tray.roomy[data-tab="bricks"] #turnBtn{
+    width:100%;height:52px;flex-direction:row;gap:8px;font-size:.9rem;
+    background:var(--lav);border:3px solid var(--ink);border-radius:16px;box-shadow:0 3px 0 var(--ink);
+  }
+  .tray.roomy .sec-bricks .row .btn svg{padding:0;background:none;border:0;box-shadow:none;width:22px;height:22px}
+  .tray.roomy .sec-bricks .row .btn[aria-pressed="true"]{background:#FFE14D}
+  .tray.roomy .swatches,.tray.roomy[data-tab="bricks"] .swatches{grid-template-columns:repeat(8,minmax(0,1fr));grid-auto-flow:row;grid-auto-columns:auto;overflow:visible;gap:8px 5px;padding:2px 0}
+  .tray.roomy .swatches .swatch{width:auto}
+  .tray.roomy .styles,.tray.roomy .tray-body .styles{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .tray.roomy .stamps{grid-auto-flow:row;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-columns:auto;gap:8px}
+  .tray.roomy[data-tab="plates"] .sec-plates{width:100%;flex-direction:column;align-items:stretch;gap:8px}
+  .tray.roomy[data-tab="plates"] .plate-styles{width:auto}
+  .tray.roomy[data-tab="plates"] .plates,.tray.roomy .plates{grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
+  .tray.roomy .plates > *{min-width:0;min-height:0;aspect-ratio:1}
+}
+/* the compact toy box starts at the top too, so there is never a gap over the bricks */
+@media (orientation:portrait) and (max-width:699px){
+  .tray:not(.roomy) .tray-body{align-content:flex-start}
+}
