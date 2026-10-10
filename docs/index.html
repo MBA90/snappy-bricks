@@ -301,9 +301,8 @@ button{font:inherit;color:inherit}
 .card{
   position:relative;display:grid;place-items:center;min-height:60px;padding:10px 6px 20px;
   background:var(--tint);border:3px solid transparent;border-radius:16px;cursor:grab;
-  /* a finger swipe over the cards scrolls the toy box; holding a card still picks it up (waitForHold in ui.js),
-     and once it is lifted the toy box stops scrolling under it */
-  touch-action:pan-x pan-y;user-select:none;-webkit-user-select:none;
+  /* the browser never scrolls from a card, so a held card always lifts; a swipe scrolls the toy box in ui.js (swipeTray) */
+  touch-action:none;user-select:none;-webkit-user-select:none;
 }
 .card:hover{border-color:var(--lav)}
 .card[aria-pressed="true"]{border-color:var(--ink);background:#FFF5B5}
@@ -4535,12 +4534,13 @@ window.addEventListener("pointermove", e => {
   if (ptr.kind === "brush"){ const ev = e.getCoalescedEvents ? e.getCoalescedEvents() : []; (ev.length ? ev : [e]).forEach(brushAt); return; }
   if (ptr.kind === "pencil"){ e.preventDefault(); const ev = e.getCoalescedEvents ? e.getCoalescedEvents() : []; (ev.length ? ev : [e]).forEach(pencilAt); return; }
   if (ptr.kind === "tap") return;
+  if (ptr.kind === "swipe"){ moveSwipe(e); return; }
   if (!ptr.moved){
     const far = Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy);
     if (ptr.hold){
       // still waiting for the hold: moving away first means it was a swipe, so leave the brick alone
       ptr.lx = e.clientX; ptr.ly = e.clientY;
-      if (far > 10){ clearTimeout(ptr.timer); ptr = null; }
+      if (far > 10){ clearTimeout(ptr.timer); ptr = ptr.source === "tray" ? swipeTray(e) : null; }
       return;
     }
     if (far < 7) return;
@@ -4553,6 +4553,7 @@ window.addEventListener("pointerup", e => {
   if (!ptr || e.pointerId !== ptr.id) return;
   if (ptr.kind === "brush"){ ptr = null; emit("change"); return; }
   if (ptr.kind === "pencil"){ endPencil(false); return; }
+  if (ptr.kind === "swipe"){ glideSwipe(ptr); ptr = null; return; }
   if (ptr.kind === "tap"){
     const tp = ptr; ptr = null;
     if (Math.hypot(e.clientX - tp.sx, e.clientY - tp.sy) > 12) return;
@@ -4565,6 +4566,39 @@ window.addEventListener("pointerup", e => {
   }
   endDrag(e, false);
 });
+// Cards are touch-action:none so a held card always lifts on every phone, so a finger swipe that starts on a card
+// scrolls the toy box here instead of in the browser, and glides on a little when the finger lets go.
+let glide = 0;
+function scrollerOf(el){
+  for (; el && el !== document.body; el = el.parentElement){
+    const cs = getComputedStyle(el);
+    if ((el.scrollHeight > el.clientHeight + 1 && /auto|scroll/.test(cs.overflowY)) || (el.scrollWidth > el.clientWidth + 1 && /auto|scroll/.test(cs.overflowX))) return el;
+  }
+  return null;
+}
+function swipeTray(e){
+  cancelAnimationFrame(glide);
+  const p = ptr, el = scrollerOf(document.elementFromPoint(p.sx, p.sy));
+  if (!el) return null;
+  const s = {kind: "swipe", id: p.id, el, x: p.sx, y: p.sy, t: performance.now(), vx: 0, vy: 0};
+  ptr = s; moveSwipe(e); return s;
+}
+function moveSwipe(e){
+  const s = ptr, now = performance.now(), dx = e.clientX - s.x, dy = e.clientY - s.y, dt = Math.max(1, now - s.t);
+  s.el.scrollLeft -= dx; s.el.scrollTop -= dy;
+  s.vx = s.vx * .2 + dx / dt * .8; s.vy = s.vy * .2 + dy / dt * .8;
+  s.x = e.clientX; s.y = e.clientY; s.t = now;
+}
+function glideSwipe(s){
+  if (performance.now() - s.t > 80 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let vx = s.vx * 16, vy = s.vy * 16;
+  const step = () => {
+    s.el.scrollLeft -= vx; s.el.scrollTop -= vy; vx *= .94; vy *= .94;
+    if (Math.abs(vx) + Math.abs(vy) > .5) glide = requestAnimationFrame(step);
+  };
+  glide = requestAnimationFrame(step);
+}
+window.addEventListener("pointerdown", () => cancelAnimationFrame(glide), true);
 // a brick picked up from the toy box follows the finger: the toy box doesn't scroll under it
 $("#tray").addEventListener("touchmove", e => { if (ptr && ptr.kind === "drag" && ptr.moved && e.cancelable) e.preventDefault(); }, {passive: false});
 window.addEventListener("pointercancel", e => {
