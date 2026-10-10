@@ -688,9 +688,12 @@ function buildBoardControls(){
     const ic = document.createElement("span"); ic.className = "sizeic"; ic.textContent = s.ic; ic.setAttribute("aria-hidden", "true"); b.appendChild(ic);
     const lab = document.createElement("span"); lab.textContent = s[LANG]; b.appendChild(lab);
     b.addEventListener("click", () => {
-      if (boardSize(B.bs) === s.id) return;
-      pushHistory(); B.bs = s.id; applyBoard(); emit("change"); sfx.click();
-      say(t("boardSizeSay_" + s.id));
+      // the size that is already on still tidies a board that bricks have stretched past it
+      if (boardSize(B.bs) === s.id && !(autoWidth() && fitDims(true).join() !== B.cols + "," + B.rows)) return;
+      pushHistory(); B.bs = s.id;
+      const cut = resizeBoard();
+      clearEls(); applyBoard(); commit(); sfx.click();
+      say(t(cut ? "sizeCut" : "boardSizeSay_" + s.id));
     });
     bz.appendChild(b);
   }
