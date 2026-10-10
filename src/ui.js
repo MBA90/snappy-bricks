@@ -195,7 +195,7 @@ function pickUp(e){
 function showFloat(){
   floatEl = document.createElement("div"); floatEl.className = "floating";
   floatEl.appendChild(pieceEl(ptr.piece, cell)); document.body.appendChild(floatEl);
-  if (ptr.source === "board"){ const el = els.get(ptr.brick.id); if (el) el.classList.add("lifted"); const a = auraFor(ptr.brick.id); if (a) a.classList.add("lifted"); }
+  if (ptr.source === "board"){ const el = els.get(ptr.brick.id); if (el) el.classList.add("lifted"); const a = auraFor(ptr.brick.id); if (a) a.classList.add("lifted"); const w = wallFor(ptr.brick.id); if (w) w.classList.add("lifted"); }
 }
 // the held piece floats a little up and to the side of where it will land, so its landing shadow peeks out underneath
 function moveFloat(e){
@@ -241,7 +241,7 @@ function endDrag(e, cancelled){
   const p = ptr; ptr = null; clearTimeout(p.timer);
   hideGhost(); hideSpin(); trash.classList.remove("hot"); $("#tray").classList.remove("hot");
   if (floatEl){ floatEl.remove(); floatEl = null; }
-  if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); const a = auraFor(p.brick.id); if (a) a.classList.remove("lifted"); }
+  if (p.source === "board"){ const el = els.get(p.brick.id); if (el) el.classList.remove("lifted"); const a = auraFor(p.brick.id); if (a) a.classList.remove("lifted"); const w = wallFor(p.brick.id); if (w) w.classList.remove("lifted"); }
   if (cancelled) return;
   if (!p.moved){
     if (p.source === "tray") toggleSelect(p.sel); else tapBrick(p.brick);
