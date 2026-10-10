@@ -357,10 +357,10 @@ function autoWidth(){ return B === FREE && fitRoom && fitRoom.w > 0 && fitRoom.h
 // studs stay square, so the board takes the shape of the space with as close to that many studs as the shape
 // allows, filling the space first. The board never gets smaller than the bricks on it; when bricks make it
 // wider than the screen allows, extra rows fill the height instead.
-function fitDims(){
+function fitDims(ignoreBricks){
   const want = BOARD_SIZES.find(s => s.id === boardSize(B.bs)).studs;
-  const needC = B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
-  const needR = B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
+  const needC = ignoreBricks ? 0 : B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
+  const needR = ignoreBricks ? 0 : B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
   const W = fitRoom.w, H = fitRoom.h, r0 = Math.sqrt(want * H / W);
   let best = null;
   for (let r = Math.max(4, Math.floor(r0) - 2); r <= Math.ceil(r0) + 2; r++){
@@ -379,6 +379,20 @@ function fitDims(){
     rows = clamp(Math.max(rows, Math.floor(H / (W / cols))), 4, 120);
   }
   return [cols, rows];
+}
+// a new board size always gives the board that many studs: a build that is too big moves into the corner,
+// and bricks that still don't fit come off (Undo brings them back). Returns how many came off.
+function resizeBoard(){
+  if (!autoWidth()) return 0;
+  const [cols, rows] = fitDims(true);
+  if (!B.bricks.length) return 0;
+  const minX = Math.min(...B.bricks.map(b => b.x)), minY = Math.min(...B.bricks.map(b => b.y));
+  const maxX = Math.max(...B.bricks.map(b => b.x + b.w)), maxY = Math.max(...B.bricks.map(b => b.y + b.h));
+  // slide the build back onto the board only as far as it has to go
+  const dx = maxX > cols ? Math.max(cols - maxX, -minX) : 0, dy = maxY > rows ? Math.max(rows - maxY, -minY) : 0;
+  const before = B.bricks.length;
+  B.bricks = B.bricks.filter(b => { b.x += dx; b.y += dy; return b.x + b.w <= cols && b.y + b.h <= rows; });
+  return before - B.bricks.length;
 }
 function fitBox(wrap){
   if (!wrap.offsetParent) return false;              // the studio is not on screen
