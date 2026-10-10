@@ -14,6 +14,12 @@ body[data-area="math"]{--area:#8A4DE0;--area-soft:#ECE1FB}
 /* ---------- home ---------- */
 .home{align-items:center;text-align:center;gap:18px;padding-block:4px 16px;min-height:calc(100vh - 40px - env(safe-area-inset-top, 0px));min-height:calc(100dvh - 40px - env(safe-area-inset-top, 0px))}
 .home-top{align-self:stretch;display:flex;justify-content:flex-end}
+/* the spare height goes above the logo and below the buttons, so the home screen sits in the middle of the screen;
+   the Grown-ups button stays in its corner, out of the way of the centring */
+.home{position:relative}
+.home-top{position:absolute;top:0;inset-inline:0}
+.home > .logo{margin-top:auto}
+.home > .home-extras{margin-bottom:auto}
 .home .logo{filter:drop-shadow(0 4px 0 rgba(43,30,92,.35))}
 .home-hello{display:flex;align-items:center;justify-content:center;gap:14px;max-width:100%}
 .bricky.big{width:86px;height:86px}
