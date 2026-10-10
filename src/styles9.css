@@ -274,4 +274,8 @@ body:not([data-screen="studio"]){padding-top:env(safe-area-inset-top, 0px)}
   #tools .tbtn .txt{display:none}
   #tools .tbtn svg{width:24px;height:24px}
   #tools .tbtn.undo svg{width:26px;height:26px}
+  /* the zoom buttons fit the slim column's 90px inside its padding: three 26px buttons, 2px gaps and padding, 2px border */
+  #tools .zoombar{box-sizing:border-box;max-width:100%;padding:2px;gap:2px}
+  #tools .zbtn{width:26px;height:26px;flex:none}
+  #tools .zbtn svg{width:14px;height:14px}
 }
