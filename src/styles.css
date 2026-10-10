@@ -280,7 +280,9 @@ button{font:inherit;color:inherit}
 .card{
   position:relative;display:grid;place-items:center;min-height:60px;padding:10px 6px 20px;
   background:var(--tint);border:3px solid transparent;border-radius:16px;cursor:grab;
-  touch-action:none;user-select:none;-webkit-user-select:none;
+  /* a finger swipe over the cards scrolls the toy box; holding a card still picks it up (waitForHold in ui.js),
+     and once it is lifted the toy box stops scrolling under it */
+  touch-action:pan-x pan-y;user-select:none;-webkit-user-select:none;
 }
 .card:hover{border-color:var(--lav)}
 .card[aria-pressed="true"]{border-color:var(--ink);background:#FFF5B5}
