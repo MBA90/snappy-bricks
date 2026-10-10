@@ -102,9 +102,7 @@ function buildShapes(){
     if (settings.age === "little" && !LITTLE_SHAPES.includes(i)) return;
     const p = brickPiece(i);
     const lab = `${Math.min(p.w, p.h)}×${Math.max(p.w, p.h)}`;
-    const card = makeCard(p, trayCell(), lab, {kind: "brick", i}, t("brickAria", {s: lab}));
-    if (Math.max(p.w, p.h) > 4) card.classList.add("long");   // 1×6 and longer get a whole row
-    box.appendChild(card);
+    box.appendChild(makeCard(p, trayCell(), lab, {kind: "brick", i}, t("brickAria", {s: lab})));
   });
   // colour the style previews too
   $$("#styles .brick").forEach(e => paintVars(e, color));

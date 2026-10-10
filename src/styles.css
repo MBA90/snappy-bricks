@@ -276,7 +276,6 @@ button{font:inherit;color:inherit}
 }
 .stylebtn[aria-pressed="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
 .shapes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.shapes .card.long{grid-column:span 2}
 .stamps{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:8px}
 .card{
   position:relative;display:grid;place-items:center;min-height:60px;padding:10px 6px 20px;
