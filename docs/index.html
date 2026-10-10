@@ -1956,16 +1956,21 @@ body:not([data-screen="studio"]){padding-top:env(safe-area-inset-top, 0px)}
 }
 
 /* ===================== stacked bricks look stacked ===================== */
-/* each layer lifts a brick up and to the left (--lx, --ly: a bigger step on bigger studs), and the side of a stacked
-   brick (.wall, renderWalls() in engine.js) fills the step below it in the brick's darker colour, with a light seam
-   on top, so a tower shows every layer it is made of */
-.plate{--lx:min(-2px, calc(var(--cell) * -.14));--ly:min(-3px, calc(var(--cell) * -.26))}
+/* each layer lifts a brick up and to the left (--lx, --ly: a fifth and two fifths of a stud, at least 3px and 6px so
+   a phone shows it), and the side of a stacked brick (.wall, renderWalls() in engine.js) fills the step below it in
+   the brick's darker colour, with a light seam on top and a dark line where it meets the layer under it, so a tower
+   shows every layer it is made of */
+.plate{--lx:min(-3px, calc(var(--cell) * -.2));--ly:min(-6px, calc(var(--cell) * -.4))}
 .wall{
   position:absolute;pointer-events:none;border-radius:calc(var(--cell)*.14);background:var(--dk);
   translate:calc((var(--z) - 1) * var(--lx)) calc((var(--z) - 1) * var(--ly));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 0 1px rgba(30,10,60,.3),
-    calc(1px + var(--z) * 1px) calc(2px + var(--z) * 2px) calc(3px + var(--z) * 2px) rgba(30,10,60,.3);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -2px 0 rgba(30,10,60,.35),0 0 0 1.5px rgba(30,10,60,.45),
+    calc(2px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.38);
 }
+/* a new layer on a stack: its number pops so the child sees the tower grow */
+.height.pop{animation:heightPop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes heightPop{0%{scale:.2}60%{scale:1.5}100%{scale:1}}
+@media (prefers-reduced-motion: reduce){.height.pop{animation:none}}
 .wall.lifted{opacity:.25}
 .plate.tiny .wall{display:none}
 
@@ -2986,7 +2991,7 @@ function renderHeights(){
     if (!h){ h = document.createElement("b"); h.className = "height"; heightLayer.appendChild(h); heights.set(b.id, h); }
     const pos = b.x + "," + b.y + "," + b.w;
     if (h._pos !== pos){ h._pos = pos; h.style.left = `calc(var(--cell) * ${b.x + b.w})`; h.style.top = `calc(var(--cell) * ${b.y})`; }
-    if (h._z !== z){ h._z = z; h.textContent = z + 1; h.style.setProperty("--z", z); }
+    if (h._z !== z){ h._z = z; h.textContent = z + 1; h.style.setProperty("--z", z); h.classList.remove("pop"); void h.offsetWidth; h.classList.add("pop"); }
     shown.add(b.id);
   }
   for (const [id, h] of heights) if (!shown.has(id)){ h.remove(); heights.delete(id); }
@@ -3476,14 +3481,14 @@ function drawBoard(ctx, board, ox, oy, c){
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
     // each layer lifts a brick up and left as on the board (--lx, --ly), with its side one layer below it
-    const lx = Math.max(2, c * .14), ly = Math.max(3, c * .26);
+    const lx = Math.max(3, c * .2), ly = Math.max(6, c * .4);
     const x = ox + b.x * c + gap - z * lx, y = oy + b.y * c + gap - z * ly, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
     const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
     const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
     if (z){
       ctx.save(); ctx.shadowColor = "rgba(30,10,60,.3)"; ctx.shadowBlur = 3 + z * 2; ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = 2 + z * 2;
       ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x + lx, y + ly, w, h, c * .14); ctx.fill(); ctx.restore();
-      ctx.save(); ctx.strokeStyle = "rgba(30,10,60,.3)"; ctx.lineWidth = 1; rrect(ctx, x + lx, y + ly, w, h, c * .14); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.strokeStyle = "rgba(30,10,60,.45)"; ctx.lineWidth = 1.5; rrect(ctx, x + lx, y + ly, w, h, c * .14); ctx.stroke(); ctx.restore();
     }
     ctx.save();
     ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
