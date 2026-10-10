@@ -241,3 +241,8 @@ html[lang="ar"] .brick.pow::after{content:"بوم!";font-family:"Baloo Bhaijaan 
   .toast{zoom:var(--ui)}
   .sheet-card{max-height:calc(92dvh / var(--ui))}
 }
+
+/* ===================== the home-screen app runs under the status bar ===================== */
+/* (black-translucent in build.py) so every screen keeps its top clear of it; the studio already pads its .app.
+   In a browser tab, and on sideways iPhones, the inset is 0 and nothing moves. */
+body:not([data-screen="studio"]){padding-top:env(safe-area-inset-top, 0px)}

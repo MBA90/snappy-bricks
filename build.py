@@ -34,7 +34,10 @@ def standalone(body):
              '<link rel="apple-touch-icon" href="icon-192.png">\n'
              '<meta name="apple-mobile-web-app-capable" content="yes">\n'
              '<meta name="mobile-web-app-capable" content="yes">\n'
-             '<meta name="apple-mobile-web-app-status-bar-style" content="default">\n'
+             # black-translucent: the home-screen app covers the whole screen, under the status bar. With "default"
+             # iPhones leave the upright status bar's height as an empty band at the top after turning sideways,
+             # pushing the studio off the bottom. The page keeps clear of the status bar with env(safe-area-inset-top).
+             '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n'
              '<meta name="apple-mobile-web-app-title" content="Snappy Bricks">\n'
              '<meta name="description" content="A colorful brick-building website for kids: snap bricks, play word and puzzle games, and build your name in English or Arabic.">\n')
     sw = ("<script>if('serviceWorker' in navigator && location.protocol.startsWith('http')){"
