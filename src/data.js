@@ -16,6 +16,15 @@ const PHOTO_SIZES = [
   {id: "p", en: "Poster", ar: "ملصق",   cols: 96, rows: 72},
 ];
 const ALL_SIZES = SIZES.concat(PHOTO_SIZES);
+// the building board always fills the same space; its size only says how many studs fit in it
+// (named after animals from little to big; n: studs across the little picture on its button)
+const BOARD_SIZES = [
+  {id: "xs", en: "Mouse",    ar: "فأر",  ic: "🐭", studs: 300,  n: 3},
+  {id: "s",  en: "Cat",      ar: "قطة",  ic: "🐱", studs: 600,  n: 4},
+  {id: "m",  en: "Dog",      ar: "كلب",  ic: "🐶", studs: 1200, n: 5},
+  {id: "l",  en: "Lion",     ar: "أسد",  ic: "🦁", studs: 1800, n: 7},
+  {id: "xl", en: "Elephant", ar: "فيل",  ic: "🐘", studs: 2400, n: 9},
+];
 const PLATES = [
   {en: "Pink",   ar: "وردية",   hex: "#FF2E8A"},
   {en: "Blue",   ar: "زرقاء",   hex: "#2F9BF0"},
@@ -151,6 +160,11 @@ addStrings({
   buildName: ["Build my name!", "ابنِ اسمي!"],
   board: ["Board", "اللوحة"], size: ["Size", "الحجم"], boardColor: ["Board color", "لون اللوحة"],
   boardStyle: ["Board style", "نوع اللوحة"],
+  boardSizeSay_xs: ["Mouse board: a few big bumps!", "لوحة الفأر: نتوءات قليلة وكبيرة!"],
+  boardSizeSay_s: ["Cat board: big bumps!", "لوحة القطة: نتوءات كبيرة!"],
+  boardSizeSay_m: ["Dog board: just right!", "لوحة الكلب: مناسبة تمامًا!"],
+  boardSizeSay_l: ["Lion board: lots of bumps!", "لوحة الأسد: نتوءات كثيرة!"],
+  boardSizeSay_xl: ["Elephant board: tiny bumps everywhere!", "لوحة الفيل: نتوءات صغيرة في كل مكان!"],
   plateStyleSay_std: ["A classic board with bumps on top.", "لوحة كلاسيكية بنتوءات صغيرة."],
   plateStyleSay_glitter: ["A sparkly glitter board!", "لوحة لامعة بالبريق!"],
   plateStyleSay_glow: ["A glow board that shines like a magic light!", "لوحة مضيئة تلمع مثل ضوء سحري!"],

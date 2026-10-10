@@ -203,7 +203,8 @@ function artToPix(art, recolor){
 const plateStyle = v => STYLES.some(s => s.id === v) ? v : "std";
 // the colour a board shows to the eye: neon boards are dark glass whatever their colour
 function plateTone(board){ const r = richPlate(board.plate); return plateStyle(board.ps) === "neon" ? shade(r, -.68) : r; }
-function newBoard(cols, rows, plate, ps = "std"){ return {cols, rows, plate, ps, bricks: [], hist: []}; }
+const boardSize = v => BOARD_SIZES.some(s => s.id === v) ? v : "m";
+function newBoard(cols, rows, plate, ps = "std"){ return {cols, rows, plate, ps, bs: "m", bricks: [], hist: []}; }
 let FREE = newBoard(24, 18, "#FF2E8A");
 let B = FREE;            // the board on screen
 let nextId = 1;
@@ -248,7 +249,7 @@ function canPlace(bricks, gx, gy, ignore = 0){
 }
 
 /* ---- history ---- */
-function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, ps: B.ps, bricks: B.bricks}); }
+function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, ps: B.ps, bs: B.bs, bricks: B.bricks}); }
 function pushHistory(){
   B.hist.push(snapshot()); if (B.hist.length > 60) B.hist.shift();
   updateUndo();
@@ -257,7 +258,7 @@ function updateUndo(){ const u = $("#undoBtn"); if (u) u.disabled = !B.hist.leng
 function undo(){
   if (!B.hist.length) return;
   const d = JSON.parse(B.hist.pop());
-  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.ps = plateStyle(d.ps); B.bricks = d.bricks;
+  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.ps = plateStyle(d.ps); B.bs = boardSize(d.bs); B.bricks = d.bricks;
   applyBoard(); commit(); sfx.turn(); updateUndo();
   say(t("undone"));
 }
@@ -352,11 +353,11 @@ function fitCell(){
 // the space the board was last given; the building board's studs across and down are worked out from it
 let fitRoom = null;
 function autoWidth(){ return B === FREE && fitRoom && fitRoom.w > 0 && fitRoom.h > 0 && boardZoom <= 1 && !isPhotoBoard(); }
-// about as many studs as the old Huge board (40 × 30 = 1200), shaped to the space: the rows come from the
-// space's shape and the columns then fill the width. The board never gets smaller than the bricks on it;
-// when bricks make it wider than the screen allows, extra rows fill the height instead.
-const BOARD_STUDS = 1200;
+// the board size picks how many studs (Medium: 1200, like the old Huge board), shaped to the space: the rows
+// come from the space's shape and the columns then fill the width. The board never gets smaller than the
+// bricks on it; when bricks make it wider than the screen allows, extra rows fill the height instead.
 function fitDims(){
+  const BOARD_STUDS = BOARD_SIZES.find(s => s.id === boardSize(B.bs)).studs;
   const needC = B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
   const needR = B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
   let rows = clamp(Math.max(Math.round(Math.sqrt(BOARD_STUDS * fitRoom.h / fitRoom.w)), needR), 6, 120);

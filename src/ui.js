@@ -680,9 +680,27 @@ function buildBoardControls(){
     });
     ps.appendChild(b);
   }
+  // board sizes: the same space every time, with fewer or more studs in it
+  const bz = $("#boardSizes"); bz.innerHTML = "";
+  for (const s of BOARD_SIZES){
+    const b = document.createElement("button"); b.type = "button"; b.className = "sizebtn"; b.dataset.bs = s.id; b.title = s[LANG];
+    const prev = document.createElement("span"); prev.className = "plate pprev sprev"; prev.style.setProperty("--n", s.n); b.appendChild(prev);
+    const ic = document.createElement("span"); ic.className = "sizeic"; ic.textContent = s.ic; ic.setAttribute("aria-hidden", "true"); b.appendChild(ic);
+    const lab = document.createElement("span"); lab.textContent = s[LANG]; b.appendChild(lab);
+    b.addEventListener("click", () => {
+      if (boardSize(B.bs) === s.id) return;
+      pushHistory(); B.bs = s.id; applyBoard(); emit("change"); sfx.click();
+      say(t("boardSizeSay_" + s.id));
+    });
+    bz.appendChild(b);
+  }
   syncBoardControls();
 }
 function syncBoardControls(){
+  // games and photo boards keep their own size: the size picker is for building only
+  $(".sec-plates").classList.toggle("fixed-size", B !== FREE || isPhotoBoard());
+  $$("#boardSizes .sizebtn").forEach(b => b.setAttribute("aria-pressed", b.dataset.bs === boardSize(B.bs)));
+  $$("#boardSizes .pprev").forEach(e => { paintBoardVars(e, B.plate); e.dataset.ps = plateStyle(B.ps); });
   $$("#plates .swatch").forEach(b => b.setAttribute("aria-pressed", b.dataset.hex === B.plate));
   $$("#plateStyles .stylebtn").forEach(b => b.setAttribute("aria-pressed", b.dataset.ps === plateStyle(B.ps)));
   $$("#plateStyles .pprev").forEach(e => paintBoardVars(e, B.plate));
