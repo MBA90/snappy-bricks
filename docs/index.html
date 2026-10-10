@@ -37,6 +37,8 @@
   color-scheme:light;
 }
 html,body{height:100%}
+/* iPhones make the text bigger when turned sideways unless told not to; that pushed buttons and labels out of place */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{
   margin:0;
   background-color:var(--bg);
@@ -1769,32 +1771,41 @@ body[data-screen="studio"] .app{max-width:none}
 
 /* ===================== Snappy Bricks plays sideways ===================== */
 /* held upright, a friendly screen asks for the phone (or tablet) to be turned; on a computer, for a wider window */
-.turn-me{display:none}
-@media (orientation:portrait){
-  html,body{overflow:hidden}
-  .app{visibility:hidden}
-  .turn-me{
-    position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
-    padding:max(24px, env(safe-area-inset-top, 0px)) 24px max(24px, env(safe-area-inset-bottom, 0px));
-    background-color:var(--bg);background-image:var(--bg-img);background-size:var(--bg-size);text-align:center;
-  }
-  .turn-pic{display:flex;flex-direction:column;align-items:center;gap:6px}
-  .turn-arrow{width:160px;height:64px;filter:drop-shadow(0 3px 0 var(--ink))}
-  .turn-phone{
-    margin-top:20px;width:92px;height:150px;border:6px solid var(--ink);border-radius:22px;background:#fff;box-shadow:0 6px 0 var(--ink);
-    display:grid;place-items:center;animation:turnMe 2.6s ease-in-out infinite;
-  }
-  .turn-phone .bricky{width:58px;height:58px;animation:turnBricky 2.6s ease-in-out infinite}
-  .turn-txt{
-    margin:0;max-width:340px;padding:14px 22px;border:4px solid var(--ink);border-radius:24px;background:var(--sun);
-    box-shadow:0 6px 0 var(--ink);color:var(--ink);font-size:1.6rem;font-weight:800;line-height:1.2;
-  }
-  .turn-mouse{display:none}
+/* The app is taken out of the page while upright (display, not just visibility): nothing in it is laid out for the
+   upright shape, so iPhones never shrink the page to fit it and the board isn't rebuilt twice for every turn.
+   Turning back sideways, the sign fades away over the board (.leaving, added in boot.js) instead of vanishing. */
+.turn-me{
+  display:none;position:fixed;inset:0;z-index:99999;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  padding:max(24px, env(safe-area-inset-top, 0px)) 24px max(24px, env(safe-area-inset-bottom, 0px));
+  background-color:var(--bg);background-image:var(--bg-img);background-size:var(--bg-size);text-align:center;
 }
-@media (orientation:portrait) and (pointer:fine){
+.turn-pic{display:flex;flex-direction:column;align-items:center;gap:6px}
+.turn-arrow{width:160px;height:64px;filter:drop-shadow(0 3px 0 var(--ink))}
+.turn-phone{
+  margin-top:20px;width:92px;height:150px;border:6px solid var(--ink);border-radius:22px;background:#fff;box-shadow:0 6px 0 var(--ink);
+  display:grid;place-items:center;animation:turnMe 2.6s ease-in-out infinite;
+}
+.turn-phone .bricky{width:58px;height:58px;animation:turnBricky 2.6s ease-in-out infinite}
+.turn-txt{
+  margin:0;max-width:340px;padding:14px 22px;border:4px solid var(--ink);border-radius:24px;background:var(--sun);
+  box-shadow:0 6px 0 var(--ink);color:var(--ink);font-size:1.6rem;font-weight:800;line-height:1.2;
+}
+.turn-mouse{display:none}
+@media (pointer:fine){
   .turn-touch{display:none}
   .turn-mouse{display:block}
 }
+@media (orientation:portrait){
+  html,body{overflow:hidden}
+  .app{display:none}
+  .turn-me{display:flex;animation:turnIn .22s ease-out}
+}
+.turn-me.leaving{display:flex;pointer-events:none;animation:turnOut .3s ease-in forwards}
+.turn-me.leaving .turn-pic{animation:turnAway .3s ease-in forwards}
+@keyframes turnIn{from{opacity:0}}
+@keyframes turnOut{to{opacity:0}}
+@keyframes turnAway{to{transform:scale(.85)}}
+@media (prefers-reduced-motion: reduce){.turn-me,.turn-me.leaving .turn-pic{animation:none}.turn-me.leaving{display:none}}
 @keyframes turnMe{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
 @keyframes turnBricky{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(90deg)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion: reduce){.turn-phone{animation:none;transform:rotate(-90deg)}.turn-phone .bricky{animation:none;transform:rotate(90deg)}}
@@ -4560,6 +4571,14 @@ window.addEventListener("pointercancel", e => {
   else if (ptr.kind === "pencil") endPencil(true);
   else ptr = null;
 });
+// the screen was turned upright with a finger still down: a lifted brick goes back where it came from
+// and a half-drawn line is dropped, so nothing lands by itself on the hidden board
+function dropPointer(){
+  if (!ptr) return;
+  if (ptr.kind === "drag") endDrag(null, true);
+  else if (ptr.kind === "pencil") endPencil(true);
+  else { if (ptr.kind === "brush") emit("change"); ptr = null; }
+}
 
 window.addEventListener("keydown", e => {
   const typing = e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA");
@@ -6368,20 +6387,9 @@ function updateZoomBtns(){
   $("#zoomFitBtn").disabled = boardZoom <= 1;
   $("#zoomInBtn").disabled = boardZoom >= zoomMax - .01;
 }
-// when the tools stand in a column beside the board, the zoom buttons move into it, above Undo, so they never cover the board
-(function zoomHome(){
-  const zb = $("#zoomBar"), home = zb.parentNode, after = zb.nextSibling;
-  const upright = matchMedia("(orientation:portrait) and (max-width:899px) and (min-height:541px)");
-  const place = () => {
-    const tools = $("#tools"), undo = $("#undoBtn");
-    if (!upright.matches) tools.insertBefore(zb, undo);
-    else home.insertBefore(zb, after);
-    fitStale = true;                                   // the layout changed: every brick gets a new size, style them once
-    fitCell();
-  };
-  upright.addEventListener ? upright.addEventListener("change", place) : upright.addListener(place);
-  place();
-})();
+// the tools stand in a column beside the board on every (sideways) screen: the zoom buttons sit in it, above Undo,
+// so they never cover the board
+$("#tools").insertBefore($("#zoomBar"), $("#undoBtn"));
 $("#zoomInBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom * 1.6); });
 $("#zoomOutBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom / 1.6); });
 $("#zoomFitBtn").addEventListener("click", () => { sfx.click(); zoomTo(1); });
@@ -7208,12 +7216,42 @@ $$("[data-mode]").forEach(b => b.addEventListener("click", () => {
 // hide the tablet brick dock while the on-screen keyboard is up
 document.addEventListener("focusin", e => { if (e.target.matches && e.target.matches("input, textarea")) document.body.classList.add("typing"); });
 document.addEventListener("focusout", e => { if (e.target.matches && e.target.matches("input, textarea")) document.body.classList.remove("typing"); });
-let rz;
-window.addEventListener("resize", () => {
+/* ---- a new screen size; turning the screen ----
+   Held upright, the app is out of the page under the turn-me sign (styles8.css), so nothing is measured or rebuilt
+   then: turning back sideways finds the board just as it was left, with the same studs, zoom and scroll. */
+const upright = matchMedia("(orientation:portrait)");
+let rz, laidOut = innerWidth + "x" + innerHeight;
+function relayout(){
   clearTimeout(rz);
-  rz = setTimeout(() => { buildLogo(); buildShapes(); buildStamps(); fitCell(); emit("resize"); }, 120);
-});
-window.addEventListener("orientationchange", () => setTimeout(() => { buildLogo(); fitCell(); }, 300));
+  if (upright.matches) return;
+  const size = innerWidth + "x" + innerHeight;
+  if (size !== laidOut){ laidOut = size; buildLogo(); buildShapes(); buildStamps(); }
+  fitCell(); emit("resize");
+}
+window.addEventListener("resize", () => { clearTimeout(rz); if (!upright.matches) rz = setTimeout(relayout, 120); });
+// some phones report their new size late after a turn
+window.addEventListener("orientationchange", () => setTimeout(relayout, 300));
+// scrolled spots (a zoomed-in board, the toy box) are kept while the app is out of the page
+const scrolled = new Map();
+document.addEventListener("scroll", e => {
+  const el = e.target;
+  if (el.nodeType === 1 && !upright.matches && el.closest(".app")) scrolled.set(el, [el.scrollLeft, el.scrollTop]);
+}, {capture: true, passive: true});
+function onTurn(){
+  const sign = $("#turnMe");
+  sign.classList.remove("leaving");
+  if (upright.matches){ dropPointer(); return; }
+  // back sideways: lay the app out before the first picture is drawn, then let the sign fade away over it
+  relayout();
+  for (const [el, [x, y]] of scrolled){ if (el.isConnected){ el.scrollLeft = x; el.scrollTop = y; } else scrolled.delete(el); }
+  if (reduceMotion) return;
+  void sign.offsetWidth;                              // start the fade from the start
+  sign.classList.add("leaving");
+  const done = () => sign.classList.remove("leaving");
+  sign.addEventListener("animationend", e => { if (e.target === sign) done(); }, {once: true});
+  setTimeout(done, 500);
+}
+upright.addEventListener ? upright.addEventListener("change", onTurn) : upright.addListener(onTurn);
 
 /* ---- go ---- */
 document.body.dataset.mode = "free";

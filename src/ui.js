@@ -532,6 +532,14 @@ window.addEventListener("pointercancel", e => {
   else if (ptr.kind === "pencil") endPencil(true);
   else ptr = null;
 });
+// the screen was turned upright with a finger still down: a lifted brick goes back where it came from
+// and a half-drawn line is dropped, so nothing lands by itself on the hidden board
+function dropPointer(){
+  if (!ptr) return;
+  if (ptr.kind === "drag") endDrag(null, true);
+  else if (ptr.kind === "pencil") endPencil(true);
+  else { if (ptr.kind === "brush") emit("change"); ptr = null; }
+}
 
 window.addEventListener("keydown", e => {
   const typing = e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA");

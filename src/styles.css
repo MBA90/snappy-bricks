@@ -16,6 +16,8 @@
   color-scheme:light;
 }
 html,body{height:100%}
+/* iPhones make the text bigger when turned sideways unless told not to; that pushed buttons and labels out of place */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{
   margin:0;
   background-color:var(--bg);

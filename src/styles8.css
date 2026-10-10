@@ -418,32 +418,41 @@ body[data-screen="studio"] .app{max-width:none}
 
 /* ===================== Snappy Bricks plays sideways ===================== */
 /* held upright, a friendly screen asks for the phone (or tablet) to be turned; on a computer, for a wider window */
-.turn-me{display:none}
-@media (orientation:portrait){
-  html,body{overflow:hidden}
-  .app{visibility:hidden}
-  .turn-me{
-    position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
-    padding:max(24px, env(safe-area-inset-top, 0px)) 24px max(24px, env(safe-area-inset-bottom, 0px));
-    background-color:var(--bg);background-image:var(--bg-img);background-size:var(--bg-size);text-align:center;
-  }
-  .turn-pic{display:flex;flex-direction:column;align-items:center;gap:6px}
-  .turn-arrow{width:160px;height:64px;filter:drop-shadow(0 3px 0 var(--ink))}
-  .turn-phone{
-    margin-top:20px;width:92px;height:150px;border:6px solid var(--ink);border-radius:22px;background:#fff;box-shadow:0 6px 0 var(--ink);
-    display:grid;place-items:center;animation:turnMe 2.6s ease-in-out infinite;
-  }
-  .turn-phone .bricky{width:58px;height:58px;animation:turnBricky 2.6s ease-in-out infinite}
-  .turn-txt{
-    margin:0;max-width:340px;padding:14px 22px;border:4px solid var(--ink);border-radius:24px;background:var(--sun);
-    box-shadow:0 6px 0 var(--ink);color:var(--ink);font-size:1.6rem;font-weight:800;line-height:1.2;
-  }
-  .turn-mouse{display:none}
+/* The app is taken out of the page while upright (display, not just visibility): nothing in it is laid out for the
+   upright shape, so iPhones never shrink the page to fit it and the board isn't rebuilt twice for every turn.
+   Turning back sideways, the sign fades away over the board (.leaving, added in boot.js) instead of vanishing. */
+.turn-me{
+  display:none;position:fixed;inset:0;z-index:99999;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  padding:max(24px, env(safe-area-inset-top, 0px)) 24px max(24px, env(safe-area-inset-bottom, 0px));
+  background-color:var(--bg);background-image:var(--bg-img);background-size:var(--bg-size);text-align:center;
 }
-@media (orientation:portrait) and (pointer:fine){
+.turn-pic{display:flex;flex-direction:column;align-items:center;gap:6px}
+.turn-arrow{width:160px;height:64px;filter:drop-shadow(0 3px 0 var(--ink))}
+.turn-phone{
+  margin-top:20px;width:92px;height:150px;border:6px solid var(--ink);border-radius:22px;background:#fff;box-shadow:0 6px 0 var(--ink);
+  display:grid;place-items:center;animation:turnMe 2.6s ease-in-out infinite;
+}
+.turn-phone .bricky{width:58px;height:58px;animation:turnBricky 2.6s ease-in-out infinite}
+.turn-txt{
+  margin:0;max-width:340px;padding:14px 22px;border:4px solid var(--ink);border-radius:24px;background:var(--sun);
+  box-shadow:0 6px 0 var(--ink);color:var(--ink);font-size:1.6rem;font-weight:800;line-height:1.2;
+}
+.turn-mouse{display:none}
+@media (pointer:fine){
   .turn-touch{display:none}
   .turn-mouse{display:block}
 }
+@media (orientation:portrait){
+  html,body{overflow:hidden}
+  .app{display:none}
+  .turn-me{display:flex;animation:turnIn .22s ease-out}
+}
+.turn-me.leaving{display:flex;pointer-events:none;animation:turnOut .3s ease-in forwards}
+.turn-me.leaving .turn-pic{animation:turnAway .3s ease-in forwards}
+@keyframes turnIn{from{opacity:0}}
+@keyframes turnOut{to{opacity:0}}
+@keyframes turnAway{to{transform:scale(.85)}}
+@media (prefers-reduced-motion: reduce){.turn-me,.turn-me.leaving .turn-pic{animation:none}.turn-me.leaving{display:none}}
 @keyframes turnMe{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
 @keyframes turnBricky{0%,20%{transform:rotate(0)}50%,85%{transform:rotate(90deg)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion: reduce){.turn-phone{animation:none;transform:rotate(-90deg)}.turn-phone .bricky{animation:none;transform:rotate(90deg)}}
