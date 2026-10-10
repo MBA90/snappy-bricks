@@ -2114,6 +2114,23 @@ html[lang="ar"] .brick.pow::after{content:"بوم!";font-family:"Baloo Bhaijaan 
    In a browser tab, and on sideways iPhones, the inset is 0 and nothing moves. */
 body:not([data-screen="studio"]){padding-top:env(safe-area-inset-top, 0px)}
 
+/* ===================== phones on their side: toy box, board and tools line up top and bottom ===================== */
+/* Each has its own outline and shadow: the toy box a 7px shadow, the board a 3px ring and a shadow 14px below it,
+   the tool buttons a 3px shadow. The board's box leaves room for exactly its ring above and its shadow below (it
+   clips anything more), the toy box stops its shadow's height short of the bottom, and the tools start at the top
+   and stop their shadow's height short of the bottom, so all three outlines start and end on the same lines.
+   Studs come in whole screen pixels, so the board is often a little shorter than its box: fitBox() then sets --bh
+   to the board's height and all three take it, together in the middle (as on tablets). The tool rows spread out
+   to reach the bottom when they have room to spare (Little, taller phones). */
+@media (orientation:landscape) and (max-height:540px){
+  body[data-screen="studio"] .studio{grid-template-rows:minmax(0,var(--bh,1fr));align-content:center}
+  body[data-screen="studio"] #tools{align-content:space-between}
+  body[data-screen="studio"] #tools .zoombar{align-self:end;margin-bottom:-1px}
+  body[data-screen="studio"] .plate-wrap,body[data-screen="studio"] .plate-wrap.zoomed{padding-block:3px 14px}
+  body[data-screen="studio"] .studio > .tray{margin-bottom:7px}
+  body[data-screen="studio"] #tools{padding-block:0 3px}
+}
+
 </style>
 <!-- Snappy Bricks plays sideways: held upright, the screen asks to be turned -->
 <div class="turn-me" id="turnMe" aria-live="polite">
