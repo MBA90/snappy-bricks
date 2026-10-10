@@ -51,10 +51,18 @@ function placePiece(piece, gx, gy, opts = {}){
 }
 
 /* ===================== tray UI ===================== */
+// Rebuild a toy-box list in one step and keep every scrolled box around it where it was: emptying the list first
+// let the toy box shrink for a moment, which threw it back to the top whenever a brick, colour or style was picked.
+function refill(box, items){
+  const keep = [];
+  for (let el = box; el; el = el.parentElement) if (el.scrollTop || el.scrollLeft) keep.push([el, el.scrollTop, el.scrollLeft]);
+  box.replaceChildren(...items);
+  for (const [el, y, x] of keep){ el.scrollTop = y; el.scrollLeft = x; }
+}
 const coarse = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
 function trayCell(){ return window.innerWidth < 720 || window.innerHeight < 541 ? 14 : coarse ? 18 : 16; }
 function buildSwatches(){
-  const box = $("#swatches"); box.innerHTML = "";
+  const box = $("#swatches"), items = [];
   for (const c of COLORS){
     const b = document.createElement("button");
     b.className = "swatch"; b.type = "button"; b.dataset.hex = c.hex;
@@ -67,11 +75,12 @@ function buildSwatches(){
       buildShapes(); emit("color", color);
       say(t(tool === "draw" ? "drawReady" : tool === "paint" || tool === "fill" ? "paintReady" : "colorPicked", {c: c[LANG]}));
     });
-    box.appendChild(b);
+    items.push(b);
   }
+  refill(box, items);
 }
 function buildStyles(){
-  const box = $("#styles"); box.innerHTML = "";
+  const box = $("#styles"), items = [];
   for (const s of STYLES){
     const b = document.createElement("button"); b.type = "button"; b.className = "stylebtn";
     b.setAttribute("aria-pressed", s.id === brickStyle); b.title = s[LANG];
@@ -82,8 +91,9 @@ function buildStyles(){
       brickStyle = s.id; sfx.click(); buildStyles(); buildShapes(); buildStamps();
       say(t("styleSay_" + s.id));
     });
-    box.appendChild(b);
+    items.push(b);
   }
+  refill(box, items);
 }
 function makeCard(piece, px, label, sel, ariaLabel){
   const card = document.createElement("div");
@@ -97,24 +107,26 @@ function makeCard(piece, px, label, sel, ariaLabel){
   return card;
 }
 function buildShapes(){
-  const box = $("#shapes"); box.innerHTML = "";
+  const items = [];
   SHAPES.forEach((s, i) => {
     if (settings.age === "little" && !LITTLE_SHAPES.includes(i)) return;
     const p = brickPiece(i);
     const lab = `${Math.min(p.w, p.h)}×${Math.max(p.w, p.h)}`;
-    box.appendChild(makeCard(p, trayCell(), lab, {kind: "brick", i}, t("brickAria", {s: lab})));
+    items.push(makeCard(p, trayCell(), lab, {kind: "brick", i}, t("brickAria", {s: lab})));
   });
+  refill($("#shapes"), items);
   // colour the style previews too
   $$("#styles .brick").forEach(e => paintVars(e, color));
 }
 function buildStamps(){
-  const box = $("#stamps"); box.innerHTML = "";
+  const items = [];
   const names = [...BASE_STAMPS, ...(THEMES[settings.theme] || THEMES.classic).stamps];
   for (const name of names){
     const p = artPiece(name);
     const px = Math.max(4, Math.min(8, Math.floor(56 / Math.max(p.w, p.h))));
-    box.appendChild(makeCard(p, px, ART[name][LANG], {kind: "art", name}));
+    items.push(makeCard(p, px, ART[name][LANG], {kind: "art", name}));
   }
+  refill($("#stamps"), items);
 }
 function sameSel(a, b){ return !!(a && b && a.kind === b.kind && a.i === b.i && a.name === b.name); }
 function toggleSelect(sel){
