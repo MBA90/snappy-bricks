@@ -16,6 +16,15 @@ const PHOTO_SIZES = [
   {id: "p", en: "Poster", ar: "ملصق",   cols: 96, rows: 72},
 ];
 const ALL_SIZES = SIZES.concat(PHOTO_SIZES);
+// the building board always fills the same space; its size only says how many studs fit in it
+// (n: studs across the little picture on its button)
+const BOARD_SIZES = [
+  {id: "xs", en: "Very small", ar: "صغيرة جدًا", studs: 300,  n: 3},
+  {id: "s",  en: "Small",      ar: "صغيرة",      studs: 600,  n: 4},
+  {id: "m",  en: "Medium",     ar: "وسط",        studs: 1200, n: 5},
+  {id: "l",  en: "Large",      ar: "كبيرة",      studs: 1800, n: 7},
+  {id: "xl", en: "Very large", ar: "كبيرة جدًا", studs: 2400, n: 9},
+];
 const PLATES = [
   {en: "Pink",   ar: "وردية",   hex: "#FF2E8A"},
   {en: "Blue",   ar: "زرقاء",   hex: "#2F9BF0"},
@@ -151,6 +160,11 @@ addStrings({
   buildName: ["Build my name!", "ابنِ اسمي!"],
   board: ["Board", "اللوحة"], size: ["Size", "الحجم"], boardColor: ["Board color", "لون اللوحة"],
   boardStyle: ["Board style", "نوع اللوحة"],
+  boardSizeSay_xs: ["A very small board with a few big bumps.", "لوحة صغيرة جدًا فيها نتوءات قليلة وكبيرة."],
+  boardSizeSay_s: ["A small board.", "لوحة صغيرة."],
+  boardSizeSay_m: ["A medium board.", "لوحة وسط."],
+  boardSizeSay_l: ["A large board with lots of bumps!", "لوحة كبيرة فيها نتوءات كثيرة!"],
+  boardSizeSay_xl: ["A very large board with tiny bumps everywhere!", "لوحة كبيرة جدًا فيها نتوءات صغيرة في كل مكان!"],
   plateStyleSay_std: ["A classic board with bumps on top.", "لوحة كلاسيكية بنتوءات صغيرة."],
   plateStyleSay_glitter: ["A sparkly glitter board!", "لوحة لامعة بالبريق!"],
   plateStyleSay_glow: ["A glow board that shines like a magic light!", "لوحة مضيئة تلمع مثل ضوء سحري!"],

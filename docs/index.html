@@ -2044,6 +2044,23 @@ html[lang="ar"] .brick.pow::after{content:"بوم!";font-family:"Baloo Bhaijaan 
 .pprev[data-ps="comic"]{border-radius:5px;box-shadow:inset 0 0 0 2px var(--ink2),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 .pprev[data-ps="galaxy"]::before{background-size:39px 26px}
 
+/* ===================== board size: the same board, fewer or more studs ===================== */
+.bsizes{display:grid;grid-template-columns:repeat(auto-fit,minmax(58px,1fr));gap:4px}
+.sizebtn{
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:3px;padding:6px 2px 3px;border-radius:12px;
+  border:3px solid transparent;background:var(--tint);cursor:pointer;font:inherit;font-size:.66rem;font-weight:800;line-height:1.05;
+  color:var(--ink-soft);min-width:0;overflow:hidden;text-align:center;
+}
+.sizebtn[aria-pressed="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
+/* every button shows the same little board; only the number of studs across it changes */
+.pprev.sprev{--cell:calc(44px / var(--n));width:44px;height:33px;margin:1px auto 2px}
+.sec-plates.fixed-size .bsize-h,.sec-plates.fixed-size .bsizes{display:none}
+@media (orientation:landscape) and (min-height:541px){
+  .bsizes{grid-template-columns:repeat(auto-fit,minmax(62px,1fr));gap:6px}
+  .sizebtn{font-size:.76rem;padding:7px 3px 4px}
+  .pprev.sprev{--cell:calc(52px / var(--n));width:52px;height:39px}
+}
+
 </style>
 <!-- Snappy Bricks plays sideways: held upright, the screen asks to be turned -->
 <div class="turn-me" id="turnMe" aria-live="polite">
@@ -2221,6 +2238,8 @@ html[lang="ar"] .brick.pow::after{content:"بوم!";font-family:"Baloo Bhaijaan 
           <div class="stamps" id="stamps"></div>
         </div>
         <div class="tray-sec sec-plates">
+          <h3 class="bsize-h" data-i18n="boardSize">Board size</h3>
+          <div class="bsizes" id="boardSizes"></div>
           <h3 data-i18n="boardStyle">Board style</h3>
           <div class="styles plate-styles" id="plateStyles"></div>
           <h3 data-i18n="boardColor">Board color</h3>
@@ -2455,6 +2474,15 @@ const PHOTO_SIZES = [
   {id: "p", en: "Poster", ar: "ملصق",   cols: 96, rows: 72},
 ];
 const ALL_SIZES = SIZES.concat(PHOTO_SIZES);
+// the building board always fills the same space; its size only says how many studs fit in it
+// (n: studs across the little picture on its button)
+const BOARD_SIZES = [
+  {id: "xs", en: "Very small", ar: "صغيرة جدًا", studs: 300,  n: 3},
+  {id: "s",  en: "Small",      ar: "صغيرة",      studs: 600,  n: 4},
+  {id: "m",  en: "Medium",     ar: "وسط",        studs: 1200, n: 5},
+  {id: "l",  en: "Large",      ar: "كبيرة",      studs: 1800, n: 7},
+  {id: "xl", en: "Very large", ar: "كبيرة جدًا", studs: 2400, n: 9},
+];
 const PLATES = [
   {en: "Pink",   ar: "وردية",   hex: "#FF2E8A"},
   {en: "Blue",   ar: "زرقاء",   hex: "#2F9BF0"},
@@ -2590,6 +2618,11 @@ addStrings({
   buildName: ["Build my name!", "ابنِ اسمي!"],
   board: ["Board", "اللوحة"], size: ["Size", "الحجم"], boardColor: ["Board color", "لون اللوحة"],
   boardStyle: ["Board style", "نوع اللوحة"],
+  boardSizeSay_xs: ["A very small board with a few big bumps.", "لوحة صغيرة جدًا فيها نتوءات قليلة وكبيرة."],
+  boardSizeSay_s: ["A small board.", "لوحة صغيرة."],
+  boardSizeSay_m: ["A medium board.", "لوحة وسط."],
+  boardSizeSay_l: ["A large board with lots of bumps!", "لوحة كبيرة فيها نتوءات كثيرة!"],
+  boardSizeSay_xl: ["A very large board with tiny bumps everywhere!", "لوحة كبيرة جدًا فيها نتوءات صغيرة في كل مكان!"],
   plateStyleSay_std: ["A classic board with bumps on top.", "لوحة كلاسيكية بنتوءات صغيرة."],
   plateStyleSay_glitter: ["A sparkly glitter board!", "لوحة لامعة بالبريق!"],
   plateStyleSay_glow: ["A glow board that shines like a magic light!", "لوحة مضيئة تلمع مثل ضوء سحري!"],
@@ -2943,7 +2976,8 @@ function artToPix(art, recolor){
 const plateStyle = v => STYLES.some(s => s.id === v) ? v : "std";
 // the colour a board shows to the eye: neon boards are dark glass whatever their colour
 function plateTone(board){ const r = richPlate(board.plate); return plateStyle(board.ps) === "neon" ? shade(r, -.68) : r; }
-function newBoard(cols, rows, plate, ps = "std"){ return {cols, rows, plate, ps, bricks: [], hist: []}; }
+const boardSize = v => BOARD_SIZES.some(s => s.id === v) ? v : "m";
+function newBoard(cols, rows, plate, ps = "std"){ return {cols, rows, plate, ps, bs: "m", bricks: [], hist: []}; }
 let FREE = newBoard(24, 18, "#FF2E8A");
 let B = FREE;            // the board on screen
 let nextId = 1;
@@ -2988,7 +3022,7 @@ function canPlace(bricks, gx, gy, ignore = 0){
 }
 
 /* ---- history ---- */
-function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, ps: B.ps, bricks: B.bricks}); }
+function snapshot(){ return JSON.stringify({cols: B.cols, rows: B.rows, plate: B.plate, ps: B.ps, bs: B.bs, bricks: B.bricks}); }
 function pushHistory(){
   B.hist.push(snapshot()); if (B.hist.length > 60) B.hist.shift();
   updateUndo();
@@ -2997,7 +3031,7 @@ function updateUndo(){ const u = $("#undoBtn"); if (u) u.disabled = !B.hist.leng
 function undo(){
   if (!B.hist.length) return;
   const d = JSON.parse(B.hist.pop());
-  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.ps = plateStyle(d.ps); B.bricks = d.bricks;
+  B.cols = d.cols; B.rows = d.rows; B.plate = d.plate; B.ps = plateStyle(d.ps); B.bs = boardSize(d.bs); B.bricks = d.bricks;
   applyBoard(); commit(); sfx.turn(); updateUndo();
   say(t("undone"));
 }
@@ -3092,11 +3126,11 @@ function fitCell(){
 // the space the board was last given; the building board's studs across and down are worked out from it
 let fitRoom = null;
 function autoWidth(){ return B === FREE && fitRoom && fitRoom.w > 0 && fitRoom.h > 0 && boardZoom <= 1 && !isPhotoBoard(); }
-// about as many studs as the old Huge board (40 × 30 = 1200), shaped to the space: the rows come from the
-// space's shape and the columns then fill the width. The board never gets smaller than the bricks on it;
-// when bricks make it wider than the screen allows, extra rows fill the height instead.
-const BOARD_STUDS = 1200;
+// the board size picks how many studs (Medium: 1200, like the old Huge board), shaped to the space: the rows
+// come from the space's shape and the columns then fill the width. The board never gets smaller than the
+// bricks on it; when bricks make it wider than the screen allows, extra rows fill the height instead.
 function fitDims(){
+  const BOARD_STUDS = BOARD_SIZES.find(s => s.id === boardSize(B.bs)).studs;
   const needC = B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
   const needR = B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
   let rows = clamp(Math.max(Math.round(Math.sqrt(BOARD_STUDS * fitRoom.h / fitRoom.w)), needR), 6, 120);
@@ -4595,9 +4629,26 @@ function buildBoardControls(){
     });
     ps.appendChild(b);
   }
+  // board sizes: the same space every time, with fewer or more studs in it
+  const bz = $("#boardSizes"); bz.innerHTML = "";
+  for (const s of BOARD_SIZES){
+    const b = document.createElement("button"); b.type = "button"; b.className = "sizebtn"; b.dataset.bs = s.id; b.title = s[LANG];
+    const prev = document.createElement("span"); prev.className = "plate pprev sprev"; prev.style.setProperty("--n", s.n); b.appendChild(prev);
+    const lab = document.createElement("span"); lab.textContent = s[LANG]; b.appendChild(lab);
+    b.addEventListener("click", () => {
+      if (boardSize(B.bs) === s.id) return;
+      pushHistory(); B.bs = s.id; applyBoard(); emit("change"); sfx.click();
+      say(t("boardSizeSay_" + s.id));
+    });
+    bz.appendChild(b);
+  }
   syncBoardControls();
 }
 function syncBoardControls(){
+  // games and photo boards keep their own size: the size picker is for building only
+  $(".sec-plates").classList.toggle("fixed-size", B !== FREE || isPhotoBoard());
+  $$("#boardSizes .sizebtn").forEach(b => b.setAttribute("aria-pressed", b.dataset.bs === boardSize(B.bs)));
+  $$("#boardSizes .pprev").forEach(e => { paintBoardVars(e, B.plate); e.dataset.ps = plateStyle(B.ps); });
   $$("#plates .swatch").forEach(b => b.setAttribute("aria-pressed", b.dataset.hex === B.plate));
   $$("#plateStyles .stylebtn").forEach(b => b.setAttribute("aria-pressed", b.dataset.ps === plateStyle(B.ps)));
   $$("#plateStyles .pprev").forEach(e => paintBoardVars(e, B.plate));
@@ -5407,7 +5458,7 @@ $("#replayBtn").addEventListener("click", replay);
 
 /* ---------- my creations (gallery) ---------- */
 let gallery = store("snappy-gallery") || [];
-function compactBoard(bd){ return {cols: bd.cols, rows: bd.rows, plate: bd.plate, ps: plateStyle(bd.ps), b: bd.bricks.map(b => [b.x, b.y, b.w, b.h, b.c, b.t || "std", b.z || 0])}; }
+function compactBoard(bd){ return {cols: bd.cols, rows: bd.rows, plate: bd.plate, ps: plateStyle(bd.ps), bs: boardSize(bd.bs), b: bd.bricks.map(b => [b.x, b.y, b.w, b.h, b.c, b.t || "std", b.z || 0])}; }
 function expandBricks(cb){ return fitBricks(cb.b.map(a => ({id: nextId++, x: a[0], y: a[1], w: a[2], h: a[3], c: a[4], t: a[5] || "std", z: a[6] || 0}))); }
 function saveToGallery(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
@@ -5419,7 +5470,7 @@ function saveToGallery(){
 function loadIntoFree(cb){
   if (currentMode !== "free") setMode("free", true);
   pushHistory();
-  FREE.cols = cb.cols; FREE.rows = cb.rows; FREE.plate = cb.plate; FREE.ps = plateStyle(cb.ps); FREE.bricks = expandBricks(cb);
+  FREE.cols = cb.cols; FREE.rows = cb.rows; FREE.plate = cb.plate; FREE.ps = plateStyle(cb.ps); FREE.bs = boardSize(cb.bs); FREE.bricks = expandBricks(cb);
   clearEls(); applyBoard(); commit();
 }
 function openGallery(){
@@ -6983,7 +7034,7 @@ on("boot", () => refreshMapBtn());
 
 /* ===================== start-up + wiring ===================== */
 const SAVE_KEY = "snappy-bricks-v2";
-const saveFree = later(() => store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, ps: FREE.ps, bricks: FREE.bricks}), 300);
+const saveFree = later(() => store(SAVE_KEY, {cols: FREE.cols, rows: FREE.rows, plate: FREE.plate, ps: FREE.ps, bs: FREE.bs, bricks: FREE.bricks}), 300);
 on("change", () => { if (B === FREE) saveFree(); });
 // never lose the last few moves when the tab is closed or put away
 window.addEventListener("pagehide", saveFree.flush);
@@ -6991,7 +7042,7 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) saveF
 function loadFree(){
   const d = store(SAVE_KEY) || store("snappy-bricks-v1");
   if (!d || !Array.isArray(d.bricks) || !isBoardSize(d.cols, d.rows)) return false;
-  FREE.cols = d.cols; FREE.rows = d.rows; FREE.plate = typeof d.plate === "string" ? d.plate : "#FF2E8A"; FREE.ps = plateStyle(d.ps);
+  FREE.cols = d.cols; FREE.rows = d.rows; FREE.plate = typeof d.plate === "string" ? d.plate : "#FF2E8A"; FREE.ps = plateStyle(d.ps); FREE.bs = boardSize(d.bs);
   FREE.bricks = fitBricks(d.bricks.filter(b => b && [b.x, b.y, b.w, b.h].every(Number.isFinite) && typeof b.c === "string")
     .map(b => ({id: nextId++, x: b.x, y: b.y, w: b.w, h: b.h, c: b.c, t: b.t || "std", z: b.z || 0})));
   return true;
