@@ -19,11 +19,11 @@ const ALL_SIZES = SIZES.concat(PHOTO_SIZES);
 // the building board always fills the same space; its size only says how many studs fit in it
 // (named after animals from little to big; n: studs across the little picture on its button)
 const BOARD_SIZES = [
-  {id: "xs", en: "Mouse",    ar: "فأر",  ic: "🐭", studs: 300,  n: 3},
-  {id: "s",  en: "Cat",      ar: "قطة",  ic: "🐱", studs: 600,  n: 4},
-  {id: "m",  en: "Dog",      ar: "كلب",  ic: "🐶", studs: 1200, n: 5},
-  {id: "l",  en: "Lion",     ar: "أسد",  ic: "🦁", studs: 1800, n: 7},
-  {id: "xl", en: "Elephant", ar: "فيل",  ic: "🐘", studs: 2400, n: 9},
+  {id: "xs", en: "Mouse",    ar: "فأر",  ic: "🐭", studs: 64,   n: 3},
+  {id: "s",  en: "Cat",      ar: "قطة",  ic: "🐱", studs: 128,  n: 4},
+  {id: "m",  en: "Dog",      ar: "كلب",  ic: "🐶", studs: 256,  n: 5},
+  {id: "l",  en: "Lion",     ar: "أسد",  ic: "🦁", studs: 512,  n: 7},
+  {id: "xl", en: "Elephant", ar: "فيل",  ic: "🐘", studs: 1024, n: 9},
 ];
 const PLATES = [
   {en: "Pink",   ar: "وردية",   hex: "#FF2E8A"},
