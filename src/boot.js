@@ -68,12 +68,42 @@ $$("[data-mode]").forEach(b => b.addEventListener("click", () => {
 // hide the tablet brick dock while the on-screen keyboard is up
 document.addEventListener("focusin", e => { if (e.target.matches && e.target.matches("input, textarea")) document.body.classList.add("typing"); });
 document.addEventListener("focusout", e => { if (e.target.matches && e.target.matches("input, textarea")) document.body.classList.remove("typing"); });
-let rz;
-window.addEventListener("resize", () => {
+/* ---- a new screen size; turning the screen ----
+   Held upright, the app is out of the page under the turn-me sign (styles8.css), so nothing is measured or rebuilt
+   then: turning back sideways finds the board just as it was left, with the same studs, zoom and scroll. */
+const upright = matchMedia("(orientation:portrait)");
+let rz, laidOut = innerWidth + "x" + innerHeight;
+function relayout(){
   clearTimeout(rz);
-  rz = setTimeout(() => { buildLogo(); buildShapes(); buildStamps(); fitCell(); emit("resize"); }, 120);
-});
-window.addEventListener("orientationchange", () => setTimeout(() => { buildLogo(); fitCell(); }, 300));
+  if (upright.matches) return;
+  const size = innerWidth + "x" + innerHeight;
+  if (size !== laidOut){ laidOut = size; buildLogo(); buildShapes(); buildStamps(); }
+  fitCell(); emit("resize");
+}
+window.addEventListener("resize", () => { clearTimeout(rz); if (!upright.matches) rz = setTimeout(relayout, 120); });
+// some phones report their new size late after a turn
+window.addEventListener("orientationchange", () => setTimeout(relayout, 300));
+// scrolled spots (a zoomed-in board, the toy box) are kept while the app is out of the page
+const scrolled = new Map();
+document.addEventListener("scroll", e => {
+  const el = e.target;
+  if (el.nodeType === 1 && !upright.matches && el.closest(".app")) scrolled.set(el, [el.scrollLeft, el.scrollTop]);
+}, {capture: true, passive: true});
+function onTurn(){
+  const sign = $("#turnMe");
+  sign.classList.remove("leaving");
+  if (upright.matches){ dropPointer(); return; }
+  // back sideways: lay the app out before the first picture is drawn, then let the sign fade away over it
+  relayout();
+  for (const [el, [x, y]] of scrolled){ if (el.isConnected){ el.scrollLeft = x; el.scrollTop = y; } else scrolled.delete(el); }
+  if (reduceMotion) return;
+  void sign.offsetWidth;                              // start the fade from the start
+  sign.classList.add("leaving");
+  const done = () => sign.classList.remove("leaving");
+  sign.addEventListener("animationend", e => { if (e.target === sign) done(); }, {once: true});
+  setTimeout(done, 500);
+}
+upright.addEventListener ? upright.addEventListener("change", onTurn) : upright.addListener(onTurn);
 
 /* ---- go ---- */
 document.body.dataset.mode = "free";

@@ -81,20 +81,9 @@ function updateZoomBtns(){
   $("#zoomFitBtn").disabled = boardZoom <= 1;
   $("#zoomInBtn").disabled = boardZoom >= zoomMax - .01;
 }
-// when the tools stand in a column beside the board, the zoom buttons move into it, above Undo, so they never cover the board
-(function zoomHome(){
-  const zb = $("#zoomBar"), home = zb.parentNode, after = zb.nextSibling;
-  const upright = matchMedia("(orientation:portrait) and (max-width:899px) and (min-height:541px)");
-  const place = () => {
-    const tools = $("#tools"), undo = $("#undoBtn");
-    if (!upright.matches) tools.insertBefore(zb, undo);
-    else home.insertBefore(zb, after);
-    fitStale = true;                                   // the layout changed: every brick gets a new size, style them once
-    fitCell();
-  };
-  upright.addEventListener ? upright.addEventListener("change", place) : upright.addListener(place);
-  place();
-})();
+// the tools stand in a column beside the board on every (sideways) screen: the zoom buttons sit in it, above Undo,
+// so they never cover the board
+$("#tools").insertBefore($("#zoomBar"), $("#undoBtn"));
 $("#zoomInBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom * 1.6); });
 $("#zoomOutBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom / 1.6); });
 $("#zoomFitBtn").addEventListener("click", () => { sfx.click(); zoomTo(1); });
