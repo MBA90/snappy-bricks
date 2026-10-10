@@ -353,16 +353,31 @@ function fitCell(){
 // the space the board was last given; the building board's studs across and down are worked out from it
 let fitRoom = null;
 function autoWidth(){ return B === FREE && fitRoom && fitRoom.w > 0 && fitRoom.h > 0 && boardZoom <= 1 && !isPhotoBoard(); }
-// the board size picks how many studs (Medium: 1200, like the old Huge board), shaped to the space: the rows
-// come from the space's shape and the columns then fill the width. The board never gets smaller than the
-// bricks on it; when bricks make it wider than the screen allows, extra rows fill the height instead.
+// the board size picks how many studs (Mouse 64 … Elephant 1024) and the board always fills the same space:
+// studs stay square, so the board takes the shape of the space with as close to that many studs as the shape
+// allows, filling the space first. The board never gets smaller than the bricks on it; when bricks make it
+// wider than the screen allows, extra rows fill the height instead.
 function fitDims(){
-  const BOARD_STUDS = BOARD_SIZES.find(s => s.id === boardSize(B.bs)).studs;
+  const want = BOARD_SIZES.find(s => s.id === boardSize(B.bs)).studs;
   const needC = B.bricks.reduce((m, b) => Math.max(m, b.x + b.w), 0);
   const needR = B.bricks.reduce((m, b) => Math.max(m, b.y + b.h), 0);
-  let rows = clamp(Math.max(Math.round(Math.sqrt(BOARD_STUDS * fitRoom.h / fitRoom.w)), needR), 6, 120);
-  const cols = clamp(Math.max(Math.floor(fitRoom.w / (fitRoom.h / rows)), needC), 6, 120);
-  rows = clamp(Math.max(rows, Math.floor(fitRoom.h / (fitRoom.w / cols))), 6, 120);
+  const W = fitRoom.w, H = fitRoom.h, r0 = Math.sqrt(want * H / W);
+  let best = null;
+  for (let r = Math.max(4, Math.floor(r0) - 2); r <= Math.ceil(r0) + 2; r++){
+    const c0 = r * W / H;
+    for (let c = Math.max(4, Math.floor(c0) - 1); c <= Math.ceil(c0) + 1; c++){
+      const cell = Math.min(W / c, H / r), fill = c * r * cell * cell / (W * H);
+      const score = 3 * (1 - fill) + Math.abs(c * r - want) / want;
+      if (!best || score < best.score) best = {c, r, score};
+    }
+  }
+  let rows = clamp(Math.max(best.r, needR), 4, 120);
+  let cols = clamp(Math.max(best.c, needC), 4, 120);
+  if (cols > best.c || rows > best.r){
+    // bricks reach past the chosen board: keep the space's shape around them
+    cols = clamp(Math.max(cols, Math.floor(W / (H / rows))), 4, 120);
+    rows = clamp(Math.max(rows, Math.floor(H / (W / cols))), 4, 120);
+  }
   return [cols, rows];
 }
 function fitBox(wrap){
@@ -400,7 +415,7 @@ function fitBox(wrap){
     }
   }
   // studs may be part of a pixel wide, so the board fills its box right to the edge instead of losing up to a pixel a row
-  const fit = Math.floor(100 * clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 120 : 48)) / 100;
+  const fit = Math.floor(100 * clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 240 : 48)) / 100;
   // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted
   const dims = B.cols + "x" + B.rows;
   if (dims !== zoomDims){ zoomDims = dims; boardZoom = 1; }
@@ -412,7 +427,9 @@ function fitBox(wrap){
   wrap.classList.toggle("zoomed", zoomed);
   wrap.style.height = zoomed && !boxed ? (fit * B.rows + 28) + "px" : "";
   plate.style.setProperty("--cell", cell + "px");
-  plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
+  // huge photo boards: plain tiles read better than tiny studs; the building board always shows every stud,
+  // even an Elephant board on a small phone
+  plate.classList.toggle("tiny", cell < 7 && (B !== FREE || isPhotoBoard()));
   // sideways phones keep the board's column while zoomed in, so the toy box and tools don't jump about
   if (studio && boxed && zoomed && getComputedStyle(studio).getPropertyValue("--hold-bw").trim() === "1")
     studio.style.setProperty("--bw", Math.ceil(fit * B.cols + plate.offsetWidth - cell * B.cols + padX) + "px");
