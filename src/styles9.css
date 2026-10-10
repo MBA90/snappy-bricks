@@ -94,3 +94,109 @@
 /* the picker */
 .pprev[data-ps="pixel"]{border-radius:0;box-shadow:inset 0 2px 0 rgba(255,255,255,.3),inset 0 -2px 0 rgba(30,10,60,.25),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 .pprev[data-ps="ice"]{box-shadow:inset 0 0 6px rgba(255,255,255,.9),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+
+/* ===================== Galaxy and Comic: bricks and boards =====================
+   Galaxy is deep space with a hint of the brick's colour (--gx from galaxyColor()), a nebula of the colour
+   itself (--gxn, and the fainter --gxf on the board), stars and little planet studs with rings. Comic is a comic-book drawing: flat colour, a thick
+   ink outline, halftone dots, a hard shadow and studs drawn in ink; a Comic brick put down on its own says
+   POW! (.pow, added in render()). Nothing on the bricks moves; the Galaxy board has one layer of twinkling stars. */
+.brick,.plate,.swatch-face{
+  --stars:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='5' cy='7' r='0.60' fill='rgba(255,255,255,0.95)'/%3E%3Ccircle cx='17' cy='3' r='0.40' fill='rgba(255,255,255,0.70)'/%3E%3Ccircle cx='31' cy='9' r='0.70' fill='rgba(255,255,255,0.90)'/%3E%3Ccircle cx='24' cy='19' r='0.45' fill='rgba(255,255,255,0.60)'/%3E%3Ccircle cx='9' cy='27' r='0.50' fill='rgba(255,255,255,0.80)'/%3E%3Ccircle cx='36' cy='25' r='0.40' fill='rgba(255,255,255,0.60)'/%3E%3Ccircle cx='19' cy='35' r='0.60' fill='rgba(255,255,255,0.85)'/%3E%3Ccircle cx='3' cy='17' r='0.35' fill='rgba(255,255,255,0.50)'/%3E%3Ccircle cx='29' cy='33' r='0.30' fill='rgba(255,255,255,0.50)'/%3E%3Ccircle cx='14' cy='14' r='0.30' fill='rgba(255,255,255,0.50)'/%3E%3Ccircle cx='38' cy='3' r='0.35' fill='rgba(255,255,255,0.60)'/%3E%3Cpath d='M13 22.2l.5 1.3 1.3.5-1.3.5-.5 1.3-.5-1.3-1.3-.5 1.3-.5z' fill='%23fff'/%3E%3C/svg%3E");
+  --starsb:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='5' cy='7' r='0.48' fill='rgba(255,255,255,0.66)'/%3E%3Ccircle cx='17' cy='3' r='0.32' fill='rgba(255,255,255,0.49)'/%3E%3Ccircle cx='31' cy='9' r='0.56' fill='rgba(255,255,255,0.63)'/%3E%3Ccircle cx='24' cy='19' r='0.36' fill='rgba(255,255,255,0.42)'/%3E%3Ccircle cx='9' cy='27' r='0.40' fill='rgba(255,255,255,0.56)'/%3E%3Ccircle cx='36' cy='25' r='0.32' fill='rgba(255,255,255,0.42)'/%3E%3Ccircle cx='19' cy='35' r='0.48' fill='rgba(255,255,255,0.59)'/%3E%3Ccircle cx='3' cy='17' r='0.28' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='29' cy='33' r='0.24' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='14' cy='14' r='0.24' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='38' cy='3' r='0.28' fill='rgba(255,255,255,0.42)'/%3E%3Cpath d='M13 22.2l.5 1.3 1.3.5-1.3.5-.5 1.3-.5-1.3-1.3-.5 1.3-.5z' fill='%23fff'/%3E%3C/svg%3E");
+  --ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cellipse cx='10' cy='10' rx='5.6' ry='1.5' transform='rotate(-22 10 10)' fill='none' stroke='rgba(255,255,255,.8)' stroke-width='.7'/%3E%3C/svg%3E");
+  --twinkle:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 50'%3E%3Cg fill='%23fff'%3E%3Cpath d='M12 9l1 3 3 1-3 1-1 3-1-3-3-1 3-1z'/%3E%3Cpath d='M47 30l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z'/%3E%3Cpath d='M60 6l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z'/%3E%3Cpath d='M27 41l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z'/%3E%3C/g%3E%3C/svg%3E");
+  --ink2:#1E1730;
+}
+
+/* galaxy: a nebula glowing in the brick's colour, stars, and planet studs in the colour with a white ring */
+.brick.t-galaxy{
+  background-color:var(--gx);
+  background-image:
+    var(--ring),
+    radial-gradient(circle at 44% 42%, var(--lt) 0 calc(var(--cell)*.03), var(--neon) calc(var(--cell)*.12), var(--dk) calc(var(--cell)*.15), transparent calc(var(--cell)*.16)),
+    var(--stars),
+    radial-gradient(ellipse 75% 65% at 30% 30%, var(--gxn) 0, transparent 100%),
+    linear-gradient(160deg, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 35%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),calc(var(--cell)*2) calc(var(--cell)*2),100% 100%,100% 100%;
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
+  background-repeat:repeat,repeat,repeat,no-repeat,no-repeat;
+  border-radius:calc(var(--cell)*.16);
+  box-shadow:
+    inset 0 0 0 max(1px, calc(var(--cell)*.035)) var(--gxn),
+    inset 0 calc(var(--cell)*-.08) 0 rgba(0,0,20,.35),
+    0 0 0 1px rgba(20,10,50,.5),
+    calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.34);
+}
+
+/* comic: flat colour, halftone dots, a white shine, a thick ink outline, a hard shadow and inked studs */
+.brick.t-comic{
+  background-image:
+    radial-gradient(circle at 40% 37%, #fff 0 calc(var(--cell)*.045), transparent calc(var(--cell)*.055)),
+    radial-gradient(circle at 50% 50%, var(--c) 0 calc(var(--cell)*.15), var(--ink2) calc(var(--cell)*.16) calc(var(--cell)*.205), transparent calc(var(--cell)*.215)),
+    radial-gradient(circle at 56% 58%, var(--ink2) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.21)),
+    linear-gradient(135deg, rgba(255,255,255,.55) 0 12%, transparent 12% 100%),
+    radial-gradient(circle, var(--dk) 0 calc(var(--cell)*.035), transparent calc(var(--cell)*.045));
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,calc(var(--cell)*.25) calc(var(--cell)*.25);
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
+  background-repeat:repeat,repeat,repeat,no-repeat,repeat;
+  border-radius:calc(var(--cell)*.1);
+  box-shadow:
+    0 0 0 max(1.5px, calc(var(--cell)*.06)) var(--ink2),
+    calc(2px + var(--z) * 1px) calc(3px + var(--z) * 3px) 0 max(1.5px, calc(var(--cell)*.06)) var(--ink2);
+}
+.brick.t-comic.drop{animation-duration:.6s}
+/* POW! in a yellow burst over the brick, on its own landing only */
+.brick.pow{z-index:450!important}
+.brick.pow::after{
+  content:"POW!";position:absolute;left:50%;bottom:70%;translate:-50% 0;pointer-events:none;
+  padding:.35em .55em .25em;font:900 max(16px, calc(var(--cell)*.85))/1 "Baloo 2",system-ui,sans-serif;color:#F2383A;
+  background:#FFE838;border:2px solid var(--ink2);border-radius:40% 55% 45% 60%;
+  -webkit-text-stroke:1px var(--ink2);white-space:nowrap;
+  animation:pow .6s ease-out both;
+}
+html[lang="ar"] .brick.pow::after{content:"بوم!";font-family:"Baloo Bhaijaan 2","Baloo 2",system-ui,sans-serif}
+@keyframes pow{0%{scale:.2;rotate:-14deg;opacity:0}25%{scale:1.15;rotate:-6deg;opacity:1}70%{scale:1;opacity:1}100%{scale:1.05;opacity:0}}
+
+/* ---------- boards ---------- */
+/* galaxy: deep space in the board's colour, a big soft nebula, faint stars and dim little planets; a few
+   bigger stars twinkle (one fading layer) */
+.plate[data-ps="galaxy"]{
+  background-color:var(--gx);
+  background-image:
+    radial-gradient(circle at 46% 44%, var(--gxn) 0 calc(var(--cell)*.04), transparent calc(var(--cell)*.12)),
+    var(--starsb),
+    radial-gradient(ellipse 60% 45% at 30% 30%, var(--gxf) 0, transparent 100%),
+    radial-gradient(ellipse 50% 40% at 78% 75%, var(--gxf) 0, transparent 100%);
+  background-size:var(--cell) var(--cell),calc(var(--cell)*3) calc(var(--cell)*3),100% 100%,100% 100%;
+  background-repeat:repeat,repeat,no-repeat,no-repeat;
+  box-shadow:
+    inset 0 0 calc(var(--cell)*1.2) rgba(0,0,20,.6),
+    inset 0 0 0 max(2px, calc(var(--cell)*.06)) var(--gxn),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="galaxy"]::before{
+  content:"";opacity:0;
+  background-image:var(--twinkle);background-size:calc(var(--cell)*7) calc(var(--cell)*5);background-repeat:repeat;
+  animation:boardtwinkle 3s ease-in-out infinite;
+}
+
+/* comic: a comic-book page. The board's colour made pale with halftone dots in the colour, inked studs and
+   a thick panel border */
+.plate[data-ps="comic"]{
+  border-radius:calc(var(--cell)*.12);
+  background-color:var(--pl);
+  background-image:
+    radial-gradient(circle at 50% 50%, var(--pl) 0 calc(var(--cell)*.14), rgba(30,23,48,.5) calc(var(--cell)*.15) calc(var(--cell)*.17), transparent calc(var(--cell)*.18)),
+    radial-gradient(circle, var(--c) 0 calc(var(--cell)*.04), transparent calc(var(--cell)*.05));
+  background-size:var(--cell) var(--cell),calc(var(--cell)*.25) calc(var(--cell)*.25);
+  background-repeat:repeat,repeat;
+  box-shadow:
+    inset 0 0 0 max(3px, calc(var(--cell)*.14)) var(--ink2),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="comic"]::before,.plate[data-ps="comic"]::after{border-radius:calc(var(--cell)*.12)}
+
+/* the picker */
+.pprev[data-ps="galaxy"]{box-shadow:inset 0 0 6px rgba(0,0,20,.6),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="comic"]{border-radius:5px;box-shadow:inset 0 0 0 2px var(--ink2),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="galaxy"]::before{background-size:39px 26px}

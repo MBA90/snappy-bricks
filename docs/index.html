@@ -1938,6 +1938,112 @@ body[data-screen="studio"] .app{max-width:none}
 .pprev[data-ps="pixel"]{border-radius:0;box-shadow:inset 0 2px 0 rgba(255,255,255,.3),inset 0 -2px 0 rgba(30,10,60,.25),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 .pprev[data-ps="ice"]{box-shadow:inset 0 0 6px rgba(255,255,255,.9),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
 
+/* ===================== Galaxy and Comic: bricks and boards =====================
+   Galaxy is deep space with a hint of the brick's colour (--gx from galaxyColor()), a nebula of the colour
+   itself (--gxn, and the fainter --gxf on the board), stars and little planet studs with rings. Comic is a comic-book drawing: flat colour, a thick
+   ink outline, halftone dots, a hard shadow and studs drawn in ink; a Comic brick put down on its own says
+   POW! (.pow, added in render()). Nothing on the bricks moves; the Galaxy board has one layer of twinkling stars. */
+.brick,.plate,.swatch-face{
+  --stars:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='5' cy='7' r='0.60' fill='rgba(255,255,255,0.95)'/%3E%3Ccircle cx='17' cy='3' r='0.40' fill='rgba(255,255,255,0.70)'/%3E%3Ccircle cx='31' cy='9' r='0.70' fill='rgba(255,255,255,0.90)'/%3E%3Ccircle cx='24' cy='19' r='0.45' fill='rgba(255,255,255,0.60)'/%3E%3Ccircle cx='9' cy='27' r='0.50' fill='rgba(255,255,255,0.80)'/%3E%3Ccircle cx='36' cy='25' r='0.40' fill='rgba(255,255,255,0.60)'/%3E%3Ccircle cx='19' cy='35' r='0.60' fill='rgba(255,255,255,0.85)'/%3E%3Ccircle cx='3' cy='17' r='0.35' fill='rgba(255,255,255,0.50)'/%3E%3Ccircle cx='29' cy='33' r='0.30' fill='rgba(255,255,255,0.50)'/%3E%3Ccircle cx='14' cy='14' r='0.30' fill='rgba(255,255,255,0.50)'/%3E%3Ccircle cx='38' cy='3' r='0.35' fill='rgba(255,255,255,0.60)'/%3E%3Cpath d='M13 22.2l.5 1.3 1.3.5-1.3.5-.5 1.3-.5-1.3-1.3-.5 1.3-.5z' fill='%23fff'/%3E%3C/svg%3E");
+  --starsb:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='5' cy='7' r='0.48' fill='rgba(255,255,255,0.66)'/%3E%3Ccircle cx='17' cy='3' r='0.32' fill='rgba(255,255,255,0.49)'/%3E%3Ccircle cx='31' cy='9' r='0.56' fill='rgba(255,255,255,0.63)'/%3E%3Ccircle cx='24' cy='19' r='0.36' fill='rgba(255,255,255,0.42)'/%3E%3Ccircle cx='9' cy='27' r='0.40' fill='rgba(255,255,255,0.56)'/%3E%3Ccircle cx='36' cy='25' r='0.32' fill='rgba(255,255,255,0.42)'/%3E%3Ccircle cx='19' cy='35' r='0.48' fill='rgba(255,255,255,0.59)'/%3E%3Ccircle cx='3' cy='17' r='0.28' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='29' cy='33' r='0.24' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='14' cy='14' r='0.24' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='38' cy='3' r='0.28' fill='rgba(255,255,255,0.42)'/%3E%3Cpath d='M13 22.2l.5 1.3 1.3.5-1.3.5-.5 1.3-.5-1.3-1.3-.5 1.3-.5z' fill='%23fff'/%3E%3C/svg%3E");
+  --ring:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cellipse cx='10' cy='10' rx='5.6' ry='1.5' transform='rotate(-22 10 10)' fill='none' stroke='rgba(255,255,255,.8)' stroke-width='.7'/%3E%3C/svg%3E");
+  --twinkle:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 50'%3E%3Cg fill='%23fff'%3E%3Cpath d='M12 9l1 3 3 1-3 1-1 3-1-3-3-1 3-1z'/%3E%3Cpath d='M47 30l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z'/%3E%3Cpath d='M60 6l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z'/%3E%3Cpath d='M27 41l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z'/%3E%3C/g%3E%3C/svg%3E");
+  --ink2:#1E1730;
+}
+
+/* galaxy: a nebula glowing in the brick's colour, stars, and planet studs in the colour with a white ring */
+.brick.t-galaxy{
+  background-color:var(--gx);
+  background-image:
+    var(--ring),
+    radial-gradient(circle at 44% 42%, var(--lt) 0 calc(var(--cell)*.03), var(--neon) calc(var(--cell)*.12), var(--dk) calc(var(--cell)*.15), transparent calc(var(--cell)*.16)),
+    var(--stars),
+    radial-gradient(ellipse 75% 65% at 30% 30%, var(--gxn) 0, transparent 100%),
+    linear-gradient(160deg, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 35%);
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),calc(var(--cell)*2) calc(var(--cell)*2),100% 100%,100% 100%;
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
+  background-repeat:repeat,repeat,repeat,no-repeat,no-repeat;
+  border-radius:calc(var(--cell)*.16);
+  box-shadow:
+    inset 0 0 0 max(1px, calc(var(--cell)*.035)) var(--gxn),
+    inset 0 calc(var(--cell)*-.08) 0 rgba(0,0,20,.35),
+    0 0 0 1px rgba(20,10,50,.5),
+    calc(1px + var(--z) * 1px) calc(3px + var(--z) * 3px) calc(4px + var(--z) * 3px) rgba(30,10,60,.34);
+}
+
+/* comic: flat colour, halftone dots, a white shine, a thick ink outline, a hard shadow and inked studs */
+.brick.t-comic{
+  background-image:
+    radial-gradient(circle at 40% 37%, #fff 0 calc(var(--cell)*.045), transparent calc(var(--cell)*.055)),
+    radial-gradient(circle at 50% 50%, var(--c) 0 calc(var(--cell)*.15), var(--ink2) calc(var(--cell)*.16) calc(var(--cell)*.205), transparent calc(var(--cell)*.215)),
+    radial-gradient(circle at 56% 58%, var(--ink2) 0 calc(var(--cell)*.2), transparent calc(var(--cell)*.21)),
+    linear-gradient(135deg, rgba(255,255,255,.55) 0 12%, transparent 12% 100%),
+    radial-gradient(circle, var(--dk) 0 calc(var(--cell)*.035), transparent calc(var(--cell)*.045));
+  background-size:var(--cell) var(--cell),var(--cell) var(--cell),var(--cell) var(--cell),100% 100%,calc(var(--cell)*.25) calc(var(--cell)*.25);
+  background-position:var(--at) var(--at),var(--at) var(--at),var(--at) var(--at),0 0,0 0;
+  background-repeat:repeat,repeat,repeat,no-repeat,repeat;
+  border-radius:calc(var(--cell)*.1);
+  box-shadow:
+    0 0 0 max(1.5px, calc(var(--cell)*.06)) var(--ink2),
+    calc(2px + var(--z) * 1px) calc(3px + var(--z) * 3px) 0 max(1.5px, calc(var(--cell)*.06)) var(--ink2);
+}
+.brick.t-comic.drop{animation-duration:.6s}
+/* POW! in a yellow burst over the brick, on its own landing only */
+.brick.pow{z-index:450!important}
+.brick.pow::after{
+  content:"POW!";position:absolute;left:50%;bottom:70%;translate:-50% 0;pointer-events:none;
+  padding:.35em .55em .25em;font:900 max(16px, calc(var(--cell)*.85))/1 "Baloo 2",system-ui,sans-serif;color:#F2383A;
+  background:#FFE838;border:2px solid var(--ink2);border-radius:40% 55% 45% 60%;
+  -webkit-text-stroke:1px var(--ink2);white-space:nowrap;
+  animation:pow .6s ease-out both;
+}
+html[lang="ar"] .brick.pow::after{content:"بوم!";font-family:"Baloo Bhaijaan 2","Baloo 2",system-ui,sans-serif}
+@keyframes pow{0%{scale:.2;rotate:-14deg;opacity:0}25%{scale:1.15;rotate:-6deg;opacity:1}70%{scale:1;opacity:1}100%{scale:1.05;opacity:0}}
+
+/* ---------- boards ---------- */
+/* galaxy: deep space in the board's colour, a big soft nebula, faint stars and dim little planets; a few
+   bigger stars twinkle (one fading layer) */
+.plate[data-ps="galaxy"]{
+  background-color:var(--gx);
+  background-image:
+    radial-gradient(circle at 46% 44%, var(--gxn) 0 calc(var(--cell)*.04), transparent calc(var(--cell)*.12)),
+    var(--starsb),
+    radial-gradient(ellipse 60% 45% at 30% 30%, var(--gxf) 0, transparent 100%),
+    radial-gradient(ellipse 50% 40% at 78% 75%, var(--gxf) 0, transparent 100%);
+  background-size:var(--cell) var(--cell),calc(var(--cell)*3) calc(var(--cell)*3),100% 100%,100% 100%;
+  background-repeat:repeat,repeat,no-repeat,no-repeat;
+  box-shadow:
+    inset 0 0 calc(var(--cell)*1.2) rgba(0,0,20,.6),
+    inset 0 0 0 max(2px, calc(var(--cell)*.06)) var(--gxn),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="galaxy"]::before{
+  content:"";opacity:0;
+  background-image:var(--twinkle);background-size:calc(var(--cell)*7) calc(var(--cell)*5);background-repeat:repeat;
+  animation:boardtwinkle 3s ease-in-out infinite;
+}
+
+/* comic: a comic-book page. The board's colour made pale with halftone dots in the colour, inked studs and
+   a thick panel border */
+.plate[data-ps="comic"]{
+  border-radius:calc(var(--cell)*.12);
+  background-color:var(--pl);
+  background-image:
+    radial-gradient(circle at 50% 50%, var(--pl) 0 calc(var(--cell)*.14), rgba(30,23,48,.5) calc(var(--cell)*.15) calc(var(--cell)*.17), transparent calc(var(--cell)*.18)),
+    radial-gradient(circle, var(--c) 0 calc(var(--cell)*.04), transparent calc(var(--cell)*.05));
+  background-size:var(--cell) var(--cell),calc(var(--cell)*.25) calc(var(--cell)*.25);
+  background-repeat:repeat,repeat;
+  box-shadow:
+    inset 0 0 0 max(3px, calc(var(--cell)*.14)) var(--ink2),
+    0 0 0 3px var(--ink),0 11px 0 3px var(--ink);
+}
+.plate[data-ps="comic"]::before,.plate[data-ps="comic"]::after{border-radius:calc(var(--cell)*.12)}
+
+/* the picker */
+.pprev[data-ps="galaxy"]{box-shadow:inset 0 0 6px rgba(0,0,20,.6),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="comic"]{border-radius:5px;box-shadow:inset 0 0 0 2px var(--ink2),0 0 0 2px var(--ink),0 3px 0 2px var(--ink)}
+.pprev[data-ps="galaxy"]::before{background-size:39px 26px}
+
 </style>
 <!-- Snappy Bricks plays sideways: held upright, the screen asks to be turned -->
 <div class="turn-me" id="turnMe" aria-live="polite">
@@ -2388,6 +2494,8 @@ const STYLES = [
   {id: "rainbow", en: "Rainbow", ar: "قوس قزح"},
   {id: "pixel",   en: "Pixel",   ar: "بكسل"},
   {id: "ice",     en: "Ice",     ar: "ثلج"},
+  {id: "galaxy",  en: "Galaxy",  ar: "مجرة"},
+  {id: "comic",   en: "Comic",   ar: "كوميك"},
 ];
 // long side first (lying down)
 const SHAPES = [[1,1],[2,2],[3,2],[4,2]];
@@ -2492,6 +2600,8 @@ addStrings({
   plateStyleSay_rainbow: ["A rainbow board full of colors!", "لوحة قوس قزح مليئة بالألوان!"],
   plateStyleSay_pixel: ["A pixel board, like a video game screen!", "لوحة بكسل مثل شاشة لعبة فيديو!"],
   plateStyleSay_ice: ["An ice board, like a frozen pond!", "لوحة ثلج مثل بركة متجمدة!"],
+  plateStyleSay_galaxy: ["A galaxy board, out in space with the stars!", "لوحة مجرة في الفضاء بين النجوم!"],
+  plateStyleSay_comic: ["A comic board, like a page from a comic book!", "لوحة كوميك مثل صفحة من مجلة مصورة!"],
   undone: ["Undone! It's back the way it was.", "تم التراجع! عاد كما كان."],
   oneBrick: ["1 brick", "المكعبات: 1"], nBricks: ["{n} bricks", "المكعبات: {n}"],
   builtWith: ["Built with Snappy Bricks", "صُنعت بمكعبات سنابي"],
@@ -2508,6 +2618,8 @@ addStrings({
   styleSay_rainbow: ["Rainbow bricks in every color!", "مكعبات قوس قزح بكل الألوان!"],
   styleSay_pixel: ["Pixel bricks, like in a video game!", "مكعبات بكسل مثل لعبة فيديو!"],
   styleSay_ice: ["Frosty ice bricks with snowflakes!", "مكعبات ثلج باردة عليها ندف الثلج!"],
+  styleSay_galaxy: ["Galaxy bricks full of stars and little planets!", "مكعبات مجرة مليئة بالنجوم والكواكب الصغيرة!"],
+  styleSay_comic: ["Comic bricks go POW when they land!", "مكعبات كوميك تقول بوم عندما تنزل!"],
   brickAria: ["{s} brick", "مكعب {s}"],
   tapToPlace: ["Now tap the board to put it there. Tap it again to stop.", "الآن اضغط على اللوحة لتضعه. اضغط عليه مرة أخرى للتوقف."],
   dragAnytime: ["Okay! Drag a brick onto the board whenever you like.", "حسنًا! اسحب مكعبًا إلى اللوحة متى شئت."],
@@ -2716,6 +2828,14 @@ function iceColor(c){
   const n = parseInt(c.slice(1), 16), m = (v, w) => Math.round(v + (w - v) * .5).toString(16).padStart(2, "0");
   return "#" + m(n >> 16, 228) + m((n >> 8) & 255, 244) + m(n & 255, 255);
 }
+// galaxy: deep space with a hint of the brick's colour, and the colour itself as a soft cloud of light (a nebula)
+function galaxyColor(c){
+  const v = neonColor(c), n = v[0] === "#" ? parseInt(v.slice(1), 16) : null;
+  const [r, g, b] = n === null ? v.match(/\d+/g).map(Number) : [n >> 16, (n >> 8) & 255, n & 255];
+  const m = (x, w) => Math.round(w + (x - w) * .26).toString(16).padStart(2, "0");
+  return "#" + m(r, 18) + m(g, 12) + m(b, 48);
+}
+function nebulaColor(c, a){ return jellyColor(neonColor(c), 0, a); }
 // the pastel of the Light and Candy boards: less white than a light brick's, so the board keeps its colour
 function boardPastel(c){
   const n = parseInt(c.slice(1), 16), m = v => Math.round(v + (255 - v) * .3).toString(16).padStart(2, "0");
@@ -2728,7 +2848,7 @@ function colorVars(c){
   if (!v){ v = [["--c", c], ["--neon", neonColor(c)], ["--glass", neonGlass(c)], ["--lt", shade(c, .3)], ["--dk", shade(c, -.24)], ["--spark", sparkColor(c)], ["--spark2", spark2Color(c)],
     ["--pl", pastel(c)], ["--plt", shade(pastel(c), .45)], ["--pdk", shade(pastel(c), -.16)], ["--glo", lampColor(c, .75)],
     ["--jel", jellyColor(c, 0, .8)], ["--jlt", jellyColor(c, .45, .9)], ["--jdk", jellyColor(c, -.35, .85)], ["--jsh", jellyColor(c, -.45, .4)],
-    ["--cs", candyStripe(c)], ["--ice", iceColor(c)], ["--idk", shade(iceColor(c), -.2)], ...rainbowOf(c).map((r, i) => ["--r" + i, r])]; varsCache.set(c, v); }
+    ["--cs", candyStripe(c)], ["--ice", iceColor(c)], ["--idk", shade(iceColor(c), -.2)], ["--gx", galaxyColor(c)], ["--gxn", nebulaColor(c, .6)], ["--gxf", nebulaColor(c, .26)], ...rainbowOf(c).map((r, i) => ["--r" + i, r])]; varsCache.set(c, v); }
   return v;
 }
 function paintVars(el, c){ for (const [k, v] of colorVars(c)) el.style.setProperty(k, v); }
@@ -2819,7 +2939,7 @@ function artToPix(art, recolor){
 }
 
 /* ===================== boards ===================== */
-// board styles are the brick styles (Classic, Glitter, Glow, Neon, Light, Jelly, Candy, Rainbow, Pixel, Ice) worn by the board itself
+// board styles are the brick styles (Classic, Glitter, Glow, Neon, Light, Jelly, Candy, Rainbow, Pixel, Ice, Galaxy, Comic) worn by the board itself
 const plateStyle = v => STYLES.some(s => s.id === v) ? v : "std";
 // the colour a board shows to the eye: neon boards are dark glass whatever their colour
 function plateTone(board){ const r = richPlate(board.plate); return plateStyle(board.ps) === "neon" ? shade(r, -.68) : r; }
@@ -2896,7 +3016,9 @@ function render(anim){
       if (anim && anim.has(b.id) && !reduceMotion){
         el.style.animationDelay = anim.get(b.id) + "ms";
         el.classList.add("drop");
-        el.addEventListener("animationend", () => { el.classList.remove("drop"); el.style.animationDelay = ""; }, {once: true});
+        // a comic brick put down on its own says POW! (not when a fill or shape lands many at once)
+        if (b.t === "comic" && anim.size === 1) el.classList.add("pow");
+        el.addEventListener("animationend", () => { el.classList.remove("drop", "pow"); el.style.animationDelay = ""; }, {once: true});
       }
     } else {
       const keep = el._t !== (b.t || "std") ? ["drop", "flash", "flash2", "wiggle", "wiggle2", "selected"].filter(c => el.classList.contains(c)) : null;
@@ -3264,12 +3386,49 @@ function iceCracks(ctx, x, y, w, h, c, n, a){
     for (const line of CRACKS) line.forEach(([px, py], i) => ctx[i ? "lineTo" : "moveTo"](x + tx + px * u, y + ty + py * u));
   ctx.stroke();
 }
+// the stars of a galaxy (as --stars in styles9.css): x, y, size, brightness per 2×2 studs, and one sparkle
+const STARS = [[5, 7, .6, .95], [17, 3, .4, .7], [31, 9, .7, .9], [24, 19, .45, .6], [9, 27, .5, .8], [36, 25, .4, .6], [19, 35, .6, .85], [3, 17, .35, .5], [29, 33, .3, .5], [14, 14, .3, .5], [38, 3, .35, .6]];
+function sparkle(ctx, x, y, r){
+  ctx.beginPath(); ctx.moveTo(x, y - r); ctx.lineTo(x + r * .3, y - r * .3); ctx.lineTo(x + r, y); ctx.lineTo(x + r * .3, y + r * .3);
+  ctx.lineTo(x, y + r); ctx.lineTo(x - r * .3, y + r * .3); ctx.lineTo(x - r, y); ctx.lineTo(x - r * .3, y - r * .3); ctx.fill();
+}
+// stars over an area, one pattern per n×n studs (k: star size, a: brightness), clipped by the caller
+function galaxyStars(ctx, x, y, w, h, c, n, k, a){
+  const u = c * n / 40;
+  for (let ty = 0; ty < h; ty += c * n) for (let tx = 0; tx < w; tx += c * n){
+    for (const [sx, sy, r, al] of STARS){ ctx.fillStyle = `rgba(255,255,255,${al * a})`; ctx.beginPath(); ctx.arc(x + tx + sx * u, y + ty + sy * u, r * k * u, 0, 7); ctx.fill(); }
+    ctx.fillStyle = "#fff"; sparkle(ctx, x + tx + 13 * u, y + ty + 23 * u, 1.3 * u);
+  }
+}
+// a little planet stud in the brick's colour with a white ring (sx, sy: its middle)
+function planetStud(ctx, sx, sy, c, col){
+  const px = sx - c * .06, py = sy - c * .08, pg = ctx.createRadialGradient(px, py, 0, px, py, c * .16);
+  pg.addColorStop(0, shade(col, .3)); pg.addColorStop(.2, shade(col, .3)); pg.addColorStop(.75, neonColor(col)); pg.addColorStop(1, shade(col, -.24));
+  ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(sx, sy, c * .15, 0, 7); ctx.fill();
+  ctx.save(); ctx.translate(sx, sy); ctx.rotate(-22 * Math.PI / 180); ctx.scale(1, 1.5 / 5.6);
+  ctx.beginPath(); ctx.arc(0, 0, c * .28, 0, 7); ctx.restore();
+  ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = c * .035; ctx.stroke();
+}
+// comic: halftone dots in a colour, one small tile stamped as a pattern, so even big boards draw quickly
+const halftones = new Map();
+function halftone(ctx, col, c){
+  const key = col + "|" + c;
+  let p = halftones.get(key);
+  if (!p){
+    if (halftones.size > 60) halftones.clear();
+    const t = document.createElement("canvas"), s = Math.max(2, Math.round(c * .25)); t.width = s; t.height = s;
+    const tc = t.getContext("2d"); tc.fillStyle = col; tc.beginPath(); tc.arc(s / 2, s / 2, Math.max(.5, c * .04), 0, 7); tc.fill();
+    p = ctx.createPattern(t, "repeat"); halftones.set(key, p);
+  }
+  return p;
+}
+const INK2 = "#1E1730";
 // the sprinkles between a candy board's studs (the same as --sprinkles in styles8.css), per 3×3 studs
 const SPRINKLES = [["#FF4F9A", 90, 94, 110, 106], ["#3D9BFF", 192, 108, 208, 92], ["#36C46A", 89, 200, 111, 200], ["#FFB800", 200, 189, 200, 211]];
 // the board under the bricks in each board style (matches styles7.css; Classic is the plain board)
 function drawPlate(ctx, board, ox, oy, c){
   const bw = board.cols * c, bh = board.rows * c, ps = plateStyle(board.ps), col = richPlate(board.plate), glass = shade(col, -.68);
-  const rad = ps === "jelly" ? c * .6 : ps === "pixel" ? 0 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
+  const rad = ps === "jelly" ? c * .6 : ps === "pixel" ? 0 : ps === "comic" ? c * .12 : c * .3, path = () => rrect(ctx, ox, oy, bw, bh, rad);
   const each = fn => { for (let y = 0; y < board.rows; y++) for (let x = 0; x < board.cols; x++) fn(ox + (x + .5) * c, oy + (y + .5) * c, x, y); };
   // glow, neon and light boards shine out past their edge in their own colour
   if (ps === "glow" || ps === "neon" || ps === "light"){
@@ -3277,7 +3436,7 @@ function drawPlate(ctx, board, ox, oy, c){
     ctx.fillStyle = ps === "neon" ? glass : col; path(); ctx.fill(); ctx.restore();
   }
   ctx.save(); path(); ctx.clip();
-  ctx.fillStyle = ps === "neon" ? glass : ps === "light" ? boardPastel(col) : ps === "ice" ? iceColor(col) : col; ctx.fillRect(ox, oy, bw, bh);
+  ctx.fillStyle = ps === "neon" ? glass : ps === "light" ? boardPastel(col) : ps === "ice" ? iceColor(col) : ps === "galaxy" ? galaxyColor(col) : ps === "comic" ? boardPastel(col) : col; ctx.fillRect(ox, oy, bw, bh);
   if (ps === "glow"){
     const g = ctx.createRadialGradient(ox + bw / 2, oy + bh * .45, 0, ox + bw / 2, oy + bh * .45, Math.max(bw, bh) * .62);
     g.addColorStop(0, "rgba(255,255,255,.55)"); g.addColorStop(.45, shade(col, .18)); g.addColorStop(1, col);
@@ -3304,6 +3463,22 @@ function drawPlate(ctx, board, ox, oy, c){
     const wg = ctx.createLinearGradient(ox, oy, ox + bw * .17, oy + bh);
     wg.addColorStop(0, "rgba(255,255,255,.22)"); wg.addColorStop(1, "rgba(255,255,255,.05)");
     ctx.fillStyle = wg; ctx.fillRect(ox, oy, bw, bh);
+  } else if (ps === "galaxy"){
+    // two soft nebulas in the board's colour, faint stars and a few bigger ones mid-twinkle
+    for (const [ex, ey, rx, ry] of [[.3, .3, .6, .45], [.78, .75, .5, .4]]){
+      ctx.save(); ctx.translate(ox + bw * ex, oy + bh * ey); ctx.scale(bw * rx, bh * ry);
+      const ng = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); ng.addColorStop(0, nebulaColor(col, .26)); ng.addColorStop(1, nebulaColor(col, 0));
+      ctx.fillStyle = ng; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
+    }
+    galaxyStars(ctx, ox, oy, bw, bh, c, 3, .8, .7);
+    ctx.fillStyle = "#fff";
+    for (let ty = 0; ty < bh; ty += c * 5) for (let tx = 0; tx < bw; tx += c * 7)
+      for (const [sx, sy, r] of [[12, 13, 4], [47, 33, 3.2], [60, 8, 2.4], [27, 43, 2.4]]) sparkle(ctx, ox + tx + sx * c / 10, oy + ty + sy * c / 10, r * c / 10);
+    const vg = ctx.createRadialGradient(ox + bw / 2, oy + bh / 2, Math.min(bw, bh) * .35, ox + bw / 2, oy + bh / 2, Math.max(bw, bh) * .75);
+    vg.addColorStop(0, "rgba(0,0,20,0)"); vg.addColorStop(1, "rgba(0,0,20,.45)");
+    ctx.fillStyle = vg; ctx.fillRect(ox, oy, bw, bh);
+  } else if (ps === "comic"){
+    ctx.fillStyle = halftone(ctx, col, c); ctx.save(); ctx.translate(ox, oy); ctx.fillRect(0, 0, bw, bh); ctx.restore();
   } else if (ps === "pixel"){
     // a flat game screen: the grid and studs are drawn with the studs below
   } else if (ps === "ice"){
@@ -3340,6 +3515,14 @@ function drawPlate(ctx, board, ox, oy, c){
     ctx.shadowColor = "rgba(20,5,40,.32)"; ctx.shadowBlur = c * 1.4; ctx.lineWidth = c; ctx.strokeStyle = "rgba(20,5,40,.16)";
   }
   if (ps === "neon"){ path(); ctx.stroke(); ctx.stroke(); }
+  else if (ps === "comic"){
+    // a thick ink panel border
+    const e = Math.max(3, c * .14);
+    ctx.strokeStyle = INK2; ctx.lineWidth = e * 2; path(); ctx.stroke();
+  }
+  else if (ps === "galaxy"){
+    ctx.strokeStyle = nebulaColor(col, .6); ctx.lineWidth = Math.max(2, c * .06) * 2; path(); ctx.stroke();
+  }
   else if (ps === "pixel"){
     // hard steps of light and shadow round the edge, no blur
     const e = Math.max(3, c * .14);
@@ -3374,6 +3557,21 @@ function drawPlate(ctx, board, ox, oy, c){
     each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
   } else if (ps === "rainbow"){
     each((sx, sy) => glassStud(ctx, sx, sy, c));
+  } else if (ps === "galaxy"){
+    // dim little planets: a soft glow with a bright middle
+    const key = "gxb|" + c + "|" + col;
+    let tile = studTiles.get(key);
+    if (!tile){
+      const sz = Math.ceil(c); tile = document.createElement("canvas"); tile.width = sz; tile.height = sz;
+      const tc = tile.getContext("2d"), m = c * .46, g = tc.createRadialGradient(m, c * .44, 0, m, c * .44, c * .12);
+      g.addColorStop(0, nebulaColor(col, .6)); g.addColorStop(.33, nebulaColor(col, .6)); g.addColorStop(1, nebulaColor(col, 0));
+      tc.fillStyle = g; tc.beginPath(); tc.arc(m, c * .44, c * .12, 0, 7); tc.fill();
+      studTiles.set(key, tile);
+    }
+    each((sx, sy) => ctx.drawImage(tile, sx - c / 2, sy - c / 2));
+  } else if (ps === "comic"){
+    ctx.fillStyle = boardPastel(col); ctx.strokeStyle = "rgba(30,23,48,.5)"; ctx.lineWidth = c * .02;
+    each((sx, sy) => { ctx.beginPath(); ctx.arc(sx, sy, c * .16, 0, 7); ctx.fill(); ctx.stroke(); });
   } else if (ps === "pixel" || ps === "ice"){
     // drawn once and stamped
     const key = ps + "b|" + c;
@@ -3417,10 +3615,10 @@ function drawBoard(ctx, board, ox, oy, c){
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
     const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
-    const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : t === "pixel" ? 0 : t === "ice" ? c * .18 : c * .14;
+    const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : t === "pixel" ? 0 : t === "ice" ? c * .18 : t === "galaxy" ? c * .16 : t === "comic" ? c * .1 : c * .14;
     const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
     ctx.save();
-    ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = t === "pixel" ? 0 : (t === "light" ? 8 : 4) + z * 3;
+    ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = t === "pixel" || t === "comic" ? 0 : (t === "light" ? 8 : 4) + z * 3;
     ctx.shadowOffsetX = (t === "pixel" ? 2 : 1) + z; ctx.shadowOffsetY = (t === "light" ? 4 : 3) + z * 3;
     ctx.fillStyle = "rgba(30,10,60,.2)"; rrect(ctx, x, y, w, h, rad); ctx.fill(); ctx.restore();
     if (t === "pixel"){
@@ -3434,6 +3632,48 @@ function drawBoard(ctx, board, ox, oy, c){
       for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) pixelStud(ctx, x - gap + xx * c, y - gap + yy * c, c);
       ctx.strokeStyle = "rgba(30,10,60,.6)"; ctx.lineWidth = Math.max(1, c * .04);
       ctx.strokeRect(x - ctx.lineWidth / 2, y - ctx.lineWidth / 2, w + ctx.lineWidth, h + ctx.lineWidth);
+      ctx.restore();
+      continue;
+    }
+    if (t === "galaxy"){
+      // deep space with a nebula of the brick's colour, stars, and planet studs
+      ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
+      ctx.fillStyle = galaxyColor(b.c); ctx.fillRect(x, y, w, h);
+      ctx.save(); ctx.translate(x + w * .3, y + h * .3); ctx.scale(w * .75, h * .65);
+      const ng = ctx.createRadialGradient(0, 0, 0, 0, 0, 1); ng.addColorStop(0, nebulaColor(b.c, .6)); ng.addColorStop(1, nebulaColor(b.c, 0));
+      ctx.fillStyle = ng; ctx.fillRect(-1, -1, 2, 2); ctx.restore();
+      const sg = ctx.createLinearGradient(x, y, x + w * .34, y + h);
+      sg.addColorStop(0, "rgba(255,255,255,.18)"); sg.addColorStop(.35, "rgba(255,255,255,0)");
+      ctx.fillStyle = sg; ctx.fillRect(x, y, w, h);
+      galaxyStars(ctx, x - gap, y - gap, w + gap, h + gap, c, 2, 1, 1);
+      ctx.fillStyle = "rgba(0,0,20,.35)"; ctx.fillRect(x, y + h - c * .08, w, c * .08);
+      ctx.strokeStyle = nebulaColor(b.c, .6); ctx.lineWidth = Math.max(2, c * .07); rrect(ctx, x, y, w, h, rad); ctx.stroke();
+      ctx.restore();
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++) planetStud(ctx, x - gap + (xx + .5) * c, y - gap + (yy + .5) * c, c, b.c);
+      ctx.strokeStyle = "rgba(20,10,50,.5)"; ctx.lineWidth = 1;
+      rrect(ctx, x - .5, y - .5, w + 1, h + 1, rad); ctx.stroke();
+      ctx.restore();
+      continue;
+    }
+    if (t === "comic"){
+      // flat colour under halftone dots, a white shine in the corner, a thick ink outline, a hard ink shadow
+      // and studs drawn in ink
+      const ow = Math.max(1.5, c * .06);
+      ctx.fillStyle = INK2;
+      rrect(ctx, x - ow + 2 + z, y - ow + 3 + z * 3, w + ow * 2, h + ow * 2, rad + ow); ctx.fill();
+      rrect(ctx, x - ow, y - ow, w + ow * 2, h + ow * 2, rad + ow); ctx.fill();
+      ctx.save(); rrect(ctx, x, y, w, h, rad); ctx.clip();
+      ctx.fillStyle = b.c; ctx.fillRect(x, y, w, h);
+      ctx.save(); ctx.translate(x - gap, y - gap); ctx.fillStyle = halftone(ctx, shade(b.c, -.24), c); ctx.fillRect(gap, gap, w, h); ctx.restore();
+      ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + (w + h) * .17, y); ctx.lineTo(x, y + (w + h) * .17); ctx.fill();
+      ctx.restore();
+      for (let yy = 0; yy < b.h; yy++) for (let xx = 0; xx < b.w; xx++){
+        const sx = x - gap + (xx + .5) * c, sy = y - gap + (yy + .5) * c;
+        ctx.fillStyle = INK2; ctx.beginPath(); ctx.arc(sx + c * .06, sy + c * .08, c * .2, 0, 7); ctx.fill();
+        ctx.beginPath(); ctx.arc(sx, sy, c * .205, 0, 7); ctx.fill();
+        ctx.fillStyle = b.c; ctx.beginPath(); ctx.arc(sx, sy, c * .155, 0, 7); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(sx - c * .1, sy - c * .13, c * .05, 0, 7); ctx.fill();
+      }
       ctx.restore();
       continue;
     }

@@ -55,6 +55,8 @@ const STYLES = [
   {id: "rainbow", en: "Rainbow", ar: "قوس قزح"},
   {id: "pixel",   en: "Pixel",   ar: "بكسل"},
   {id: "ice",     en: "Ice",     ar: "ثلج"},
+  {id: "galaxy",  en: "Galaxy",  ar: "مجرة"},
+  {id: "comic",   en: "Comic",   ar: "كوميك"},
 ];
 // long side first (lying down)
 const SHAPES = [[1,1],[2,2],[3,2],[4,2]];
@@ -159,6 +161,8 @@ addStrings({
   plateStyleSay_rainbow: ["A rainbow board full of colors!", "لوحة قوس قزح مليئة بالألوان!"],
   plateStyleSay_pixel: ["A pixel board, like a video game screen!", "لوحة بكسل مثل شاشة لعبة فيديو!"],
   plateStyleSay_ice: ["An ice board, like a frozen pond!", "لوحة ثلج مثل بركة متجمدة!"],
+  plateStyleSay_galaxy: ["A galaxy board, out in space with the stars!", "لوحة مجرة في الفضاء بين النجوم!"],
+  plateStyleSay_comic: ["A comic board, like a page from a comic book!", "لوحة كوميك مثل صفحة من مجلة مصورة!"],
   undone: ["Undone! It's back the way it was.", "تم التراجع! عاد كما كان."],
   oneBrick: ["1 brick", "المكعبات: 1"], nBricks: ["{n} bricks", "المكعبات: {n}"],
   builtWith: ["Built with Snappy Bricks", "صُنعت بمكعبات سنابي"],
@@ -175,6 +179,8 @@ addStrings({
   styleSay_rainbow: ["Rainbow bricks in every color!", "مكعبات قوس قزح بكل الألوان!"],
   styleSay_pixel: ["Pixel bricks, like in a video game!", "مكعبات بكسل مثل لعبة فيديو!"],
   styleSay_ice: ["Frosty ice bricks with snowflakes!", "مكعبات ثلج باردة عليها ندف الثلج!"],
+  styleSay_galaxy: ["Galaxy bricks full of stars and little planets!", "مكعبات مجرة مليئة بالنجوم والكواكب الصغيرة!"],
+  styleSay_comic: ["Comic bricks go POW when they land!", "مكعبات كوميك تقول بوم عندما تنزل!"],
   brickAria: ["{s} brick", "مكعب {s}"],
   tapToPlace: ["Now tap the board to put it there. Tap it again to stop.", "الآن اضغط على اللوحة لتضعه. اضغط عليه مرة أخرى للتوقف."],
   dragAnytime: ["Okay! Drag a brick onto the board whenever you like.", "حسنًا! اسحب مكعبًا إلى اللوحة متى شئت."],
