@@ -70,7 +70,7 @@ const STYLES = [
 // long side first (lying down)
 // the toy-box bricks, in toy-box order (two to a row)
 const SHAPES = [[1,1],[2,1],[3,1],[4,1],[2,2],[3,2],[4,2],[4,4]];
-// names, Fun shapes, photos and Fill are built from these classic sizes, so their pictures stay the same
+// names, Fun shapes and photos are built from these classic sizes, so their pictures stay the same
 const FILL_SHAPES = [[1,1],[2,2],[3,2],[4,2]];
 const PAL = {R:"#F2383A",W:"#FBFAF5",Y:"#FFE838",K:"#2E2A3A",P:"#FFB3CF",G:"#3DC45A",B:"#2F8CF0",O:"#FF9A1F",
              M:"#7FE3C0",L:"#A9A6F0",H:"#FF2E8A",V:"#8A4DE0",N:"#9A5B34",S:"#8FD3FF",A:"#9AA0AE"};
@@ -142,16 +142,13 @@ addStrings({
   dragHint: ["Drag it to the board, or tap it and then tap the board.", "اسحبه إلى اللوحة، أو اضغط عليه ثم اضغط على اللوحة."],
   turnBricks: ["Turn bricks", "لُفّ المكعبات"],
   funShapes: ["Fun shapes", "أشكال ممتعة"],
-  paint: ["Paint", "تلوين"], fill: ["Fill", "تعبئة"], eraser: ["Eraser", "ممحاة"],
+  paint: ["Paint", "تلوين"], eraser: ["Eraser", "ممحاة"],
   tt_paint: ["Tap or swipe over bricks to color them", "اضغط أو مرّر على المكعبات لتلوينها"],
-  tt_fill: ["Fill an empty space, or recolor a whole shape", "املأ مكانًا فارغًا، أو غيّر لون شكل كامل"],
   tt_draw: ["Draw with your finger to make bricks", "ارسم بإصبعك لتصنع مكعبات"],
   tt_play: ["Watch Bricky play on your build", "شاهد بريكي يلعب على بنائك"],
   draw: ["Draw", "ارسم"], play: ["Play", "العب"],
   tt_erase: ["Tap or swipe over bricks to take them off", "اضغط أو مرّر على المكعبات لإزالتها"],
-  tt_stack: ["Stack bricks on top of each other", "ضع المكعبات فوق بعضها"],
   tt_clear: ["Clear the board", "امسح اللوحة"],
-  stack: ["Stack", "تكديس"],
   undo: ["Undo", "تراجع"], clear: ["Clear", "مسح"], sure: ["Sure?", "متأكد؟"],
   savePicture: ["Save picture", "احفظ الصورة"],
   dropTrash: ["Drop here to throw away", "أفلت هنا للرمي"],
@@ -202,18 +199,14 @@ addStrings({
   tapToPlace: ["Now tap the board to put it there. Tap it again to stop.", "الآن اضغط على اللوحة لتضعه. اضغط عليه مرة أخرى للتوقف."],
   dragAnytime: ["Okay! Drag a brick onto the board whenever you like.", "حسنًا! اسحب مكعبًا إلى اللوحة متى شئت."],
   tool_paint: ["Paint: tap or swipe over bricks to color them.", "تلوين: اضغط أو مرّر على المكعبات لتلوينها."],
-  tool_fill: ["Fill: tap an empty space to fill it, or tap a shape to recolor it.", "تعبئة: اضغط على مكان فارغ لتملأه، أو على شكل لتغيّر لونه."],
   tool_draw: ["Draw: draw with your finger and it turns into bricks! Draw a circle to fill it in.", "ارسم: ارسم بإصبعك وسيتحوّل الرسم إلى مكعبات! ارسم دائرة لتمتلئ."],
   playStart: ["Watch me play on your build! Can I reach all the stars?", "شاهدني ألعب على بنائك! هل أصل إلى كل النجوم؟"],
   playEmpty: ["Build me something to climb on first!", "ابنِ لي شيئًا أتسلّق عليه أولًا!"],
   playWin: ["I got all the stars! Thank you for building me a playground!", "جمعت كل النجوم! شكرًا لأنك بنيت لي ملعبًا!"],
   playBye: ["That was fun! Build me higher steps and press Play again.", "كان ذلك ممتعًا! ابنِ لي درجات أعلى واضغط العب مرة أخرى."],
   tool_erase: ["Eraser: tap or swipe over bricks to take them off.", "ممحاة: اضغط أو مرّر على المكعبات لإزالتها."],
-  stackOn: ["Stacking is on. Drop bricks on top of other bricks!", "التكديس مفعّل. ضع المكعبات فوق بعضها!"],
-  stackOff: ["Stacking is off. Bricks go on the board only.", "التكديس متوقف. المكعبات توضع على اللوحة فقط."],
   cheers: ["Snap!|Nice one!|Looking great!|Click! Perfect fit.|You're a builder!", "طَق!|رائع!|يبدو جميلًا!|تمام! مكانه مضبوط.|أنت بنّاء ماهر!"],
   tooHigh: ["That tower is as tall as it can go!", "هذا البرج وصل إلى أعلى ارتفاع!"],
-  spotTaken: ["Oops, that spot is taken. Find an empty spot, or turn on Stack.", "عذرًا، هذا المكان مشغول. ابحث عن مكان فارغ، أو فعّل التكديس."],
   byeBrick: ["Bye bye, brick!", "وداعًا يا مكعب!"],
   squareTurn: ["Square bricks look the same when you turn them!", "المكعبات المربعة تبقى كما هي عندما تلفّها!"],
   noRoomTurn: ["No room to turn it here. Try moving it first.", "لا يوجد مكان للفّه هنا. جرّب تحريكه أولًا."],
