@@ -190,6 +190,23 @@ function loadIntoFree(cb){
   FREE.cols = cb.cols; FREE.rows = cb.rows; FREE.plate = cb.plate; FREE.ps = plateStyle(cb.ps); FREE.bs = boardSize(cb.bs); FREE.bricks = expandBricks(cb);
   clearEls(); applyBoard(); commit();
 }
+// the saved small pictures are drawn for an ordinary screen; on a retina or 4K screen draw each one again from its
+// saved board, sharp, one at a time so the gallery opens at once
+function sharpThumbs(card){
+  const k = hiDpi(); if (k < 2) return;
+  const items = [...card.querySelectorAll(".gal-item")];
+  const next = () => {
+    const it = items.shift(); if (!it || !it.isConnected) return;
+    const g = gallery.find(x => x.id === it.dataset.id), cb = g && g.board;
+    if (cb && cb.b){
+      const bd = {cols: cb.cols, rows: cb.rows, plate: cb.plate, ps: plateStyle(cb.ps),
+        bricks: cb.b.map((a, i) => ({id: i + 1, x: a[0], y: a[1], w: a[2], h: a[3], c: a[4], t: a[5] || "std", z: a[6] || 0}))};
+      const src = thumbData(bd, 180 * k); if (src) it.querySelector("img").src = src;
+    }
+    setTimeout(next, 0);
+  };
+  setTimeout(next, 60);
+}
 function openGallery(){
   const fmt = ts => { try { return new Date(ts).toLocaleDateString(LANG === "ar" ? "ar" : "en", {day: "numeric", month: "short"}); } catch(e){ return ""; } };
   let html = `<h2>${esc(t("myCreations"))}</h2><div class="modal-actions" style="justify-content:flex-start"><button class="btn mint" id="gNew">${esc(t("newBoard"))}</button></div>`;
@@ -203,6 +220,7 @@ function openGallery(){
     closeModal(); if (currentMode !== "free") setMode("free", true); else if (typeof showScreen === "function") showScreen("studio");
     pushHistory(); FREE.bricks = []; leavePhotoBoard(); commit(); sfx.whoosh(); say(t("newBoardSay"));
   });
+  sharpThumbs(card);
   card.querySelectorAll(".gal-item").forEach(it => {
     const g = gallery.find(x => x.id === it.dataset.id);
     it.querySelector("[data-open]").addEventListener("click", () => { closeModal(); loadIntoFree(g.board); sfx.cheer(); say(t("opened")); });
@@ -237,10 +255,12 @@ function textLine(ctx, text, x, y, max, size, color){
   fitFont(ctx, text, max, size); ctx.fillText(text, x, y); ctx.restore();
 }
 // pic: the board picture, drawn once per card maker (big boards take a moment to draw)
+// The card is laid out 1200×900 and drawn twice as big (2400×1800), sharp on a 4K screen and in print.
+const CARD_X = 2;
 function drawCard(f, pic){
   const tp = CARDS[f.tpl], W = 1200, H = 900, c = 30;
-  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
-  const ctx = cv.getContext("2d");
+  const cv = document.createElement("canvas"); cv.width = W * CARD_X; cv.height = H * CARD_X;
+  const ctx = cv.getContext("2d"); ctx.scale(CARD_X, CARD_X);
   ctx.fillStyle = tp.bg; ctx.fillRect(0, 0, W, H);
   // brick border
   let k = 0;
@@ -258,14 +278,15 @@ function drawCard(f, pic){
   // the board picture
   const bh = 470;
   pic = pic || cardPic();
-  ctx.drawImage(pic, cx - pic.width / 2, 215 + (bh - pic.height) / 2);
+  const pw = pic.width / CARD_X, ph = pic.height / CARD_X;
+  ctx.drawImage(pic, cx - pw / 2, 215 + (bh - ph) / 2, pw, ph);
   textLine(ctx, f.msg, cx, 735, 1040, 46, tp.ink);
   textLine(ctx, f.from ? t("fromLine", {n: f.from}) : "", cx, 805, 1000, 36, tp.ink);
   return cv;
 }
 function cardPic(){
   const cs = Math.max(4, Math.floor(Math.min((980 - 24) / B.cols, (470 - 24) / B.rows)));
-  return boardCanvas(B, cs, {pad: 12, foot: 0, transparent: true});
+  return boardCanvas(B, cs * CARD_X, {pad: 12 * CARD_X, foot: 0, transparent: true});
 }
 function openCardMaker(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }

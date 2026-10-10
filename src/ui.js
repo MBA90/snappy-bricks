@@ -630,7 +630,8 @@ async function saveFile(blob, filename, preview){
 async function savePicture(){
   if (!B.bricks.length){ say(t("buildFirst")); return; }
   sfx.click();
-  const cv = boardCanvas(B, Math.min(40, Math.floor(2600 / Math.max(B.cols, B.rows))));
+  // up to 4K across (3840 pixels), so the picture is sharp on a big screen or printed
+  const cv = boardCanvas(B, Math.min(80, Math.floor(3840 / Math.max(B.cols, B.rows))));
   const blob = await new Promise(res => cv.toBlob(res, "image/png"));
   const r = await saveFile(blob, "my-brick-picture.png", () => cv.toDataURL("image/png"));
   if (r === "saved"){ say(t("savedPic")); sfx.cheer(); emit("saved"); }

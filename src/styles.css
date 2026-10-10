@@ -221,6 +221,10 @@ button{font:inherit;color:inherit}
 @keyframes auraIn{from{opacity:0}}
 /* lots of lamps: a few sparkles here and there instead of one on every brick */
 .plate.lamps .brick.t-light:not(.tw)::after{display:none}
+/* a busy board of glitter, glow and neon bricks: every fourth one shimmers, breathes or flickers, the rest stand still */
+.plate.busy .brick:not(.tw)::before,.plate.busy .brick:not(.tw)::after{animation:none}
+.plate.busy .brick.t-glow:not(.tw)::before{opacity:.7}
+.plate.busy .brick.t-glitter:not(.tw)::after,.plate.busy .brick.t-light:not(.tw)::after{display:none}
 @keyframes lamptwinkle{0%,100%{opacity:0;transform:scale(.4) rotate(0)}45%,55%{opacity:1;transform:scale(1) rotate(45deg)}}
 /* boards with hundreds of bricks keep their look but stop the endless shimmer, glow and flicker */
 .plate.calm .brick::before,.plate.calm .brick::after{animation:none}
