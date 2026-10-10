@@ -282,11 +282,37 @@ function render(anim){
   }
   for (const [id, el] of els) if (!seen.has(id)){ el.remove(); els.delete(id); }
   renderAuras(anim);
+  renderHeights();
   const n = B.bricks.length;
   plate.classList.toggle("calm", n > CALM_AT);
   const cnt = $("#count"); if (cnt) cnt.textContent = t(n === 1 ? "oneBrick" : "nBricks", {n});
 }
-function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); for (const a of auras.values()) a.remove(); auras.clear(); }
+function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); for (const a of auras.values()) a.remove(); auras.clear(); for (const h of heights.values()) h.remove(); heights.clear(); }
+
+/* ---- how high a stack is ----
+   Every stacked brick that can still be seen from above (it is the top of at least one of its studs) wears a little
+   number on its corner: 2 on the second layer, 3 on the third and so on. They sit in one layer over all the bricks. */
+const heights = new Map();
+const heightLayer = document.createElement("div");
+heightLayer.className = "heights";
+plate.appendChild(heightLayer);
+function renderHeights(){
+  const shown = new Set();
+  for (const b of B.bricks){
+    const z = b.z || 0;
+    if (!z) continue;
+    let seen = false;
+    for (let y = b.y; y < b.y + b.h && !seen; y++) for (let x = b.x; x < b.x + b.w; x++) if (topAt(x, y) === b){ seen = true; break; }
+    if (!seen) continue;
+    let h = heights.get(b.id);
+    if (!h){ h = document.createElement("b"); h.className = "height"; heightLayer.appendChild(h); heights.set(b.id, h); }
+    const pos = b.x + "," + b.y + "," + b.w;
+    if (h._pos !== pos){ h._pos = pos; h.style.left = `calc(var(--cell) * ${b.x + b.w})`; h.style.top = `calc(var(--cell) * ${b.y})`; }
+    if (h._z !== z){ h._z = z; h.textContent = z + 1; h.style.setProperty("--z", z); }
+    shown.add(b.id);
+  }
+  for (const [id, h] of heights) if (!shown.has(id)){ h.remove(); heights.delete(id); }
+}
 
 /* ---- the soft light round every lamp (Light) brick ----
    All the halos sit in one layer under the bricks, and that one layer breathes. A pulse on each brick

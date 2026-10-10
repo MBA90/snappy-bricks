@@ -76,3 +76,14 @@ body:not([data-screen="studio"]){padding-top:env(safe-area-inset-top, 0px)}
   #tools .zbtn{width:26px;height:26px;flex:none}
   #tools .zbtn svg{width:14px;height:14px}
 }
+
+/* ===================== stacked bricks show how high they are ===================== */
+/* a round number on the top corner of each stacked brick that can be seen (renderHeights() in engine.js), moved up
+   and left with the brick's own lift so it stays on its corner; over every brick, never in the way of a finger */
+.heights{position:absolute;inset:0;z-index:100;pointer-events:none}
+.height{
+  position:absolute;--hs:clamp(14px, calc(var(--cell) * .62), 26px);width:var(--hs);height:var(--hs);
+  margin:calc(var(--hs) * -.42) 0 0 calc(var(--hs) * -.58);translate:calc(var(--z) * -2px) calc(var(--z) * -3px);
+  display:grid;place-items:center;border-radius:50%;background:var(--sun);border:2px solid var(--ink);
+  box-shadow:0 1px 0 var(--ink);color:var(--ink);font-size:calc(var(--hs) * .58);font-weight:900;line-height:1;
+}
