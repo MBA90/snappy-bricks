@@ -176,7 +176,7 @@ function quantize(px){
 // 4. real brick sizes: try a few ways of filling and keep the one with the fewest bricks
 function mosaicBricks(pix){
   const H = pix.length, W = pix[0].length;
-  const byArea = SHAPES.slice().sort((a, b) => b[0] * b[1] - a[0] * a[1] || b[0] - a[0]);
+  const byArea = FILL_SHAPES.slice().sort((a, b) => b[0] * b[1] - a[0] * a[1] || b[0] - a[0]);
   const lying = [], standing = [];
   byArea.forEach(([w, h]) => { lying.push([w, h]); if (w !== h) lying.push([h, w]); standing.push([h, w]); if (w !== h) standing.push([w, h]); });
   const run = (shapes, colFirst) => {

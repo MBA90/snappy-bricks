@@ -168,7 +168,7 @@ function decompose(pix){
   const H = pix.length, W = H ? pix[0].length : 0;
   const used = pix.map(r => r.map(() => false));
   const shapes = [];
-  SHAPES.slice().sort((a, b) => b[0] * b[1] - a[0] * a[1]).forEach(([w, h]) => { shapes.push([w, h]); if (w !== h) shapes.push([h, w]); });
+  FILL_SHAPES.slice().sort((a, b) => b[0] * b[1] - a[0] * a[1]).forEach(([w, h]) => { shapes.push([w, h]); if (w !== h) shapes.push([h, w]); });
   const fits = (x, y, w, h, c) => {
     if (x + w > W || y + h > H) return false;
     for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) if (used[y + j][x + i] || pix[y + j][x + i] !== c) return false;

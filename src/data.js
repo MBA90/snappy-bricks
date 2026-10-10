@@ -68,7 +68,10 @@ const STYLES = [
   {id: "comic",   en: "Comic",   ar: "كوميك"},
 ];
 // long side first (lying down)
-const SHAPES = [[1,1],[2,2],[3,2],[4,2]];
+// the toy-box bricks, in toy-box order (two to a row; the long ones get a row each)
+const SHAPES = [[1,1],[2,1],[3,1],[4,1],[2,2],[3,2],[4,2],[4,4],[6,1],[6,2],[8,1],[8,2]];
+// names, Fun shapes, photos and Fill are built from these classic sizes, so their pictures stay the same
+const FILL_SHAPES = [[1,1],[2,2],[3,2],[4,2]];
 const PAL = {R:"#F2383A",W:"#FBFAF5",Y:"#FFE838",K:"#2E2A3A",P:"#FFB3CF",G:"#3DC45A",B:"#2F8CF0",O:"#FF9A1F",
              M:"#7FE3C0",L:"#A9A6F0",H:"#FF2E8A",V:"#8A4DE0",N:"#9A5B34",S:"#8FD3FF",A:"#9AA0AE"};
 const ART = {
