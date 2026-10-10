@@ -2131,6 +2131,18 @@ body:not([data-screen="studio"]){padding-top:env(safe-area-inset-top, 0px)}
   body[data-screen="studio"] #tools{padding-block:0 3px}
 }
 
+/* ===================== phones on their side: a slim tools column, a wider board ===================== */
+/* The tools keep two to a row but show only their pictures (a long press says the name, and the tool sign on the
+   board names the tool that is on), so the column is about 60px narrower and the board's column takes that space:
+   fitBox() lays the same number of studs out wider, so every stud grows. */
+@media (orientation:landscape) and (max-height:540px){
+  .studio{grid-template-columns:clamp(160px,21vw,180px) minmax(0,1fr) 102px}
+  body[data-hand="left"] .studio{grid-template-columns:102px minmax(0,1fr) clamp(160px,21vw,180px)}
+  #tools .tbtn .txt{display:none}
+  #tools .tbtn svg{width:24px;height:24px}
+  #tools .tbtn.undo svg{width:26px;height:26px}
+}
+
 </style>
 <!-- Snappy Bricks plays sideways: held upright, the screen asks to be turned -->
 <div class="turn-me" id="turnMe" aria-live="polite">
