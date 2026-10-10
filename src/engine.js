@@ -287,7 +287,7 @@ function render(anim){
   plate.classList.toggle("calm", n > CALM_AT);
   const cnt = $("#count"); if (cnt) cnt.textContent = t(n === 1 ? "oneBrick" : "nBricks", {n});
 }
-function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); for (const a of auras.values()) a.remove(); auras.clear(); for (const h of heights.values()) h.remove(); heights.clear(); }
+function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); for (const a of auras.values()) a.remove(); auras.clear(); for (const h of heights.values()) h.remove(); heights.clear(); for (const w of walls.values()) w.remove(); walls.clear(); }
 
 /* ---- how high a stack is ----
    Every stacked brick that can still be seen from above (it is the top of at least one of its studs) wears a little
@@ -296,7 +296,28 @@ const heights = new Map();
 const heightLayer = document.createElement("div");
 heightLayer.className = "heights";
 plate.appendChild(heightLayer);
+/* ---- the side of every stacked brick ----
+   A brick up on the stack shows its own side below it, one layer deep in its darker colour, so a tower reads as
+   bricks piled up and not as one flat brick. Each side sits just under its brick and over the layer beneath. */
+const walls = new Map();
+function wallFor(id){ return walls.get(id); }
+function renderWalls(){
+  const up = new Set();
+  for (const b of B.bricks){
+    const z = b.z || 0;
+    if (!z) continue;
+    let w = walls.get(b.id);
+    if (!w){ w = document.createElement("div"); w.className = "wall"; plate.appendChild(w); walls.set(b.id, w); }
+    const pos = b.x + "," + b.y + "," + b.w + "," + b.h;
+    if (w._pos !== pos){ w._pos = pos; placeEl(w, b); }
+    if (w._c !== b.c){ w._c = b.c; w.style.setProperty("--dk", colorVars(b.c).find(v => v[0] === "--dk")[1]); }
+    if (w._z !== z){ w._z = z; w.style.setProperty("--z", z); w.style.zIndex = z * 10; }
+    up.add(b.id);
+  }
+  for (const [id, w] of walls) if (!up.has(id)){ w.remove(); walls.delete(id); }
+}
 function renderHeights(){
+  renderWalls();
   const shown = new Set();
   for (const b of B.bricks){
     const z = b.z || 0;
@@ -797,9 +818,16 @@ function drawBoard(ctx, board, ox, oy, c){
     const z = b.z || 0, t = brickStyleOf(b.t);
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
-    const x = ox + b.x * c + gap - z * 2, y = oy + b.y * c + gap - z * 3, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
+    // each layer lifts a brick up and left as on the board (--lx, --ly), with its side one layer below it
+    const lx = Math.max(2, c * .14), ly = Math.max(3, c * .26);
+    const x = ox + b.x * c + gap - z * lx, y = oy + b.y * c + gap - z * ly, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
     const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
     const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
+    if (z){
+      ctx.save(); ctx.shadowColor = "rgba(30,10,60,.3)"; ctx.shadowBlur = 3 + z * 2; ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = 2 + z * 2;
+      ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x + lx, y + ly, w, h, c * .14); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.strokeStyle = "rgba(30,10,60,.3)"; ctx.lineWidth = 1; rrect(ctx, x + lx, y + ly, w, h, c * .14); ctx.stroke(); ctx.restore();
+    }
     ctx.save();
     ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
     ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = (t === "light" ? 4 : 3) + z * 3;
