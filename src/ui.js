@@ -1,5 +1,7 @@
 /* ===================== UI: tray, tools, dragging ===================== */
-const settings = Object.assign({sound: true, talk: false, stack: false, lang: "en", theme: "classic"}, store("snappy-settings") || {});
+const settings = Object.assign({sound: true, talk: false, lang: "en", theme: "classic"}, store("snappy-settings") || {});
+// bricks always stack: drop one on another and it goes on top (there is no Stack button)
+settings.stack = true;
 function saveSettings(){ store("snappy-settings", settings); }
 
 let tool = "move";
@@ -73,7 +75,7 @@ function buildSwatches(){
       color = c.hex; sfx.click();
       box.querySelectorAll(".swatch").forEach(s => s.setAttribute("aria-pressed", s.dataset.hex === color));
       buildShapes(); emit("color", color);
-      say(t(tool === "draw" ? "drawReady" : tool === "paint" || tool === "fill" ? "paintReady" : "colorPicked", {c: c[LANG]}));
+      say(t(tool === "draw" ? "drawReady" : tool === "paint" ? "paintReady" : "colorPicked", {c: c[LANG]}));
     });
     items.push(b);
   }
@@ -147,11 +149,6 @@ function setTool(tl, quiet){
   emit("tool", tl);
   if (quiet) return;
   sfx.click(); say(t(tl === "move" ? "dragAnytime" : "tool_" + tl));
-}
-function setStack(on, quiet){
-  settings.stack = on; saveSettings();
-  $("#stackBtn").setAttribute("aria-pressed", on);
-  if (!quiet){ sfx.click(); say(t(on ? "stackOn" : "stackOff")); }
 }
 
 /* ===================== pointer handling ===================== */
@@ -255,7 +252,7 @@ function endDrag(e, cancelled){
       if (tool !== "move") setTool("move", true);      // a new brick from the toy box: back to building
       placePiece(p.piece, p.target.gx, p.target.gy);
       if (Math.random() < .25) say(pick(t("cheers").split("|")));
-    } else if (p.target){ sfx.nope(); say(t(p.target.full ? "tooHigh" : "spotTaken")); }
+    } else if (p.target){ sfx.nope(); say(t(p.target.full ? "tooHigh" : "noRoomThere")); }
     return;
   }
   const b = p.brick;
@@ -263,7 +260,7 @@ function endDrag(e, cancelled){
     pushHistory(); b.x = p.target.gx; b.y = p.target.gy; b.z = p.target.z; commit(); sfx.snap();
   } else if (p.inTrash || !p.target){
     removeBrick(b.id); say(t("byeBrick"));
-  } else { sfx.nope(); const el = els.get(b.id); if (el) wiggle(el); if (!settings.stack) say(t("spotTaken")); }
+  } else { sfx.nope(); const el = els.get(b.id); if (el) wiggle(el); }
 }
 function wiggle(el){ const again = el.classList.contains("wiggle"); el.classList.remove("wiggle", "wiggle2"); el.classList.add(again ? "wiggle2" : "wiggle"); }
 // big boards skip the flash: repainting it under a fast paint swipe made the swipe lag
@@ -333,52 +330,6 @@ function brushAt(e){
   p.last = [fx, fy];
 }
 
-/* ---- fill bucket ---- */
-function fillAt(x, y, opts = {}){
-  if (x < 0 || y < 0 || x >= B.cols || y >= B.rows) return 0;
-  const target = topAt(x, y);
-  if (!target){
-    // flood the empty floor
-    const seen = new Set([y * 1000 + x]), q = [[x, y]], cells = [];
-    while (q.length && cells.length < 900){
-      const [cx, cy] = q.shift(); cells.push([cx, cy]);
-      for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-        const nx = cx + dx, ny = cy + dy, k = ny * 1000 + nx;
-        if (nx < 0 || ny < 0 || nx >= B.cols || ny >= B.rows || seen.has(k)) continue;
-        seen.add(k); if (!grid[ny][nx].length) q.push([nx, ny]);
-      }
-    }
-    const pix = Array.from({length: B.rows}, () => Array(B.cols).fill(null));
-    cells.forEach(([cx, cy]) => { pix[cy][cx] = color; });
-    if (!opts.noHistory) pushHistory();
-    const anim = new Map();
-    decompose(pix).forEach(b => {
-      const nb = {id: nextId++, ...b, t: brickStyle, z: 0};
-      B.bricks.push(nb); anim.set(nb.id, Math.min(500, (Math.abs(b.x - x) + Math.abs(b.y - y)) * 18));
-    });
-    commit(anim);
-    return cells.length;
-  }
-  // recolour connected bricks of the same colour
-  const from = target.c;
-  if (from === color && (target.t || "std") === brickStyle) return 0;
-  const seen = new Set(), q = [[x, y]], hit = new Set();
-  seen.add(y * 1000 + x);
-  while (q.length){
-    const [cx, cy] = q.shift();
-    const b = topAt(cx, cy); if (!b || b.c !== from) continue;
-    hit.add(b);
-    for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-      const nx = cx + dx, ny = cy + dy, k = ny * 1000 + nx;
-      if (nx < 0 || ny < 0 || nx >= B.cols || ny >= B.rows || seen.has(k)) continue;
-      seen.add(k); q.push([nx, ny]);
-    }
-  }
-  if (!opts.noHistory) pushHistory();
-  hit.forEach(b => { b.c = color; b.t = brickStyle; const el = els.get(b.id); if (el){ styleBrickEl(el, b); flash(el); } });
-  renderAuras(); emit("change");
-  return hit.size;
-}
 /* ---- brick pencil: draw with a finger, and the line turns into bricks; a closed loop fills in ---- */
 let pencilSvg = null;
 function startPencil(e){
@@ -448,7 +399,7 @@ function endPencil(cancelled){
     for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) free[(y + j) * W + x + i] = 0;
     made.push({x, y, w, h});
   }
-  if (!made.length){ sfx.nope(); say(t("spotTaken")); return; }
+  if (!made.length){ sfx.nope(); say(t("noRoomThere")); return; }
   pushHistory();
   const anim = new Map(), gap = Math.max(4, Math.min(24, Math.round(600 / made.length)));
   made.forEach((m, i) => { const nb = {id: nextId++, ...m, c: color, t: brickStyle, z: 0}; B.bricks.push(nb); anim.set(nb.id, i * gap); });
@@ -456,13 +407,6 @@ function endPencil(cancelled){
   emit("placed", {n: made.length});
 }
 
-function doFill(e){
-  const {x, y} = cellFromEvent(e);
-  pushHistory();
-  const n = fillAt(x, y, {noHistory: true});
-  rebuildGrid(); render();
-  if (n){ sfx.fill(); emit("placed", {n: 0}); } else { B.hist.pop(); updateUndo(); sfx.nope(); }
-}
 
 
 /* ---- board pointer events ---- */
@@ -494,7 +438,6 @@ plate.addEventListener("pointerdown", e => {
   if (e.button > 0 || ptr) return;
   e.preventDefault();
   if (tool === "paint" || tool === "erase"){ ptr = {kind: "brush", id: e.pointerId, done: new Set(), changed: false}; brushAt(e); return; }
-  if (tool === "fill"){ doFill(e); return; }
   if (tool === "draw"){ startPencil(e); return; }
   const el = e.target.closest(".brick");
   if (el && el.parentElement === plate){ const b = byId.get(+el.dataset.id); if (b && !B.locked) startBoardDrag(e, b); return; }

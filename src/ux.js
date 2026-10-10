@@ -171,8 +171,6 @@ function applyAge(age, fromUser){
   $$("#ageSeg [data-age]").forEach(b => b.setAttribute("aria-pressed", b.dataset.age === settings.age));
   if (settings.age === "little"){
     if (brickStyle !== "std"){ brickStyle = "std"; buildStyles(); }
-    if (settings.stack) setStack(false, true);
-    if (tool === "fill") setTool("move", true);
     if (selected && selected.kind === "brick" && !LITTLE_SHAPES.includes(selected.i)) selected = null;
     if (fromUser && !settings.talk) $("#talkBtn").click();
   }

@@ -45,7 +45,6 @@ $("#soundBtn").addEventListener("click", () => {
   if (settings.sound) sfx.click();
 });
 $$("[data-tool]").forEach(b => b.addEventListener("click", () => setTool(b.dataset.tool)));
-$("#stackBtn").addEventListener("click", () => setStack(!settings.stack));
 $("#undoBtn").addEventListener("click", undo);
 $("#clearBtn").addEventListener("click", clearBoard);
 $("#saveBtn").addEventListener("click", savePicture);
@@ -113,7 +112,6 @@ B = FREE;
 $("#talkBtn").setAttribute("aria-pressed", settings.talk);
 $("#soundBtn").setAttribute("aria-pressed", settings.sound);
 setLang(LANG, true);
-setStack(!!settings.stack, true);
 applyBoard();
 if (!hadSave) starter();
 commit();
