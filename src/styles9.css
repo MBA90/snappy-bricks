@@ -208,7 +208,10 @@ html[lang="ar"] .brick.pow::after{content:"بوم!";font-family:"Baloo Bhaijaan 
   border:3px solid transparent;background:var(--tint);cursor:pointer;font:inherit;font-size:.66rem;font-weight:800;line-height:1.05;
   color:var(--ink-soft);min-width:0;overflow:hidden;text-align:center;
 }
+.sizebtn{position:relative}
 .sizebtn[aria-pressed="true"]{border-color:var(--ink);background:#FFF5B5;color:var(--ink)}
+/* the animal sits on the corner of its little board, so children who can't read yet know the sizes apart */
+.sizeic{position:absolute;top:1px;inset-inline-end:2px;font-size:1.05rem;line-height:1;filter:drop-shadow(0 1px 0 #fff)}
 /* every button shows the same little board; only the number of studs across it changes */
 .pprev.sprev{--cell:calc(44px / var(--n));width:44px;height:33px;margin:1px auto 2px}
 .sec-plates.fixed-size .bsize-h,.sec-plates.fixed-size .bsizes{display:none}

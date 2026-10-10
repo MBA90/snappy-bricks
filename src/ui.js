@@ -685,6 +685,7 @@ function buildBoardControls(){
   for (const s of BOARD_SIZES){
     const b = document.createElement("button"); b.type = "button"; b.className = "sizebtn"; b.dataset.bs = s.id; b.title = s[LANG];
     const prev = document.createElement("span"); prev.className = "plate pprev sprev"; prev.style.setProperty("--n", s.n); b.appendChild(prev);
+    const ic = document.createElement("span"); ic.className = "sizeic"; ic.textContent = s.ic; ic.setAttribute("aria-hidden", "true"); b.appendChild(ic);
     const lab = document.createElement("span"); lab.textContent = s[LANG]; b.appendChild(lab);
     b.addEventListener("click", () => {
       if (boardSize(B.bs) === s.id) return;
