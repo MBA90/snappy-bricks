@@ -137,8 +137,9 @@ function placeEl(el, b){
 // only touches what changed, so redrawing a board of thousands of bricks after one move stays quick
 function styleBrickEl(el, b){
   const t = b.t || "std", z = b.z || 0;
-  // on a board full of lamps only every fourth one twinkles (.tw), picked by its id so the sparkles stay put
-  if (el._t !== t){ el._t = t; el.className = "brick t-" + t + (t === "light" && b.id % 4 === 1 ? " tw" : ""); }
+  // on a busy board only every fourth shimmering brick keeps moving (.tw), picked by a shuffle of its id so the
+  // sparkles stay put and are spread over every style on a board of mixed bricks
+  if (el._t !== t){ el._t = t; el.className = "brick t-" + t + (ASTYLES.has(t) && Math.imul(b.id, 0x9E3779B1) >>> 30 === 1 ? " tw" : ""); }
   const pos = b.x + "," + b.y + "," + b.w + "," + b.h;
   if (el._pos !== pos){ el._pos = pos; placeEl(el, b); }
   if (el._c !== b.c){ el._c = b.c; paintVars(el, b.c); }
@@ -215,6 +216,11 @@ let boardZoom = 1, zoomMax = 1, zoomDims = "";
 const ZOOM_CELL = 40;                               // zooming stops once a stud is this many pixels wide
 const CALM_AT = 400;                                // more bricks than this: no endless shimmer, glow or flicker
 const LAMPS_AT = 24;                                // more lamp bricks than this: only every fourth one twinkles
+// styles whose every brick has a moving part of its own (glitter sweep, glow breathing, neon flicker, lamp twinkle).
+// Each moving part is a picture the phone or a 4K screen redraws on every frame: with more than BUSY_AT of them
+// only every fourth one moves, and the rest keep their look standing still
+const ASTYLES = new Set(["glitter", "glow", "neon", "light"]);
+const BUSY_AT = 40;
 const plate = $("#plate");
 const els = new Map();
 
@@ -304,8 +310,9 @@ auraLayer.className = "auras";
 plate.prepend(auraLayer);
 function auraFor(id){ return auras.get(id); }
 function renderAuras(anim){
-  let n = 0; const lit = new Set();
+  let n = 0, moving = 0; const lit = new Set();
   for (const b of B.bricks){
+    if (ASTYLES.has(b.t)) moving++;
     if ((b.t || "std") !== "light") continue;
     n++;
     let a = auras.get(b.id);
@@ -325,6 +332,7 @@ function renderAuras(anim){
   }
   for (const [id, a] of auras) if (!lit.has(id)){ a.remove(); auras.delete(id); }
   plate.classList.toggle("lamps", n > LAMPS_AT);
+  plate.classList.toggle("busy", moving > BUSY_AT);
 }
 function switchBoard(board){
   if (B === board) return;
@@ -342,6 +350,16 @@ let refitting = false;
 // the studio was hidden, so its bricks have no styles yet: measure with them tucked away and
 // style them once at the right size (measuring first used to style hundreds of bricks twice)
 let fitStale = true;
+// screen pixels to a CSS pixel (1 on most computer screens, 2 on retina and 4K, 3 on many phones; browser zoom changes it)
+function screenDensity(){ return Math.min(4, Math.max(1, window.devicePixelRatio || 1)); }
+// pictures drawn for the screen (puzzle pictures, saved boards) are drawn this many times bigger, so they stay sharp
+function hiDpi(){ return Math.min(3, Math.ceil(screenDensity() - .1)); }
+// dragging the window to a sharper screen, or zooming the page, changes the screen's pixels: fit the studs again
+(function watchDensity(){
+  const mq = matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+  const again = () => { mq.removeEventListener ? mq.removeEventListener("change", again) : mq.removeListener(again); fitCell(); watchDensity(); };
+  mq.addEventListener ? mq.addEventListener("change", again) : mq.addListener(again);
+})();
 function fitCell(){
   const wrap = $("#plateWrap");
   if (!wrap || $("#studioScreen").hidden){ fitStale = true; return; }
@@ -428,8 +446,10 @@ function fitBox(wrap){
       commit(); emit("board");
     }
   }
-  // studs may be part of a pixel wide, so the board fills its box right to the edge instead of losing up to a pixel a row
-  const fit = Math.floor(100 * clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 240 : 48)) / 100;
+  // studs are a whole number of the screen's own pixels (a retina or 4K screen has 2 or 3 to a CSS pixel), so every
+  // stud is drawn the same, with sharp edges, and the board still fills its box to within a screen pixel a row
+  const dpr = screenDensity();
+  const fit = Math.floor(dpr * clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 240 : 48)) / dpr;
   // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted
   const dims = B.cols + "x" + B.rows;
   if (dims !== zoomDims){ zoomDims = dims; boardZoom = 1; }
@@ -437,7 +457,7 @@ function fitBox(wrap){
   boardZoom = clamp(boardZoom, 1, zoomMax);
   if (boardZoom < 1.05) boardZoom = 1;
   const zoomed = boardZoom > 1;
-  cell = zoomed ? Math.round(fit * boardZoom) : fit;
+  cell = zoomed ? Math.round(fit * boardZoom * dpr) / dpr : fit;
   wrap.classList.toggle("zoomed", zoomed);
   wrap.style.height = zoomed && !boxed ? (fit * B.rows + 28) + "px" : "";
   plate.style.setProperty("--cell", cell + "px");

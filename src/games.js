@@ -91,7 +91,8 @@ function plateFor(colors){
 function artCanvas(pix, plateHex, c){
   const tmp = {cols: pix[0].length + 2, rows: pix.length + 2, plate: plateHex,
     bricks: decompose(pix).map((b, i) => ({...b, id: i + 1, x: b.x + 1, y: b.y + 1, t: "std", z: 0}))};
-  const cv = boardCanvas(tmp, c, {pad: 0, foot: 0, bg: "#ffffff"});
+  // drawn at the screen's own sharpness (it is shown stretched to its box)
+  const cv = boardCanvas(tmp, c * hiDpi(), {pad: 0, foot: 0, bg: "#ffffff"});
   cv.className = "gp-canvas"; return cv;
 }
 function startCopy(i){
