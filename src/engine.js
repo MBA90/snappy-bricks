@@ -290,7 +290,7 @@ function render(anim){
 function clearEls(){ for (const el of els.values()) el.remove(); els.clear(); for (const a of auras.values()) a.remove(); auras.clear(); for (const h of heights.values()) h.remove(); heights.clear(); for (const w of walls.values()) w.remove(); walls.clear(); }
 
 /* ---- how high a stack is ----
-   Every stacked brick that can still be seen from above (it is the top of at least one of its studs) wears a little
+   Every stacked brick still on top at its top-right stud wears a little
    number on its corner: 2 on the second layer, 3 on the third and so on. They sit in one layer over all the bricks. */
 const heights = new Map();
 const heightLayer = document.createElement("div");
@@ -322,9 +322,8 @@ function renderHeights(){
   for (const b of B.bricks){
     const z = b.z || 0;
     if (!z) continue;
-    let seen = false;
-    for (let y = b.y; y < b.y + b.h && !seen; y++) for (let x = b.x; x < b.x + b.w; x++) if (topAt(x, y) === b){ seen = true; break; }
-    if (!seen) continue;
+    // the number sits on the brick's top-right corner, so only a brick still on top there shows one
+    if (topAt(b.x + b.w - 1, b.y) !== b) continue;
     let h = heights.get(b.id);
     if (!h){ h = document.createElement("b"); h.className = "height"; heightLayer.appendChild(h); heights.set(b.id, h); }
     const pos = b.x + "," + b.y + "," + b.w;
@@ -818,15 +817,16 @@ function drawBoard(ctx, board, ox, oy, c){
     const z = b.z || 0, t = brickStyleOf(b.t);
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
-    // each layer lifts a brick up and left as on the board (--lx, --ly), with its side one layer below it
-    const lx = Math.max(2, c * .14), ly = Math.max(3, c * .26);
-    const x = ox + b.x * c + gap - z * lx, y = oy + b.y * c + gap - z * ly, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
+    // each layer lifts a brick straight up as on the board (--ly), with its front one layer below it
+    const ly = Math.max(5, c * .34);
+    const x = ox + b.x * c + gap, y = oy + b.y * c + gap - z * ly, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
     const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
     const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
     if (z){
-      ctx.save(); ctx.shadowColor = "rgba(30,10,60,.3)"; ctx.shadowBlur = 3 + z * 2; ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = 2 + z * 2;
-      ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x + lx, y + ly, w, h, c * .14); ctx.fill(); ctx.restore();
-      ctx.save(); ctx.strokeStyle = "rgba(30,10,60,.3)"; ctx.lineWidth = 1; rrect(ctx, x + lx, y + ly, w, h, c * .14); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.shadowColor = "rgba(30,10,60,.25)"; ctx.shadowBlur = 3 + z * 3; ctx.shadowOffsetY = 1 + z * 2;
+      ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x, y + ly, w, h, c * .14); ctx.fill(); ctx.restore();
+      const lit = ctx.createLinearGradient(0, y + ly, 0, y + ly + h * .6); lit.addColorStop(0, "rgba(255,255,255,.22)"); lit.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = lit; rrect(ctx, x, y + ly, w, h, c * .14); ctx.fill();
     }
     ctx.save();
     ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
