@@ -3188,7 +3188,9 @@ function fitBox(wrap){
   wrap.classList.toggle("zoomed", zoomed);
   wrap.style.height = zoomed && !boxed ? (fit * B.rows + 28) + "px" : "";
   plate.style.setProperty("--cell", cell + "px");
-  plate.classList.toggle("tiny", cell < 7);          // huge photo boards: plain tiles read better than tiny studs
+  // huge photo boards: plain tiles read better than tiny studs; the building board always shows every stud,
+  // even an Elephant board on a small phone
+  plate.classList.toggle("tiny", cell < 7 && (B !== FREE || isPhotoBoard()));
   // sideways phones keep the board's column while zoomed in, so the toy box and tools don't jump about
   if (studio && boxed && zoomed && getComputedStyle(studio).getPropertyValue("--hold-bw").trim() === "1")
     studio.style.setProperty("--bw", Math.ceil(fit * B.cols + plate.offsetWidth - cell * B.cols + padX) + "px");
