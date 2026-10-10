@@ -89,15 +89,14 @@ body:not([data-screen="studio"]){padding-top:env(safe-area-inset-top, 0px)}
 }
 
 /* ===================== stacked bricks look stacked ===================== */
-/* each layer lifts a brick straight up (--ly, a third of a stud and at least 5px, so a phone shows it), and the
-   front of a stacked brick (.wall, renderWalls() in engine.js) fills the step below it in the brick's darker colour,
-   lit from above, so a tower reads like real bricks seen from the front */
-.plate{--lx:0px;--ly:min(-5px, calc(var(--cell) * -.34))}
+/* each layer lifts a brick a little straight up (--ly, about a fifth of a stud and at least 3px), and under every
+   stacked brick a soft shadow (.wall, renderWalls() in engine.js) grows with the height, so a taller tower floats
+   higher over the board without any extra edges */
+.plate{--lx:0px;--ly:min(-3px, calc(var(--cell) * -.18))}
 .wall{
-  position:absolute;pointer-events:none;border-radius:calc(var(--cell)*.14);
-  background:linear-gradient(rgba(255,255,255,.22), rgba(255,255,255,0) 60%), var(--dk);
+  position:absolute;pointer-events:none;border-radius:calc(var(--cell)*.14);background:none;
   translate:calc((var(--z) - 1) * var(--lx)) calc((var(--z) - 1) * var(--ly));
-  box-shadow:inset 0 -1px 0 rgba(30,10,60,.22),0 calc(1px + var(--z) * 2px) calc(3px + var(--z) * 3px) rgba(30,10,60,.25);
+  box-shadow:0 calc(2px + var(--z) * 3px) calc(4px + var(--z) * 4px) rgba(30,10,60,.35);
 }
 .wall.lifted{opacity:.25}
 .plate.tiny .wall{display:none}

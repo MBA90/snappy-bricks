@@ -817,17 +817,11 @@ function drawBoard(ctx, board, ox, oy, c){
     const z = b.z || 0, t = brickStyleOf(b.t);
     // the gap between bricks shrinks on tiny pictures (thumbnails of big boards), so 1×1 bricks still show
     const gap = Math.min(1.5, c * .2);
-    // each layer lifts a brick straight up as on the board (--ly), with its front one layer below it
-    const ly = Math.max(5, c * .34);
+    // each layer lifts a brick a little straight up as on the board (--ly); its own shadow below grows with the height
+    const ly = Math.max(3, c * .18);
     const x = ox + b.x * c + gap, y = oy + b.y * c + gap - z * ly, w = b.w * c - 2 * gap, h = b.h * c - 2 * gap;
     const rad = t === "jelly" ? c * .32 : t === "light" || t === "candy" ? c * .24 : c * .14;
     const col = t === "light" ? pastel(b.c) : b.c;       // light bricks are drawn in their pastel
-    if (z){
-      ctx.save(); ctx.shadowColor = "rgba(30,10,60,.25)"; ctx.shadowBlur = 3 + z * 3; ctx.shadowOffsetY = 1 + z * 2;
-      ctx.fillStyle = shade(b.c, -.24); rrect(ctx, x, y + ly, w, h, c * .14); ctx.fill(); ctx.restore();
-      const lit = ctx.createLinearGradient(0, y + ly, 0, y + ly + h * .6); lit.addColorStop(0, "rgba(255,255,255,.22)"); lit.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = lit; rrect(ctx, x, y + ly, w, h, c * .14); ctx.fill();
-    }
     ctx.save();
     ctx.save(); ctx.shadowColor = t === "light" ? "rgba(30,10,60,.2)" : "rgba(30,10,60,.34)"; ctx.shadowBlur = (t === "light" ? 8 : 4) + z * 3;
     ctx.shadowOffsetX = 1 + z; ctx.shadowOffsetY = (t === "light" ? 4 : 3) + z * 3;
