@@ -175,8 +175,10 @@ function startBoardDrag(e, b){
          grabX: e.clientX - (r.left + b.x * cell), grabY: e.clientY - (r.top + b.y * cell), lift: e.pointerType === "touch" ? cell * 1.4 : 0, target: null};
   waitForHold(e);
 }
-// On touch screens a brick or shape is picked up only after the finger rests on it for a moment:
-// a quick touch or swipe never grabs one by accident (a tap still selects or turns it). A mouse drags straight away.
+// On touch screens a brick on the board is picked up only after the finger rests on it for a moment:
+// a quick touch or swipe never grabs one by accident (a tap still turns it). A mouse drags straight away.
+// A toy-box brick or shape lifts the moment the finger moves off across the toy box (see trayMove);
+// resting on it for a moment also lifts it, for dragging along the toy box.
 const HOLD_MS = 300;
 function waitForHold(e){
   if (e.pointerType === "mouse") return;
@@ -455,7 +457,8 @@ window.addEventListener("pointermove", e => {
     if (ptr.hold){
       // still waiting for the hold: moving away first means it was a swipe, so leave the brick alone
       ptr.lx = e.clientX; ptr.ly = e.clientY;
-      if (far > 10){ clearTimeout(ptr.timer); ptr = ptr.source === "tray" ? swipeTray(e) : null; }
+      if (ptr.source === "tray"){ if (far > 6) trayMove(e); return; }
+      if (far > 10){ clearTimeout(ptr.timer); ptr = null; }
       return;
     }
     if (far < 7) return;
@@ -484,17 +487,29 @@ window.addEventListener("pointerup", e => {
 // Cards are touch-action:none so a held card always lifts on every phone, so a finger swipe that starts on a card
 // scrolls the toy box here instead of in the browser, and glides on a little when the finger lets go.
 let glide = 0;
-function scrollerOf(el){
+// the nearest box under the finger that really scrolls this way ("x" or "y"); a sliver of spill-over
+// (a toy box a few pixels too narrow) doesn't count, so it never steals a drag towards the board
+function scrollerAlong(el, axis){
   for (; el && el !== document.body; el = el.parentElement){
     const cs = getComputedStyle(el);
-    if ((el.scrollHeight > el.clientHeight + 1 && /auto|scroll/.test(cs.overflowY)) || (el.scrollWidth > el.clientWidth + 1 && /auto|scroll/.test(cs.overflowX))) return el;
+    if (axis === "y" ? el.scrollHeight - el.clientHeight > 24 && /auto|scroll/.test(cs.overflowY)
+                     : el.scrollWidth - el.clientWidth > 24 && /auto|scroll/.test(cs.overflowX)) return el;
   }
   return null;
 }
-function swipeTray(e){
+// a finger that starts moving on a toy-box card: straight along a toy box that scrolls that way scrolls it,
+// any other way (towards the board) lifts the brick at once, with no wait
+function trayMove(e){
+  const dx = Math.abs(e.clientX - ptr.sx), dy = Math.abs(e.clientY - ptr.sy);
+  const axis = dx > dy ? "x" : "y", along = Math.max(dx, dy), across = Math.min(dx, dy);
+  const el = along > across * 2 ? scrollerAlong(document.elementFromPoint(ptr.sx, ptr.sy), axis) : null;
+  clearTimeout(ptr.timer); ptr.hold = false;
+  if (el) swipeTray(e, el);
+  else pickUp(e);
+}
+function swipeTray(e, el){
   cancelAnimationFrame(glide);
-  const p = ptr, el = scrollerOf(document.elementFromPoint(p.sx, p.sy));
-  if (!el) return null;
+  const p = ptr;
   const s = {kind: "swipe", id: p.id, el, x: p.sx, y: p.sy, t: performance.now(), vx: 0, vy: 0};
   ptr = s; moveSwipe(e); return s;
 }
