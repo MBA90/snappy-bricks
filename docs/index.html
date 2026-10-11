@@ -3956,8 +3956,10 @@ function endDrag(e, cancelled){
     return;
   }
   if (p.source === "tray"){
+    if (tool !== "move") setTool("move", true);        // a new brick from the toy box: back to building
+    // and it becomes the picked one in the toy box too, ready to tap onto the board again
+    if (!sameSel(selected, p.sel)){ selected = p.sel; buildShapes(); buildStamps(); }
     if (p.target && p.target.ok){
-      if (tool !== "move") setTool("move", true);      // a new brick from the toy box: back to building
       placePiece(p.piece, p.target.gx, p.target.gy);
       if (Math.random() < .25) say(pick(t("cheers").split("|")));
     } else if (p.target){ sfx.nope(); say(t(p.target.full ? "tooHigh" : "noRoomThere")); }
