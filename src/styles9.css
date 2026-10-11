@@ -100,3 +100,7 @@ body:not([data-screen="studio"]){padding-top:env(safe-area-inset-top, 0px)}
 }
 .wall.lifted{opacity:.25}
 .plate.tiny .wall{display:none}
+
+/* the board zooms only with its own pinch and + / − buttons: the browser never zooms the page from the board,
+   by a pinch or a double tap (the board's own pinch is in mobile.js) */
+.plate-wrap{touch-action:none}
