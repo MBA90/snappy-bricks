@@ -105,15 +105,22 @@ body:not([data-screen="studio"]){padding-top:env(safe-area-inset-top, 0px)}
    by a pinch or a double tap (the board's own pinch is in mobile.js) */
 .plate-wrap{touch-action:none}
 
-/* Paint, Eraser and Draw: plain white with a coloured picture when off;
-   the one that is on fills with its colour, sinks in and wears a thick outline */
-.tbtn[data-tool]{background:#fff;color:var(--ink)}
+/* Paint, Eraser and Draw: plain white with a coloured picture when off */
+.tbtn[data-tool]{background:#fff}
 .tbtn[data-tool] svg{color:var(--tc)}
-.tbtn[data-tool="paint"]{--tc:#F07A00;--tf:#FFA94D}
-.tbtn[data-tool="erase"]{--tc:#3D6BFF;--tf:#7FA6FF}
-.tbtn[data-tool="draw"]{--tc:#3C9A12;--tf:#9EDC4A}
-.tbtn[data-tool][aria-pressed="true"]{
-  background:var(--tf);border-width:5px;
-  transform:translateY(3px);box-shadow:0 1px 0 var(--ink);
-}
+.tbtn[data-tool="paint"]{--tc:#F07A00}
+.tbtn[data-tool="erase"]{--tc:#3D6BFF}
+.tbtn[data-tool="draw"]{--tc:#3C9A12}
 .tbtn[data-tool][aria-pressed="true"] svg{color:var(--ink)}
+
+/* Every button that is on shares one colour (the sunny yellow) and keeps the border it has when off.
+   Play is plain white while off and Brick my photo is mint, so yellow always means "on". */
+.tbtn.sun{background:#fff}
+.photo-open{background:var(--mint)}
+.tbtn[aria-pressed="true"],.tbtn.sun[aria-pressed="true"],.tbtn.toggle[aria-pressed="true"],
+.toggle[aria-pressed="true"],.seg .btn[aria-pressed="true"],.photo-peek[aria-pressed="true"],
+.chip[aria-pressed="true"],.stylebtn[aria-pressed="true"],.card[aria-pressed="true"],
+.theme-card[aria-pressed="true"],.sizebtn[aria-pressed="true"],.ttab[aria-selected="true"]{
+  background:var(--sun);color:var(--ink);
+}
+.stylebtn[aria-pressed="true"],.card[aria-pressed="true"],.card[aria-pressed="true"]:hover,.sizebtn[aria-pressed="true"],.ttab[aria-selected="true"]{border-color:transparent}
