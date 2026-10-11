@@ -1972,6 +1972,14 @@ body:not([data-screen="studio"]){padding-top:env(safe-area-inset-top, 0px)}
    by a pinch or a double tap (the board's own pinch is in mobile.js) */
 .plate-wrap{touch-action:none}
 
+/* Paint, Eraser and Draw each have their own colour: a soft tint when off, the full colour when on */
+.tbtn[data-tool="paint"]{background:#FFE2B8}
+.tbtn[data-tool="paint"][aria-pressed="true"]{background:#FFA94D}
+.tbtn[data-tool="erase"]{background:#D6E2FF}
+.tbtn[data-tool="erase"][aria-pressed="true"]{background:#6E9BFF}
+.tbtn[data-tool="draw"]{background:#E2F7C2}
+.tbtn[data-tool="draw"][aria-pressed="true"]{background:#9EDC4A}
+
 </style>
 <!-- Snappy Bricks plays sideways: held upright, the screen asks to be turned -->
 <div class="turn-me" id="turnMe" aria-live="polite">
