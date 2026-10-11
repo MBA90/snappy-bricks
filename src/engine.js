@@ -483,7 +483,7 @@ function fitBox(wrap){
   // stud is drawn the same, with sharp edges, and the board still fills its box to within a screen pixel a row
   const dpr = screenDensity();
   const fit = Math.floor(dpr * clamp(Math.min(w / B.cols, maxH / B.rows), B.cols > 40 || B.rows > 40 ? 3 : 7, boxed ? 240 : 48)) / dpr;
-  // zoom in on big boards on small screens (pinch, or the + / − buttons); a new board size starts fitted
+  // zoom in on big boards on small screens (the + / − buttons); a new board size starts fitted
   const dims = B.cols + "x" + B.rows;
   if (dims !== zoomDims){ zoomDims = dims; boardZoom = 1; }
   zoomMax = Math.max(1, ZOOM_CELL / fit);

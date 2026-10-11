@@ -1,4 +1,4 @@
-/* ===================== phones: toy box tabs, board zoom (pinch or + / −) ===================== */
+/* ===================== phones: toy box tabs, board zoom (+ / −) ===================== */
 addStrings({
   toyBox: ["Toy box", "صندوق الألعاب"],
   tabBricks: ["Bricks", "مكعبات"], tabColors: ["Colors", "ألوان"], tabStyles: ["Style", "الشكل"],
@@ -18,6 +18,22 @@ addStrings({
   lock();
   document.addEventListener("fullscreenchange", lock);
   document.addEventListener("pointerdown", lock, {once: true});
+})();
+
+/* ---- the page never zooms, on any screen: no pinch, no double tap, no Ctrl + wheel or Ctrl + / − / 0.
+   Phones are told so in the page's viewport (build.py); Safari on iPhones and iPads ignores that for pinches,
+   so its "gesture" events are stopped here, and two quick taps can't zoom because the page is touch-action:manipulation
+   (styles3.css). Brick my photo keeps its own pinch to frame the photo: it uses pointer events, which still arrive. ---- */
+(function noPageZoom(){
+  const stop = e => { if (e.cancelable) e.preventDefault(); };
+  ["gesturestart", "gesturechange", "gestureend"].forEach(ev => document.addEventListener(ev, stop, {passive: false}));
+  // a trackpad pinch on a computer arrives as Ctrl + wheel
+  window.addEventListener("wheel", e => { if (e.ctrlKey) stop(e); }, {passive: false});
+  window.addEventListener("keydown", e => {
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && ["+", "=", "-", "_", "0"].includes(e.key)) stop(e);
+  });
+  // two fingers moving anywhere else on the page never scale it (a phone whose browser ignores the viewport)
+  document.addEventListener("touchmove", e => { if (e.touches.length > 1 && !(e.target.closest && e.target.closest(".photo-stage"))) stop(e); }, {passive: false});
 })();
 
 /* ---- toy box tabs (only shown on phones, where the toy box is a short dock) ---- */
@@ -89,18 +105,13 @@ $("#zoomOutBtn").addEventListener("click", () => { sfx.click(); zoomTo(boardZoom
 $("#zoomFitBtn").addEventListener("click", () => { sfx.click(); zoomTo(1); });
 on("board", () => requestAnimationFrame(updateZoomBtns));
 on("resize", updateZoomBtns);
-plateWrap.addEventListener("wheel", e => {
-  if (!e.ctrlKey || $("#zoomBar").hidden) return;      // trackpad pinch / ctrl + wheel
-  e.preventDefault(); zoomTo(boardZoom * Math.exp(-e.deltaY / 200), e.clientX, e.clientY);
-}, {passive: false});
 
-/* two fingers on the board: pinch to zoom, slide to move around. One finger still builds.
-   While the fingers move, the board is only stretched (a cheap picture scale); the bricks are
-   redrawn at their new size once, when the fingers lift. Redrawing every brick on every frame
-   made pinching a big board stutter on phones.
-   Two fingers that only tap (a child tapping fast with both hands, or a palm resting on the screen) leave the zoom
-   alone: the board only zooms or moves once the fingers really spread, close or slide. */
-(function pinch(){
+/* a board zoomed in with + : two fingers slide it around. One finger still builds. Nothing on the site zooms with
+   the fingers, so spreading or closing them never changes the board's size, only the + / − buttons do.
+   While the fingers move, the board is only shifted (a cheap picture move); it settles into its scrolled spot once,
+   when the fingers lift. Two fingers that only tap (a child tapping fast with both hands, or a palm resting on the
+   screen) leave the board alone: it only moves once the fingers really slide. */
+(function twoFingerSlide(){
   const pts = new Map(); let g = null, want = null, raf = 0;
   // fingers report many moves per frame; the preview moves at most once per frame
   const apply = () => {
@@ -110,7 +121,7 @@ plateWrap.addEventListener("wheel", e => {
     const s = g.zEnd / g.z;
     plate.style.transform = `translate(${m.x - g.r.left - s * g.ax * g.c}px, ${m.y - g.r.top - s * g.ay * g.c}px) scale(${s})`;
   };
-  // fingers lifted: drop the stretch and draw the board at the new zoom, the same spot under the fingers
+  // fingers lifted: drop the shift and scroll the board so the same spot is under the fingers
   const finish = () => {
     if (raf){ cancelAnimationFrame(raf); raf = 0; if (g.on) apply(); }
     const {zEnd, mEnd, ax, ay} = g; g = null; want = null;
@@ -124,24 +135,23 @@ plateWrap.addEventListener("wheel", e => {
   };
   const two = () => [...pts.values()].slice(0, 2);
   const mid = ([a, b]) => ({x: (a.x + b.x) / 2, y: (a.y + b.y) / 2});
-  const dist = ([a, b]) => Math.hypot(a.x - b.x, a.y - b.y) || 1;
   plateWrap.addEventListener("pointerdown", e => {
     if (e.pointerType !== "touch") return;
     // the first finger down: no other finger is on the screen, so forget any finger whose lift the browser never told us about
     // (left over, it made the next single tap count as a second finger and zoom the board)
     if (e.isPrimary){ pts.clear(); if (g) finish(); }
     pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
-    if (pts.size !== 2 || $("#zoomBar").hidden) return;
+    if (pts.size !== 2 || boardZoom <= 1) return;
     if (ptr && ptr.kind === "drag" && ptr.moved) return;  // second finger turns a dragged brick
     if (ptr){
-      // the first finger's action becomes part of the pinch: undo what it started
+      // the first finger's action becomes part of the slide: undo what it started
       if (ptr.kind === "brush" && ptr.changed){ ptr = null; undo(); }
       else if (ptr.kind === "pencil") endPencil(true);   // drop the half-drawn line, or it stays stuck on the board
       ptr = null;
     }
     e.preventDefault(); e.stopPropagation();
     const p = two(), m = mid(p), r = plate.getBoundingClientRect();
-    g = {d: dist(p), z: boardZoom, r, c: cell, m0: m, on: false};
+    g = {z: boardZoom, r, c: cell, m0: m, on: false};
   }, true);
   window.addEventListener("pointermove", e => {
     if (!pts.has(e.pointerId)) return;
@@ -150,22 +160,20 @@ plateWrap.addEventListener("wheel", e => {
     e.preventDefault();
     const p = two(), m = mid(p);
     if (!g.on){
-      // still a tap: wait until the fingers spread or close by a good bit, or slide together, before anything moves
-      if (Math.abs(dist(p) - g.d) < 28 && Math.hypot(m.x - g.m0.x, m.y - g.m0.y) < 20) return;
-      // the pinch starts here, from where the fingers are now, so the board doesn't jump
-      g.on = true; g.d = dist(p); g.ax = (m.x - g.r.left) / g.c; g.ay = (m.y - g.r.top) / g.c;
+      // still a tap: wait until the fingers slide together a good bit before anything moves
+      if (Math.hypot(m.x - g.m0.x, m.y - g.m0.y) < 20) return;
+      // the slide starts here, from where the fingers are now, so the board doesn't jump
+      g.on = true; g.ax = (m.x - g.r.left) / g.c; g.ay = (m.y - g.r.top) / g.c;
       plate.style.transformOrigin = "0 0"; plate.style.willChange = "transform";
     }
-    want = {z: g.z * dist(p) / g.d, m};
+    want = {z: g.z, m};
     if (!raf) raf = requestAnimationFrame(apply);
   }, {passive: false});
   const up = e => { pts.delete(e.pointerId); if (pts.size < 2 && g) finish(); };
   window.addEventListener("pointerup", up);
   window.addEventListener("pointercancel", up);
-  // the browser's own page zoom never starts on the board: the board has its own zoom. Safari pinches the page with
-  // "gesture" events, and zooms on two quick taps unless the touch's end is held back (touch-action alone isn't always
-  // enough on iPhones). Nothing on the board listens for clicks; the board builds with pointer events, which still arrive.
-  ["gesturestart", "gesturechange"].forEach(ev => plateWrap.addEventListener(ev, e => e.preventDefault(), {passive: false}));
+  // the browser's own page zoom never starts on the board (see noPageZoom above): Safari zooms on two quick taps
+  // unless the touch's end is held back (touch-action alone isn't always enough on iPhones). Nothing on the board listens for clicks; the board builds with pointer events, which still arrive.
   plateWrap.addEventListener("touchend", e => {
     if (!e.cancelable) return;
     e.preventDefault();

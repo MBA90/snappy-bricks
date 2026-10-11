@@ -42,8 +42,9 @@ def standalone(body):
              '<meta name="description" content="A colorful brick-building website for kids: snap bricks, play word and puzzle games, and build your name in English or Arabic.">\n')
     sw = ("<script>if('serviceWorker' in navigator && location.protocol.startsWith('http')){"
           "window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>\n")
+    # the page never zooms (pinch, double tap, a text box getting the focus): see noPageZoom() in mobile.js
     return ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
-            '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
+            '<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">\n'
             + extra + '</head>\n<body>\n' + body + sw + '</body>\n</html>\n')
 
 if __name__ == "__main__":
