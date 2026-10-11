@@ -97,7 +97,9 @@ plateWrap.addEventListener("wheel", e => {
 /* two fingers on the board: pinch to zoom, slide to move around. One finger still builds.
    While the fingers move, the board is only stretched (a cheap picture scale); the bricks are
    redrawn at their new size once, when the fingers lift. Redrawing every brick on every frame
-   made pinching a big board stutter on phones. */
+   made pinching a big board stutter on phones.
+   Two fingers that only tap (a child tapping fast with both hands, or a palm resting on the screen) leave the zoom
+   alone: the board only zooms or moves once the fingers really spread, close or slide. */
 (function pinch(){
   const pts = new Map(); let g = null, want = null, raf = 0;
   // fingers report many moves per frame; the preview moves at most once per frame
@@ -110,7 +112,7 @@ plateWrap.addEventListener("wheel", e => {
   };
   // fingers lifted: drop the stretch and draw the board at the new zoom, the same spot under the fingers
   const finish = () => {
-    if (raf){ cancelAnimationFrame(raf); raf = 0; apply(); }
+    if (raf){ cancelAnimationFrame(raf); raf = 0; if (g.on) apply(); }
     const {zEnd, mEnd, ax, ay} = g; g = null; want = null;
     plate.style.transform = ""; plate.style.transformOrigin = ""; plate.style.willChange = "";
     if (zEnd == null) return;
@@ -125,6 +127,9 @@ plateWrap.addEventListener("wheel", e => {
   const dist = ([a, b]) => Math.hypot(a.x - b.x, a.y - b.y) || 1;
   plateWrap.addEventListener("pointerdown", e => {
     if (e.pointerType !== "touch") return;
+    // the first finger down: no other finger is on the screen, so forget any finger whose lift the browser never told us about
+    // (left over, it made the next single tap count as a second finger and zoom the board)
+    if (e.isPrimary){ pts.clear(); if (g) finish(); }
     pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
     if (pts.size !== 2 || $("#zoomBar").hidden) return;
     if (ptr && ptr.kind === "drag" && ptr.moved) return;  // second finger turns a dragged brick
@@ -136,21 +141,38 @@ plateWrap.addEventListener("wheel", e => {
     }
     e.preventDefault(); e.stopPropagation();
     const p = two(), m = mid(p), r = plate.getBoundingClientRect();
-    g = {d: dist(p), z: boardZoom, r, c: cell, ax: (m.x - r.left) / cell, ay: (m.y - r.top) / cell};
-    plate.style.transformOrigin = "0 0"; plate.style.willChange = "transform";
+    g = {d: dist(p), z: boardZoom, r, c: cell, m0: m, on: false};
   }, true);
   window.addEventListener("pointermove", e => {
     if (!pts.has(e.pointerId)) return;
     pts.set(e.pointerId, {x: e.clientX, y: e.clientY});
     if (!g || pts.size < 2) return;
     e.preventDefault();
-    const p = two();
-    want = {z: g.z * dist(p) / g.d, m: mid(p)};
+    const p = two(), m = mid(p);
+    if (!g.on){
+      // still a tap: wait until the fingers spread or close by a good bit, or slide together, before anything moves
+      if (Math.abs(dist(p) - g.d) < 28 && Math.hypot(m.x - g.m0.x, m.y - g.m0.y) < 20) return;
+      // the pinch starts here, from where the fingers are now, so the board doesn't jump
+      g.on = true; g.d = dist(p); g.ax = (m.x - g.r.left) / g.c; g.ay = (m.y - g.r.top) / g.c;
+      plate.style.transformOrigin = "0 0"; plate.style.willChange = "transform";
+    }
+    want = {z: g.z * dist(p) / g.d, m};
     if (!raf) raf = requestAnimationFrame(apply);
   }, {passive: false});
   const up = e => { pts.delete(e.pointerId); if (pts.size < 2 && g) finish(); };
   window.addEventListener("pointerup", up);
   window.addEventListener("pointercancel", up);
+  // the browser's own page zoom never starts on the board: the board has its own zoom. Safari pinches the page with
+  // "gesture" events, and zooms on two quick taps unless the touch's end is held back (touch-action alone isn't always
+  // enough on iPhones). Nothing on the board listens for clicks; the board builds with pointer events, which still arrive.
+  ["gesturestart", "gesturechange"].forEach(ev => plateWrap.addEventListener(ev, e => e.preventDefault(), {passive: false}));
+  plateWrap.addEventListener("touchend", e => {
+    if (!e.cancelable) return;
+    e.preventDefault();
+    // a held-back tap doesn't take the focus away from a text box, so put the keyboard away here
+    const a = document.activeElement;
+    if (a && /^(INPUT|TEXTAREA)$/.test(a.tagName)) a.blur();
+  }, {passive: false});
 })();
 
 /* ---- a sign on the board while Paint, Eraser, Draw or Fill is on: the board's edge takes the tool's colour,
