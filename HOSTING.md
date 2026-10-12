@@ -35,7 +35,8 @@ Double-clicking `index.html` works for playing. Installing and offline mode only
 Replace `index.html` (and the `voice` folder if it changed). Devices load the newest page automatically when they are online.
 
 ## Privacy notes for a kids' site
-- The site collects nothing. Creations, badges, stickers and settings are stored only in the child's own browser.
+- The site collects nothing personal. Creations, badges, stickers and settings are stored only in the child's own browser.
+- The "playing now" chip on the home screen sends only a random, made-up id (new on every visit) to the counter in `server/`, which forgets it after about a minute. See `server/README.md`.
 - Photos used in "Brick my photo" are turned into bricks inside the browser and are never uploaded.
 - There are no ads, no trackers, no sign-in, and no chat.
 - Fonts load from Google Fonts. For zero third-party requests, download the "Baloo 2" and "Baloo Bhaijaan 2" fonts, put the files next to `index.html`, and replace the Google Fonts `<link>` with your own `@font-face` rules.
