@@ -1,6 +1,6 @@
 # Snappy Bricks
 
-**Play it:** https://mba90.github.io/snappy-bricks/
+**Play it:** https://snappy-bricks.com
 
 **Code:** https://github.com/MBA90/snappy-bricks
 
